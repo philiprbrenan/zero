@@ -13,7 +13,7 @@ use Carp qw(cluck confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
-eval "use Test::More tests=>29" unless caller;
+eval "use Test::More tests=>30" unless caller;
 
 makeDieConfess;
 
@@ -49,10 +49,10 @@ my $FindResult = sub                                                            
   $f
  }->();
 
-my sub FindComparison_lower   {0}                                               # Comparison result
-my sub FindComparison_equal   {1}
-my sub FindComparison_higher  {2}
-my sub FindComparison_notFound{3}
+my sub FindResult_lower   {0}                                                   # Comparison result
+my sub FindResult_found   {1}
+my sub FindResult_higher  {2}
+my sub FindResult_notFound{3}
 
 #D1 Constructor                                                                 # Create a new tree.
 
@@ -262,7 +262,7 @@ sub FindResult_data($)                                                          
   $d
  }
 
-my sub FindComparison($$)                                                       # Convert a symbolic name for a find result comparison to an integer
+my sub FindResult($$)                                                           # Convert a symbolic name for a find result comparison to an integer
  {my ($f, $cmp) = @_;                                                           # Find result, comparison result name
   return 0 if $cmp eq q(lower);
   return 1 if $cmp eq q(equal);
@@ -556,7 +556,7 @@ my sub FindAndSplit($$)                                                         
       Then
        {IfTrue Node_isLeaf($node),                                              # Leaf
         Then
-         {Mov $F, FindResult_new($node, $key, FindComparison_higher, $last);
+         {Mov $F, FindResult_new($node, $key, FindResult_higher, $last);
           Jmp $Found;
          };
         my $last1 = Add $last, 1;
@@ -576,7 +576,7 @@ my sub FindAndSplit($$)                                                         
         Then
          {IfTrue Node_isLeaf($node),
           Then
-           {Mov $F, FindResult_new($node, $key, FindComparison_lower, $i);
+           {Mov $F, FindResult_new($node, $key, FindResult_lower, $i);
             Jmp $Found;
            };
 
@@ -590,7 +590,7 @@ my sub FindAndSplit($$)                                                         
 
         IfEq $key, $k,                                                          # Found key
         Then
-         {Mov $F, FindResult_new($node, $key, FindComparison_equal, $i);
+         {Mov $F, FindResult_new($node, $key, FindResult_found, $i);
           Jmp $Found;
          };
        } $nl;
@@ -600,7 +600,7 @@ my sub FindAndSplit($$)                                                         
   $F                                                                            # Results of find
  }
 
-sub Find($$)                                                                    # Find a key in a tree returning its associated data or undef if the key does not exist..
+sub Find($$)                                                                    # Find a key in a tree returning a FindResult describing the outcome of the search.
  {my ($tree, $key) = @_;                                                        # Tree to search, key to find
 
   my $p = Procedure 'NWayTree_Find', sub
@@ -612,7 +612,7 @@ sub Find($$)                                                                    
 
     IfFalse $node,                                                              # Empty tree
     Then
-     {ReturnPut 0, FindResult_new($node, $key, FindComparison_notFound, -1);
+     {ReturnPut 0, FindResult_new($node, $key, FindResult_notFound, -1);
       Return;
      };
 
@@ -625,7 +625,7 @@ sub Find($$)                                                                    
       Then
        {IfTrue Node_isLeaf($node),                                              # Leaf
         Then
-         {ReturnPut 0, FindResult_new($node, $key, FindComparison_higher, $nl);
+         {ReturnPut 0, FindResult_new($node, $key, FindResult_higher, $nl);
           Return;
          };
         Mov $node, Node_down($node, $nl);
@@ -637,14 +637,14 @@ sub Find($$)                                                                    
         my $k = Node_keys($node, $i);                                           # Key from tree
         IfEq $key, $k,                                                          # Found key
         Then
-         {ReturnPut 0, FindResult_new($node, $key, FindComparison_equal, $i);
+         {ReturnPut 0, FindResult_new($node, $key, FindResult_found, $i);
           Return;
          };
         IfLt $key, $k,                                                          # Lower than current key
         Then
          {IfTrue Node_isLeaf($node),                                            # Leaf
           Then
-           {ReturnPut 0, FindResult_new($node, $key, FindComparison_lower, $i);
+           {ReturnPut 0, FindResult_new($node, $key, FindResult_lower, $i);
             Return;
            };
           Mov $node, Node_down($node, $i);
@@ -726,7 +726,7 @@ sub Insert($$$%)                                                                
       my $i = FindResult_index($r);
       FindResult_free($r);
 
-      IfEq $c, FindComparison_equal,                                            # Found an equal key whose data we can update
+      IfEq $c, FindResult_found,                                                # Found an equal key whose data we can update
       Then
        {Node_setData($N, $i, $data);
         Jmp $Finish;
@@ -734,7 +734,7 @@ sub Insert($$$%)                                                                
 
       my $Nl  = Node_length($N);
       my $Nl1 = Add $Nl, 1;
-      IfEq $c, FindComparison_higher,                                           # Found a key that is greater than the one being inserted
+      IfEq $c, FindResult_higher,                                               # Found a key that is greater than the one being inserted
       Then
        {my $i1 = Add $i, 1;
         my $l = Subtract $Nl, $i1;
@@ -764,7 +764,7 @@ my sub GoAllTheWayLeft($$)                                                      
 
   IfFalse $node,                                                                # Empty tree
   Then
-   {FindResult_renew($find, $node, 0, FindComparison_notFound, 0);
+   {FindResult_renew($find, $node, 0, FindResult_notFound, 0);
    },
   Else
    {For                                                                         # Step down through tree
@@ -772,7 +772,7 @@ my sub GoAllTheWayLeft($$)                                                      
       JTrue $end, Node_isLeaf($node);                                           # Reached leaf
       Mov $node, Node_down($node, 0);
      } MaxIterations;
-    FindResult_renew($find, $node, Node_keys($node, 0), FindComparison_equal,0);# Leaf - place us on the first key
+    FindResult_renew($find, $node, Node_keys($node, 0), FindResult_found,0);# Leaf - place us on the first key
    };
   $find
  }
@@ -793,7 +793,7 @@ my sub GoUpAndAround($)                                                         
       Then
        {my $i = Add $I, 1;
         FindResult_renew($find, $node, Node_keys($node, $i),
-          FindComparison_equal, $i);
+          FindResult_found, $i);
         Jmp $Finish;
        };
 
@@ -814,12 +814,12 @@ my sub GoUpAndAround($)                                                         
            },
           Else
            {FindResult_renew($find, $parent, Node_keys($parent, $i),            # Not the last key
-              FindComparison_equal, $i);
+              FindResult_found, $i);
             Jmp $Finish;
            };
          } MaxIterations;
        };
-      FindResult_renew($find, $node, 0, FindComparison_notFound, 0);            # Last key of root
+      FindResult_renew($find, $node, 0, FindResult_notFound, 0);                # Last key of root
       Jmp $Finish;
      };
 
@@ -841,7 +841,7 @@ my sub IterStart($)                                                             
 my sub IterCheck($)                                                             # True if we can continue to iterate
  {my ($F) = @_;                                                                 # Parameters (NWayTree(FindResult) const find)                                              # Find result of last iteration
   my $r = Var;
-  IfEq FindResult_cmp($F), FindComparison_notFound,
+  IfEq FindResult_cmp($F), FindResult_notFound,
   Then
    {Mov $r, 0;
    },
@@ -979,14 +979,16 @@ return 1 if caller;
 
 Test::More->builder->output("/dev/null");                                       # Reduce number of confirmation messages during testing
 
-eval {goto latest};
+my $debug = -e q(/home/phil/);                                                  # Assume debugging if testing locally
+eval {goto latest if $debug};
 
 sub is_deeply;
 sub ok($;$);
 sub done_testing;
+sub x {exit if $debug}                                                          # Stop if debugging
 
 #latest:;
-if (1)
+if (1)                                                                          #TNew
  {Start 1;
   Out New(3);
   my $e = Execute(suppressOutput=>1);
@@ -995,7 +997,7 @@ if (1)
  }
 
 #latest:;
-if (1)
+if (1)                                                                          #TsetRoot #Troot #TincKeys
  {Start 1;
   my $t = New(3);
   my $r = root($t);
@@ -1016,7 +1018,7 @@ if (1)
   is_deeply $e->memory, { 1 => bless([3, 5, 3, 1], "Tree") };
  }
 
-#latest:;
+latest:;
 if (1)                                                                          #TNode_open
  {Start 1;
   my $t = New(7);                                                               # Create tree
@@ -1027,6 +1029,7 @@ if (1)                                                                          
   2 => bless([0, 1, 0, 1, 3, 4, 0], "Node"),
   3 => bless([], "Keys"),
   4 => bless([], "Data")};
+x
  }
 
 #latest:;
@@ -1112,7 +1115,7 @@ if (1)                                                                          
   my $t = New(3);                                                               # Create tree
   my $f = Find($t, 1);
   my $c = FindResult_cmp($f);
-  AssertEq($c, FindComparison_notFound);
+  AssertEq($c, FindResult_notFound);
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, [];
  }
@@ -1232,14 +1235,36 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TNew #TInsert
+if (1)                                                                          #TNew #TInsert #TFind
+ {my $W = 3; my $N = 66;
+
+  Start 1;
+  my $t = New($W);
+
+  for my $i(1..$N)
+   {Insert($t, $i, my $d = $i+$i);
+    for my $j(1..$i)
+     {AssertEq $j+$j, FindResult_data(Find($t, $j));
+     }
+    AssertNe FindResult_found, FindResult_cmp(Find($t, 0));
+    AssertNe FindResult_found, FindResult_cmp(Find($t, $i+1));
+   }
+
+  my $e = Execute(suppressOutput=>1);
+  is_deeply $e->out, [];
+ }
+
+#latest:;
+if (1)                                                                          #TNew #TInsert #TFind
  {my $W = 3; my $N = 66; my @r = randomArray $N;
 
   Start 1;
   my $t = New($W);
 
   for my $i(1..$N)
-   {Insert($t, $r[$i-1], $r[$i-1]);
+   {my $k = $r[$i-1]; my $d = $k*2;
+    Insert($t, $k, $d);
+    AssertEq $d, FindResult_data(Find($t, $k));
    }
 
   my $e = Execute(suppressOutput=>1);
