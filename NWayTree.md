@@ -162,19 +162,23 @@ Get the number of keys in the tree..
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
-      is_deeply $e->tallyCount,  26254;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  23689;                                             # Insertion instruction counts
+    
+      #say STDERR "AAAA
+  ", dump($e->tallyCounts->{1});
+    
       is_deeply $e->tallyCounts->{1}, {
-      add        => 860,
+      add        => 867,
       array      => 607,
       call       => 107,
       free       => 360,
-      inc        => 1044,
+      inc        => 1051,
       jEq        => 631,
-      jGe        => 1667,
+      jGe        => 1674,
       jLe        => 461,
       jLt        => 565,
       jmp        => 1450,
-      jNe        => 1095,
+      jNe        => 1102,
       mov        => 12349,
       not        => 695,
       paramsGet  => 321,
@@ -184,7 +188,6 @@ Get the number of keys in the tree..
       shiftRight => 68,
       shiftUp    => 300,
       subtract   => 641,
-      tracePoint => 2551,
     };
      }
     
@@ -236,19 +239,23 @@ Get key from find result..
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
-      is_deeply $e->tallyCount,  26254;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  23689;                                             # Insertion instruction counts
+    
+      #say STDERR "AAAA
+  ", dump($e->tallyCounts->{1});
+    
       is_deeply $e->tallyCounts->{1}, {
-      add        => 860,
+      add        => 867,
       array      => 607,
       call       => 107,
       free       => 360,
-      inc        => 1044,
+      inc        => 1051,
       jEq        => 631,
-      jGe        => 1667,
+      jGe        => 1674,
       jLe        => 461,
       jLt        => 565,
       jmp        => 1450,
-      jNe        => 1095,
+      jNe        => 1102,
       mov        => 12349,
       not        => 695,
       paramsGet  => 321,
@@ -258,7 +265,6 @@ Get key from find result..
       shiftRight => 68,
       shiftUp    => 300,
       subtract   => 641,
-      tracePoint => 2551,
     };
      }
     
@@ -335,19 +341,23 @@ Get data field from find results..
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
-      is_deeply $e->tallyCount,  26254;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  23689;                                             # Insertion instruction counts
+    
+      #say STDERR "AAAA
+  ", dump($e->tallyCounts->{1});
+    
       is_deeply $e->tallyCounts->{1}, {
-      add        => 860,
+      add        => 867,
       array      => 607,
       call       => 107,
       free       => 360,
-      inc        => 1044,
+      inc        => 1051,
       jEq        => 631,
-      jGe        => 1667,
+      jGe        => 1674,
       jLe        => 461,
       jLt        => 565,
       jmp        => 1450,
-      jNe        => 1095,
+      jNe        => 1102,
       mov        => 12349,
       not        => 695,
       paramsGet  => 321,
@@ -357,7 +367,6 @@ Get data field from find results..
       shiftRight => 68,
       shiftUp    => 300,
       subtract   => 641,
-      tracePoint => 2551,
     };
      }
     
@@ -416,19 +425,23 @@ Find a key in a tree returning its associated data or undef if the key does not 
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
-      is_deeply $e->tallyCount,  26254;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  23689;                                             # Insertion instruction counts
+    
+      #say STDERR "AAAA
+  ", dump($e->tallyCounts->{1});
+    
       is_deeply $e->tallyCounts->{1}, {
-      add        => 860,
+      add        => 867,
       array      => 607,
       call       => 107,
       free       => 360,
-      inc        => 1044,
+      inc        => 1051,
       jEq        => 631,
-      jGe        => 1667,
+      jGe        => 1674,
       jLe        => 461,
       jLt        => 565,
       jmp        => 1450,
-      jNe        => 1095,
+      jNe        => 1102,
       mov        => 12349,
       not        => 695,
       paramsGet  => 321,
@@ -438,7 +451,6 @@ Find a key in a tree returning its associated data or undef if the key does not 
       shiftRight => 68,
       shiftUp    => 300,
       subtract   => 641,
-      tracePoint => 2551,
     };
      }
     
@@ -666,19 +678,23 @@ Iterate over a tree.
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
-      is_deeply $e->tallyCount,  26254;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  23689;                                             # Insertion instruction counts
+    
+      #say STDERR "AAAA
+  ", dump($e->tallyCounts->{1});
+    
       is_deeply $e->tallyCounts->{1}, {
-      add        => 860,
+      add        => 867,
       array      => 607,
       call       => 107,
       free       => 360,
-      inc        => 1044,
+      inc        => 1051,
       jEq        => 631,
-      jGe        => 1667,
+      jGe        => 1674,
       jLe        => 461,
       jLt        => 565,
       jmp        => 1450,
-      jNe        => 1095,
+      jNe        => 1102,
       mov        => 12349,
       not        => 695,
       paramsGet  => 321,
@@ -688,7 +704,6 @@ Iterate over a tree.
       shiftRight => 68,
       shiftUp    => 300,
       subtract   => 641,
-      tracePoint => 2551,
     };
      }
     
