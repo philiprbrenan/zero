@@ -92,7 +92,38 @@ Create a variable referring to a new tree descriptor.
 
 **Example:**
 
-    if (1)                                                                           
+    if (1)                                                                          
+     {Start 1;
+    
+      Out New(3);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      my $e = Execute(suppressOutput=>1);
+      is_deeply $e->out, [1];
+      is_deeply $e->memory, { 1 => bless([0, 0, 3, 0], "Tree") };
+     }
+    
+    if (1)                                                                            
+     {my $W = 3; my $N = 66;
+    
+      Start 1;
+    
+      my $t = New($W);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+    
+      for my $i(1..$N)
+       {Insert($t, $i, my $d = $i+$i);
+        for my $j(1..$i)
+         {AssertEq $j+$j, FindResult_data(Find($t, $j));
+         }
+        AssertNe FindResult_found, FindResult_cmp(Find($t, 0));
+        AssertNe FindResult_found, FindResult_cmp(Find($t, $i+1));
+       }
+    
+      my $e = Execute(suppressOutput=>1);
+      is_deeply $e->out, [];
+     }
+    
+    if (1)                                                                            
      {my $W = 3; my $N = 66; my @r = randomArray $N;
     
       Start 1;
@@ -101,7 +132,9 @@ Create a variable referring to a new tree descriptor.
 
     
       for my $i(1..$N)
-       {Insert($t, $r[$i-1], $r[$i-1]);
+       {my $k = $r[$i-1]; my $d = $k*2;
+        Insert($t, $k, $d);
+        AssertEq $d, FindResult_data(Find($t, $k));
        }
     
       my $e = Execute(suppressOutput=>1);
@@ -383,7 +416,7 @@ Find a key in a tree.
 
 ## Find($tree, $key)
 
-Find a key in a tree returning its associated data or undef if the key does not exist..
+Find a key in a tree returning a FindResult describing the outcome of the search.
 
        Parameter  Description
     1  $tree      Tree to search
@@ -391,6 +424,55 @@ Find a key in a tree returning its associated data or undef if the key does not 
 
 **Example:**
 
+    if (1)                                                                            
+     {my $W = 3; my $N = 66;
+    
+      Start 1;
+      my $t = New($W);
+    
+      for my $i(1..$N)
+       {Insert($t, $i, my $d = $i+$i);
+        for my $j(1..$i)
+    
+         {AssertEq $j+$j, FindResult_data(Find($t, $j));  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+         }
+    
+        AssertNe FindResult_found, FindResult_cmp(Find($t, 0));  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+    
+        AssertNe FindResult_found, FindResult_cmp(Find($t, $i+1));  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+       }
+    
+      my $e = Execute(suppressOutput=>1);
+      is_deeply $e->out, [];
+     }
+    
+    if (1)                                                                            
+     {my $W = 3; my $N = 66; my @r = randomArray $N;
+    
+      Start 1;
+      my $t = New($W);
+    
+      for my $i(1..$N)
+       {my $k = $r[$i-1]; my $d = $k*2;
+        Insert($t, $k, $d);
+    
+        AssertEq $d, FindResult_data(Find($t, $k));  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+       }
+    
+      my $e = Execute(suppressOutput=>1);
+      is_deeply printTreeKeys($e->memory), <<END;
+                                                                                            30
+                                         13                                                                                           44                               55
+                        7                                     20             25                                  37                                     50                               61
+         2     4              9    11          15    17                23          27                33    35          39    41                47             52                58             63    65
+      1     3     5  6     8    10    12    14    16    18 19    21 22    24    26    28 29    31 32    34    36    38    40    42 43    45 46    48 49    51    53 54    56 57    59 60    62    64    66
+    END
+     }
+    
     if (1)                                                                              
      {my $W = 3; my $N = 107; my @r = randomArray $N;
     
@@ -484,7 +566,7 @@ Insert a key and its associated data into a tree.
       my $t = New(3);                                                               # Create tree
       my $f = Find($t, 1);
       my $c = FindResult_cmp($f);
-      AssertEq($c, FindComparison_notFound);
+      AssertEq($c, FindResult_notFound);
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, [];
      }
@@ -611,16 +693,39 @@ Insert a key and its associated data into a tree.
       19 => bless([55, 66], "Data")};
      }
     
-    if (1)                                                                           
-     {my $W = 3; my $N = 66; my @r = randomArray $N;
+    if (1)                                                                            
+     {my $W = 3; my $N = 66;
     
       Start 1;
       my $t = New($W);
     
       for my $i(1..$N)
     
-       {Insert($t, $r[$i-1], $r[$i-1]);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+       {Insert($t, $i, my $d = $i+$i);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
+        for my $j(1..$i)
+         {AssertEq $j+$j, FindResult_data(Find($t, $j));
+         }
+        AssertNe FindResult_found, FindResult_cmp(Find($t, 0));
+        AssertNe FindResult_found, FindResult_cmp(Find($t, $i+1));
+       }
+    
+      my $e = Execute(suppressOutput=>1);
+      is_deeply $e->out, [];
+     }
+    
+    if (1)                                                                            
+     {my $W = 3; my $N = 66; my @r = randomArray $N;
+    
+      Start 1;
+      my $t = New($W);
+    
+      for my $i(1..$N)
+       {my $k = $r[$i-1]; my $d = $k*2;
+    
+        Insert($t, $k, $d);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+        AssertEq $d, FindResult_data(Find($t, $k));
        }
     
       my $e = Execute(suppressOutput=>1);
@@ -814,7 +919,7 @@ Create a random array.
 
 # Index
 
-1 [Find](#find) - Find a key in a tree returning its associated data or undef if the key does not exist.
+1 [Find](#find) - Find a key in a tree returning a FindResult describing the outcome of the search.
 
 2 [FindResult\_cmp](#findresult_cmp) - Get comparison from find result.
 
