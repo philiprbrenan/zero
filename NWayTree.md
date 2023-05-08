@@ -74,7 +74,7 @@ results:
 
 # Description
 
-Version 20230511.
+Version 20230513.
 
 The following sections describe the methods in each functional area of this
 module.  For an alphabetic listing of all methods by name see [Index](#index).
@@ -414,13 +414,14 @@ Get data field from find results..
 
 Find a key in a tree.
 
-## Find($tree, $key)
+## Find($tree, $key, %options)
 
-Find a key in a tree returning a FindResult describing the outcome of the search.
+Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResult) describing the outcome of the search.
 
        Parameter  Description
     1  $tree      Tree to search
     2  $key       Key to find
+    3  %options   Options
 
 **Example:**
 
@@ -919,7 +920,7 @@ Create a random array.
 
 # Index
 
-1 [Find](#find) - Find a key in a tree returning a FindResult describing the outcome of the search.
+1 [Find](#find) - Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResult) describing the outcome of the search.
 
 2 [FindResult\_cmp](#findresult_cmp) - Get comparison from find result.
 
