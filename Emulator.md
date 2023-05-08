@@ -231,6 +231,63 @@ The current size of an array
     1  $area      Location of area
     2  $name      Name of area
 
+**Example:**
+
+    if (1)                                                                            
+     {Start 1;
+      my $a = Array "aaa";
+        Mov [$a, 0, "aaa"], 1;
+        Mov [$a, 1, "aaa"], 22;
+        Mov [$a, 2, "aaa"], 333;
+    
+      my $n = ArraySize $a, "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      Out $n;
+    
+      ForArray
+       {my ($i, $e, $check, $next, $end) = @_;
+        IfGt $i, 1,
+        Then
+         {Trace 1;
+         };
+        Out $i; Out $e;
+       }  $a, "aaa";
+    
+      Nop;
+      my $e = Execute(suppressOutput=>1);
+      is_deeply $e->memory, {1=>[1, 22, 333]};
+    
+      is_deeply $e->out,
+     [3, 0, 1, 1, 22,
+      "Trace: 1",
+      "  37    14     1         trace                      
+  ",
+      "  38    15     3         label                      
+  ",
+      2,
+      "  39    16     3           out                      
+  ",
+      333,
+      "  40    17     3           out                      
+  ",
+      "  41    18     3         label                      
+  ",
+      "  42    19     3           inc  [0, 3, stackArea] = 3 was 2
+  ",
+      "  43    20     3           jmp                      
+  ",
+      "  44     9     4         label                      
+  ",
+      "  45    10     4           jGe                      
+  ",
+      "  46    21     1         label                      
+  ",
+      "  47    22     1           nop                      
+  ",
+    ];
+     }
+    
+
 ### ArrayIndex()
 
 Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.  The business of returning -1 leads to the inferno of try catch.
