@@ -21,7 +21,7 @@ Say "hello world":
 
 # Description
 
-Version 20230511.
+Version 20230513.
 
 The following sections describe the methods in each functional area of this
 module.  For an alphabetic listing of all methods by name see [Index](#index).
@@ -331,7 +331,7 @@ Find the 1 based index of the second source operand in the array referenced by t
 
 ### ArrayCountLess()
 
-Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result inb the target location
+Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result in the target location
 
 **Example:**
 
@@ -372,7 +372,7 @@ Count the number of elements in the array specified by the first source operand 
 
 ### ArrayCountGreater()
 
-Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result inb the target location
+Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result in the target location
 
 **Example:**
 
@@ -3124,9 +3124,9 @@ Create a variable initialized to the specified value.
 
 2 [Array](#array) - Create a new memory area and write its number into the address named by the target operand.
 
-3 [ArrayCountGreater](#arraycountgreater) - Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result inb the target location
+3 [ArrayCountGreater](#arraycountgreater) - Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result in the target location
 
-4 [ArrayCountLess](#arraycountless) - Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result inb the target location
+4 [ArrayCountLess](#arraycountless) - Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result in the target location
 
 5 [ArrayIndex](#arrayindex) - Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.
 
