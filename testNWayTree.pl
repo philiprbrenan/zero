@@ -109,7 +109,7 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);                                           # Assemble and execute the program
   is_deeply $e->out, [1..$N];                                                   # Check output
 
-  is_deeply $e->count, 577551;                                                  # Total instruction count
+  is_deeply $e->count, 563083;                                                  # Total instruction count
   #say STDERR dump("Count", $e->count);
   #say STDERR dump("Counts", $e->counts);
   my $r = formatTable($e->counts, <<END,                                        # Instruction counts
@@ -129,21 +129,23 @@ Instruction counts
 
 
 Inst        Count
-add          16760
+add          15742
 array         7309
+arrayIndex    1018
 arraySize        1
 call          2023
+dec           1018
 free          4915
-inc          31877
+inc          30314
 jEq          16167
 jFalse        2211
-jGe          56916
+jGe          54335
 jLe          10850
 jLt          12868
-jNe          32535
+jNe          29954
 jTrue          735
-jmp          43630
-mov         283849
+jmp          41049
+mov         277669
 not          17078
 out           2023
 paramsGet     6069
