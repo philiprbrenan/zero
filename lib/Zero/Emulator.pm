@@ -2960,7 +2960,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TAreaSize #TForArray #TArray
+if (1)                                                                          #TArraySize #TForArray #TArray
  {Start 1;
   my $a = Array "aaa";
     Mov [$a, 0, "aaa"], 1;
