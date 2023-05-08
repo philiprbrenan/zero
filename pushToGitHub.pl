@@ -27,10 +27,12 @@ sub pod($$$)                                                                    
    {my $p = Pod::Markdown->new;
     my $m;
        $p->output_string(\$m);
-       $p->parse_string_document("$intro\n$2");
-    owf($out, $m);
+       $p->parse_string_document(my $pod = "$intro\n$2");                       # Create Pod and convert to markdown
+    owf($out, $m);                                                              # Write markdown
+    my $podFile = setFileExtension($out, q(pod));                               # Corresponding pod file
+    owf($podFile, $pod);                                                        # Write corresponding pod
 
-    say STDERR "$in\n$1\n";
+    say STDERR "$in\n$1\n";                                                     # Print any error messages from automated documentation
     return;
    }
   confess "Cannot extract documentation for file: $in";
