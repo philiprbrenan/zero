@@ -44,7 +44,7 @@ indexing, push, pop, index, iteration, resizing and scan operations.  Each
 procedure has its own stack frame implemented as a stack frame area, parameter
 area and return results area. Each area can grow as much as is needed to hold
 data.  Additional [user](https://en.wikipedia.org/wiki/User_(computing)) [memory](https://en.wikipedia.org/wiki/Computer_memory) areas can be allocated and freed as necessary.
-Communication with other systems is acheieved by reading and writing to [arrays](https://en.wikipedia.org/wiki/Dynamic_array) with predetermined names.
+Communication with other systems can be achieved by reading and writing to [arrays](https://en.wikipedia.org/wiki/Dynamic_array) with predetermined names.
 
 Well known locations are represented by character == non numeric area ids.
 Stack frames, parameter and return areas are represented by negative area ids.
@@ -74,7 +74,8 @@ executable instructions and then executes these instructions.
 
 ## N-Way-Tree
 
-An implementation of N-Way-Trees in Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler). 
+An implementation of N-Way-Trees in Zero ```assembler```.
+
 [Documentation](https://github.com/philiprbrenan/zero/blob/ce00d94208e515c3fd7b6e3252060a6776a80c93/NWayTree.md)
 
 [Code](https://github.com/philiprbrenan/zero/blob/ce00d94208e515c3fd7b6e3252060a6776a80c93/lib/Zero/NWayTree.pm)
