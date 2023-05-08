@@ -1,0 +1,26 @@
+# Test $d
+
+name: Test
+
+on:
+  push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: 'main'
+
+    - name: Cpan
+      run: |
+        sudo cpan install -T Data::Dump Data::Table::Text
+
+    - name: Zero
+      run: |
+        perl lib/Zero/Emulator.pm
+        perl lib/Zero/NWayTree.pm
+        perl testEmulator.pl
+        perl testNWayTree.pl
