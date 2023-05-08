@@ -1018,7 +1018,7 @@ if (1)                                                                          
   is_deeply $e->memory, { 1 => bless([3, 5, 3, 1], "Tree") };
  }
 
-latest:;
+#latest:;
 if (1)                                                                          #TNode_open
  {Start 1;
   my $t = New(7);                                                               # Create tree
@@ -1029,7 +1029,6 @@ if (1)                                                                          
   2 => bless([0, 1, 0, 1, 3, 4, 0], "Node"),
   3 => bless([], "Keys"),
   4 => bless([], "Data")};
-x
  }
 
 #latest:;
