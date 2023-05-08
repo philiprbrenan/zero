@@ -6,7 +6,7 @@
 # Key compression in each node by eliminating any common prefix present in each key in each node especially useful if we were to add attributes like userid, process, string position, rwx etc to front of each key.  Data does does not need this additional information.
 use v5.30;
 package Zero::NWayTree;
-our $VERSION = 20230511;                                                        # Version
+our $VERSION = 20230513;                                                        # Version
 use warnings FATAL => qw(all);
 use strict;
 use Carp qw(cluck confess);
@@ -600,8 +600,8 @@ my sub FindAndSplit($$)                                                         
   $F                                                                            # Results of find
  }
 
-sub Find($$)                                                                    # Find a key in a tree returning a FindResult describing the outcome of the search.
- {my ($tree, $key) = @_;                                                        # Tree to search, key to find
+sub Find($$%)                                                                   # Find a key in a tree returning a L<FindResult> describing the outcome of the search.
+ {my ($tree, $key, %options) = @_;                                              # Tree to search, key to find, options
 
   my $p = Procedure 'NWayTree_Find', sub
    {my ($p) = @_;                                                               # Procedure description
