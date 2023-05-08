@@ -149,15 +149,20 @@ my sub Node_tree($)                                                             
   Node_getField($node, q(tree));                                                # Get tree
  }
 
+my sub Node_field($$)                                                           # Get the value of a field in a node
+ {my ($node, $field) = @_;                                                      # Node, field name
+  Mov [$node, $Node->address($field), 'Node'];                                  # Fields
+ }
+
 my sub Node_getIndex($$$)                                                       # Get the indexed field from a node
  {my ($node, $index, $field) = @_;                                              # Node, index of field, field name
-  my $F = Mov [$node, $Node->address($field), 'Node'];                          # Fields
+  my $F = Node_field($node, $field);                                            # Array
   Mov [$F, \$index, ucfirst $field];                                            # Field
  }
 
 my sub Node_setIndex($$$$)                                                      # Set an indexed field to a specified value
  {my ($node, $index, $field, $value) = @_;                                      # Node, index, field name, value
-  my $F = Mov [$node, $Node->address($field), 'Node'];                          # Fields
+  my $F = Node_field($node, $field);                                            # Array
   Mov [$F, \$index, ucfirst $field], $value;                                    # Set field to value
  }
 
@@ -383,6 +388,16 @@ my sub Node_indexInParent($%)                                                   
  {my ($node, %options) = @_;                                                    # Node, options
   my $p = $options{parent} // Node_up($node);                                   # Parent
   AssertNe($p, 0);                                                              # Number of children as opposed to the number of keys
+  my $d = Node_field($p, 'down');
+  my $r = ArrayIndex $d, $node;
+  Dec $r;
+  $r
+ }
+
+my sub Node_indexInParent222222222222($%)                                       # Get the index of a node in its parent.
+ {my ($node, %options) = @_;                                                    # Node, options
+  my $p = $options{parent} // Node_up($node);                                   # Parent
+  AssertNe($p, 0);                                                              # Number of children as opposed to the number of keys
   my $l = $options{children} // Node_length($p);                                # Number of children
   AssertNe($l, 0);                                                              # Number of children as opposed to the number of keys
   my $L = Add $l, 1;
@@ -400,6 +415,12 @@ my sub Node_indexInParent($%)                                                   
      } $L;
     Assert;                                                                     # Something has gone seriously wrong if we cannot find the node within its parent
    };
+  my $R = Node_indexInParent2($node, %options);
+  Out "AAAAA11";
+  Out $r;
+  Out $R;
+  Out "AAAAA22";
+  #AssertEq $r, $R;
   $r
  }
 
@@ -1445,31 +1466,33 @@ if (1)                                                                          
 
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
-  is_deeply $e->tallyCount,  23689;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  23612;                                             # Insertion instruction counts
 
   #say STDERR "AAAA\n", dump($e->tallyCounts->{1});
 
   is_deeply $e->tallyCounts->{1}, {
-  add        => 867,
-  array      => 607,
-  call       => 107,
-  free       => 360,
-  inc        => 1051,
-  jEq        => 631,
-  jGe        => 1674,
-  jLe        => 461,
-  jLt        => 565,
-  jmp        => 1450,
-  jNe        => 1102,
-  mov        => 12349,
-  not        => 695,
-  paramsGet  => 321,
-  paramsPut  => 321,
-  resize     => 12,
-  return     => 107,
+  add => 860,
+  array => 607,
+  arrayIndex => 7,
+  call => 107,
+  dec => 7,
+  free => 360,
+  inc => 1044,
+  jEq => 631,
+  jGe => 1660,
+  jLe => 461,
+  jLt => 565,
+  jmp => 1436,
+  jNe => 1088,
+  mov => 12314,
+  not => 695,
+  paramsGet => 321,
+  paramsPut => 321,
+  resize => 12,
+  return => 107,
   shiftRight => 68,
-  shiftUp    => 300,
-  subtract   => 641,
+  shiftUp => 300,
+  subtract => 641,
 };
  }
 
