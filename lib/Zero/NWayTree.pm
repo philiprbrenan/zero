@@ -379,11 +379,11 @@ my sub ReUp($)                                                                  
    } $L;
  }
 
-my sub Node_indexInParent                                                       # Get the index of a node in its parent.
- {my ($node) = @_;                                                              # Node
-  my $p = Node_up($node);
+my sub Node_indexInParent($%)                                                   # Get the index of a node in its parent.
+ {my ($node, %options) = @_;                                                    # Node, options
+  my $p = $options{parent} // Node_up($node);                                   # Parent
   AssertNe($p, 0);                                                              # Number of children as opposed to the number of keys
-  my $l = Node_length($p);
+  my $l = $options{children} // Node_length($p);                                # Number of children
   AssertNe($l, 0);                                                              # Number of children as opposed to the number of keys
   my $L = Add $l, 1;
   my $r = Var;                                                                  # Index of child
@@ -472,22 +472,16 @@ my sub Node_SplitIfFull($)                                                      
         Jmp $good;
        };
 
-      For                                                                       # Splitting a middle child:
-       {my ($i) = @_;                                                           # Child index
-        IfEq Node_down($p, $i), $node,                                          # Find the node that points from the parent to the current node
-        Then
-         {my $pli = Subtract $pl, $i;
-          my $pk = Node_keys($node, $n);
-          my $pd = Node_data($node, $n);
-          Node_open     ($p, $i, $pli, $pk, $pd);
-          Node_setDown  ($p, $i,  $l);
-          my $i1  = Add $i,  1;
-          Node_setDown  ($p, $i1, $r);
-          Node_free     ($node);
-          Jmp $good;
-         };
-       } [1, $pl];
-      Assert;                                                                   # Could not find the child in the parent
+      my $i = Node_indexInParent($node, parent=>$p, children=>$pl);             # Index of the node being split in its parent
+      my $pli = Subtract $pl, $i;
+      my $pk = Node_keys($node, $n);
+      my $pd = Node_data($node, $n);
+      Node_open     ($p, $i, $pli, $pk, $pd);
+      Node_setDown  ($p, $i,  $l);
+      my $i1  = Add $i,  1;
+      Node_setDown  ($p, $i1, $r);
+      Node_free     ($node);
+      Jmp $good;
      };
 
     Node_setUp($l, $node);                                                      # Root node with single key after split
@@ -787,9 +781,10 @@ my sub GoUpAndAround($)                                                         
       Then
        {For                                                                     # Not the only node in the tree
          {my ($j, $check, $next, $end) = @_;                                    # Parameters
-          my $i = Node_indexInParent($node);                                    # Index in parent
+          my $pl = Node_length($parent);                                        # Number of children
+          my $i = Node_indexInParent($node, parent=>$parent, children=>$pl);    # Index in parent
 
-          IfEq $i, Node_length($parent),                                        # Last key - continue up
+          IfEq $i, $pl,                                                         # Last key - continue up
           Then
            {Mov $node, $parent;
             my $Parent = Node_up($parent);                                      # Parent
@@ -1450,7 +1445,7 @@ if (1)                                                                          
 
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
-  is_deeply $e->tallyCount,  26177;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  26254;                                             # Insertion instruction counts
   is_deeply $e->tallyCounts->{1}, {
   add        => 860,
   array      => 607,
@@ -1461,9 +1456,9 @@ if (1)                                                                          
   jGe        => 1667,
   jLe        => 461,
   jLt        => 565,
-  jmp        => 1436,
+  jmp        => 1450,
   jNe        => 1095,
-  mov        => 12328,
+  mov        => 12349,
   not        => 695,
   paramsGet  => 321,
   paramsPut  => 321,
