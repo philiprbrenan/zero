@@ -126,7 +126,7 @@ Create a new memory area and write its number into the address named by the targ
         Mov [$a, 0, "aaa"], 1;
         Mov [$a, 1, "aaa"], 22;
         Mov [$a, 2, "aaa"], 333;
-      my $n = AreaSize $a, "aaa";
+      my $n = ArraySize $a, "aaa";
       Out $n;
     
       ForArray
@@ -192,7 +192,7 @@ Free the memory area named by the target operand after confirming that it has th
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->out, [
-      "Wrong name: aaa for area with name: node",
+      "Wrong name: aaa for array with name: node",
       "    1     2 free",
     ];
      }
@@ -223,68 +223,41 @@ Free the memory area named by the target operand after confirming that it has th
      }
     
 
-### AreaSize($area, $name)
+### ArraySize($area, $name)
 
-The current size of an area.
+The current size of an array
 
        Parameter  Description
     1  $area      Location of area
     2  $name      Name of area
 
+### ArrayIndex()
+
+Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.  The business of returning -1 leads to the inferno of try catch.
+
 **Example:**
 
-    if (1)                                                                            
+    if (1)                                                                          
      {Start 1;
       my $a = Array "aaa";
-        Mov [$a, 0, "aaa"], 1;
-        Mov [$a, 1, "aaa"], 22;
-        Mov [$a, 2, "aaa"], 333;
+      Mov [$a, 0, "aaa"], 10;
+      Mov [$a, 1, "aaa"], 20;
+      Mov [$a, 2, "aaa"], 30;
     
-      my $n = AreaSize $a, "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      Out ArrayIndex $a, 30;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      Out $n;
     
-      ForArray
-       {my ($i, $e, $check, $next, $end) = @_;
-        IfGt $i, 1,
-        Then
-         {Trace 1;
-         };
-        Out $i; Out $e;
-       }  $a, "aaa";
+      Out ArrayIndex $a, 20;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
     
-      Nop;
+      Out ArrayIndex $a, 10;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+    
+      Out ArrayIndex $a, 15;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->memory, {1=>[1, 22, 333]};
     
-      is_deeply $e->out,
-     [3, 0, 1, 1, 22,
-      "Trace: 1",
-      "  37    14     1         trace                      
-  ",
-      "  38    15     3         label                      
-  ",
-      2,
-      "  39    16     3           out                      
-  ",
-      333,
-      "  40    17     3           out                      
-  ",
-      "  41    18     3         label                      
-  ",
-      "  42    19     3           inc  [0, 3, stackArea] = 3 was 2
-  ",
-      "  43    20     3           jmp                      
-  ",
-      "  44     9     4         label                      
-  ",
-      "  45    10     4           jGe                      
-  ",
-      "  46    21     1         label                      
-  ",
-      "  47    22     1           nop                      
-  ",
-    ];
+      is_deeply $e->out, [3,2,1,0];
      }
     
 
@@ -2403,7 +2376,7 @@ For loop to process each element of the named area.
         Mov [$a, 0, "aaa"], 1;
         Mov [$a, 1, "aaa"], 22;
         Mov [$a, 2, "aaa"], 333;
-      my $n = AreaSize $a, "aaa";
+      my $n = ArraySize $a, "aaa";
       Out $n;
     
     
@@ -2845,6 +2818,15 @@ Create the initial stack frame.
        Parameter  Description
     1  $exec      Execution environment
 
+## Zero::Emulator::Execution::checkArrayName($exec, $area, $name)
+
+Check the name of an array
+
+       Parameter  Description
+    1  $exec      Execution environment
+    2  $area      Array
+    3  $name      Array name
+
 ## Zero::Emulator::Code::execute($block, %options)
 
 Execute a block of code.
@@ -2897,215 +2879,219 @@ Create a variable initialized to the specified value.
 
 1 [Add](#add) - Add the source locations together and store in the result in the target area.
 
-2 [AreaSize](#areasize) - The current size of an area.
+2 [Array](#array) - Create a new memory area and write its number into the address named by the target operand.
 
-3 [Array](#array) - Create a new memory area and write its number into the address named by the target operand.
+3 [ArrayIndex](#arrayindex) - Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.
 
-4 [Assert](#assert) - Assert regardless.
+4 [ArraySize](#arraysize) - The current size of an array
 
-5 [AssertEq](#asserteq) - Assert two memory locations are equal.
+5 [Assert](#assert) - Assert regardless.
 
-6 [AssertGe](#assertge) - Assert are greater than or equal.
+6 [AssertEq](#asserteq) - Assert two memory locations are equal.
 
-7 [AssertGt](#assertgt) - Assert two memory locations are greater than.
+7 [AssertGe](#assertge) - Assert are greater than or equal.
 
-8 [AssertLe](#assertle) - Assert two memory locations are less than or equal.
+8 [AssertGt](#assertgt) - Assert two memory locations are greater than.
 
-9 [AssertLt](#assertlt) - Assert two memory locations are less than.
+9 [AssertLe](#assertle) - Assert two memory locations are less than or equal.
 
-10 [AssertNe](#assertne) - Assert two memory locations are not equal.
+10 [AssertLt](#assertlt) - Assert two memory locations are less than.
 
-11 [AssertOp](#assertop) - Assert operation.
+11 [AssertNe](#assertne) - Assert two memory locations are not equal.
 
-12 [Bad](#bad) - A bad ending.
+12 [AssertOp](#assertop) - Assert operation.
 
-13 [Block](#block) - Block of code that can either be restarted or come to a good or a bad ending.
+13 [Bad](#bad) - A bad ending.
 
-14 [Call](#call) - Call the subroutine at the target address.
+14 [Block](#block) - Block of code that can either be restarted or come to a good or a bad ending.
 
-15 [Clear](#clear) - Clear the first bytes of an area.
+15 [Call](#call) - Call the subroutine at the target address.
 
-16 [Confess](#confess) - Confess.
+16 [Clear](#clear) - Clear the first bytes of an area.
 
-17 [Dec](#dec) - Decrement the target.
+17 [Confess](#confess) - Confess.
 
-18 [Dump](#dump) - Dump memory.
+18 [Dec](#dec) - Decrement the target.
 
-19 [DumpArray](#dumparray) - Dump an array.
+19 [Dump](#dump) - Dump memory.
 
-20 [Else](#else) - Else block.
+20 [DumpArray](#dumparray) - Dump an array.
 
-21 [Execute](#execute) - Execute the current assembly.
+21 [Else](#else) - Else block.
 
-22 [For](#for) - For loop 0.
+22 [Execute](#execute) - Execute the current assembly.
 
-23 [ForArray](#forarray) - For loop to process each element of the named area.
+23 [For](#for) - For loop 0.
 
-24 [Free](#free) - Free the memory area named by the target operand after confirming that it has the name specified on the source operand.
+24 [ForArray](#forarray) - For loop to process each element of the named area.
 
-25 [Good](#good) - A good ending.
+25 [Free](#free) - Free the memory area named by the target operand after confirming that it has the name specified on the source operand.
 
-26 [IfEq](#ifeq) - Execute then or else clause depending on whether two memory locations are equal.
+26 [Good](#good) - A good ending.
 
-27 [IfFalse](#iffalse) - Execute then clause if the specified memory address is zero representing false.
+27 [IfEq](#ifeq) - Execute then or else clause depending on whether two memory locations are equal.
 
-28 [IfGe](#ifge) - Execute then or else clause depending on whether two memory locations are greater than or equal.
+28 [IfFalse](#iffalse) - Execute then clause if the specified memory address is zero representing false.
 
-29 [IfGt](#ifgt) - Execute then or else clause depending on whether two memory locations are greater than.
+29 [IfGe](#ifge) - Execute then or else clause depending on whether two memory locations are greater than or equal.
 
-30 [IfLe](#ifle) - Execute then or else clause depending on whether two memory locations are less than or equal.
+30 [IfGt](#ifgt) - Execute then or else clause depending on whether two memory locations are greater than.
 
-31 [IfLt](#iflt) - Execute then or else clause depending on whether two memory locations are less than.
+31 [IfLe](#ifle) - Execute then or else clause depending on whether two memory locations are less than or equal.
 
-32 [IfNe](#ifne) - Execute then or else clause depending on whether two memory locations are not equal.
+32 [IfLt](#iflt) - Execute then or else clause depending on whether two memory locations are less than.
 
-33 [IfTrue](#iftrue) - Execute then clause if the specified memory address is not zero representing true.
+33 [IfNe](#ifne) - Execute then or else clause depending on whether two memory locations are not equal.
 
-34 [Ifx](#ifx) - Execute then or else clause depending on whether two memory locations are equal.
+34 [IfTrue](#iftrue) - Execute then clause if the specified memory address is not zero representing true.
 
-35 [Inc](#inc) - Increment the target.
+35 [Ifx](#ifx) - Execute then or else clause depending on whether two memory locations are equal.
 
-36 [Jeq](#jeq) - Jump to a target label if the first source field is equal to the second source field.
+36 [Inc](#inc) - Increment the target.
 
-37 [JFalse](#jfalse) - Jump to a target label if the first source field is equal to zero
+37 [Jeq](#jeq) - Jump to a target label if the first source field is equal to the second source field.
 
-38 [Jge](#jge) - Jump to a target label if the first source field is greater than or equal to the second source field.
+38 [JFalse](#jfalse) - Jump to a target label if the first source field is equal to zero
 
-39 [Jgt](#jgt) - Jump to a target label if the first source field is greater than the second source field.
+39 [Jge](#jge) - Jump to a target label if the first source field is greater than or equal to the second source field.
 
-40 [Jle](#jle) - Jump to a target label if the first source field is less than or equal to the second source field.
+40 [Jgt](#jgt) - Jump to a target label if the first source field is greater than the second source field.
 
-41 [Jlt](#jlt) - Jump to a target label if the first source field is less than the second source field.
+41 [Jle](#jle) - Jump to a target label if the first source field is less than or equal to the second source field.
 
-42 [Jmp](#jmp) - Jump to a label.
+42 [Jlt](#jlt) - Jump to a target label if the first source field is less than the second source field.
 
-43 [Jne](#jne) - Jump to a target label if the first source field is not equal to the second source field.
+43 [Jmp](#jmp) - Jump to a label.
 
-44 [JTrue](#jtrue) - Jump to a target label if the first source field is not equal to zero
+44 [Jne](#jne) - Jump to a target label if the first source field is not equal to the second source field.
 
-45 [Label](#label) - Create a label.
+45 [JTrue](#jtrue) - Jump to a target label if the first source field is not equal to zero
 
-46 [LeAddress](#leaddress) - Load the address component.
+46 [Label](#label) - Create a label.
 
-47 [LeArea](#learea) - Load the address component.
+47 [LeAddress](#leaddress) - Load the address component.
 
-48 [Mov](#mov) - Copy a constant or memory address to the target address.
+48 [LeArea](#learea) - Load the address component.
 
-49 [Nop](#nop) - Do nothing (but do it well!).
+49 [Mov](#mov) - Copy a constant or memory address to the target address.
 
-50 [Not](#not) - Move and not.
+50 [Nop](#nop) - Do nothing (but do it well!).
 
-51 [Out](#out) - Write memory contents to out.
+51 [Not](#not) - Move and not.
 
-52 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
+52 [Out](#out) - Write memory contents to out.
 
-53 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
+53 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
 
-54 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
+54 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
 
-55 [Procedure](#procedure) - Define a procedure.
+55 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
 
-56 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
+56 [Procedure](#procedure) - Define a procedure.
 
-57 [Resize](#resize) - Resize the target area to the source size.
+57 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
 
-58 [Return](#return) - Return from a procedure via the call stack.
+58 [Resize](#resize) - Resize the target area to the source size.
 
-59 [ReturnGet](#returnget) - Get a word from the return area and save it.
+59 [Return](#return) - Return from a procedure via the call stack.
 
-60 [ReturnPut](#returnput) - Put a word into the return area.
+60 [ReturnGet](#returnget) - Get a word from the return area and save it.
 
-61 [ShiftDown](#shiftdown) - Shift an element down one in an area.
+61 [ReturnPut](#returnput) - Put a word into the return area.
 
-62 [ShiftLeft](#shiftleft) - Shift left within an element.
+62 [ShiftDown](#shiftdown) - Shift an element down one in an area.
 
-63 [ShiftRight](#shiftright) - Shift right with an element.
+63 [ShiftLeft](#shiftleft) - Shift left within an element.
 
-64 [ShiftUp](#shiftup) - Shift an element up one in an area.
+64 [ShiftRight](#shiftright) - Shift right with an element.
 
-65 [Start](#start) - Start the current assembly using the specified version of the Zero language.
+65 [ShiftUp](#shiftup) - Shift an element up one in an area.
 
-66 [Subtract](#subtract) - Subtract the second source address from the first and store in the result in the target area.
+66 [Start](#start) - Start the current assembly using the specified version of the Zero language.
 
-67 [Tally](#tally) - Counts instructions when enabled.
+67 [Subtract](#subtract) - Subtract the second source address from the first and store in the result in the target area.
 
-68 [Then](#then) - Then block.
+68 [Tally](#tally) - Counts instructions when enabled.
 
-69 [Trace](#trace) - Trace.
+69 [Then](#then) - Then block.
 
-70 [TracePoint](#tracepoint) - Trace point - a point in the code where the flow of execution might change.
+70 [Trace](#trace) - Trace.
 
-71 [TracePoints](#tracepoints) - Enable trace points.
+71 [TracePoint](#tracepoint) - Trace point - a point in the code where the flow of execution might change.
 
-72 [Var](#var) - Create a variable initialized to the specified value.
+72 [TracePoints](#tracepoints) - Enable trace points.
 
-73 [Watch](#watch) - Shift an element down one in an area.
+73 [Var](#var) - Create a variable initialized to the specified value.
 
-74 [Zero::Emulator::Code::execute](#zero-emulator-code-execute) - Execute a block of code.
+74 [Watch](#watch) - Shift an element down one in an area.
 
-75 [Zero::Emulator::Execution::address](#zero-emulator-execution-address) - Record a reference to memory.
+75 [Zero::Emulator::Code::execute](#zero-emulator-code-execute) - Execute a block of code.
 
-76 [Zero::Emulator::Execution::allocateSystemAreas](#zero-emulator-execution-allocatesystemareas) - Allocate system areas for a new stack frame.
+76 [Zero::Emulator::Execution::address](#zero-emulator-execution-address) - Record a reference to memory.
 
-77 [Zero::Emulator::Execution::allocMemory](#zero-emulator-execution-allocmemory) - Create the name of a new memory area.
+77 [Zero::Emulator::Execution::allocateSystemAreas](#zero-emulator-execution-allocatesystemareas) - Allocate system areas for a new stack frame.
 
-78 [Zero::Emulator::Execution::analyzeExecutionNotRead](#zero-emulator-execution-analyzeexecutionnotread) - Analyze execution results for variables never read.
+78 [Zero::Emulator::Execution::allocMemory](#zero-emulator-execution-allocmemory) - Create the name of a new memory area.
 
-79 [Zero::Emulator::Execution::analyzeExecutionResults](#zero-emulator-execution-analyzeexecutionresults) - Analyze execution results.
+79 [Zero::Emulator::Execution::analyzeExecutionNotRead](#zero-emulator-execution-analyzeexecutionnotread) - Analyze execution results for variables never read.
 
-80 [Zero::Emulator::Execution::analyzeExecutionResultsDoubleWrite](#zero-emulator-execution-analyzeexecutionresultsdoublewrite) - Analyze execution results - double writes.
+80 [Zero::Emulator::Execution::analyzeExecutionResults](#zero-emulator-execution-analyzeexecutionresults) - Analyze execution results.
 
-81 [Zero::Emulator::Execution::analyzeExecutionResultsLeast](#zero-emulator-execution-analyzeexecutionresultsleast) - Analyze execution results for least used code.
+81 [Zero::Emulator::Execution::analyzeExecutionResultsDoubleWrite](#zero-emulator-execution-analyzeexecutionresultsdoublewrite) - Analyze execution results - double writes.
 
-82 [Zero::Emulator::Execution::analyzeExecutionResultsMost](#zero-emulator-execution-analyzeexecutionresultsmost) - Analyze execution results for most used code.
+82 [Zero::Emulator::Execution::analyzeExecutionResultsLeast](#zero-emulator-execution-analyzeexecutionresultsleast) - Analyze execution results for least used code.
 
-83 [Zero::Emulator::Execution::areaContent](#zero-emulator-execution-areacontent) - Content of an area containing a address in memory in the specified execution.
+83 [Zero::Emulator::Execution::analyzeExecutionResultsMost](#zero-emulator-execution-analyzeexecutionresultsmost) - Analyze execution results for most used code.
 
-84 [Zero::Emulator::Execution::assert](#zero-emulator-execution-assert) - Assert generically.
+84 [Zero::Emulator::Execution::areaContent](#zero-emulator-execution-areacontent) - Content of an area containing a address in memory in the specified execution.
 
-85 [Zero::Emulator::Execution::assign](#zero-emulator-execution-assign) - Assign - check for pointless assignments.
+85 [Zero::Emulator::Execution::assert](#zero-emulator-execution-assert) - Assert generically.
 
-86 [Zero::Emulator::Execution::check](#zero-emulator-execution-check) - Check that a user area access is valid.
+86 [Zero::Emulator::Execution::assign](#zero-emulator-execution-assign) - Assign - check for pointless assignments.
 
-87 [Zero::Emulator::Execution::createInitialStackEntry](#zero-emulator-execution-createinitialstackentry) - Create the initial stack frame.
+87 [Zero::Emulator::Execution::check](#zero-emulator-execution-check) - Check that a user area access is valid.
 
-88 [Zero::Emulator::Execution::currentInstruction](#zero-emulator-execution-currentinstruction) - Locate current instruction.
+88 [Zero::Emulator::Execution::checkArrayName](#zero-emulator-execution-checkarrayname) - Check the name of an array
 
-89 [Zero::Emulator::Execution::dumpMemory](#zero-emulator-execution-dumpmemory) - Dump memory.
+89 [Zero::Emulator::Execution::createInitialStackEntry](#zero-emulator-execution-createinitialstackentry) - Create the initial stack frame.
 
-90 [Zero::Emulator::Execution::formatTrace](#zero-emulator-execution-formattrace) - Describe last memory assignment.
+90 [Zero::Emulator::Execution::currentInstruction](#zero-emulator-execution-currentinstruction) - Locate current instruction.
 
-91 [Zero::Emulator::Execution::freeSystemAreas](#zero-emulator-execution-freesystemareas) - Free system areas for the specified stack frame.
+91 [Zero::Emulator::Execution::dumpMemory](#zero-emulator-execution-dumpmemory) - Dump memory.
 
-92 [Zero::Emulator::Execution::get](#zero-emulator-execution-get) - Get from memory.
+92 [Zero::Emulator::Execution::formatTrace](#zero-emulator-execution-formattrace) - Describe last memory assignment.
 
-93 [Zero::Emulator::Execution::getMemory](#zero-emulator-execution-getmemory) - Get from memory.
+93 [Zero::Emulator::Execution::freeSystemAreas](#zero-emulator-execution-freesystemareas) - Free system areas for the specified stack frame.
 
-94 [Zero::Emulator::Execution::jumpOp](#zero-emulator-execution-jumpop) - Jump to the target address if the tested memory area if the condition is matched.
+94 [Zero::Emulator::Execution::get](#zero-emulator-execution-get) - Get from memory.
 
-95 [Zero::Emulator::Execution::left](#zero-emulator-execution-left) - Address a memory address.
+95 [Zero::Emulator::Execution::getMemory](#zero-emulator-execution-getmemory) - Get from memory.
 
-96 [Zero::Emulator::Execution::leftSuppress](#zero-emulator-execution-leftsuppress) - Indicate that a memory address has been read.
+96 [Zero::Emulator::Execution::jumpOp](#zero-emulator-execution-jumpop) - Jump to the target address if the tested memory area if the condition is matched.
 
-97 [Zero::Emulator::Execution::markAsRead](#zero-emulator-execution-markasread) - Mark a memory address as having been read from.
+97 [Zero::Emulator::Execution::left](#zero-emulator-execution-left) - Address a memory address.
 
-98 [Zero::Emulator::Execution::notRead](#zero-emulator-execution-notread) - Record the unused memory locations in the current stack frame.
+98 [Zero::Emulator::Execution::leftSuppress](#zero-emulator-execution-leftsuppress) - Indicate that a memory address has been read.
 
-99 [Zero::Emulator::Execution::right](#zero-emulator-execution-right) - Get a constant or a memory address.
+99 [Zero::Emulator::Execution::markAsRead](#zero-emulator-execution-markasread) - Mark a memory address as having been read from.
 
-100 [Zero::Emulator::Execution::rwRead](#zero-emulator-execution-rwread) - Observe read from memory.
+100 [Zero::Emulator::Execution::notRead](#zero-emulator-execution-notread) - Record the unused memory locations in the current stack frame.
 
-101 [Zero::Emulator::Execution::rwWrite](#zero-emulator-execution-rwwrite) - Observe write to memory.
+101 [Zero::Emulator::Execution::right](#zero-emulator-execution-right) - Get a constant or a memory address.
 
-102 [Zero::Emulator::Execution::set](#zero-emulator-execution-set) - Set the value of an address at the specified address in memory in the current execution environment.
+102 [Zero::Emulator::Execution::rwRead](#zero-emulator-execution-rwread) - Observe read from memory.
 
-103 [Zero::Emulator::Execution::setMemoryType](#zero-emulator-execution-setmemorytype) - Set the type of a memory area - a name that can be used to confirm the validity of reads and writes to that array represented by that area.
+103 [Zero::Emulator::Execution::rwWrite](#zero-emulator-execution-rwwrite) - Observe write to memory.
 
-104 [Zero::Emulator::Execution::stackArea](#zero-emulator-execution-stackarea) - Current stack frame.
+104 [Zero::Emulator::Execution::set](#zero-emulator-execution-set) - Set the value of an address at the specified address in memory in the current execution environment.
 
-105 [Zero::Emulator::Execution::stackTrace](#zero-emulator-execution-stacktrace) - Create a stack trace.
+105 [Zero::Emulator::Execution::setMemoryType](#zero-emulator-execution-setmemorytype) - Set the type of a memory area - a name that can be used to confirm the validity of reads and writes to that array represented by that area.
 
-106 [Zero::Emulator::Execution::stackTraceAndExit](#zero-emulator-execution-stacktraceandexit) - Create a stack trace and exit from the emulated program.
+106 [Zero::Emulator::Execution::stackArea](#zero-emulator-execution-stackarea) - Current stack frame.
+
+107 [Zero::Emulator::Execution::stackTrace](#zero-emulator-execution-stacktrace) - Create a stack trace.
+
+108 [Zero::Emulator::Execution::stackTraceAndExit](#zero-emulator-execution-stacktraceandexit) - Create a stack trace and exit from the emulated program.
 
 # Installation
 
