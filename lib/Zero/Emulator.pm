@@ -2193,7 +2193,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 @ISA         = qw(Exporter);
 @EXPORT      = qw();
-@EXPORT_OK   = qw(Add AreaStructure Array Assert AssertEq AssertGe AssertGt AssertLe AssertLt AssertNe Bad Block Call Clear Confess Dec Dump DumpArray Else Execute For ForArray Free Good IfEq IfFalse IfGe IfGt IfLe IfLt IfNe IfTrue Ifx Inc Jeq Jge Jgt Jle Jlt Jmp Jne JTrue JFalse Label Mov Nop Not Out ParamsGet ParamsPut Pop Procedure Push Resize Return ReturnGet ReturnPut ShiftDown ShiftLeft ShiftRight ShiftUp Start Subtract Tally Then Trace TracePoints Var Watch);
+@EXPORT_OK   = qw(Add AreaStructure Array ArrayIndex ArrayCountLess ArrayCountGreater Assert AssertEq AssertGe AssertGt AssertLe AssertLt AssertNe Bad Block Call Clear Confess Dec Dump DumpArray Else Execute For ForArray Free Good IfEq IfFalse IfGe IfGt IfLe IfLt IfNe IfTrue Ifx Inc Jeq Jge Jgt Jle Jlt Jmp Jne JTrue JFalse Label Mov Nop Not Out ParamsGet ParamsPut Pop Procedure Push Resize Return ReturnGet ReturnPut ShiftDown ShiftLeft ShiftRight ShiftUp Start Subtract Tally Then Trace TracePoints Var Watch);
 #say STDERR '@EXPORT_OK   = qw(', (join ' ', sort @EXPORT_OK), ')'; exit;
 %EXPORT_TAGS = (all=>[@EXPORT, @EXPORT_OK]);
 
