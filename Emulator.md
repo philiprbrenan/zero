@@ -782,7 +782,7 @@ Jump to a target label if the first source field is less than or equal to the se
         Jgt $next, $d, $d;
        } 3;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       27 instructions executed";
+      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
       is_deeply $e->memory, { 1=>  bless([2], "aaa"), 2=>  bless([99], "bbb") };
      }
     
@@ -818,7 +818,7 @@ Jump to a target label if the first source field is less than the second source 
         Jgt $next, $d, $d;
        } 3;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       27 instructions executed";
+      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
       is_deeply $e->memory, { 1=>  bless([2], "aaa"), 2=>  bless([99], "bbb") };
      }
     
@@ -854,7 +854,7 @@ Jump to a target label if the first source field is greater than or equal to the
         Jgt $next, $d, $d;
        } 3;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       27 instructions executed";
+      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
       is_deeply $e->memory, { 1=>  bless([2], "aaa"), 2=>  bless([99], "bbb") };
      }
     
@@ -890,7 +890,7 @@ Jump to a target label if the first source field is greater than the second sour
 
        } 3;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       27 instructions executed";
+      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
       is_deeply $e->memory, { 1=>  bless([2], "aaa"), 2=>  bless([99], "bbb") };
      }
     
@@ -926,7 +926,7 @@ Jump to a target label if the first source field is equal to the second source f
         Jgt $next, $d, $d;
        } 3;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       27 instructions executed";
+      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
       is_deeply $e->memory, { 1=>  bless([2], "aaa"), 2=>  bless([99], "bbb") };
      }
     
@@ -962,7 +962,7 @@ Jump to a target label if the first source field is not equal to the second sour
         Jgt $next, $d, $d;
        } 3;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       27 instructions executed";
+      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
       is_deeply $e->memory, { 1=>  bless([2], "aaa"), 2=>  bless([99], "bbb") };
      }
     
@@ -1303,7 +1303,7 @@ Copy a constant or memory address to the target address.
         Jgt $next, $d, $d;
        } 3;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       27 instructions executed";
+      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
       is_deeply $e->memory, { 1=>  bless([2], "aaa"), 2=>  bless([99], "bbb") };
      }
     
@@ -1321,7 +1321,7 @@ Copy a constant or memory address to the target address.
         Jeq $next, [$a, \$b, 'aaa'], 1;
        } 3;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       22 instructions executed";
+      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       19 instructions executed";
       is_deeply $e->memory, {1=>  bless([undef, undef, 1], "aaa")};
      }
     
@@ -2505,23 +2505,6 @@ Assert true
   "];
      }
     
-    if (1)                                                                          
-     {Start 1;
-    
-      AssertTrue  1;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-      AssertFalse 1;
-      my $e = Execute(suppressOutput=>1, trace=>1);
-      is_deeply $e->out,
-    [ "   1     0     1    assertTrue                      
-  ",
-      "AssertFalse 1 failed",
-      "    1     2 assertFalse",
-      "   2     1     1   assertFalse                      
-  "];
-    
-     }
-    
 
 ### AssertFalse($a, %options)
 
@@ -2530,6 +2513,28 @@ Assert false
        Parameter  Description
     1  $a         Source operand
     2  %options
+
+**Example:**
+
+    if (1)                                                                          
+     {Start 1;
+      AssertTrue  1;
+    
+      AssertFalse 1;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      my $e = Execute(suppressOutput=>1, trace=>1);
+      is_deeply $e->out,
+    [ "   1     0     1    assertTrue                      
+  ",
+    
+      "AssertFalse 1 failed",  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      "    1     2 assertFalse",
+      "   2     1     1   assertFalse                      
+  "];
+    
+     }
+    
 
 ### For($block, $range, %options)
 
