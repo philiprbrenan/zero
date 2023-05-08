@@ -74,7 +74,7 @@ executable instructions and then executes these instructions.
 
 ## N-Way-Tree
 
-An implementation of N-Way-Trees in Zero ```assembler```.
+An implementation of N-Way-Trees in Zero assembler.
 
 [Documentation](https://github.com/philiprbrenan/zero/blob/ce00d94208e515c3fd7b6e3252060a6776a80c93/NWayTree.md)
 
