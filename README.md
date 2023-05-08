@@ -39,11 +39,13 @@ perform the look ups. Being able to deliver such look ups faster than can be
 done with conventional software solutions might prove profitable in much the
 same way as graphics chips and other chips used at scale.
 
-Memory is addressed via named areas.  Each procedure has its own stack frame
-implemented as a stack frame area, parameter area and return results area. Each
-area can grow as much as is needed to hold data.  Additional [user](https://en.wikipedia.org/wiki/User_(computing)) [memory](https://en.wikipedia.org/wiki/Computer_memory) areas
-can be allocated and freed as necessary.  Such areas can be iterated over,
-indexed, sized and resized as flexible [arrays](https://en.wikipedia.org/wiki/Dynamic_array). 
+Memory is addressed via named areas which act as flexible [arrays](https://en.wikipedia.org/wiki/Dynamic_array) with the usual
+indexing, push, pop, index, iteration, resizing and scan operations.  Each
+procedure has its own stack frame implemented as a stack frame area, parameter
+area and return results area. Each area can grow as much as is needed to hold
+data.  Additional [user](https://en.wikipedia.org/wiki/User_(computing)) [memory](https://en.wikipedia.org/wiki/Computer_memory) areas can be allocated and freed as necessary.
+Communication with other systems is acheieved by reading and writing to [arrays](https://en.wikipedia.org/wiki/Dynamic_array) with predetermined names.
+
 Well known locations are represented by character == non numeric area ids.
 Stack frames, parameter and return areas are represented by negative area ids.
 
