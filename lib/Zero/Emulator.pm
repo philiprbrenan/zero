@@ -945,6 +945,31 @@ sub Zero::Emulator::Execution::checkArrayName($$$)                              
   1
  }
 
+sub Zero::Emulator::Execution::locateAreaElement($$$)                           #P Locate an element in an array
+ {my ($exec, $area, $op) = @_;                                                  # Execution environment, array, operation
+  my @a = $exec->memory->{$area}->@*;
+  for my $a(keys @a)                                                            # Check each element of the array
+   {if ($op->($a[$a]))
+     {return $a + 1;
+     }
+   }
+  0
+ }
+
+sub Zero::Emulator::Execution::countAreaElement($$$)                            #P Count the number of elements in array that meet some specification
+ {my ($exec, $area, $op) = @_;                                                  # Execution environment, array, operation
+  my @a = $exec->memory->{$area}->@*;
+  my $n = 0;
+
+  for my $a(keys @a)                                                            # Check each element of the array
+   {if ($op->($a[$a]))
+     {++$n;
+     }
+   }
+
+  $n
+ }
+
 sub Zero::Emulator::Code::execute($%)                                           #P Execute a block of code.
  {my ($block, %options) = @_;                                                   # Block of code, execution options
 
@@ -1030,41 +1055,36 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $area = $exec->right($i->source);                                      # Location of area
       my $name = $i->source2;                                                   # Name of area
 
-      if (!defined($name))                                                      # A name is required
-       {$exec->stackTraceAndExit("Array name required to size an array: ".dump($area));
-        return;
-       }
-
-      my $Name = $exec->memoryType->{$area};                                    # Area has a name
-      if (!defined($Name))
-       {$exec->stackTraceAndExit("No name associated with array: $area");
-        return;
-       }
-
-      if ($name ne $Name)                                                       # Name matches supplied name
-       {$exec->stackTraceAndExit("Wrong name: $name for array with name: $Name");
-        return;
-       }
+      $exec->checkArrayName($area, $name);                                      # Check that the supplied array name matches what is actually in memory
 
       $exec->assign($size, scalar $exec->memory->{$area}->@*)                   # Size of area
      },
 
     arrayIndex=> sub                                                            # Place the 1 based index of the second source operand in the array referenced by the first source operand in the target location
      {my $i = $exec->currentInstruction;
-      my $indx = $exec->left ($i->target);                                      # Location to store index in
-      my $area = $exec->right($i->source);                                      # Location of area
-      my $elem = $exec->right($i->source2);                                     # Location of element
+      my $x = $exec->left ($i->target);                                         # Location to store index in
+      my $a = $exec->right($i->source);                                         # Location of area
+      my $e = $exec->right($i->source2);                                        # Location of element
 
-      my $I = 0;
-      my @A = $exec->memory->{$area}->@*;
-      for my $a(keys @A)                                                        # Check each element of the array
-       {if ($A[$a] == $elem)
-         {$I = $a + 1;
-          last;
-         }
-       }
+      $exec->assign($x, $exec->locateAreaElement($a, sub{$_[0] == $e}))         # Index of element
+     },
 
-      $exec->assign($indx, $I)                                                  # Index of element
+    arrayCountGreater=> sub                                                     # Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result inb the target location
+     {my $i = $exec->currentInstruction;
+      my $x = $exec->left ($i->target);                                         # Location to store index in
+      my $a = $exec->right($i->source);                                         # Location of area
+      my $e = $exec->right($i->source2);                                        # Location of element
+
+      $exec->assign($x, $exec->countAreaElement($a, sub{$_[0] > $e}))           # Index of element
+     },
+
+    arrayCountLess=> sub                                                        # Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result inb the target location
+     {my $i = $exec->currentInstruction;
+      my $x = $exec->left ($i->target);                                         # Location to store index in
+      my $a = $exec->right($i->source);                                         # Location of area
+      my $e = $exec->right($i->source2);                                        # Location of element
+
+      $exec->assign($x, $exec->countAreaElement($a, sub{$_[0] < $e}))           # Index of element
      },
 
     resize=> sub                                                                # Resize an array
@@ -1496,9 +1516,6 @@ sub ArraySize($$)                                                               
   $t
  }
 
-#   0       1       2
-#   10      20      30
-# 5=0  15=1     25=2   35=3
 sub ArrayIndex($$;$) {                                                          # Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.  The business of returning -1 leads to the inferno of try catch.
   if (@_ == 2)
    {my ($area, $element) = @_;                                                  # Area, element to find
@@ -1510,6 +1527,36 @@ sub ArrayIndex($$;$) {                                                          
   else
    {my ($target, $area, $element) = @_;                                         # Target, area, element to find
     $assembly->instruction(action=>"arrayIndex",
+    xTarget($target), xSource($area), xSource2($element));
+   }
+ }
+
+sub ArrayCountLess($$;$) {                                                      # Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result inb the target location
+  if (@_ == 2)
+   {my ($area, $element) = @_;                                                  # Area, element to find
+    my $t = &Var();
+    $assembly->instruction(action=>"arrayCountLess",
+    target=>RefLeft($t), xSource($area), xSource2($element));
+    $t
+   }
+  else
+   {my ($target, $area, $element) = @_;                                         # Target, area, element to find
+    $assembly->instruction(action=>"arrayCountLess",
+    xTarget($target), xSource($area), xSource2($element));
+   }
+ }
+
+sub ArrayCountGreater($$;$) {                                                   # Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result inb the target location
+  if (@_ == 2)
+   {my ($area, $element) = @_;                                                  # Area, element to find
+    my $t = &Var();
+    $assembly->instruction(action=>"arrayCountGreater",
+    target=>RefLeft($t), xSource($area), xSource2($element));
+    $t
+   }
+  else
+   {my ($target, $area, $element) = @_;                                         # Target, area, element to find
+    $assembly->instruction(action=>"arrayCountGreater",
     xTarget($target), xSource($area), xSource2($element));
    }
  }
@@ -2742,8 +2789,8 @@ if (1)                                                                          
   Mov 3, 1;
   Mov 3, 1;
   Mov 1, 1;
-  my $e = Execute(suppressOutput=>0);
-  is_deeply keys($e->doubleWrite->%*), 3;                                       # In area 0, variable 1 was first written by instruction 0 then again by instruction 1 once.
+  my $e = Execute(suppressOutput=>1);
+  is_deeply keys($e->doubleWrite->%*), 1;                                       # In area 0, variable 1 was first written by instruction 0 then again by instruction 1 once.
  }
 
 #latest:;
@@ -3019,20 +3066,36 @@ if (1)                                                                          
 ];
  }
 
+
+#      0     1     2
+#     10    20    30
+# 5=0   15=1  25=2  35=3
+
 #latest:;
-if (1)                                                                          #TArrayIndex
+if (1)                                                                          #TArrayIndex #TArrayCountLess #TArrayCountGreater
  {Start 1;
   my $a = Array "aaa";
   Mov [$a, 0, "aaa"], 10;
   Mov [$a, 1, "aaa"], 20;
   Mov [$a, 2, "aaa"], 30;
+
   Out ArrayIndex $a, 30;
   Out ArrayIndex $a, 20;
   Out ArrayIndex $a, 10;
   Out ArrayIndex $a, 15;
-  my $e = Execute(suppressOutput=>1);
 
-  is_deeply $e->out, [3,2,1,0];
+  Out ArrayCountLess $a, 35;
+  Out ArrayCountLess $a, 25;
+  Out ArrayCountLess $a, 15;
+  Out ArrayCountLess $a,  5;
+
+  Out ArrayCountGreater $a, 35;
+  Out ArrayCountGreater $a, 25;
+  Out ArrayCountGreater $a, 15;
+  Out ArrayCountGreater $a,  5;
+
+  my $e = Execute(suppressOutput=>1);
+  is_deeply $e->out, [3,2,1,0,  3,2,1,0, 0,1,2,3];
  }
 
 #latest:;
