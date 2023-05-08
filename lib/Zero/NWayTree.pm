@@ -1445,19 +1445,22 @@ if (1)                                                                          
 
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
-  is_deeply $e->tallyCount,  26254;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  23689;                                             # Insertion instruction counts
+
+  #say STDERR "AAAA\n", dump($e->tallyCounts->{1});
+
   is_deeply $e->tallyCounts->{1}, {
-  add        => 860,
+  add        => 867,
   array      => 607,
   call       => 107,
   free       => 360,
-  inc        => 1044,
+  inc        => 1051,
   jEq        => 631,
-  jGe        => 1667,
+  jGe        => 1674,
   jLe        => 461,
   jLt        => 565,
   jmp        => 1450,
-  jNe        => 1095,
+  jNe        => 1102,
   mov        => 12349,
   not        => 695,
   paramsGet  => 321,
@@ -1467,7 +1470,6 @@ if (1)                                                                          
   shiftRight => 68,
   shiftUp    => 300,
   subtract   => 641,
-  tracePoint => 2551,
 };
  }
 
