@@ -162,7 +162,7 @@ Get the number of keys in the tree..
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
-      is_deeply $e->tallyCount,  26177;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  26254;                                             # Insertion instruction counts
       is_deeply $e->tallyCounts->{1}, {
       add        => 860,
       array      => 607,
@@ -173,9 +173,9 @@ Get the number of keys in the tree..
       jGe        => 1667,
       jLe        => 461,
       jLt        => 565,
-      jmp        => 1436,
+      jmp        => 1450,
       jNe        => 1095,
-      mov        => 12328,
+      mov        => 12349,
       not        => 695,
       paramsGet  => 321,
       paramsPut  => 321,
@@ -236,7 +236,7 @@ Get key from find result..
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
-      is_deeply $e->tallyCount,  26177;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  26254;                                             # Insertion instruction counts
       is_deeply $e->tallyCounts->{1}, {
       add        => 860,
       array      => 607,
@@ -247,9 +247,9 @@ Get key from find result..
       jGe        => 1667,
       jLe        => 461,
       jLt        => 565,
-      jmp        => 1436,
+      jmp        => 1450,
       jNe        => 1095,
-      mov        => 12328,
+      mov        => 12349,
       not        => 695,
       paramsGet  => 321,
       paramsPut  => 321,
@@ -335,7 +335,7 @@ Get data field from find results..
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
-      is_deeply $e->tallyCount,  26177;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  26254;                                             # Insertion instruction counts
       is_deeply $e->tallyCounts->{1}, {
       add        => 860,
       array      => 607,
@@ -346,9 +346,9 @@ Get data field from find results..
       jGe        => 1667,
       jLe        => 461,
       jLt        => 565,
-      jmp        => 1436,
+      jmp        => 1450,
       jNe        => 1095,
-      mov        => 12328,
+      mov        => 12349,
       not        => 695,
       paramsGet  => 321,
       paramsPut  => 321,
@@ -416,7 +416,7 @@ Find a key in a tree returning its associated data or undef if the key does not 
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
-      is_deeply $e->tallyCount,  26177;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  26254;                                             # Insertion instruction counts
       is_deeply $e->tallyCounts->{1}, {
       add        => 860,
       array      => 607,
@@ -427,9 +427,9 @@ Find a key in a tree returning its associated data or undef if the key does not 
       jGe        => 1667,
       jLe        => 461,
       jLt        => 565,
-      jmp        => 1436,
+      jmp        => 1450,
       jNe        => 1095,
-      mov        => 12328,
+      mov        => 12349,
       not        => 695,
       paramsGet  => 321,
       paramsPut  => 321,
@@ -666,7 +666,7 @@ Iterate over a tree.
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
-      is_deeply $e->tallyCount,  26177;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  26254;                                             # Insertion instruction counts
       is_deeply $e->tallyCounts->{1}, {
       add        => 860,
       array      => 607,
@@ -677,9 +677,9 @@ Iterate over a tree.
       jGe        => 1667,
       jLe        => 461,
       jLt        => 565,
-      jmp        => 1436,
+      jmp        => 1450,
       jNe        => 1095,
-      mov        => 12328,
+      mov        => 12349,
       not        => 695,
       paramsGet  => 321,
       paramsPut  => 321,
