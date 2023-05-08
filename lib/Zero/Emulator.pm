@@ -1417,7 +1417,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {$exec->stackTraceAndExit(qq(Invalid instruction: "$a"\n))
         unless my $c = $instructions{$a};
 
-      if ($a !~ m(\A(assert.*|label|tally)\Z))                                  # Omit instructions that are not tally-able
+      if ($a !~ m(\A(assert.*|label|tally|trace(Points?)?)\Z))                  # Omit instructions that are not tally-able
        {if (my $t = $exec->tally)                                               # Tally instruction counts
          {$exec->tallyCount++;
           $exec->tallyCounts->{$t}{$a}++;
@@ -2714,7 +2714,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TAssertTrue
+if (1)                                                                          #TAssertFalse
  {Start 1;
   AssertTrue  1;
   AssertFalse 1;
@@ -2956,7 +2956,7 @@ if (1)                                                                          
     Jgt $next, $d, $d;
    } 3;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       27 instructions executed";
+  is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
   is_deeply $e->memory, { 1=>  bless([2], "aaa"), 2=>  bless([99], "bbb") };
  }
 
@@ -3000,7 +3000,7 @@ if (1)                                                                          
     Jeq $next, [$a, \$b, 'aaa'], 1;
    } 3;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       22 instructions executed";
+  is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       19 instructions executed";
   is_deeply $e->memory, {1=>  bless([undef, undef, 1], "aaa")};
  }
 
