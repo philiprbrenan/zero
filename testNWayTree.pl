@@ -130,8 +130,8 @@ Instruction counts
 
 Inst        Count
 add          16476
-areaSize         1
 array         7309
+arraySize        1
 assertNe      1468
 call          2023
 free          4915
