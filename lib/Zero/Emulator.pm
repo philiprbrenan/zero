@@ -8,7 +8,7 @@
 # Count number of ways an if statement actually goes.
 use v5.30;
 package Zero::Emulator;
-our $VERSION = 20230511;                                                        # Version
+our $VERSION = 20230513;                                                        # Version
 use warnings FATAL=>qw(all);
 use strict;
 use Carp qw(cluck confess);
@@ -1087,7 +1087,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->assign($x, $exec->locateAreaElement($a, sub{$_[0] == $e}))         # Index of element
      },
 
-    arrayCountGreater=> sub                                                     # Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result inb the target location
+    arrayCountGreater=> sub                                                     # Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result in the target location
      {my $i = $exec->currentInstruction;
       my $x = $exec->left ($i->target);                                         # Location to store index in
       my $a = $exec->right($i->source);                                         # Location of area
@@ -1096,7 +1096,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->assign($x, $exec->countAreaElement($a, sub{$_[0] > $e}))           # Index of element
      },
 
-    arrayCountLess=> sub                                                        # Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result inb the target location
+    arrayCountLess=> sub                                                        # Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result in the target location
      {my $i = $exec->currentInstruction;
       my $x = $exec->left ($i->target);                                         # Location to store index in
       my $a = $exec->right($i->source);                                         # Location of area
@@ -1549,7 +1549,7 @@ sub ArrayIndex($$;$) {                                                          
    }
  }
 
-sub ArrayCountLess($$;$) {                                                      # Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result inb the target location
+sub ArrayCountLess($$;$) {                                                      # Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result in the target location
   if (@_ == 2)
    {my ($area, $element) = @_;                                                  # Area, element to find
     my $t = &Var();
@@ -1564,7 +1564,7 @@ sub ArrayCountLess($$;$) {                                                      
    }
  }
 
-sub ArrayCountGreater($$;$) {                                                   # Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result inb the target location
+sub ArrayCountGreater($$;$) {                                                   # Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result in the target location
   if (@_ == 2)
    {my ($area, $element) = @_;                                                  # Area, element to find
     my $t = &Var();
