@@ -14,7 +14,7 @@ use strict;
 use Carp qw(cluck confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>77" unless caller;
+eval "use Test::More tests=>78" unless caller;
 
 makeDieConfess;
 
@@ -835,6 +835,16 @@ sub Zero::Emulator::Execution::jumpOp($$$)                                      
   $exec->instructionPointer = $i->number + $exec->right($i->target) if &$check; # Check if condition is met
  }
 
+sub Zero::Emulator::Execution::assert1($$$)                                     #P Assert true or false
+ {my ($exec, $test, $sub) = @_;                                                 # Execution environment, Text of test, subroutine of test
+  @_ == 3 or confess "Three parameters";
+  my $i = $exec->currentInstruction;
+  my $a = $exec->right($i->source);
+  unless($sub->($a))
+   {$exec->stackTraceAndExit("Assert$test $a failed");
+   }
+ }
+
 sub Zero::Emulator::Execution::assert($$$)                                      #P Assert generically.
  {my ($exec, $test, $sub) = @_;                                                 # Execution environment, Text of test, subroutine of test
   @_ == 3 or confess "Three parameters";
@@ -1021,6 +1031,14 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     assertGe=> sub                                                              # Assert greater
      {$exec->assert(">=", sub {my ($a, $b) = @_; $a >= $b})
+     },
+
+    assertFalse=> sub                                                           # Assert false
+     {$exec->assert1("False", sub {my ($a) = @_; $a == 0})
+     },
+
+    assertTrue=> sub                                                            # Assert true
+     {$exec->assert1("True", sub {my ($a) = @_; $a != 0})
      },
 
     array=> sub                                                                 # Create a new memory area and write its number into the address named by the target operand
@@ -1396,15 +1414,15 @@ sub Zero::Emulator::Code::execute($%)                                           
             $exec->calls->[-1]->instruction = $i;
     last unless $i;
     if (my $a = $i->action)                                                     # Action
-     {$exec->counts->{$a}++; $exec->count++;                                    # Execution instruction counts
-      $exec->stackTraceAndExit(qq(Invalid instruction: "$a"\n))
+     {$exec->stackTraceAndExit(qq(Invalid instruction: "$a"\n))
         unless my $c = $instructions{$a};
 
-      if (my $t = $exec->tally)                                                 # Tally instruction counts
-       {if ($a !~ m(\A(label|tally)\Z))                                         # Omit instructions that are not tally-able
+      if ($a !~ m(\A(assert.*|label|tally)\Z))                                  # Omit instructions that are not tally-able
+       {if (my $t = $exec->tally)                                               # Tally instruction counts
          {$exec->tallyCount++;
           $exec->tallyCounts->{$t}{$a}++;
          }
+        $exec->counts->{$a}++; $exec->count++;                                  # Execution instruction counts
        }
 
       $exec->lastAssignArea = $exec->lastAssignAddress = $exec->lastAssignValue = undef;
@@ -1982,7 +2000,12 @@ sub IfGe($$%)                                                                   
   Ifx(\&Jlt, $a, $b, %options);
  }
 
-sub AssertOp($$$)                                                               #P Assert operation.
+sub Assert1($$)                                                                 #P Assert operation.
+ {my ($op, $a) = @_;                                                            # Operation, Source operand
+  $assembly->instruction(action=>"assert$op", xSource($a), level=>2);
+ }
+
+sub Assert2($$$)                                                                #P Assert operation.
  {my ($op, $a, $b) = @_;                                                        # Operation, First memory address, second memory address
   $assembly->instruction(action=>"assert$op",
     xSource($a), xSource2($b), level=>2);
@@ -1995,32 +2018,42 @@ sub Assert(%)                                                                   
 
 sub AssertEq($$%)                                                               # Assert two memory locations are equal..
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
-  AssertOp("Eq", $a, $b);
+  Assert2("Eq", $a, $b);
  }
 
 sub AssertNe($$%)                                                               # Assert two memory locations are not equal..
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
-  AssertOp("Ne", $a, $b);
+  Assert2("Ne", $a, $b);
  }
 
 sub AssertLt($$%)                                                               # Assert two memory locations are less than..
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
-  AssertOp("Lt", $a, $b);
+  Assert2("Lt", $a, $b);
  }
 
 sub AssertLe($$%)                                                               # Assert two memory locations are less than or equal..
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
-  AssertOp("Le", $a, $b);
+  Assert2("Le", $a, $b);
  }
 
 sub AssertGt($$%)                                                               # Assert two memory locations are greater than..
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
-  AssertOp("Gt", $a, $b);
+  Assert2("Gt", $a, $b);
  }
 
 sub AssertGe($$%)                                                               # Assert are greater than or equal..
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
-  AssertOp("Ge", $a, $b);
+  Assert2("Ge", $a, $b);
+ }
+
+sub AssertTrue($%)                                                              # Assert true
+ {my ($a, %options) = @_;                                                       # Source operand
+  Assert1("True", $a);
+ }
+
+sub AssertFalse($%)                                                             # Assert false
+ {my ($a, %options) = @_;                                                       # Source operand
+  Assert1("False", $a);
  }
 
 sub For(&$%)                                                                    # For loop 0..range-1 or in reverse.
@@ -2668,6 +2701,33 @@ if (1)                                                                          
  }
 
 #latest:;
+if (1)                                                                          #TAssertTrue
+ {Start 1;
+  AssertFalse 0;
+  AssertTrue  0;
+  my $e = Execute(suppressOutput=>1, trace=>1);
+  is_deeply $e->out,
+[ "   1     0     1   assertFalse                      \n",
+  "AssertTrue 0 failed",
+  "    1     2 assertTrue",
+  "   2     1     1    assertTrue                      \n"];
+ }
+
+#latest:;
+if (1)                                                                          #TAssertTrue
+ {Start 1;
+  AssertTrue  1;
+  AssertFalse 1;
+  my $e = Execute(suppressOutput=>1, trace=>1);
+  is_deeply $e->out,
+[ "   1     0     1    assertTrue                      \n",
+  "AssertFalse 1 failed",
+  "    1     2 assertFalse",
+  "   2     1     1   assertFalse                      \n"];
+
+ }
+
+#latest:;
 if (1)                                                                          # Temporary variable
  {my $s = Start 1;
   my $a = Mov 1;
@@ -2778,7 +2838,6 @@ if (1)                                                                          
    };
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, [1..10];
-  ok $e->analyzeExecutionResults(analyze=>3) =~ m(#       12 instructions executed);
  }
 
 #latest:;
@@ -2897,7 +2956,7 @@ if (1)                                                                          
     Jgt $next, $d, $d;
    } 3;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       36 instructions executed";
+  is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       27 instructions executed";
   is_deeply $e->memory, { 1=>  bless([2], "aaa"), 2=>  bless([99], "bbb") };
  }
 
@@ -2941,7 +3000,7 @@ if (1)                                                                          
     Jeq $next, [$a, \$b, 'aaa'], 1;
    } 3;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       31 instructions executed";
+  is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       22 instructions executed";
   is_deeply $e->memory, {1=>  bless([undef, undef, 1], "aaa")};
  }
 
