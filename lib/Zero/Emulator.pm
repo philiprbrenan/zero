@@ -9,12 +9,12 @@
 use v5.30;
 package Zero::Emulator;
 our $VERSION = 20230511;                                                        # Version
-use warnings FATAL=>  qw(all);
+use warnings FATAL=>qw(all);
 use strict;
 use Carp qw(cluck confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>76" unless caller;
+eval "use Test::More tests=>77" unless caller;
 
 makeDieConfess;
 
@@ -922,6 +922,29 @@ sub Zero::Emulator::Execution::createInitialStackEntry($)                       
   $exec
  }
 
+sub Zero::Emulator::Execution::checkArrayName($$$)                               #P Check the name of an array
+ {my ($exec, $area, $name) = @_;                                                # Execution environment, array, array name
+  @_ == 3 or confess "Three parameters";
+
+  if (!defined($name))                                                          # A name is required
+   {$exec->stackTraceAndExit("Array name required to size an array: ".dump($area));
+    return 0;
+   }
+
+  my $Name = $exec->memoryType->{$area};                                        # Area has a name
+  if (!defined($Name))
+   {$exec->stackTraceAndExit("No name associated with array: $area");
+    return 0;
+   }
+
+  if ($name ne $Name)                                                           # Name matches supplied name
+   {$exec->stackTraceAndExit("Wrong name: $name for array with name: $Name");
+    return 0;
+   }
+
+  1
+ }
+
 sub Zero::Emulator::Code::execute($%)                                           #P Execute a block of code.
  {my ($block, %options) = @_;                                                   # Block of code, execution options
 
@@ -991,59 +1014,63 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $area = $exec->right($i->target);                                      # Area
       my $name = $exec->right($i->source);
 
-      if (!defined($name))                                                      # A name is required
-       {$exec->stackTraceAndExit("Area name required to free an area: $area");
-        return;
-       }
-
       if ($area !~ m(\A\d+\Z))                                                  # User free-able area
        {$exec->stackTraceAndExit("Attempting to allocate non user area: $area");
         return;
        }
 
-      my $Name = $exec->memoryType->{$area};                                    # Area has a name
-      if (!defined($Name))
-       {$exec->stackTraceAndExit("No name associated with area: $area");
-        return;
-       }
+      $exec->checkArrayName($area, $name);                                      # Check that the supplied array name matches what is actually in memory
 
-      if ($name ne $Name)                                                       # Name matches supplied name
-       {$exec->stackTraceAndExit("Wrong name: $name for area with name: $Name");
-        return;
-       }
-
-      delete $exec->memory->{$area}                                             # Free validly identified area
+      delete $exec->memory->{$area}                                             # Free correctly identified area
      },
 
-    areaSize=> sub                                                              # Get the size of the specified area
+    arraySize=> sub                                                             # Get the size of the specified area
      {my $i = $exec->currentInstruction;
       my $size = $exec->left ($i->target);                                      # Location to store size in
       my $area = $exec->right($i->source);                                      # Location of area
       my $name = $i->source2;                                                   # Name of area
 
       if (!defined($name))                                                      # A name is required
-       {$exec->stackTraceAndExit("Area name required to size an area: ".dump($area));
+       {$exec->stackTraceAndExit("Array name required to size an array: ".dump($area));
         return;
        }
 
       my $Name = $exec->memoryType->{$area};                                    # Area has a name
       if (!defined($Name))
-       {$exec->stackTraceAndExit("No name associated with area: $area");
+       {$exec->stackTraceAndExit("No name associated with array: $area");
         return;
        }
 
       if ($name ne $Name)                                                       # Name matches supplied name
-       {$exec->stackTraceAndExit("Wrong name: $name for area with name: $Name");
+       {$exec->stackTraceAndExit("Wrong name: $name for array with name: $Name");
         return;
        }
 
       $exec->assign($size, scalar $exec->memory->{$area}->@*)                   # Size of area
      },
 
-    resize=> sub                                                                # Resize an area
+    arrayIndex=> sub                                                            # Place the 1 based index of the second source operand in the array referenced by the first source operand in the target location
      {my $i = $exec->currentInstruction;
-      my $size =  $exec->right($i->source);                                     # Size to reduce area to
-      my $area =  $exec->right($i->target);                                     # Area to reduce to
+      my $indx = $exec->left ($i->target);                                      # Location to store index in
+      my $area = $exec->right($i->source);                                      # Location of area
+      my $elem = $exec->right($i->source2);                                     # Location of element
+
+      my $I = 0;
+      my @A = $exec->memory->{$area}->@*;
+      for my $a(keys @A)                                                        # Check each element of the array
+       {if ($A[$a] == $elem)
+         {$I = $a + 1;
+          last;
+         }
+       }
+
+      $exec->assign($indx, $I)                                                  # Index of element
+     },
+
+    resize=> sub                                                                # Resize an array
+     {my $i = $exec->currentInstruction;
+      my $size =  $exec->right($i->source);                                     # New size
+      my $area =  $exec->right($i->target);                                     # Array to resize
       $exec->stackTraceAndExit("Attempting to resize non user area: $area")
         unless $area =~ m(\A\d+\Z);
       $#{$exec->memory->{$area}} = $size-1;
@@ -1461,12 +1488,30 @@ sub Free($$)                                                                    
   $assembly->instruction(action=>"free", xTarget($target), xSource($source));
  }
 
-sub AreaSize($$)                                                                # The current size of an area.
+sub ArraySize($$)                                                               # The current size of an array
  {my ($area, $name) = @_;                                                       # Location of area, name of area
   my $t = &Var();
-  $assembly->instruction(action=>"areaSize",                                    # Target - location to place the size in, source - address of the area, source2 - the name of the area which cannot be taken from the area of the first source operand because that area name is the name of the area that contains the location of the area we wish to work on.
+  $assembly->instruction(action=>"arraySize",                                   # Target - location to place the size in, source - address of the area, source2 - the name of the area which cannot be taken from the area of the first source operand because that area name is the name of the area that contains the location of the area we wish to work on.
     target=>RefLeft($t), xSource($area), source2=>$name);
   $t
+ }
+
+#   0       1       2
+#   10      20      30
+# 5=0  15=1     25=2   35=3
+sub ArrayIndex($$;$) {                                                          # Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.  The business of returning -1 leads to the inferno of try catch.
+  if (@_ == 2)
+   {my ($area, $element) = @_;                                                  # Area, element to find
+    my $t = &Var();
+    $assembly->instruction(action=>"arrayIndex",
+    target=>RefLeft($t), xSource($area), xSource2($element));
+    $t
+   }
+  else
+   {my ($target, $area, $element) = @_;                                         # Target, area, element to find
+    $assembly->instruction(action=>"arrayIndex",
+    xTarget($target), xSource($area), xSource2($element));
+   }
  }
 
 sub Call($)                                                                     # Call the subroutine at the target address.
@@ -1972,7 +2017,7 @@ sub For(&$%)                                                                    
 
 sub ForArray(&$$%)                                                              # For loop to process each element of the named area.
  {my ($block, $area, $name, %options) = @_;                                     # Block of code, area, area name, options
-  my $e = AreaSize $area, $name;                                                # End
+  my $e = ArraySize $area, $name;                                               # End
   my $s = 0;                                                                    # Start
 
   my ($Start, $Check, $Next, $End) = (label, label, label, label);
@@ -2365,7 +2410,7 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->out, [
-  "Wrong name: aaa for area with name: node",
+  "Wrong name: aaa for array with name: node",
   "    1     2 free",
 ];
  }
@@ -2921,7 +2966,7 @@ if (1)                                                                          
     Mov [$a, 0, "aaa"], 1;
     Mov [$a, 1, "aaa"], 22;
     Mov [$a, 2, "aaa"], 333;
-  my $n = AreaSize $a, "aaa";
+  my $n = ArraySize $a, "aaa";
   Out $n;
 
   ForArray
@@ -2972,6 +3017,22 @@ if (1)                                                                          
   "Stack trace",
   "    1     5 dumpArray",
 ];
+ }
+
+#latest:;
+if (1)                                                                          #TArrayIndex
+ {Start 1;
+  my $a = Array "aaa";
+  Mov [$a, 0, "aaa"], 10;
+  Mov [$a, 1, "aaa"], 20;
+  Mov [$a, 2, "aaa"], 30;
+  Out ArrayIndex $a, 30;
+  Out ArrayIndex $a, 20;
+  Out ArrayIndex $a, 10;
+  Out ArrayIndex $a, 15;
+  my $e = Execute(suppressOutput=>1);
+
+  is_deeply $e->out, [3,2,1,0];
  }
 
 #latest:;
