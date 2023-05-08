@@ -162,32 +162,34 @@ Get the number of keys in the tree..
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
-      is_deeply $e->tallyCount,  23689;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  23612;                                             # Insertion instruction counts
     
       #say STDERR "AAAA
   ", dump($e->tallyCounts->{1});
     
       is_deeply $e->tallyCounts->{1}, {
-      add        => 867,
-      array      => 607,
-      call       => 107,
-      free       => 360,
-      inc        => 1051,
-      jEq        => 631,
-      jGe        => 1674,
-      jLe        => 461,
-      jLt        => 565,
-      jmp        => 1450,
-      jNe        => 1102,
-      mov        => 12349,
-      not        => 695,
-      paramsGet  => 321,
-      paramsPut  => 321,
-      resize     => 12,
-      return     => 107,
+      add => 860,
+      array => 607,
+      arrayIndex => 7,
+      call => 107,
+      dec => 7,
+      free => 360,
+      inc => 1044,
+      jEq => 631,
+      jGe => 1660,
+      jLe => 461,
+      jLt => 565,
+      jmp => 1436,
+      jNe => 1088,
+      mov => 12314,
+      not => 695,
+      paramsGet => 321,
+      paramsPut => 321,
+      resize => 12,
+      return => 107,
       shiftRight => 68,
-      shiftUp    => 300,
-      subtract   => 641,
+      shiftUp => 300,
+      subtract => 641,
     };
      }
     
@@ -239,32 +241,34 @@ Get key from find result..
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
-      is_deeply $e->tallyCount,  23689;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  23612;                                             # Insertion instruction counts
     
       #say STDERR "AAAA
   ", dump($e->tallyCounts->{1});
     
       is_deeply $e->tallyCounts->{1}, {
-      add        => 867,
-      array      => 607,
-      call       => 107,
-      free       => 360,
-      inc        => 1051,
-      jEq        => 631,
-      jGe        => 1674,
-      jLe        => 461,
-      jLt        => 565,
-      jmp        => 1450,
-      jNe        => 1102,
-      mov        => 12349,
-      not        => 695,
-      paramsGet  => 321,
-      paramsPut  => 321,
-      resize     => 12,
-      return     => 107,
+      add => 860,
+      array => 607,
+      arrayIndex => 7,
+      call => 107,
+      dec => 7,
+      free => 360,
+      inc => 1044,
+      jEq => 631,
+      jGe => 1660,
+      jLe => 461,
+      jLt => 565,
+      jmp => 1436,
+      jNe => 1088,
+      mov => 12314,
+      not => 695,
+      paramsGet => 321,
+      paramsPut => 321,
+      resize => 12,
+      return => 107,
       shiftRight => 68,
-      shiftUp    => 300,
-      subtract   => 641,
+      shiftUp => 300,
+      subtract => 641,
     };
      }
     
@@ -341,32 +345,34 @@ Get data field from find results..
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
-      is_deeply $e->tallyCount,  23689;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  23612;                                             # Insertion instruction counts
     
       #say STDERR "AAAA
   ", dump($e->tallyCounts->{1});
     
       is_deeply $e->tallyCounts->{1}, {
-      add        => 867,
-      array      => 607,
-      call       => 107,
-      free       => 360,
-      inc        => 1051,
-      jEq        => 631,
-      jGe        => 1674,
-      jLe        => 461,
-      jLt        => 565,
-      jmp        => 1450,
-      jNe        => 1102,
-      mov        => 12349,
-      not        => 695,
-      paramsGet  => 321,
-      paramsPut  => 321,
-      resize     => 12,
-      return     => 107,
+      add => 860,
+      array => 607,
+      arrayIndex => 7,
+      call => 107,
+      dec => 7,
+      free => 360,
+      inc => 1044,
+      jEq => 631,
+      jGe => 1660,
+      jLe => 461,
+      jLt => 565,
+      jmp => 1436,
+      jNe => 1088,
+      mov => 12314,
+      not => 695,
+      paramsGet => 321,
+      paramsPut => 321,
+      resize => 12,
+      return => 107,
       shiftRight => 68,
-      shiftUp    => 300,
-      subtract   => 641,
+      shiftUp => 300,
+      subtract => 641,
     };
      }
     
@@ -425,32 +431,34 @@ Find a key in a tree returning its associated data or undef if the key does not 
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
-      is_deeply $e->tallyCount,  23689;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  23612;                                             # Insertion instruction counts
     
       #say STDERR "AAAA
   ", dump($e->tallyCounts->{1});
     
       is_deeply $e->tallyCounts->{1}, {
-      add        => 867,
-      array      => 607,
-      call       => 107,
-      free       => 360,
-      inc        => 1051,
-      jEq        => 631,
-      jGe        => 1674,
-      jLe        => 461,
-      jLt        => 565,
-      jmp        => 1450,
-      jNe        => 1102,
-      mov        => 12349,
-      not        => 695,
-      paramsGet  => 321,
-      paramsPut  => 321,
-      resize     => 12,
-      return     => 107,
+      add => 860,
+      array => 607,
+      arrayIndex => 7,
+      call => 107,
+      dec => 7,
+      free => 360,
+      inc => 1044,
+      jEq => 631,
+      jGe => 1660,
+      jLe => 461,
+      jLt => 565,
+      jmp => 1436,
+      jNe => 1088,
+      mov => 12314,
+      not => 695,
+      paramsGet => 321,
+      paramsPut => 321,
+      resize => 12,
+      return => 107,
       shiftRight => 68,
-      shiftUp    => 300,
-      subtract   => 641,
+      shiftUp => 300,
+      subtract => 641,
     };
      }
     
@@ -678,32 +686,34 @@ Iterate over a tree.
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
-      is_deeply $e->tallyCount,  23689;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  23612;                                             # Insertion instruction counts
     
       #say STDERR "AAAA
   ", dump($e->tallyCounts->{1});
     
       is_deeply $e->tallyCounts->{1}, {
-      add        => 867,
-      array      => 607,
-      call       => 107,
-      free       => 360,
-      inc        => 1051,
-      jEq        => 631,
-      jGe        => 1674,
-      jLe        => 461,
-      jLt        => 565,
-      jmp        => 1450,
-      jNe        => 1102,
-      mov        => 12349,
-      not        => 695,
-      paramsGet  => 321,
-      paramsPut  => 321,
-      resize     => 12,
-      return     => 107,
+      add => 860,
+      array => 607,
+      arrayIndex => 7,
+      call => 107,
+      dec => 7,
+      free => 360,
+      inc => 1044,
+      jEq => 631,
+      jGe => 1660,
+      jLe => 461,
+      jLt => 565,
+      jmp => 1436,
+      jNe => 1088,
+      mov => 12314,
+      not => 695,
+      paramsGet => 321,
+      paramsPut => 321,
+      resize => 12,
+      return => 107,
       shiftRight => 68,
-      shiftUp    => 300,
-      subtract   => 641,
+      shiftUp => 300,
+      subtract => 641,
     };
      }
     
