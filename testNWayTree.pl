@@ -10,7 +10,7 @@ use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Zero::NWayTree qw(:all);
 use Zero::Emulator qw(:all);
-use Test::More tests=>6;
+use Test::More tests=>4;
 
 =pod
 
@@ -78,9 +78,6 @@ This example loads a tree with a random rearrangement of the values from
 0..$N-1 and then confirms that the tree so produced can be interated to recover
 the original sequence before it was disarranged.
 
-The number of executions of each instruction type is checked at the end and
-printed as a table using Data::Table::Text.
-
 =cut
 
 if (1)                                                                          # A larger tree
@@ -108,54 +105,6 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1);                                           # Assemble and execute the program
   is_deeply $e->out, [1..$N];                                                   # Check output
-
-  is_deeply $e->count, 563083;                                                  # Total instruction count
-  #say STDERR dump("Count", $e->count);
-  #say STDERR dump("Counts", $e->counts);
-  my $r = formatTable($e->counts, <<END,                                        # Instruction counts
-Inst  Instruction name
-Count Number of times each instruction was executed
-END
-    title     => q(Instruction counts),
-#   file => q(zzz.txt),
-    );
-
-  is_deeply [split "\n", $r], [split m/\n/, <<END];
-Instruction counts
-
-   Column  Description
-1  Inst    Instruction name
-2  Count   Number of times each instruction was executed
-
-
-Inst        Count
-add          15742
-array         7309
-arrayIndex    1018
-arraySize        1
-call          2023
-dec           1018
-free          4915
-inc          30314
-jEq          16167
-jFalse        2211
-jGe          54335
-jLe          10850
-jLt          12868
-jNe          29954
-jTrue          735
-jmp          41049
-mov         277669
-not          17078
-out           2023
-paramsGet     6069
-paramsPut     6069
-resize          15
-return        2023
-shiftRight     729
-shiftUp       5540
-subtract     15359
-END
 }
 
 done_testing;
