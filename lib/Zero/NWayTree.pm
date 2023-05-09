@@ -288,9 +288,9 @@ my sub FindResult($$)                                                           
 my sub Node_open($$$$$)                                                         # Open a gap in an interior node
  {my ($node, $offset, $length, $K, $D) = @_;                                    # Node
 
-  my $k = Mov [$node, $Node->address(qw(keys)), 'Node'];
-  my $d = Mov [$node, $Node->address(qw(data)), 'Node'];
-  my $n = Mov [$node, $Node->address(qw(down)), 'Node'];
+  my $k = Node_fieldKeys $node;
+  my $d = Node_fieldData $node;
+  my $n = Node_fieldDown $node;
 
   ShiftUp [$k, \$offset, 'Keys'], $K;
   ShiftUp [$d, \$offset, 'Data'], $D;
@@ -302,8 +302,8 @@ my sub Node_open($$$$$)                                                         
 my sub Node_openLeaf($$$$$)                                                     # Open a gap in a leaf node
  {my ($node, $offset, $length, $K, $D) = @_;                                    # Node
 
-  my $k = Mov [$node, $Node->address(qw(keys)), 'Node'];
-  my $d = Mov [$node, $Node->address(qw(data)), 'Node'];
+  my $k = Node_fieldKeys $node;
+  my $d = Node_fieldData $node;
 
   ShiftUp [$k, \$offset, 'Keys'], $K;
   ShiftUp [$d, \$offset, 'Data'], $D;
@@ -352,9 +352,9 @@ my sub Node_free($)                                                             
  {my ($node) = @_;                                                              # Node to free
   IfFalse Node_isLeaf($node),
   Then
-   {my $K = Mov [$node, $Node->address(q(keys)), 'Node'];
-    my $D = Mov [$node, $Node->address(q(data)), 'Node'];
-    my $N = Mov [$node, $Node->address(q(down)), 'Node'];
+   {my $K = Node_fieldKeys $node;
+    my $D = Node_fieldData $node;
+    my $N = Node_fieldDown $node;
     Free $K, "Keys";
     Free $D, "Data";
     Free $N, "Down";
@@ -502,9 +502,9 @@ my sub Node_SplitIfFull($)                                                      
     Node_setLength($node, 1);
 
     if (1)                                                                      # Resize split node
-     {my $K = Mov [$node, $Node->address(q(keys)), 'Node'];
-      my $D = Mov [$node, $Node->address(q(data)), 'Node'];
-      my $N = Mov [$node, $Node->address(q(down)), 'Node'];
+     {my $K = Node_fieldKeys $node;
+      my $D = Node_fieldData $node;
+      my $N = Node_fieldDown $node;
       Resize $K, 1;
       Resize $D, 1;
       Resize $N, 2;
