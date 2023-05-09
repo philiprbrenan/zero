@@ -13,7 +13,7 @@ use Carp qw(cluck confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
-eval "use Test::More tests=>25" unless caller;
+eval "use Test::More tests=>23" unless caller;
 
 makeDieConfess;
 
@@ -191,32 +191,32 @@ my sub Node_data($$)                                                            
   Node_getIndex($node, $index, q(data));                                        # Data
  }
 
-my sub Node_down($$)                                                            # Get the indexed child node from a node
+my sub Node_down($$)                                                            # Get the indexed child node from a node.
  {my ($node, $index) = @_;                                                      # Node, index of child
   Node_getIndex($node, $index, q(down));                                        # Child
  }
 
-my sub Node_isLeaf($)                                                           # Put 1 in a temporary variable if a node is a leaf else 0
+my sub Node_isLeaf($)                                                           # Put 1 in a temporary variable if a node is a leaf else 0.
  {my ($node) = @_;                                                              # Node
   Not [$node, $Node->address('down'), 'Node'];                                  # Whether the down field is present or not . 0 is never a user allocated memory area
  }
 
-my sub Node_setKeys($$$)                                                        # Set a key by index
+my sub Node_setKeys($$$)                                                        # Set a key by index.
  {my ($node, $index, $value) = @_;                                              # Node, index, value
   Node_setIndex($node, $index, q(keys), $value)                                 # Set indexed key
  }
 
-my sub Node_setData($$$)                                                        # Set a data field by index
+my sub Node_setData($$$)                                                        # Set a data field by index.
  {my ($node, $index, $value) = @_;                                              # Node, index, value
   Node_setIndex($node, $index, q(data), $value)                                 # Set indexed key
  }
 
-my sub Node_setDown($$$)                                                        # Set a child by index
+my sub Node_setDown($$$)                                                        # Set a child by index.
  {my ($node, $index, $value) = @_;                                              # Node, index, value
   Node_setIndex($node, $index, q(down), $value)                                 # Set indexed key
  }
 
-my sub Node_new($%)                                                             # Create a variable referring to a new node descriptor
+my sub Node_new($%)                                                             # Create a variable referring to a new node descriptor.
  {my ($tree, %options) = @_;                                                    # Tree node is being created in, options
   my $n = Array "Node";                                                         # Allocate node
   my $k = Array "Keys";                                                         # Allocate keys
@@ -237,23 +237,23 @@ my sub Node_new($%)                                                             
   $n                                                                            # Return reference to new node
  }
 
-my sub Node_allocDown($%)                                                       # Upgrade a leaf node to an internal node
+my sub Node_allocDown($%)                                                       # Upgrade a leaf node to an internal node.
  {my ($node, %options) = @_;                                                    # Node to upgrade, options
   my $d = Array "Down";                                                         # Allocate down
   Mov [$node, $Node->address(q(down)), 'Node'], $d;                             # Down area
  }
 
-my sub FindResult_getField($$)                                                  # Get a field from a find result
+my sub FindResult_getField($$)                                                  # Get a field from a find result.
  {my ($findResult, $field) = @_;                                                # Find result, name of field
   Mov [$findResult, $FindResult->address($field), q(FindResult)];               # Fields
  }
 
-sub FindResult_key($)                                                           # Get key from find result..
+sub FindResult_key22($)                                                         # Get key from find result.
  {my ($f) = @_;                                                                 # Find result
   FindResult_getField($f, q(key))                                               # Key
  }
 
-sub FindResult_cmp($)                                                           # Get comparison from find result..
+sub FindResult_cmp($)                                                           # Get comparison from find result.
  {my ($f) = @_;                                                                 # Find result
   FindResult_getField($f, q(cmp))                                               # Comparison
  }
@@ -268,13 +268,22 @@ my sub FindResult_node($)                                                       
   FindResult_getField($f, q(node))                                              # Node
  }
 
-sub FindResult_data($)                                                          # Get data field from find results..
+sub FindResult_data($)                                                          # Get data field from find results.
  {my ($f) = @_;                                                                 # Find result
 
   my $n = FindResult_node ($f);
   my $i = FindResult_index($f);
   my $d = Node_data($n, $i);
   $d
+ }
+
+sub FindResult_key($)                                                           # Get key field from find results.
+ {my ($f) = @_;                                                                 # Find result
+
+  my $n = FindResult_node ($f);
+  my $i = FindResult_index($f);
+  my $k = Node_keys($n, $i);
+  $k
  }
 
 my sub FindResult($$)                                                           # Convert a symbolic name for a find result comparison to an integer
@@ -362,12 +371,11 @@ my sub Node_free($)                                                             
   Free $node, "Node";
  }
 
-my sub FindResult_renew($$$$$%)                                                 # Reuse an existing find result
- {my ($find, $node, $key, $cmp, $index, %options) = @_;                         # Find result, node, search key, comparison result, index, options
+my sub FindResult_renew($$$$%)                                                  # Reuse an existing find result
+ {my ($find, $node, $cmp, $index, %options) = @_;                               # Find result, node, comparison result, index, options
   my $f = $find;
 
   Mov [$f, $FindResult->address(q(node)) , 'FindResult'], $node;
-  Mov [$f, $FindResult->address(q(key))  , 'FindResult'], $key;
   Mov [$f, $FindResult->address(q(cmp))  , 'FindResult'], $cmp;
 
   if (my $d = $options{subtract})                                               # Adjust index if necessary
@@ -386,11 +394,6 @@ my sub FindResult_create()                                                      
 my sub FindResult_free($)                                                       # Free a find result
  {my ($find) = @_;                                                              # Find result
   Free $find, "FindResult";                                                     # Free find result
- }
-
-my sub FindResult_new($$$$)                                                     # New find result
- {my ($node, $key, $cmp, $index) = @_;                                          # Node,search key, comparison result, index
-  FindResult_renew(FindResult_create, $node, $key, $cmp, $index)                # Load find result
  }
 
 my sub ReUp($)                                                                  # Reconnect the children to their new parent.
@@ -548,7 +551,7 @@ my sub FindAndSplit($$%)                                                        
       Then
        {IfTrue Node_isLeaf($node),                                              # Leaf
         Then
-         {FindResult_renew($find, $node, $key, FindResult_higher, $last);
+         {FindResult_renew($find, $node, FindResult_higher, $last);
           Jmp $Found;
          };
         my $n = Node_down($node, $nl);                                          # We will be heading down through the last node so split it in advance if necessary
@@ -567,7 +570,7 @@ my sub FindAndSplit($$%)                                                        
         Then
          {IfTrue Node_isLeaf($node),
           Then
-           {FindResult_renew($find, $node, $key, FindResult_lower, $i);
+           {FindResult_renew($find, $node, FindResult_lower, $i);
             Jmp $Found;
            };
 
@@ -581,7 +584,7 @@ my sub FindAndSplit($$%)                                                        
 
         IfEq $key, $k,                                                          # Found key
         Then
-         {FindResult_renew($find, $node, $key, FindResult_found, $i);
+         {FindResult_renew($find, $node, FindResult_found, $i);
           Jmp $Found;
          };
        } $nl;
@@ -603,7 +606,7 @@ sub Find($$%)                                                                   
 
     IfFalse $node,                                                              # Empty tree
     Then
-     {FindResult_renew($find, $node, $key, FindResult_notFound, 0);
+     {FindResult_renew($find, $node, FindResult_notFound, 0);                   # Was -1
       Jmp $End;
      };
 
@@ -617,7 +620,7 @@ sub Find($$%)                                                                   
       Then
        {IfTrue Node_isLeaf($node),                                              # Leaf
         Then
-         {FindResult_renew($find, $node, $key, FindResult_higher, $nl);
+         {FindResult_renew($find, $node, FindResult_higher, $nl);
           Jmp $End;
          };
         Mov $node, Node_down($node, $nl);
@@ -627,14 +630,14 @@ sub Find($$%)                                                                   
       my $e = ArrayIndex $K, $key;                                              # Check for equal keys
       IfTrue $e,                                                                # Found a matching key
       Then
-       {FindResult_renew($find, $node, $key, FindResult_found, $e, subtract=>1);# Find result
+       {FindResult_renew($find, $node, FindResult_found, $e, subtract=>1);      # Find result
         Jmp $End;
        };
 
       my $i = ArrayCountLess $K, $key;                                          # Check for smaller keys
       IfTrue Node_isLeaf($node),                                                # Leaf
       Then
-       {FindResult_renew($find, $node, $key, FindResult_lower, $i);
+       {FindResult_renew($find, $node, FindResult_lower, $i);
         Jmp $End;
        };
       Mov $node, Node_down($node, $i);
@@ -735,7 +738,7 @@ my sub GoAllTheWayLeft($$)                                                      
 
   IfFalse $node,                                                                # Empty tree
   Then
-   {FindResult_renew($find, $node, 0, FindResult_notFound, 0);
+   {FindResult_renew($find, $node, FindResult_notFound, 0);
    },
   Else
    {For                                                                         # Step down through tree
@@ -743,7 +746,7 @@ my sub GoAllTheWayLeft($$)                                                      
       JTrue $end, Node_isLeaf($node);                                           # Reached leaf
       Mov $node, Node_down($node, 0);
      } MaxIterations;
-    FindResult_renew($find, $node, Node_keys($node, 0), FindResult_found, 0);   # Leaf - place us on the first key
+    FindResult_renew($find, $node, FindResult_found, 0);                        # Leaf - place us on the first key
    };
   $find
  }
@@ -763,8 +766,7 @@ my sub GoUpAndAround($)                                                         
       IfLt $I, $L1,                                                             # More keys in leaf
       Then
        {my $i = Add $I, 1;
-        FindResult_renew($find, $node, Node_keys($node, $i),
-          FindResult_found, $i);
+        FindResult_renew($find, $node, FindResult_found, $i);
         Jmp $Finish;
        };
 
@@ -784,13 +786,12 @@ my sub GoUpAndAround($)                                                         
             JFalse $end, $parent;
            },
           Else
-           {FindResult_renew($find, $parent, Node_keys($parent, $i),            # Not the last key
-              FindResult_found, $i);
+           {FindResult_renew($find, $parent,  FindResult_found, $i);            # Not the last key
             Jmp $Finish;
            };
          } MaxIterations;
        };
-      FindResult_renew($find, $node, 0, FindResult_notFound, 0);                # Last key of root
+      FindResult_renew($find, $node, FindResult_notFound, 0);                   # Last key of root
       Jmp $Finish;
      };
 
@@ -1066,20 +1067,6 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TFindResult_new #TFindResult_cmp
- {Start 1;
-  my $f = FindResult_new(1, 2, 3, 4);
-  my $n = FindResult_node($f);
-  my $k = FindResult_key($f);
-  my $c = FindResult_cmp($f);
-  my $i = FindResult_index($f);
-  Out $_ for $n, $c, $k, $i;
-  my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out,    [1, 3, 2, 4];
-  is_deeply $e->memory, {1=>[1, 3, 2, 4]};
- }
-
-#latest:;
 if (1)                                                                          #TInsert
  {Start 1;
   my $t = New(3);                                                               # Create tree
@@ -1267,7 +1254,7 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];
  }
 
-latest:;
+#latest:;
 if (1)                                                                          #TIterate #TKeys #TFindResult_key #TFindResult_data #TFind #TprintTreeKeys #TprintTreeData
  {my $W = 3; my $N = 107; my @r = randomArray $N;
 
@@ -1309,10 +1296,10 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  28908;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  28697;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 22177, 2 => 6731 };
+  is_deeply $e->tallyTotal, { 1 => 22073, 2 => 6624 };
 
   is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
   add => 700,
@@ -1327,7 +1314,7 @@ if (1)                                                                          
   jLt => 565,
   jmp => 1329,
   jNe => 1088,
-  mov => 12210,
+  mov => 12106,
   not => 695,
   resize => 12,
   shiftRight => 68,
@@ -1344,7 +1331,7 @@ if (1)                                                                          
   jLe => 467,
   jmp => 604,
   jNe => 107,
-  mov => 2549,
+  mov => 2442,
   not => 360,
   subtract => 574};
 
