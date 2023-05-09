@@ -186,10 +186,10 @@ Get the number of keys in the tree..
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  31192;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  31144;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294, 3=>2997};
+      is_deeply $e->tallyTotal, { 1 => 21853, 2 => 6294, 3=>2997};
     
       #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -205,7 +205,7 @@ Get the number of keys in the tree..
       jLt => 565,
       jmp => 1329,
       jNe => 1088,
-      mov => 12038,
+      mov => 11990,
       not => 695,
       resize => 12,
       shiftRight => 68,
@@ -361,10 +361,10 @@ Get data field from find results.
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  31192;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  31144;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294, 3=>2997};
+      is_deeply $e->tallyTotal, { 1 => 21853, 2 => 6294, 3=>2997};
     
       #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -380,7 +380,7 @@ Get data field from find results.
       jLt => 565,
       jmp => 1329,
       jNe => 1088,
-      mov => 12038,
+      mov => 11990,
       not => 695,
       resize => 12,
       shiftRight => 68,
@@ -497,10 +497,10 @@ Get key field from find results.
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  31192;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  31144;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294, 3=>2997};
+      is_deeply $e->tallyTotal, { 1 => 21853, 2 => 6294, 3=>2997};
     
       #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -516,7 +516,7 @@ Get key field from find results.
       jLt => 565,
       jmp => 1329,
       jNe => 1088,
-      mov => 12038,
+      mov => 11990,
       not => 695,
       resize => 12,
       shiftRight => 68,
@@ -674,10 +674,10 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  31192;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  31144;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294, 3=>2997};
+      is_deeply $e->tallyTotal, { 1 => 21853, 2 => 6294, 3=>2997};
     
       #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -693,7 +693,7 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
       jLt => 565,
       jmp => 1329,
       jNe => 1088,
-      mov => 12038,
+      mov => 11990,
       not => 695,
       resize => 12,
       shiftRight => 68,
@@ -1012,10 +1012,10 @@ Iterate over a tree.
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  31192;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  31144;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294, 3=>2997};
+      is_deeply $e->tallyTotal, { 1 => 21853, 2 => 6294, 3=>2997};
     
       #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -1031,7 +1031,7 @@ Iterate over a tree.
       jLt => 565,
       jmp => 1329,
       jNe => 1088,
-      mov => 12038,
+      mov => 11990,
       not => 695,
       resize => 12,
       shiftRight => 68,
@@ -1152,10 +1152,10 @@ Print the keys held in a tree.
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  31192;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  31144;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294, 3=>2997};
+      is_deeply $e->tallyTotal, { 1 => 21853, 2 => 6294, 3=>2997};
     
       #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -1171,7 +1171,7 @@ Print the keys held in a tree.
       jLt => 565,
       jmp => 1329,
       jNe => 1088,
-      mov => 12038,
+      mov => 11990,
       not => 695,
       resize => 12,
       shiftRight => 68,
@@ -1290,10 +1290,10 @@ Print the data held in a tree.
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  31192;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  31144;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294, 3=>2997};
+      is_deeply $e->tallyTotal, { 1 => 21853, 2 => 6294, 3=>2997};
     
       #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -1309,7 +1309,7 @@ Print the data held in a tree.
       jLt => 565,
       jmp => 1329,
       jNe => 1088,
-      mov => 12038,
+      mov => 11990,
       not => 695,
       resize => 12,
       shiftRight => 68,
