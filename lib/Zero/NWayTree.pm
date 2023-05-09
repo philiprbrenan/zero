@@ -403,7 +403,7 @@ my sub Node_indexInParent($%)                                                   
  {my ($node, %options) = @_;                                                    # Node, options
   my $p = $options{parent} // Node_up($node);                                   # Parent
   AssertNe($p, 0);                                                              # Number of children as opposed to the number of keys
-  my $d = Node_field($p, 'down');
+  my $d = Node_fieldDown($p);
   my $r = ArrayIndex $d, $node;
   Dec $r;
   $r
