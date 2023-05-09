@@ -713,7 +713,6 @@ sub Insert($$$%)                                                                
      };
 
     my $Nl  = Node_length($N);
-    my $Nl1 = Add $Nl, 1;
     IfEq $c, FindResult_higher,                                                 # Found a key that is greater than the one being inserted
     Then
      {my $i1 = Add $i, 1;
@@ -760,9 +759,8 @@ my sub GoUpAndAround($)                                                         
     IfTrue Node_isLeaf($node),                                                  # Leaf
     Then
      {my $I = FindResult_index($find);
-      my $L = Node_length($node);
-      my $L1 = Subtract $L, 1;
-      IfLt $I, $L1,                                                             # More keys in leaf
+      my $L = Node_lengthM1($node);
+      IfLt $I, $L,                                                              # More keys in leaf
       Then
        {my $i = Add $I, 1;
         FindResult_renew($find, $node, FindResult_found, $i);
@@ -1295,13 +1293,13 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  28299;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  28195;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 22005, 2 => 6294 };
+  is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294 };
 
   is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
-  add => 700,
+  add => 596,
   array => 503,
   arrayIndex => 7,
   dec => 7,
