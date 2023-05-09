@@ -170,7 +170,7 @@ Get the number of keys in the tree..
         my $k = FindResult_key($find);
         Out $k;
         Tally 2;
-        my $f = Find($t, $k);                                                       # Find
+        my $f = Find($t, $k, findResult=>$f);                                       # Find
         Tally 0;
         my $d = FindResult_data($f);
         my $K = Add $k, $k;
@@ -182,12 +182,12 @@ Get the number of keys in the tree..
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  30079;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  29972;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7742 };
+      is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7635 };
     
-      is_deeply $e->tallyCounts->{1}, {
+      is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
       add => 860,
       array => 503,
       arrayIndex => 7,
@@ -208,8 +208,7 @@ Get the number of keys in the tree..
       subtract => 641};
     
       #say STDERR dump $e->tallyCounts->{2};
-      is_deeply $e->tallyCounts->{2}, {
-      array => 107,
+      is_deeply $e->tallyCounts->{2}, {                                             # Find tally
       arrayCountLess => 223,
       arrayIndex => 330,
       dec => 107,
@@ -284,7 +283,7 @@ Get key from find result..
 
         Out $k;
         Tally 2;
-        my $f = Find($t, $k);                                                       # Find
+        my $f = Find($t, $k, findResult=>$f);                                       # Find
         Tally 0;
         my $d = FindResult_data($f);
         my $K = Add $k, $k;
@@ -296,12 +295,12 @@ Get key from find result..
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  30079;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  29972;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7742 };
+      is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7635 };
     
-      is_deeply $e->tallyCounts->{1}, {
+      is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
       add => 860,
       array => 503,
       arrayIndex => 7,
@@ -322,8 +321,7 @@ Get key from find result..
       subtract => 641};
     
       #say STDERR dump $e->tallyCounts->{2};
-      is_deeply $e->tallyCounts->{2}, {
-      array => 107,
+      is_deeply $e->tallyCounts->{2}, {                                             # Find tally
       arrayCountLess => 223,
       arrayIndex => 330,
       dec => 107,
@@ -421,7 +419,7 @@ Get data field from find results..
         my $k = FindResult_key($find);
         Out $k;
         Tally 2;
-        my $f = Find($t, $k);                                                       # Find
+        my $f = Find($t, $k, findResult=>$f);                                       # Find
         Tally 0;
     
         my $d = FindResult_data($f);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -435,12 +433,12 @@ Get data field from find results..
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  30079;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  29972;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7742 };
+      is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7635 };
     
-      is_deeply $e->tallyCounts->{1}, {
+      is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
       add => 860,
       array => 503,
       arrayIndex => 7,
@@ -461,8 +459,7 @@ Get data field from find results..
       subtract => 641};
     
       #say STDERR dump $e->tallyCounts->{2};
-      is_deeply $e->tallyCounts->{2}, {
-      array => 107,
+      is_deeply $e->tallyCounts->{2}, {                                             # Find tally
       arrayCountLess => 223,
       arrayIndex => 330,
       dec => 107,
@@ -577,7 +574,7 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
         Out $k;
         Tally 2;
     
-        my $f = Find($t, $k);                                                       # Find  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+        my $f = Find($t, $k, findResult=>$f);                                       # Find  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
         Tally 0;
         my $d = FindResult_data($f);
@@ -590,12 +587,12 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  30079;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  29972;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7742 };
+      is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7635 };
     
-      is_deeply $e->tallyCounts->{1}, {
+      is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
       add => 860,
       array => 503,
       arrayIndex => 7,
@@ -616,8 +613,9 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
       subtract => 641};
     
       #say STDERR dump $e->tallyCounts->{2};
-      is_deeply $e->tallyCounts->{2}, {
-      array => 107,
+    
+      is_deeply $e->tallyCounts->{2}, {                                             # Find tally  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
       arrayCountLess => 223,
       arrayIndex => 330,
       dec => 107,
@@ -890,7 +888,7 @@ Iterate over a tree.
         my $k = FindResult_key($find);
         Out $k;
         Tally 2;
-        my $f = Find($t, $k);                                                       # Find
+        my $f = Find($t, $k, findResult=>$f);                                       # Find
         Tally 0;
         my $d = FindResult_data($f);
         my $K = Add $k, $k;
@@ -902,12 +900,12 @@ Iterate over a tree.
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  30079;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  29972;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7742 };
+      is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7635 };
     
-      is_deeply $e->tallyCounts->{1}, {
+      is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
       add => 860,
       array => 503,
       arrayIndex => 7,
@@ -928,8 +926,7 @@ Iterate over a tree.
       subtract => 641};
     
       #say STDERR dump $e->tallyCounts->{2};
-      is_deeply $e->tallyCounts->{2}, {
-      array => 107,
+      is_deeply $e->tallyCounts->{2}, {                                             # Find tally
       arrayCountLess => 223,
       arrayIndex => 330,
       dec => 107,
@@ -1006,7 +1003,7 @@ Print the keys held in a tree.
         my $k = FindResult_key($find);
         Out $k;
         Tally 2;
-        my $f = Find($t, $k);                                                       # Find
+        my $f = Find($t, $k, findResult=>$f);                                       # Find
         Tally 0;
         my $d = FindResult_data($f);
         my $K = Add $k, $k;
@@ -1018,12 +1015,12 @@ Print the keys held in a tree.
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  30079;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  29972;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7742 };
+      is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7635 };
     
-      is_deeply $e->tallyCounts->{1}, {
+      is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
       add => 860,
       array => 503,
       arrayIndex => 7,
@@ -1044,8 +1041,7 @@ Print the keys held in a tree.
       subtract => 641};
     
       #say STDERR dump $e->tallyCounts->{2};
-      is_deeply $e->tallyCounts->{2}, {
-      array => 107,
+      is_deeply $e->tallyCounts->{2}, {                                             # Find tally
       arrayCountLess => 223,
       arrayIndex => 330,
       dec => 107,
@@ -1122,7 +1118,7 @@ Print the data held in a tree.
         my $k = FindResult_key($find);
         Out $k;
         Tally 2;
-        my $f = Find($t, $k);                                                       # Find
+        my $f = Find($t, $k, findResult=>$f);                                       # Find
         Tally 0;
         my $d = FindResult_data($f);
         my $K = Add $k, $k;
@@ -1134,12 +1130,12 @@ Print the data held in a tree.
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  30079;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  29972;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7742 };
+      is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7635 };
     
-      is_deeply $e->tallyCounts->{1}, {
+      is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
       add => 860,
       array => 503,
       arrayIndex => 7,
@@ -1160,8 +1156,7 @@ Print the data held in a tree.
       subtract => 641};
     
       #say STDERR dump $e->tallyCounts->{2};
-      is_deeply $e->tallyCounts->{2}, {
-      array => 107,
+      is_deeply $e->tallyCounts->{2}, {                                             # Find tally
       arrayCountLess => 223,
       arrayIndex => 330,
       dec => 107,
