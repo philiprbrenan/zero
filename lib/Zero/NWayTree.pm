@@ -263,6 +263,11 @@ my sub FindResult_index($)                                                      
   FindResult_getField($f, q(index))                                             # Index
  }
 
+my sub FindResult_indexP1($)                                                    # Get index+1 from find result
+ {my ($f) = @_;                                                                 # Find result
+  Add [$f, $FindResult->address(q(index)), q(FindResult)], 1;                   # Fields
+ }
+
 my sub FindResult_node($)                                                       # Get node from find result
  {my ($f) = @_;                                                                 # Find result
   FindResult_getField($f, q(node))                                              # Node
@@ -792,9 +797,8 @@ my sub GoUpAndAround($)                                                         
       Jmp $Finish;
      };
 
-    my $i = FindResult_index($find);                                            # Not a leaf so on an interior key so we can go right then all the way left
-    my $I = Add $i, 1;
-    my $d = Node_down($node, $I);
+    my $i = FindResult_indexP1($find);                                          # Not a leaf so on an interior key so we can go right then all the way left
+    my $d = Node_down($node, $i);
     GoAllTheWayLeft($find, $d);
    };
   $find
