@@ -553,7 +553,7 @@ my sub FindAndSplit($$%)                                                        
       Then
        {IfTrue Node_isLeaf($node),                                              # Leaf
         Then
-         {FindResult_renew($find, $node, FindResult_higher, $last);
+         {FindResult_renew($find, $node, FindResult_higher, $nl, subtract=>1);
           Jmp $Found;
          };
         my $n = Node_down($node, $nl);                                          # We will be heading down through the last node so split it in advance if necessary
@@ -1247,7 +1247,7 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];
  }
 
-#latest:;
+latest:;
 if (1)                                                                          #TIterate #TKeys #TFindResult_key #TFindResult_data #TFind #TprintTreeKeys #TprintTreeData
  {my $W = 3; my $N = 107; my @r = randomArray $N;
 
@@ -1312,12 +1312,12 @@ if (1)                                                                          
   jLt => 565,
   jmp => 1329,
   jNe => 1088,
-  mov => 11990,
+  mov => 11950,
   not => 695,
   resize => 12,
   shiftRight => 68,
   shiftUp => 300,
-  subtract => 641};
+  subtract => 681};
 
   #say STDERR dump $e->tallyCounts->{2};
   is_deeply $e->tallyCounts->{2}, {                                             # Find tally
