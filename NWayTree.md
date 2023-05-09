@@ -205,12 +205,12 @@ Get the number of keys in the tree..
       jLt => 565,
       jmp => 1329,
       jNe => 1088,
-      mov => 11990,
+      mov => 11950,
       not => 695,
       resize => 12,
       shiftRight => 68,
       shiftUp => 300,
-      subtract => 641};
+      subtract => 681};
     
       #say STDERR dump $e->tallyCounts->{2};
       is_deeply $e->tallyCounts->{2}, {                                             # Find tally
@@ -380,12 +380,12 @@ Get data field from find results.
       jLt => 565,
       jmp => 1329,
       jNe => 1088,
-      mov => 11990,
+      mov => 11950,
       not => 695,
       resize => 12,
       shiftRight => 68,
       shiftUp => 300,
-      subtract => 641};
+      subtract => 681};
     
       #say STDERR dump $e->tallyCounts->{2};
       is_deeply $e->tallyCounts->{2}, {                                             # Find tally
@@ -516,12 +516,12 @@ Get key field from find results.
       jLt => 565,
       jmp => 1329,
       jNe => 1088,
-      mov => 11990,
+      mov => 11950,
       not => 695,
       resize => 12,
       shiftRight => 68,
       shiftUp => 300,
-      subtract => 641};
+      subtract => 681};
     
       #say STDERR dump $e->tallyCounts->{2};
       is_deeply $e->tallyCounts->{2}, {                                             # Find tally
@@ -693,12 +693,12 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
       jLt => 565,
       jmp => 1329,
       jNe => 1088,
-      mov => 11990,
+      mov => 11950,
       not => 695,
       resize => 12,
       shiftRight => 68,
       shiftUp => 300,
-      subtract => 641};
+      subtract => 681};
     
       #say STDERR dump $e->tallyCounts->{2};
     
@@ -1031,12 +1031,12 @@ Iterate over a tree.
       jLt => 565,
       jmp => 1329,
       jNe => 1088,
-      mov => 11990,
+      mov => 11950,
       not => 695,
       resize => 12,
       shiftRight => 68,
       shiftUp => 300,
-      subtract => 641};
+      subtract => 681};
     
       #say STDERR dump $e->tallyCounts->{2};
       is_deeply $e->tallyCounts->{2}, {                                             # Find tally
@@ -1171,12 +1171,12 @@ Print the keys held in a tree.
       jLt => 565,
       jmp => 1329,
       jNe => 1088,
-      mov => 11990,
+      mov => 11950,
       not => 695,
       resize => 12,
       shiftRight => 68,
       shiftUp => 300,
-      subtract => 641};
+      subtract => 681};
     
       #say STDERR dump $e->tallyCounts->{2};
       is_deeply $e->tallyCounts->{2}, {                                             # Find tally
@@ -1309,12 +1309,12 @@ Print the data held in a tree.
       jLt => 565,
       jmp => 1329,
       jNe => 1088,
-      mov => 11990,
+      mov => 11950,
       not => 695,
       resize => 12,
       shiftRight => 68,
       shiftUp => 300,
-      subtract => 641};
+      subtract => 681};
     
       #say STDERR dump $e->tallyCounts->{2};
       is_deeply $e->tallyCounts->{2}, {                                             # Find tally
