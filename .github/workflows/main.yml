@@ -22,7 +22,7 @@ jobs:
       run: |
         perl lib/Zero/Emulator.pm
 
-    - name: Zero NWay
+    - name: Zero NWayTree
       run: |
         perl lib/Zero/NWayTree.pm
 
