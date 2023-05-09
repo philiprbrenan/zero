@@ -177,16 +177,21 @@ Get the number of keys in the tree..
         AssertEq $K, $d;                                                            # Check result
        } $t;
     
+      Tally 3;
+      Iterate {} $t;                                                                # Iterate tree
+      Tally 0;
+    
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  28195;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  31192;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294 };
+      is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294, 3=>2997};
     
+      #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
       add => 596,
       array => 503,
@@ -221,6 +226,24 @@ Get the number of keys in the tree..
       mov => 1975,
       not => 360,
       subtract => 574};
+    
+      #say STDERR dump $e->tallyCounts->{3};
+      is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally
+      add        => 62,
+      array      => 1,
+      arrayIndex => 72,
+      dec        => 72,
+      free       => 1,
+      inc        => 162,
+      jEq        => 152,
+      jFalse     => 136,
+      jGe        => 316,
+      jmp        => 253,
+      jNe        => 225,
+      jTrue      => 73,
+      mov        => 1229,
+      not        => 180,
+      subtract   => 63};
     
       #say STDERR printTreeKeys($e->memory); x;
       #say STDERR printTreeData($e->memory); x;
@@ -329,16 +352,21 @@ Get data field from find results.
         AssertEq $K, $d;                                                            # Check result
        } $t;
     
+      Tally 3;
+      Iterate {} $t;                                                                # Iterate tree
+      Tally 0;
+    
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  28195;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  31192;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294 };
+      is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294, 3=>2997};
     
+      #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
       add => 596,
       array => 503,
@@ -373,6 +401,24 @@ Get data field from find results.
       mov => 1975,
       not => 360,
       subtract => 574};
+    
+      #say STDERR dump $e->tallyCounts->{3};
+      is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally
+      add        => 62,
+      array      => 1,
+      arrayIndex => 72,
+      dec        => 72,
+      free       => 1,
+      inc        => 162,
+      jEq        => 152,
+      jFalse     => 136,
+      jGe        => 316,
+      jmp        => 253,
+      jNe        => 225,
+      jTrue      => 73,
+      mov        => 1229,
+      not        => 180,
+      subtract   => 63};
     
       #say STDERR printTreeKeys($e->memory); x;
       #say STDERR printTreeData($e->memory); x;
@@ -442,16 +488,21 @@ Get key field from find results.
         AssertEq $K, $d;                                                            # Check result
        } $t;
     
+      Tally 3;
+      Iterate {} $t;                                                                # Iterate tree
+      Tally 0;
+    
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  28195;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  31192;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294 };
+      is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294, 3=>2997};
     
+      #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
       add => 596,
       array => 503,
@@ -486,6 +537,24 @@ Get key field from find results.
       mov => 1975,
       not => 360,
       subtract => 574};
+    
+      #say STDERR dump $e->tallyCounts->{3};
+      is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally
+      add        => 62,
+      array      => 1,
+      arrayIndex => 72,
+      dec        => 72,
+      free       => 1,
+      inc        => 162,
+      jEq        => 152,
+      jFalse     => 136,
+      jGe        => 316,
+      jmp        => 253,
+      jNe        => 225,
+      jTrue      => 73,
+      mov        => 1229,
+      not        => 180,
+      subtract   => 63};
     
       #say STDERR printTreeKeys($e->memory); x;
       #say STDERR printTreeData($e->memory); x;
@@ -596,16 +665,21 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
         AssertEq $K, $d;                                                            # Check result
        } $t;
     
+      Tally 3;
+      Iterate {} $t;                                                                # Iterate tree
+      Tally 0;
+    
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  28195;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  31192;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294 };
+      is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294, 3=>2997};
     
+      #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
       add => 596,
       array => 503,
@@ -642,6 +716,24 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
       mov => 1975,
       not => 360,
       subtract => 574};
+    
+      #say STDERR dump $e->tallyCounts->{3};
+      is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally
+      add        => 62,
+      array      => 1,
+      arrayIndex => 72,
+      dec        => 72,
+      free       => 1,
+      inc        => 162,
+      jEq        => 152,
+      jFalse     => 136,
+      jGe        => 316,
+      jmp        => 253,
+      jNe        => 225,
+      jTrue      => 73,
+      mov        => 1229,
+      not        => 180,
+      subtract   => 63};
     
       #say STDERR printTreeKeys($e->memory); x;
       #say STDERR printTreeData($e->memory); x;
@@ -909,16 +1001,23 @@ Iterate over a tree.
         AssertEq $K, $d;                                                            # Check result
        } $t;
     
+      Tally 3;
+    
+      Iterate {} $t;                                                                # Iterate tree  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      Tally 0;
+    
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  28195;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  31192;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294 };
+      is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294, 3=>2997};
     
+      #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
       add => 596,
       array => 503,
@@ -953,6 +1052,26 @@ Iterate over a tree.
       mov => 1975,
       not => 360,
       subtract => 574};
+    
+      #say STDERR dump $e->tallyCounts->{3};
+    
+      is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      add        => 62,
+      array      => 1,
+      arrayIndex => 72,
+      dec        => 72,
+      free       => 1,
+      inc        => 162,
+      jEq        => 152,
+      jFalse     => 136,
+      jGe        => 316,
+      jmp        => 253,
+      jNe        => 225,
+      jTrue      => 73,
+      mov        => 1229,
+      not        => 180,
+      subtract   => 63};
     
       #say STDERR printTreeKeys($e->memory); x;
       #say STDERR printTreeData($e->memory); x;
@@ -1024,16 +1143,21 @@ Print the keys held in a tree.
         AssertEq $K, $d;                                                            # Check result
        } $t;
     
+      Tally 3;
+      Iterate {} $t;                                                                # Iterate tree
+      Tally 0;
+    
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  28195;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  31192;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294 };
+      is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294, 3=>2997};
     
+      #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
       add => 596,
       array => 503,
@@ -1068,6 +1192,24 @@ Print the keys held in a tree.
       mov => 1975,
       not => 360,
       subtract => 574};
+    
+      #say STDERR dump $e->tallyCounts->{3};
+      is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally
+      add        => 62,
+      array      => 1,
+      arrayIndex => 72,
+      dec        => 72,
+      free       => 1,
+      inc        => 162,
+      jEq        => 152,
+      jFalse     => 136,
+      jGe        => 316,
+      jmp        => 253,
+      jNe        => 225,
+      jTrue      => 73,
+      mov        => 1229,
+      not        => 180,
+      subtract   => 63};
     
     
       #say STDERR printTreeKeys($e->memory); x;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -1139,16 +1281,21 @@ Print the data held in a tree.
         AssertEq $K, $d;                                                            # Check result
        } $t;
     
+      Tally 3;
+      Iterate {} $t;                                                                # Iterate tree
+      Tally 0;
+    
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  28195;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  31192;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294 };
+      is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294, 3=>2997};
     
+      #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
       add => 596,
       array => 503,
@@ -1183,6 +1330,24 @@ Print the data held in a tree.
       mov => 1975,
       not => 360,
       subtract => 574};
+    
+      #say STDERR dump $e->tallyCounts->{3};
+      is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally
+      add        => 62,
+      array      => 1,
+      arrayIndex => 72,
+      dec        => 72,
+      free       => 1,
+      inc        => 162,
+      jEq        => 152,
+      jFalse     => 136,
+      jGe        => 316,
+      jmp        => 253,
+      jNe        => 225,
+      jTrue      => 73,
+      mov        => 1229,
+      not        => 180,
+      subtract   => 63};
     
       #say STDERR printTreeKeys($e->memory); x;
     
