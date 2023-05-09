@@ -523,12 +523,13 @@ my sub Node_SplitIfFull($)                                                      
 
 #D1 Find                                                                        # Find a key in a tree.
 
-my sub FindAndSplit($$)                                                         # Find a key in a tree splitting full nodes along the path to the key.
- {my ($tree, $key) = @_;                                                        # Parameters (NWayTree(Tree) * const tree,                                                  # Tree to search
+my sub FindAndSplit($$%)                                                        # Find a key in a tree splitting full nodes along the path to the key.
+ {my ($tree, $key, %options) = @_;                                              # Tree to search, key, options
   my $node = root($tree);
 
+  my $find = $options{findResult} // FindResult_create;                         # Find result work area
+
   Node_SplitIfFull($node);                                                      # Split the root node if necessary
-  my $F = Var;
 
   Block                                                                         # Exit this block when we have located the key
    {my ($Start, $Good, $Bad, $Found) = @_;
@@ -541,7 +542,7 @@ my sub FindAndSplit($$)                                                         
       Then
        {IfTrue Node_isLeaf($node),                                              # Leaf
         Then
-         {Mov $F, FindResult_new($node, $key, FindResult_higher, $last);
+         {FindResult_renew($find, $node, $key, FindResult_higher, $last);
           Jmp $Found;
          };
         my $last1 = Add $last, 1;
@@ -561,7 +562,7 @@ my sub FindAndSplit($$)                                                         
         Then
          {IfTrue Node_isLeaf($node),
           Then
-           {Mov $F, FindResult_new($node, $key, FindResult_lower, $i);
+           {FindResult_renew($find, $node, $key, FindResult_lower, $i);
             Jmp $Found;
            };
 
@@ -575,14 +576,14 @@ my sub FindAndSplit($$)                                                         
 
         IfEq $key, $k,                                                          # Found key
         Then
-         {Mov $F, FindResult_new($node, $key, FindResult_found, $i);
+         {FindResult_renew($find, $node, $key, FindResult_found, $i);
           Jmp $Found;
          };
        } $nl;
      }  MaxIterations;
     Assert;                                                                     # Failed to descend through the tree to the key.
    };
-  $F                                                                            # Results of find
+  $find
  }
 
 sub Find($$%)                                                                   # Find a key in a tree returning a L<FindResult> describing the outcome of the search.
@@ -644,95 +645,83 @@ sub Find($$%)                                                                   
 sub Insert($$$%)                                                                # Insert a key and its associated data into a tree.
  {my ($tree, $key, $data, %options) = @_;                                       # Tree, key, data
 
-  my $p = Procedure 'NWayTree_Insert', sub
-   {my ($p) = @_;                                                               # Procedure description
+  my $find = $options{findResult} // FindResult_create;                         # Find result work area
 
-    Block
-     {my ($Start, $Good, $Bad, $Finish) = @_;                                   # Parameters
+  Block
+   {my ($Start, $Good, $Bad, $Finish) = @_;                                     # Parameters
+    my $n = root($tree);                                                        # Root node of tree
 
-      my $tree = ParamsGet 0;
-      my $key  = ParamsGet 1;
-      my $data = ParamsGet 2;
-      my $n = root($tree);                                                      # Root node of tree
+    IfFalse $n,                                                                 # Empty tree
+    Then
+     {my $n = Node_new($tree, length=>1);
+      Node_setKeys  ($n, 0, $key);
+      Node_setData  ($n, 0, $data);
+      incKeys($tree);
+      setRoot($tree, $n);
+      Jmp $Finish;
+     };
 
-      IfFalse $n,                                                               # Empty tree
+    my $nl = Node_length($n);                                                   # Current length of node
+    IfLt $nl, maximumNumberOfKeys($tree),                                       # Node has room for another key
+    Then
+     {IfFalse Node_up($n),                                                      # Root node
       Then
-       {my $n = Node_new($tree, length=>1);
-        Node_setKeys  ($n, 0, $key);
-        Node_setData  ($n, 0, $data);
-        incKeys($tree);
-        setRoot($tree, $n);
-        Jmp $Finish;
-       };
-
-      my $nl = Node_length($n);                                                 # Current length of node
-      IfLt $nl, maximumNumberOfKeys($tree),                                     # Node has room for another key
-      Then
-       {IfFalse Node_up($n),                                                    # Root node
+       {IfTrue Node_isLeaf($n),
         Then
-         {IfTrue Node_isLeaf($n),
-          Then
-           {For                                                                 # Each key
-             {my ($i, $check, $next, $end) = @_;                                # Parameters
-              my $k = Node_keys($n, $i);                                        # Key to check
-              IfEq $key, $k,                                                    # Key already present
-              Then
-               {Node_setData($n, $i, $data);
-                Jmp $Finish;
-               };
-              IfLt $key, $k,                                                    # We have reached the insertion point
-              Then
-               {my $nli = Subtract $nl, $i;
-                Node_openLeaf($n, $i, $nli, $key, $data);
-                incKeys($tree);
-                Jmp $Finish;
-               };
-             } $nl;
-            Node_setKeys($n, $nl, $key);                                        # Insert the key at the end of the block because it is greater than all the other keys in the block
-            Node_setData($n, $nl, $data);
-            my $nl1 = Add $nl, 1;
-            Node_setLength($n, $nl1);
-            incKeys($tree);
-            Jmp $Finish;
-           };
+         {For                                                                   # Each key
+           {my ($i, $check, $next, $end) = @_;                                  # Parameters
+            my $k = Node_keys($n, $i);                                          # Key to check
+            IfEq $key, $k,                                                      # Key already present
+            Then
+             {Node_setData($n, $i, $data);
+              Jmp $Finish;
+             };
+            IfLt $key, $k,                                                      # We have reached the insertion point
+            Then
+             {my $nli = Subtract $nl, $i;
+              Node_openLeaf($n, $i, $nli, $key, $data);
+              incKeys($tree);
+              Jmp $Finish;
+             };
+           } $nl;
+          Node_setKeys($n, $nl, $key);                                          # Insert the key at the end of the block because it is greater than all the other keys in the block
+          Node_setData($n, $nl, $data);
+          my $nl1 = Add $nl, 1;
+          Node_setLength($n, $nl1);
+          incKeys($tree);
+          Jmp $Finish;
          };
        };
-                                                                                # Insert node
-      my $r = FindAndSplit($tree, $key);                                        # Check for existing key
-      my $N = FindResult_node($r);
-      my $c = FindResult_cmp($r);
-      my $i = FindResult_index($r);
-      FindResult_free($r);
-
-      IfEq $c, FindResult_found,                                                # Found an equal key whose data we can update
-      Then
-       {Node_setData($N, $i, $data);
-        Jmp $Finish;
-       };
-
-      my $Nl  = Node_length($N);
-      my $Nl1 = Add $Nl, 1;
-      IfEq $c, FindResult_higher,                                               # Found a key that is greater than the one being inserted
-      Then
-       {my $i1 = Add $i, 1;
-        my $l = Subtract $Nl, $i1;
-        Node_openLeaf($N, $i1, $l, $key, $data);
-       },
-      Else
-       {my $l = Subtract $Nl, $i;
-        Node_openLeaf($N, $i, $l, $key, $data);
-       };
-
-      incKeys($tree);
-      Node_SplitIfFull($N);                                                     # Split if the leaf is full to force keys up the tree
      };
-    Return;
-   };
+                                                                                # Insert node
+    my $r = FindAndSplit($tree, $key, findResult=>$find);                       # Check for existing key
+    my $N = FindResult_node($r);
+    my $c = FindResult_cmp($r);
+    my $i = FindResult_index($r);
+    FindResult_free($r) unless $options{findResult};                            # Free the find result now we are finished with it unless we are using a global one
 
-  ParamsPut 0, $tree;                                                           # Set parameters and call insert procedure.  As the tree parameter does not change very often the user has the option of setting it themselves out side of a loop.
-  ParamsPut 1, $key;
-  ParamsPut 2, $data;
-  Call $p;
+    IfEq $c, FindResult_found,                                                  # Found an equal key whose data we can update
+    Then
+     {Node_setData($N, $i, $data);
+      Jmp $Finish;
+     };
+
+    my $Nl  = Node_length($N);
+    my $Nl1 = Add $Nl, 1;
+    IfEq $c, FindResult_higher,                                                 # Found a key that is greater than the one being inserted
+    Then
+     {my $i1 = Add $i, 1;
+      my $l = Subtract $Nl, $i1;
+      Node_openLeaf($N, $i1, $l, $key, $data);
+     },
+    Else
+     {my $l = Subtract $Nl, $i;
+      Node_openLeaf($N, $i, $l, $key, $data);
+     };
+
+    incKeys($tree);
+    Node_SplitIfFull($N);                                                       # Split if the leaf is full to force keys up the tree
+   }
  }
 
 #D1 Iteration                                                                   # Iterate over the keys and their associated data held in a tree.
@@ -1431,7 +1420,7 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];
  }
 
-#latest:;
+latest:;
 if (1)                                                                          #TIterate #TKeys #TFindResult_key #TFindResult_data #TFind
  {my $W = 3; my $N = 107; my @r = randomArray $N;
 
@@ -1444,13 +1433,15 @@ if (1)                                                                          
     Mov [$a, $i, "aaa"], $r[$i];
    }
 
+  my $f = FindResult_create;
+
   ForArray                                                                      # Create tree
    {my ($i, $k) = @_;
     my $n = Keys($t);
     AssertEq $n, $i;                                                            # Check tree size
     my $K = Add $k, $k;
     Tally 1;
-    Insert($t, $k, $K);                                                         # Insert a new node
+    Insert($t, $k, $K, findResult=>$f);                                         # Insert a new node
     Tally 0;
    } $a, q(aaa);
 
@@ -1471,31 +1462,27 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  31354;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  30079;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 23612, 2 => 7742 };
+  is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7742 };
 
   is_deeply $e->tallyCounts->{1}, {
   add => 860,
-  array => 607,
+  array => 503,
   arrayIndex => 7,
-  call => 107,
   dec => 7,
-  free => 360,
+  free => 256,
   inc => 1044,
   jEq => 631,
   jGe => 1660,
   jLe => 461,
   jLt => 565,
-  jmp => 1436,
+  jmp => 1329,
   jNe => 1088,
-  mov => 12314,
+  mov => 12210,
   not => 695,
-  paramsGet => 321,
-  paramsPut => 321,
   resize => 12,
-  return => 107,
   shiftRight => 68,
   shiftUp => 300,
   subtract => 641,
