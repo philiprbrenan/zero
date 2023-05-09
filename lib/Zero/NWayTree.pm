@@ -808,26 +808,13 @@ my sub IterStart($)                                                             
   GoAllTheWayLeft($f, $n);
  }
 
-my sub IterCheck($)                                                             # True if we can continue to iterate
- {my ($F) = @_;                                                                 # Parameters (NWayTree(FindResult) const find)                                              # Find result of last iteration
-  my $r = Var;
-  IfEq FindResult_cmp($F), FindResult_notFound,
-  Then
-   {Mov $r, 0;
-   },
-  Else
-   {Mov $r, 1;
-   };
-  $r
- }
-
 sub Iterate(&$)                                                                 # Iterate over a tree.
  {my ($block, $tree) = @_;                                                      # Block of code to execute for each key in tree, tree
   my $f = IterStart($tree);
 
   For
    {my ($i, $check, $next, $end) = @_;                                          # Parameters
-    JFalse $end, IterCheck($f);
+    Jeq $end, FindResult_cmp($f), FindResult_notFound;
     &$block($f);
 
     GoUpAndAround($f);
@@ -1293,10 +1280,10 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  31144;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  30927;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 21853, 2 => 6294, 3=>2997};
+  is_deeply $e->tallyTotal, { 1 => 21853, 2 => 6294, 3=>2780};
 
   #say STDERR dump $e->tallyCounts->{1};
   is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -1342,13 +1329,13 @@ if (1)                                                                          
   dec        => 72,
   free       => 1,
   inc        => 162,
-  jEq        => 152,
-  jFalse     => 136,
+  jEq        => 260,
+  jFalse     => 28,
   jGe        => 316,
-  jmp        => 253,
-  jNe        => 225,
+  jmp        => 252,
+  jNe        => 117,
   jTrue      => 73,
-  mov        => 1229,
+  mov        => 1121,
   not        => 180,
   subtract   => 63};
 
