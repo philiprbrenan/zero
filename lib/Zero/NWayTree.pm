@@ -603,7 +603,7 @@ sub Find($$%)                                                                   
 
     IfFalse $node,                                                              # Empty tree
     Then
-     {FindResult_renew($find, $node, $key, FindResult_notFound, -1);
+     {FindResult_renew($find, $node, $key, FindResult_notFound, 0);
       Jmp $End;
      };
 
