@@ -4,7 +4,6 @@
 # Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 #-------------------------------------------------------------------------------
 # Key compression in each node by eliminating any common prefix present in each key in each node especially useful if we were to add attributes like userid, process, string position, rwx etc to front of each key.  Data does does not need this additional information.
-# Node_SplitIfFull should reuse the existing node rather than allocating a left hand one
 use v5.30;
 package Zero::NWayTree;
 our $VERSION = 20230513;                                                        # Version
@@ -14,7 +13,7 @@ use Carp qw(cluck confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
-eval "use Test::More tests=>32" unless caller;
+eval "use Test::More tests=>31" unless caller;
 
 makeDieConfess;
 
@@ -1501,7 +1500,7 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];
  }
 
-latest:;
+#latest:;
 if (1)                                                                          ##Iterate ##Keys ##FindResult_key ##FindResult_data ##Find ##printTreeKeys ##printTreeData
  {my $W = 3; my $N = 107; my @r = randomArray $N;
 
