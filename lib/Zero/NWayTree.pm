@@ -44,7 +44,6 @@ my $FindResult = sub                                                            
  {my $f = Zero::Emulator::AreaStructure("FindResult");
   $f->name(q(node));                                                            # Node found
   $f->name(q(cmp));                                                             # Result of the last comparison
-  $f->name(q(key));                                                             # Key searched for
   $f->name(q(index));                                                           # Index in the node of located element
   $f
  }->();
@@ -132,11 +131,6 @@ my sub Node_setLength($$)                                                       
 my sub Node_incLength($)                                                        # Increment the length of a node
  {my ($node) = @_;                                                              # Node
   Inc [$node, $Node->address(q(length)), 'Node'];                               # Increment length attribute
- }
-
-my sub Node_id($)                                                               # Get id of a node
- {my ($node) = @_;                                                              # Node
-  Node_getField($node, q(id));                                                  # Get id
  }
 
 my sub Node_up($)                                                               # Get parent node from this node
