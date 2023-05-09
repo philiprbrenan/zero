@@ -24,7 +24,7 @@ my $Tree = sub                                                                  
  {my $t = Zero::Emulator::AreaStructure("Structure");
      $t->name(q(keys));                                                         # Number of keys in tree
      $t->name(q(nodes));                                                        # Number of nodes in tree
-     $t->name(q(NumberOfKeysPerNode));                                          # The maximum number of keys in a node of this tree
+     $t->name(q(MaximumNumberOfKeys));                                          # The maximum number of keys in a node of this tree
      $t->name(q(root));                                                         # Root node
      $t
  }->();
@@ -62,7 +62,7 @@ sub New($)                                                                      
   $n > 2 && $n % 2 or confess "Number of key/data elements per node must be > 2 and odd";
 
   my $t = Array "Tree";                                                         # Allocate tree descriptor
-  Mov [$t, $Tree->address(q(NumberOfKeysPerNode)), 'Tree'], $n;                 # Save maximum number of keys per node
+  Mov [$t, $Tree->address(q(MaximumNumberOfKeys)), 'Tree'], $n;                 # Save maximum number of keys per node
   Mov [$t, $Tree->address(q(root)),                'Tree'],  0;                 # Clear root
   Mov [$t, $Tree->address(q(keys)),                'Tree'],  0;                 # Clear keys
   Mov [$t, $Tree->address(q(nodes)),               'Tree'],  0;                 # Clear nodes
@@ -76,7 +76,7 @@ my sub Tree_getField($$)                                                        
 
 my sub maximumNumberOfKeys($)                                                   # Get the maximum number of keys per node for a tree
  {my ($tree) = @_;                                                              # Tree to examine
-  Tree_getField($tree, q(NumberOfKeysPerNode));                                 # Get attribute from tree descriptor
+  Tree_getField($tree, q(MaximumNumberOfKeys));                                 # Get attribute from tree descriptor
  };
 
 my sub root($)                                                                  # Get the root node of a tree
@@ -460,7 +460,7 @@ my sub Node_SplitIfFull($%)                                                     
  {my ($node, %options) = @_;                                                    # Node to split, options
   my $nl = Node_length($node);
   my $t = Node_tree($node);                                                     # Associated tree
-  my $m = maximumNumberOfKeys($t);
+  my $m = $options{maximumNumberOfKeys} // maximumNumberOfKeys($t);
   my $split = Var;
 
   Block                                                                         # Various splitting scenarios
@@ -747,7 +747,7 @@ sub Insert($$$%)                                                                
        };
      };
                                                                                 # Insert node
-    my $r = FindAndSplit($tree, $key, findResult=>$find);                       # Check for existing key
+    my $r = FindAndSplit($tree, $key, %options, findResult=>$find);             # Check for existing key
     my $N = FindResult_node($r);
     my $c = FindResult_cmp($r);
     my $i = FindResult_index($r);
@@ -1581,7 +1581,7 @@ if (1)                                                                          
     AssertEq $n, $i;                                                            # Check tree size
     my $K = Add $k, $k;
     Tally 1;
-    Insert($t, $k, $K, findResult=>$f);                                         # Insert a new node
+    Insert($t, $k, $K, findResult=>$f, maximumNumberOfKeys=>$W);                # Insert a new node
     Tally 0;
    } $a, q(aaa);
 
@@ -1606,10 +1606,10 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  27911;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  27346;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 18865, 2 => 6294, 3=>2752};
+  is_deeply $e->tallyTotal, { 1 => 18300, 2 => 6294, 3=>2752};
 
   #say STDERR dump $e->tallyCounts->{1};
   is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -1623,7 +1623,7 @@ if (1)                                                                          
   jLt => 565,
   jmp => 1223,
   jNe => 983,
-  mov => 10120,
+  mov => 9555,
   not => 631,
   resize => 161,
   shiftRight => 68,
