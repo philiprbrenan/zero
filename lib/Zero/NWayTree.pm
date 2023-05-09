@@ -469,10 +469,14 @@ my sub Node_SplitIfFull($%)                                                     
     my $N = $m // maximumNumberOfKeys($t);                                      # Maximum size of a node
     Jlt $bad, $nl, $N unless defined $m;                                        # Must be a full node
 
-    my $n = Mov $N;                                                             # Split point
-    ShiftRight $n, 1;                                                           # Index of key that will be placed in parent
+    my $n = $options{splitPoint};                                               # Split point supplied
+    if (!defined $n)                                                            # Calculate split point
+     {$n = Mov $N;
+      ShiftRight $n, 1;
+     }
 
-    my $R = Add $n, 1;                                                          # Number of Children
+    my $R = $options{rightStart} // Add $n, 1;                                  # Start of right hand side in a node
+
     my $p = Node_up($node);                                                     # Existing parent node
 
     IfTrue $p,
@@ -1579,7 +1583,12 @@ if (1)                                                                          
     AssertEq $n, $i;                                                            # Check tree size
     my $K = Add $k, $k;
     Tally 1;
-    Insert($t, $k, $K, findResult=>$f, maximumNumberOfKeys=>$W);                # Insert a new node
+    Insert($t, $k, $K,                                                          # Insert a new node
+      findResult=>          $f,
+      maximumNumberOfKeys=> $W,
+      splitPoint=>          int($W/2),
+      rightStart=>          int($W/2)+1,
+    );
     Tally 0;
    } $a, q(aaa);
 
@@ -1604,14 +1613,14 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  26713;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  26509;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 17667, 2 => 6294, 3=>2752};
+  is_deeply $e->tallyTotal, { 1 => 17463, 2 => 6294, 3=>2752};
 
   #say STDERR dump $e->tallyCounts->{1};
   is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
-  add => 398,
+  add => 330,
   array => 247,
   arrayIndex => 30,
   inc => 874,
@@ -1621,10 +1630,9 @@ if (1)                                                                          
   jLt => 565,
   jmp => 1223,
   jNe => 983,
-  mov => 8990,
+  mov => 8922,
   not => 631,
   resize => 161,
-  shiftRight => 68,
   shiftUp => 300,
   subtract => 636};
 
