@@ -13,7 +13,7 @@ use Carp qw(cluck confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
-eval "use Test::More tests=>23" unless caller;
+eval "use Test::More tests=>24" unless caller;
 
 makeDieConfess;
 
@@ -380,8 +380,11 @@ my sub FindResult_renew($$$$%)                                                  
   if (my $d = $options{subtract})                                               # Adjust index if necessary
    {Subtract [$f, $FindResult->address(q(index)), 'FindResult'], $index, $d;
    }
+  elsif (my $D = $options{add})                                                 # Adjust index if necessary
+   {Add      [$f, $FindResult->address(q(index)), 'FindResult'], $index, $D;
+   }
   else
-   {Mov [$f, $FindResult->address(q(index)), 'FindResult'], $index;
+   {Mov      [$f, $FindResult->address(q(index)), 'FindResult'], $index;
    }
   $f
  }
@@ -761,8 +764,7 @@ my sub GoUpAndAround($)                                                         
       my $L = Node_lengthM1($node);
       IfLt $I, $L,                                                              # More keys in leaf
       Then
-       {my $i = Add $I, 1;
-        FindResult_renew($find, $node, FindResult_found, $i);
+       {FindResult_renew($find, $node, FindResult_found, $I, add=>1);
         Jmp $Finish;
        };
 
@@ -1286,16 +1288,21 @@ if (1)                                                                          
     AssertEq $K, $d;                                                            # Check result
    } $t;
 
+  Tally 3;
+  Iterate {} $t;                                                                # Iterate tree
+  Tally 0;
+
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  28195;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  31192;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294 };
+  is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294, 3=>2997};
 
+  #say STDERR dump $e->tallyCounts->{1};
   is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
   add => 596,
   array => 503,
@@ -1330,6 +1337,24 @@ if (1)                                                                          
   mov => 1975,
   not => 360,
   subtract => 574};
+
+  #say STDERR dump $e->tallyCounts->{3};
+  is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally
+  add        => 62,
+  array      => 1,
+  arrayIndex => 72,
+  dec        => 72,
+  free       => 1,
+  inc        => 162,
+  jEq        => 152,
+  jFalse     => 136,
+  jGe        => 316,
+  jmp        => 253,
+  jNe        => 225,
+  jTrue      => 73,
+  mov        => 1229,
+  not        => 180,
+  subtract   => 63};
 
   #say STDERR printTreeKeys($e->memory); x;
   #say STDERR printTreeData($e->memory); x;
