@@ -551,8 +551,7 @@ my sub FindAndSplit($$%)                                                        
          {FindResult_renew($find, $node, $key, FindResult_higher, $last);
           Jmp $Found;
          };
-        my $last1 = Add $last, 1;
-        my $n = Node_down($node, $last1);                                       # We will be heading down through the last node so split it in advance if necessary
+        my $n = Node_down($node, $nl);                                          # We will be heading down through the last node so split it in advance if necessary
         IfFalse Node_SplitIfFull($n),                                           # No split needed
         Then
          {Mov $node, $n;
@@ -1268,8 +1267,7 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];
  }
 
-
-#latest:;
+latest:;
 if (1)                                                                          #TIterate #TKeys #TFindResult_key #TFindResult_data #TFind #TprintTreeKeys #TprintTreeData
  {my $W = 3; my $N = 107; my @r = randomArray $N;
 
@@ -1311,13 +1309,13 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  29068;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  28908;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 22337, 2 => 6731 };
+  is_deeply $e->tallyTotal, { 1 => 22177, 2 => 6731 };
 
   is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
-  add => 860,
+  add => 700,
   array => 503,
   arrayIndex => 7,
   dec => 7,
