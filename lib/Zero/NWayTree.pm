@@ -475,7 +475,6 @@ my sub Node_SplitIfFull($)                                                      
       IfEq Node_down($p, $pl), $node,                                           # Splitting the last child - just add it on the end
       Then
        {my $pk = Node_keys($node, $n);
-        my $pd = Node_data($node, $n);
         Node_setKeys  ($p, $pl, $pk);
         Node_setDown  ($p, $pl, $l);
         my $nd = Node_data($node, $n);
@@ -1296,10 +1295,10 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  28367;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  28299;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 22073, 2 => 6294 };
+  is_deeply $e->tallyTotal, { 1 => 22005, 2 => 6294 };
 
   is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
   add => 700,
@@ -1314,7 +1313,7 @@ if (1)                                                                          
   jLt => 565,
   jmp => 1329,
   jNe => 1088,
-  mov => 12106,
+  mov => 12038,
   not => 695,
   resize => 12,
   shiftRight => 68,
