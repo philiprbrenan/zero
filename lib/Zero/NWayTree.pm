@@ -403,9 +403,10 @@ my sub ReUp($)                                                                  
   my $l = Node_length($node);
   my $L = Add $l, 1;
 
+  my $D = Node_fieldDown($node);
   For
    {my ($i, $check, $next, $end) = @_;                                          # Parameters
-    my $d = Node_down ($node, $i);
+    my $d = Mov [$D, \$i, 'Down'];;
             Node_setUp($d, $node);
    } $L;
  }
@@ -820,11 +821,6 @@ my sub IterCheck($)                                                             
   $r
  }
 
-my sub IterNext($)                                                              # Next element of an iteration
- {my ($F) = @_;                                                                 # Parameters (NWayTree(FindResult) const find)                                              # Find result of last iteration
-  GoUpAndAround($F);
- }
-
 sub Iterate(&$)                                                                 # Iterate over a tree.
  {my ($block, $tree) = @_;                                                      # Block of code to execute for each key in tree, tree
   my $f = IterStart($tree);
@@ -834,7 +830,7 @@ sub Iterate(&$)                                                                 
     JFalse $end, IterCheck($f);
     &$block($f);
 
-    IterNext($f);
+    GoUpAndAround($f);
    } 1e99;
   FindResult_free($f);
  }
@@ -1297,10 +1293,10 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  31192;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  31144;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 21901, 2 => 6294, 3=>2997};
+  is_deeply $e->tallyTotal, { 1 => 21853, 2 => 6294, 3=>2997};
 
   #say STDERR dump $e->tallyCounts->{1};
   is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -1316,7 +1312,7 @@ if (1)                                                                          
   jLt => 565,
   jmp => 1329,
   jNe => 1088,
-  mov => 12038,
+  mov => 11990,
   not => 695,
   resize => 12,
   shiftRight => 68,
