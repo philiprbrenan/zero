@@ -588,7 +588,7 @@ sub Zero::Emulator::Execution::stackTraceAndExit($$%)                           
   push $exec->out->@*, @t;
   my $t = join "\n", @t;
 
-  if (!defined $exec->suppressOutput)
+  if (!$exec->suppressOutput)
    {confess $t if $options{confess};
     say STDERR $t;
    }
