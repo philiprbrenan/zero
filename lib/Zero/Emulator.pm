@@ -31,6 +31,7 @@ sub execute(%)                                                                  
     tally=>                 0,                                                  # Tally executed instructions in a bin of this name
     tallyCount=>            0,                                                  # Executed instructions tally count
     tallyCounts=>           {},                                                 # Executed instructions by name tally counts
+    tallyTotal=>            {},                                                 # Total instructions executed in each tally
     instructionPointer=>    0,                                                  # Current instruction
     memory=>                {},                                                 # Memory contents at the end of execution
     memoryType=>            {},                                                 # Memory contents at the end of execution
@@ -835,7 +836,7 @@ sub Zero::Emulator::Execution::jumpOp($$$)                                      
   $exec->instructionPointer = $i->number + $exec->right($i->target) if &$check; # Check if condition is met
  }
 
-sub Zero::Emulator::Execution::assert1($$$)                                     #P Assert true or false
+sub Zero::Emulator::Execution::assert1($$$)                                     #P Assert true or false.
  {my ($exec, $test, $sub) = @_;                                                 # Execution environment, Text of test, subroutine of test
   @_ == 3 or confess "Three parameters";
   my $i = $exec->currentInstruction;
@@ -932,7 +933,7 @@ sub Zero::Emulator::Execution::createInitialStackEntry($)                       
   $exec
  }
 
-sub Zero::Emulator::Execution::checkArrayName($$$)                               #P Check the name of an array
+sub Zero::Emulator::Execution::checkArrayName($$$)                              #P Check the name of an array.
  {my ($exec, $area, $name) = @_;                                                # Execution environment, array, array name
   @_ == 3 or confess "Three parameters";
 
@@ -955,7 +956,7 @@ sub Zero::Emulator::Execution::checkArrayName($$$)                              
   1
  }
 
-sub Zero::Emulator::Execution::locateAreaElement($$$)                           #P Locate an element in an array
+sub Zero::Emulator::Execution::locateAreaElement($$$)                           #P Locate an element in an array.
  {my ($exec, $area, $op) = @_;                                                  # Execution environment, array, operation
   my @a = $exec->memory->{$area}->@*;
   for my $a(keys @a)                                                            # Check each element of the array
@@ -966,7 +967,7 @@ sub Zero::Emulator::Execution::locateAreaElement($$$)                           
   0
  }
 
-sub Zero::Emulator::Execution::countAreaElement($$$)                            #P Count the number of elements in array that meet some specification
+sub Zero::Emulator::Execution::countAreaElement($$$)                            #P Count the number of elements in array that meet some specification.
  {my ($exec, $area, $op) = @_;                                                  # Execution environment, array, operation
   my @a = $exec->memory->{$area}->@*;
   my $n = 0;
@@ -1420,6 +1421,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       if ($a !~ m(\A(assert.*|label|tally|trace(Points?)?)\Z))                  # Omit instructions that are not tally-able
        {if (my $t = $exec->tally)                                               # Tally instruction counts
          {$exec->tallyCount++;
+          $exec->tallyTotal->{$t}++;
           $exec->tallyCounts->{$t}{$a}++;
          }
         $exec->counts->{$a}++; $exec->count++;                                  # Execution instruction counts
@@ -1526,7 +1528,7 @@ sub Free($$)                                                                    
   $assembly->instruction(action=>"free", xTarget($target), xSource($source));
  }
 
-sub ArraySize($$)                                                               # The current size of an array
+sub ArraySize($$)                                                               # The current size of an array.
  {my ($area, $name) = @_;                                                       # Location of area, name of area
   my $t = &Var();
   $assembly->instruction(action=>"arraySize",                                   # Target - location to place the size in, source - address of the area, source2 - the name of the area which cannot be taken from the area of the first source operand because that area name is the name of the area that contains the location of the area we wish to work on.
@@ -1549,7 +1551,7 @@ sub ArrayIndex($$;$) {                                                          
    }
  }
 
-sub ArrayCountLess($$;$) {                                                      # Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result in the target location
+sub ArrayCountLess($$;$) {                                                      # Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result in the target location.
   if (@_ == 2)
    {my ($area, $element) = @_;                                                  # Area, element to find
     my $t = &Var();
@@ -1564,7 +1566,7 @@ sub ArrayCountLess($$;$) {                                                      
    }
  }
 
-sub ArrayCountGreater($$;$) {                                                   # Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result in the target location
+sub ArrayCountGreater($$;$) {                                                   # Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result in the target location.
   if (@_ == 2)
    {my ($area, $element) = @_;                                                  # Area, element to find
     my $t = &Var();
@@ -1665,12 +1667,12 @@ sub Jne($$$)                                                                    
     xTarget($target), xSource($source), xSource2($source2));
  }
 
-sub JFalse($$)                                                                  # Jump to a target label if the first source field is equal to zero
+sub JFalse($$)                                                                  # Jump to a target label if the first source field is equal to zero.
  {my ($target, $source) = @_;                                                   # Target label, source to test
   $assembly->instruction(action=>"jFalse", xTarget($target), xSource($source));
  }
 
-sub JTrue($$)                                                                   # Jump to a target label if the first source field is not equal to zero
+sub JTrue($$)                                                                   # Jump to a target label if the first source field is not equal to zero.
  {my ($target, $source) = @_;                                                   # Target label, source to test
   $assembly->instruction(action=>"jTrue", xTarget($target), xSource($source));
  }
@@ -2046,12 +2048,12 @@ sub AssertGe($$%)                                                               
   Assert2("Ge", $a, $b);
  }
 
-sub AssertTrue($%)                                                              # Assert true
+sub AssertTrue($%)                                                              # Assert true.
  {my ($a, %options) = @_;                                                       # Source operand
   Assert1("True", $a);
  }
 
-sub AssertFalse($%)                                                             # Assert false
+sub AssertFalse($%)                                                             # Assert false.
  {my ($a, %options) = @_;                                                       # Source operand
   Assert1("False", $a);
  }
