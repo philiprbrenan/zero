@@ -1263,7 +1263,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TIterate #TKeys #TFindResult_key #TFindResult_data #TFind
+if (1)                                                                          #TIterate #TKeys #TFindResult_key #TFindResult_data #TFind #TprintTreeKeys #TprintTreeData
  {my $W = 3; my $N = 107; my @r = randomArray $N;
 
   Start 1;
