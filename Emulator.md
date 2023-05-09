@@ -225,7 +225,7 @@ Free the memory area named by the target operand after confirming that it has th
 
 ### ArraySize($area, $name)
 
-The current size of an array
+The current size of an array.
 
        Parameter  Description
     1  $area      Location of area
@@ -331,7 +331,7 @@ Find the 1 based index of the second source operand in the array referenced by t
 
 ### ArrayCountLess()
 
-Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result in the target location
+Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result in the target location.
 
 **Example:**
 
@@ -372,7 +372,7 @@ Count the number of elements in the array specified by the first source operand 
 
 ### ArrayCountGreater()
 
-Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result in the target location
+Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result in the target location.
 
 **Example:**
 
@@ -969,7 +969,7 @@ Jump to a target label if the first source field is not equal to the second sour
 
 ### JFalse($target, $source)
 
-Jump to a target label if the first source field is equal to zero
+Jump to a target label if the first source field is equal to zero.
 
        Parameter  Description
     1  $target    Target label
@@ -1012,7 +1012,7 @@ Jump to a target label if the first source field is equal to zero
 
 ### JTrue($target, $source)
 
-Jump to a target label if the first source field is not equal to zero
+Jump to a target label if the first source field is not equal to zero.
 
        Parameter  Description
     1  $target    Target label
@@ -2479,7 +2479,7 @@ Assert are greater than or equal..
 
 ### AssertTrue($a, %options)
 
-Assert true
+Assert true.
 
        Parameter  Description
     1  $a         Source operand
@@ -2508,7 +2508,7 @@ Assert true
 
 ### AssertFalse($a, %options)
 
-Assert false
+Assert false.
 
        Parameter  Description
     1  $a         Source operand
@@ -2981,7 +2981,7 @@ Jump to the target address if the tested memory area if the condition is matched
 
 ## Zero::Emulator::Execution::assert1($exec, $test, $sub)
 
-Assert true or false
+Assert true or false.
 
        Parameter  Description
     1  $exec      Execution environment
@@ -3037,7 +3037,7 @@ Create the initial stack frame.
 
 ## Zero::Emulator::Execution::checkArrayName($exec, $area, $name)
 
-Check the name of an array
+Check the name of an array.
 
        Parameter  Description
     1  $exec      Execution environment
@@ -3046,7 +3046,7 @@ Check the name of an array
 
 ## Zero::Emulator::Execution::locateAreaElement($exec, $area, $op)
 
-Locate an element in an array
+Locate an element in an array.
 
        Parameter  Description
     1  $exec      Execution environment
@@ -3055,7 +3055,7 @@ Locate an element in an array
 
 ## Zero::Emulator::Execution::countAreaElement($exec, $area, $op)
 
-Count the number of elements in array that meet some specification
+Count the number of elements in array that meet some specification.
 
        Parameter  Description
     1  $exec      Execution environment
@@ -3124,13 +3124,13 @@ Create a variable initialized to the specified value.
 
 2 [Array](#array) - Create a new memory area and write its number into the address named by the target operand.
 
-3 [ArrayCountGreater](#arraycountgreater) - Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result in the target location
+3 [ArrayCountGreater](#arraycountgreater) - Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result in the target location.
 
-4 [ArrayCountLess](#arraycountless) - Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result in the target location
+4 [ArrayCountLess](#arraycountless) - Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result in the target location.
 
 5 [ArrayIndex](#arrayindex) - Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.
 
-6 [ArraySize](#arraysize) - The current size of an array
+6 [ArraySize](#arraysize) - The current size of an array.
 
 7 [Assert](#assert) - Assert regardless.
 
@@ -3140,7 +3140,7 @@ Create a variable initialized to the specified value.
 
 10 [AssertEq](#asserteq) - Assert two memory locations are equal.
 
-11 [AssertFalse](#assertfalse) - Assert false
+11 [AssertFalse](#assertfalse) - Assert false.
 
 12 [AssertGe](#assertge) - Assert are greater than or equal.
 
@@ -3152,7 +3152,7 @@ Create a variable initialized to the specified value.
 
 16 [AssertNe](#assertne) - Assert two memory locations are not equal.
 
-17 [AssertTrue](#asserttrue) - Assert true
+17 [AssertTrue](#asserttrue) - Assert true.
 
 18 [Bad](#bad) - A bad ending.
 
@@ -3204,7 +3204,7 @@ Create a variable initialized to the specified value.
 
 42 [Jeq](#jeq) - Jump to a target label if the first source field is equal to the second source field.
 
-43 [JFalse](#jfalse) - Jump to a target label if the first source field is equal to zero
+43 [JFalse](#jfalse) - Jump to a target label if the first source field is equal to zero.
 
 44 [Jge](#jge) - Jump to a target label if the first source field is greater than or equal to the second source field.
 
@@ -3218,7 +3218,7 @@ Create a variable initialized to the specified value.
 
 49 [Jne](#jne) - Jump to a target label if the first source field is not equal to the second source field.
 
-50 [JTrue](#jtrue) - Jump to a target label if the first source field is not equal to zero
+50 [JTrue](#jtrue) - Jump to a target label if the first source field is not equal to zero.
 
 51 [Label](#label) - Create a label.
 
@@ -3300,15 +3300,15 @@ Create a variable initialized to the specified value.
 
 90 [Zero::Emulator::Execution::assert](#zero-emulator-execution-assert) - Assert generically.
 
-91 [Zero::Emulator::Execution::assert1](#zero-emulator-execution-assert1) - Assert true or false
+91 [Zero::Emulator::Execution::assert1](#zero-emulator-execution-assert1) - Assert true or false.
 
 92 [Zero::Emulator::Execution::assign](#zero-emulator-execution-assign) - Assign - check for pointless assignments.
 
 93 [Zero::Emulator::Execution::check](#zero-emulator-execution-check) - Check that a user area access is valid.
 
-94 [Zero::Emulator::Execution::checkArrayName](#zero-emulator-execution-checkarrayname) - Check the name of an array
+94 [Zero::Emulator::Execution::checkArrayName](#zero-emulator-execution-checkarrayname) - Check the name of an array.
 
-95 [Zero::Emulator::Execution::countAreaElement](#zero-emulator-execution-countareaelement) - Count the number of elements in array that meet some specification
+95 [Zero::Emulator::Execution::countAreaElement](#zero-emulator-execution-countareaelement) - Count the number of elements in array that meet some specification.
 
 96 [Zero::Emulator::Execution::createInitialStackEntry](#zero-emulator-execution-createinitialstackentry) - Create the initial stack frame.
 
@@ -3330,7 +3330,7 @@ Create a variable initialized to the specified value.
 
 105 [Zero::Emulator::Execution::leftSuppress](#zero-emulator-execution-leftsuppress) - Indicate that a memory address has been read.
 
-106 [Zero::Emulator::Execution::locateAreaElement](#zero-emulator-execution-locateareaelement) - Locate an element in an array
+106 [Zero::Emulator::Execution::locateAreaElement](#zero-emulator-execution-locateareaelement) - Locate an element in an array.
 
 107 [Zero::Emulator::Execution::markAsRead](#zero-emulator-execution-markasread) - Mark a memory address as having been read from.
 
