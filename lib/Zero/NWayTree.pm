@@ -248,11 +248,6 @@ my sub FindResult_getField($$)                                                  
   Mov [$findResult, $FindResult->address($field), q(FindResult)];               # Fields
  }
 
-sub FindResult_key22($)                                                         # Get key from find result.
- {my ($f) = @_;                                                                 # Find result
-  FindResult_getField($f, q(key))                                               # Key
- }
-
 sub FindResult_cmp($)                                                           # Get comparison from find result.
  {my ($f) = @_;                                                                 # Find result
   FindResult_getField($f, q(cmp))                                               # Comparison
@@ -387,7 +382,7 @@ my sub FindResult_renew($$$$%)                                                  
   $f
  }
 
-my sub FindResult_create()                                                      # Create an empty find result ready for use
+my sub FindResult_new()                                                         # Create an empty find result ready for use
  {Array "FindResult";                                                           # Find result
  }
 
@@ -536,7 +531,7 @@ my sub FindAndSplit($$%)                                                        
  {my ($tree, $key, %options) = @_;                                              # Tree to search, key, options
   my $node = root($tree);
 
-  my $find = $options{findResult} // FindResult_create;                         # Find result work area
+  my $find = $options{findResult} // FindResult_new;                         # Find result work area
 
   Node_SplitIfFull($node);                                                      # Split the root node if necessary
 
@@ -597,7 +592,7 @@ my sub FindAndSplit($$%)                                                        
 sub Find($$%)                                                                   # Find a key in a tree returning a L<FindResult> describing the outcome of the search.
  {my ($tree, $key, %options) = @_;                                              # Tree to search, key to find, options
 
-  my $find = $options{findResult} // FindResult_create;                         # Find result work area
+  my $find = $options{findResult} // FindResult_new;                            # Find result work area
 
   Block                                                                         # Block
    {my ($Start, $Good, $Bad, $End) = @_;                                        # Block locations
@@ -652,7 +647,7 @@ sub Find($$%)                                                                   
 sub Insert($$$%)                                                                # Insert a key and its associated data into a tree.
  {my ($tree, $key, $data, %options) = @_;                                       # Tree, key, data
 
-  my $find = $options{findResult} // FindResult_create;                         # Find result work area
+  my $find = $options{findResult} // FindResult_new;                            # Find result work area
 
   Block
    {my ($Start, $Good, $Bad, $Finish) = @_;                                     # Parameters
@@ -806,7 +801,7 @@ my sub GoUpAndAround($)                                                         
 my sub IterStart($)                                                             # Start an iterator
  {my ($tree) = @_;                                                              # Tree to iterate
   my $n = root($tree);
-  my $f = FindResult_create;
+  my $f = FindResult_new;
   GoAllTheWayLeft($f, $n);
  }
 
@@ -1207,7 +1202,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TNew #TInsert #TFind
+if (1)                                                                          #TNew #TInsert #TFind #TFindResult_cmp
  {my $W = 3; my $N = 66;
 
   Start 1;
@@ -1267,7 +1262,7 @@ if (1)                                                                          
     Mov [$a, $i, "aaa"], $r[$i];
    }
 
-  my $f = FindResult_create;
+  my $f = FindResult_new;
 
   ForArray                                                                      # Create tree
    {my ($i, $k) = @_;
