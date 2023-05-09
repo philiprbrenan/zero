@@ -538,7 +538,7 @@ my sub FindAndSplit($$%)                                                        
  {my ($tree, $key, %options) = @_;                                              # Tree to search, key, options
   my $node = root($tree);
 
-  my $find = $options{findResult} // FindResult_new;                         # Find result work area
+  my $find = $options{findResult} // FindResult_new;                            # Find result work area
 
   Node_SplitIfFull($node);                                                      # Split the root node if necessary
 
