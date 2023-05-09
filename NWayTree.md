@@ -185,7 +185,9 @@ Get the number of keys in the tree..
        {my ($find) = @_;                                                            # Find result
         my $k = FindResult_key($find);
         Out $k;
+        Tally 2;
         my $f = Find($t, $k);                                                       # Find
+        Tally 0;
         my $d = FindResult_data($f);
         my $K = Add $k, $k;
         AssertEq $K, $d;                                                            # Check result
@@ -195,10 +197,11 @@ Get the number of keys in the tree..
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
-      is_deeply $e->tallyCount,  23612;                                             # Insertion instruction counts
+      #say STDERR dump $e->tallyCount;
+      is_deeply $e->tallyCount,  31354;                                             # Insertion instruction counts
     
-      #say STDERR "AAAA
-  ", dump($e->tallyCounts->{1});
+      #say STDERR dump $e->tallyTotal;
+      is_deeply $e->tallyTotal, { 1 => 23612, 2 => 7742 };
     
       is_deeply $e->tallyCounts->{1}, {
       add => 860,
@@ -224,6 +227,25 @@ Get the number of keys in the tree..
       shiftUp => 300,
       subtract => 641,
     };
+    
+      #say STDERR dump $e->tallyCounts->{2};
+      is_deeply $e->tallyCounts->{2},
+    { array => 107,
+      arrayCountLess => 223,
+      arrayIndex => 330,
+      dec => 107,
+      inc => 360,
+      jEq => 690,
+      jGe => 467,
+      jLe => 467,
+      jmp => 604,
+      jNe => 107,
+      mov => 3453,
+      not => 360,
+      subtract => 467,
+    };
+    
+    x
      }
     
 
@@ -264,7 +286,9 @@ Get key from find result..
         my $k = FindResult_key($find);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
         Out $k;
+        Tally 2;
         my $f = Find($t, $k);                                                       # Find
+        Tally 0;
         my $d = FindResult_data($f);
         my $K = Add $k, $k;
         AssertEq $K, $d;                                                            # Check result
@@ -274,10 +298,11 @@ Get key from find result..
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
-      is_deeply $e->tallyCount,  23612;                                             # Insertion instruction counts
+      #say STDERR dump $e->tallyCount;
+      is_deeply $e->tallyCount,  31354;                                             # Insertion instruction counts
     
-      #say STDERR "AAAA
-  ", dump($e->tallyCounts->{1});
+      #say STDERR dump $e->tallyTotal;
+      is_deeply $e->tallyTotal, { 1 => 23612, 2 => 7742 };
     
       is_deeply $e->tallyCounts->{1}, {
       add => 860,
@@ -303,6 +328,25 @@ Get key from find result..
       shiftUp => 300,
       subtract => 641,
     };
+    
+      #say STDERR dump $e->tallyCounts->{2};
+      is_deeply $e->tallyCounts->{2},
+    { array => 107,
+      arrayCountLess => 223,
+      arrayIndex => 330,
+      dec => 107,
+      inc => 360,
+      jEq => 690,
+      jGe => 467,
+      jLe => 467,
+      jmp => 604,
+      jNe => 107,
+      mov => 3453,
+      not => 360,
+      subtract => 467,
+    };
+    
+    x
      }
     
 
@@ -366,7 +410,9 @@ Get data field from find results..
        {my ($find) = @_;                                                            # Find result
         my $k = FindResult_key($find);
         Out $k;
+        Tally 2;
         my $f = Find($t, $k);                                                       # Find
+        Tally 0;
     
         my $d = FindResult_data($f);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
@@ -378,10 +424,11 @@ Get data field from find results..
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
-      is_deeply $e->tallyCount,  23612;                                             # Insertion instruction counts
+      #say STDERR dump $e->tallyCount;
+      is_deeply $e->tallyCount,  31354;                                             # Insertion instruction counts
     
-      #say STDERR "AAAA
-  ", dump($e->tallyCounts->{1});
+      #say STDERR dump $e->tallyTotal;
+      is_deeply $e->tallyTotal, { 1 => 23612, 2 => 7742 };
     
       is_deeply $e->tallyCounts->{1}, {
       add => 860,
@@ -407,6 +454,25 @@ Get data field from find results..
       shiftUp => 300,
       subtract => 641,
     };
+    
+      #say STDERR dump $e->tallyCounts->{2};
+      is_deeply $e->tallyCounts->{2},
+    { array => 107,
+      arrayCountLess => 223,
+      arrayIndex => 330,
+      dec => 107,
+      inc => 360,
+      jEq => 690,
+      jGe => 467,
+      jLe => 467,
+      jmp => 604,
+      jNe => 107,
+      mov => 3453,
+      not => 360,
+      subtract => 467,
+    };
+    
+    x
      }
     
 
@@ -502,9 +568,11 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
 
         my $k = FindResult_key($find);
         Out $k;
+        Tally 2;
     
         my $f = Find($t, $k);                                                       # Find  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
+        Tally 0;
         my $d = FindResult_data($f);
         my $K = Add $k, $k;
         AssertEq $K, $d;                                                            # Check result
@@ -514,10 +582,11 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
-      is_deeply $e->tallyCount,  23612;                                             # Insertion instruction counts
+      #say STDERR dump $e->tallyCount;
+      is_deeply $e->tallyCount,  31354;                                             # Insertion instruction counts
     
-      #say STDERR "AAAA
-  ", dump($e->tallyCounts->{1});
+      #say STDERR dump $e->tallyTotal;
+      is_deeply $e->tallyTotal, { 1 => 23612, 2 => 7742 };
     
       is_deeply $e->tallyCounts->{1}, {
       add => 860,
@@ -543,8 +612,36 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
       shiftUp => 300,
       subtract => 641,
     };
+    
+      #say STDERR dump $e->tallyCounts->{2};
+      is_deeply $e->tallyCounts->{2},
+    { array => 107,
+      arrayCountLess => 223,
+      arrayIndex => 330,
+      dec => 107,
+      inc => 360,
+      jEq => 690,
+      jGe => 467,
+      jLe => 467,
+      jmp => 604,
+      jNe => 107,
+      mov => 3453,
+      not => 360,
+      subtract => 467,
+    };
+    
+    x
      }
     
+
+## Find2($tree, $key, %options)
+
+Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResult) describing the outcome of the search.
+
+       Parameter  Description
+    1  $tree      Tree to search
+    2  $key       Key to find
+    3  %options   Options
 
 # Insert
 
@@ -782,7 +879,9 @@ Iterate over a tree.
        {my ($find) = @_;                                                            # Find result
         my $k = FindResult_key($find);
         Out $k;
+        Tally 2;
         my $f = Find($t, $k);                                                       # Find
+        Tally 0;
         my $d = FindResult_data($f);
         my $K = Add $k, $k;
         AssertEq $K, $d;                                                            # Check result
@@ -792,10 +891,11 @@ Iterate over a tree.
     
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
-      is_deeply $e->tallyCount,  23612;                                             # Insertion instruction counts
+      #say STDERR dump $e->tallyCount;
+      is_deeply $e->tallyCount,  31354;                                             # Insertion instruction counts
     
-      #say STDERR "AAAA
-  ", dump($e->tallyCounts->{1});
+      #say STDERR dump $e->tallyTotal;
+      is_deeply $e->tallyTotal, { 1 => 23612, 2 => 7742 };
     
       is_deeply $e->tallyCounts->{1}, {
       add => 860,
@@ -821,6 +921,25 @@ Iterate over a tree.
       shiftUp => 300,
       subtract => 641,
     };
+    
+      #say STDERR dump $e->tallyCounts->{2};
+      is_deeply $e->tallyCounts->{2},
+    { array => 107,
+      arrayCountLess => 223,
+      arrayIndex => 330,
+      dec => 107,
+      inc => 360,
+      jEq => 690,
+      jGe => 467,
+      jLe => 467,
+      jmp => 604,
+      jNe => 107,
+      mov => 3453,
+      not => 360,
+      subtract => 467,
+    };
+    
+    x
      }
     
 
@@ -922,25 +1041,27 @@ Create a random array.
 
 1 [Find](#find) - Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResult) describing the outcome of the search.
 
-2 [FindResult\_cmp](#findresult_cmp) - Get comparison from find result.
+2 [Find2](#find2) - Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResult) describing the outcome of the search.
 
-3 [FindResult\_data](#findresult_data) - Get data field from find results.
+3 [FindResult\_cmp](#findresult_cmp) - Get comparison from find result.
 
-4 [FindResult\_key](#findresult_key) - Get key from find result.
+4 [FindResult\_data](#findresult_data) - Get data field from find results.
 
-5 [Insert](#insert) - Insert a key and its associated data into a tree.
+5 [FindResult\_key](#findresult_key) - Get key from find result.
 
-6 [Iterate](#iterate) - Iterate over a tree.
+6 [Insert](#insert) - Insert a key and its associated data into a tree.
 
-7 [Keys](#keys) - Get the number of keys in the tree.
+7 [Iterate](#iterate) - Iterate over a tree.
 
-8 [New](#new) - Create a variable referring to a new tree descriptor.
+8 [Keys](#keys) - Get the number of keys in the tree.
 
-9 [printTreeData](#printtreedata) - Print the data held in a tree.
+9 [New](#new) - Create a variable referring to a new tree descriptor.
 
-10 [printTreeKeys](#printtreekeys) - Print the keys held in a tree.
+10 [printTreeData](#printtreedata) - Print the data held in a tree.
 
-11 [randomArray](#randomarray) - Create a random array.
+11 [printTreeKeys](#printtreekeys) - Print the keys held in a tree.
+
+12 [randomArray](#randomarray) - Create a random array.
 
 # Installation
 
