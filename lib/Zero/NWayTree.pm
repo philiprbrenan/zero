@@ -293,20 +293,6 @@ my sub FindResult($$)                                                           
   return 3 if $cmp eq q(notFound);
  }
 
-my sub Node_open2222($$$$$)                                                         # Open a gap in an interior node
- {my ($node, $offset, $length, $K, $D) = @_;                                    # Node
-
-  my $k = Node_fieldKeys $node;
-  my $d = Node_fieldData $node;
-  my $n = Node_fieldDown $node;
-
-  ShiftUp [$k, \$offset, 'Keys'], $K;
-  ShiftUp [$d, \$offset, 'Data'], $D;
-  my $o1 = Add $offset, 1;
-  ShiftUp [$n, \$o1, 'Down'], 0;
-  Node_incLength $node;
- }
-
 my sub Node_openLeaf($$$$$)                                                     # Open a gap in a leaf node
  {my ($node, $offset, $length, $K, $D) = @_;                                    # Node
 
@@ -318,7 +304,7 @@ my sub Node_openLeaf($$$$$)                                                     
   Node_incLength $node;
  }
 
-my sub Node_open2($$$$$)                                                        # Open a gap in an interior node
+my sub Node_open($$$$$)                                                         # Open a gap in an interior node
  {my ($node, $offset, $K, $D, $N) = @_;                                         # Node, offset of open, new key, new data, new right node
 
   my $k = Node_fieldKeys $node;
@@ -329,17 +315,6 @@ my sub Node_open2($$$$$)                                                        
   ShiftUp [$d, \$offset, 'Data'], $D;
   my $o1 = Add $offset, 1;
   ShiftUp [$n, \$o1,     'Down'], $N;
-  Node_incLength $node;
- }
-
-my sub Node_openLeaf2($$$$)                                                     # Open a gap in a leaf node
- {my ($node, $offset, $K, $D) = @_;                                             # Node, offsetof open, key, data
-
-  my $k = Node_fieldKeys $node;
-  my $d = Node_fieldData $node;
-
-  ShiftUp [$k, \$offset, 'Keys'], $K;
-  ShiftUp [$d, \$offset, 'Data'], $D;
   Node_incLength $node;
  }
 
@@ -516,7 +491,7 @@ my sub Node_SplitIfFull($%)                                                     
         my $pk = Node_keys($node, $n);
         my $pd = Node_data($node, $n);
         my $I = Subtract $i, 1;
-        Node_open2($p, $I, $pk, $pd, $r);
+        Node_open($p, $I, $pk, $pd, $r);
         my $K = Node_fieldKeys $node; Resize $K, $n;
         my $D = Node_fieldData $node; Resize $D, $n;
         Jmp $good;
@@ -1062,35 +1037,6 @@ if (1)                                                                          
 
   for my $i(0..$N-1)
    {my $I = $i + 1;
-    Node_setKeys($n, $i,  10  *$I);
-    Node_setData($n, $i,  100 *$I);
-    Node_setDown($n, $i,  1000*$I);
-   }
-
-  Node_setDown($n, $N, 8000);
-
-  Node_open($n, 2, 4, 35, 350);
-  my $e = Execute(suppressOutput=>1);
-  is_deeply $e->memory, {
-  1 => bless([0, 1, 7, 0], "Tree"),
-  2 => bless([8, 1, 0, 1, 3, 4, 5], "Node"),
-  3 => bless([10, 20, 35, 30, 40, 50, 60, 70], "Keys"),
-  4 => bless([100, 200, 350, 300, 400, 500, 600, 700], "Data"),
-  5 => bless([1000, 2000, 3000, 0, 4000, 5000, 6000, 7000, 8000], "Down")}
- }
-
-#latest:;
-if (1)                                                                          ##Node_open2
- {Start 1;
-  my $N = 7;
-  my $t = New($N);                                                              # Create tree
-  my $n = Node_new($t);                                                         # Create node
-
-  Node_allocDown $n;
-  Node_setLength $n, $N;
-
-  for my $i(0..$N-1)
-   {my $I = $i + 1;
     Node_setKeys($n, $i,  10*$I);
     Node_setData($n, $i,  10*$I);
     Node_setDown($n, $i,  10*$i+5);
@@ -1098,7 +1044,7 @@ if (1)                                                                          
 
   Node_setDown($n, $N, 75);
 
-  Node_open2($n, 2, 26, 26, 26);
+  Node_open($n, 2, 26, 26, 26);
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->memory, {
