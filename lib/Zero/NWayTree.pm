@@ -4,6 +4,7 @@
 # Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 #-------------------------------------------------------------------------------
 # Key compression in each node by eliminating any common prefix present in each key in each node especially useful if we were to add attributes like userid, process, string position, rwx etc to front of each key.  Data does does not need this additional information.
+# Node_SplitIfFull should reuse the existing node rather than allocating a left hand one
 use v5.30;
 package Zero::NWayTree;
 our $VERSION = 20230513;                                                        # Version
