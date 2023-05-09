@@ -288,9 +288,9 @@ my sub FindResult($$)                                                           
 my sub Node_open($$$$$)                                                         # Open a gap in an interior node
  {my ($node, $offset, $length, $K, $D) = @_;                                    # Node
 
-  my $k = Mov [$node, \$Node->offset(qw(keys)), 'Node'];
-  my $d = Mov [$node, \$Node->offset(qw(data)), 'Node'];
-  my $n = Mov [$node, \$Node->offset(qw(down)), 'Node'];
+  my $k = Mov [$node, $Node->address(qw(keys)), 'Node'];
+  my $d = Mov [$node, $Node->address(qw(data)), 'Node'];
+  my $n = Mov [$node, $Node->address(qw(down)), 'Node'];
 
   ShiftUp [$k, \$offset, 'Keys'], $K;
   ShiftUp [$d, \$offset, 'Data'], $D;
@@ -302,8 +302,8 @@ my sub Node_open($$$$$)                                                         
 my sub Node_openLeaf($$$$$)                                                     # Open a gap in a leaf node
  {my ($node, $offset, $length, $K, $D) = @_;                                    # Node
 
-  my $k = Mov [$node, \$Node->offset(qw(keys)), 'Node'];
-  my $d = Mov [$node, \$Node->offset(qw(data)), 'Node'];
+  my $k = Mov [$node, $Node->address(qw(keys)), 'Node'];
+  my $d = Mov [$node, $Node->address(qw(data)), 'Node'];
 
   ShiftUp [$k, \$offset, 'Keys'], $K;
   ShiftUp [$d, \$offset, 'Data'], $D;
