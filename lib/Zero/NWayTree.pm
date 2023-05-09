@@ -13,7 +13,7 @@ use Carp qw(cluck confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
-eval "use Test::More tests=>30" unless caller;
+eval "use Test::More tests=>32" unless caller;
 
 makeDieConfess;
 
@@ -152,6 +152,21 @@ my sub Node_tree($)                                                             
 my sub Node_field($$)                                                           # Get the value of a field in a node
  {my ($node, $field) = @_;                                                      # Node, field name
   Mov [$node, $Node->address($field), 'Node'];                                  # Fields
+ }
+
+my sub Node_fieldKeys($)                                                        # Get the keys for a node
+ {my ($node) = @_;                                                              # Node
+  Mov [$node, $Node->address(q(keys)), 'Node'];                                 # Fields
+ }
+
+my sub Node_fieldData($)                                                        # Get the data for a node
+ {my ($node) = @_;                                                              # Node
+  Mov [$node, $Node->address(q(data)), 'Node'];                                 # Fields
+ }
+
+my sub Node_fieldDown($)                                                        # Get the children for a node
+ {my ($node) = @_;                                                              # Node
+  Mov [$node, $Node->address(q(down)), 'Node'];                                 # Fields
  }
 
 my sub Node_getIndex($$$)                                                       # Get the indexed field from a node
@@ -394,36 +409,6 @@ my sub Node_indexInParent($%)                                                   
   $r
  }
 
-my sub Node_indexInParent222222222222($%)                                       # Get the index of a node in its parent.
- {my ($node, %options) = @_;                                                    # Node, options
-  my $p = $options{parent} // Node_up($node);                                   # Parent
-  AssertNe($p, 0);                                                              # Number of children as opposed to the number of keys
-  my $l = $options{children} // Node_length($p);                                # Number of children
-  AssertNe($l, 0);                                                              # Number of children as opposed to the number of keys
-  my $L = Add $l, 1;
-  my $r = Var;                                                                  # Index of child
-
-  Block
-   {my ($Start, $Good, $Bad, $End) = @_;
-    For                                                                         # Loop through each child looking for the one specified
-     {my ($i, $check, $next, $end) = @_;
-      IfEq Node_down($p, $i), $node,
-      Then
-       {Mov $r, $i;
-        Jmp $End;
-       };
-     } $L;
-    Assert;                                                                     # Something has gone seriously wrong if we cannot find the node within its parent
-   };
-  my $R = Node_indexInParent2($node, %options);
-  Out "AAAAA11";
-  Out $r;
-  Out $R;
-  Out "AAAAA22";
-  #AssertEq $r, $R;
-  $r
- }
-
 my sub Node_SplitIfFull($)                                                      # Split a node if it is full. Return true if the node was split else false
  {my ($node) = @_;                                                              # Node to split
   my $nl = Node_length($node);
@@ -603,6 +588,60 @@ my sub FindAndSplit($$)                                                         
 sub Find($$%)                                                                   # Find a key in a tree returning a L<FindResult> describing the outcome of the search.
  {my ($tree, $key, %options) = @_;                                              # Tree to search, key to find, options
 
+  my $find = $options{findResult} // FindResult_create;                         # Find result work area
+
+  Block                                                                         # Block
+   {my ($Start, $Good, $Bad, $End) = @_;                                        # Block locations
+
+    my $node = root($tree);                                                     # Current node we are searching
+
+    IfFalse $node,                                                              # Empty tree
+    Then
+     {FindResult_renew($find, $node, $key, FindResult_notFound, -1);
+      Jmp $End;
+     };
+
+    For                                                                         # Step down through tree
+     {my ($j, $check, $next, $end) = @_;                                        # Parameters
+      my $nl = Node_length($node);
+      my $nl1 = Subtract $nl, 1;
+
+      IfGt $key, Node_keys($node, $nl1),                                        # Bigger than every key
+      Then
+       {IfTrue Node_isLeaf($node),                                              # Leaf
+        Then
+         {FindResult_renew($find, $node, $key, FindResult_higher, $nl);
+          Jmp $End;
+         };
+        Mov $node, Node_down($node, $nl);
+        Jmp $next;
+       };
+
+      my $K = Node_fieldKeys($node);                                            # Keys
+      my $e = ArrayIndex $K, $key;                                              # Check for equal keys
+      IfTrue $e,                                                                # Found a matching key
+      Then
+       {Dec $e;                                                                 # Make zero based
+        FindResult_renew($find, $node, $key, FindResult_found, $e);                # Find result
+        Jmp $End;
+       };
+
+      my $i = ArrayCountLess $K, $key;                                          # Check for smaller keys
+      IfTrue Node_isLeaf($node),                                                # Leaf
+      Then
+       {FindResult_renew($find, $node, $key, FindResult_lower, $i);
+        Jmp $End;
+       };
+      Mov $node, Node_down($node, $i);
+     } MaxIterations;
+    Assert;
+   };
+  $find
+ }
+
+sub Find2($$%)                                                                   # Find a key in a tree returning a L<FindResult> describing the outcome of the search.
+ {my ($tree, $key, %options) = @_;                                              # Tree to search, key to find, options
+
   my $p = Procedure 'NWayTree_Find', sub
    {my ($p) = @_;                                                               # Procedure description
     my $tree = ParamsGet 0;
@@ -632,25 +671,22 @@ sub Find($$%)                                                                   
         Jmp $next;
        };
 
-      For                                                                       # Search the keys in this node as less than largest key
-       {my ($i, $check, $next, $end) = @_;                                      # Parameters
-        my $k = Node_keys($node, $i);                                           # Key from tree
-        IfEq $key, $k,                                                          # Found key
-        Then
-         {ReturnPut 0, FindResult_new($node, $key, FindResult_found, $i);
-          Return;
-         };
-        IfLt $key, $k,                                                          # Lower than current key
-        Then
-         {IfTrue Node_isLeaf($node),                                            # Leaf
-          Then
-           {ReturnPut 0, FindResult_new($node, $key, FindResult_lower, $i);
-            Return;
-           };
-          Mov $node, Node_down($node, $i);
-          Jmp $end;
-         };
-       } $nl;
+      my $K = Node_fieldKeys($node);                                            # Keys
+      my $e = ArrayIndex $K, $key;                                              # Check for equal keys
+      IfTrue $e,                                                                # Found a matching key
+      Then
+       {Dec $e;                                                                 # Make zero based
+        ReturnPut 0, FindResult_new($node, $key, FindResult_found, $e);         # Find result
+        Return;
+       };
+
+      my $i = ArrayCountLess $K, $key;                                          # Check for smaller keys
+      IfTrue Node_isLeaf($node),                                                # Leaf
+      Then
+       {ReturnPut 0, FindResult_new($node, $key, FindResult_lower, $i);
+        Return;
+       };
+      Mov $node, Node_down($node, $i);
      } MaxIterations;
     Assert;
    };
@@ -772,7 +808,7 @@ my sub GoAllTheWayLeft($$)                                                      
       JTrue $end, Node_isLeaf($node);                                           # Reached leaf
       Mov $node, Node_down($node, 0);
      } MaxIterations;
-    FindResult_renew($find, $node, Node_keys($node, 0), FindResult_found,0);# Leaf - place us on the first key
+    FindResult_renew($find, $node, Node_keys($node, 0), FindResult_found,0);    # Leaf - place us on the first key
    };
   $find
  }
@@ -985,7 +1021,7 @@ eval {goto latest if $debug};
 sub is_deeply;
 sub ok($;$);
 sub done_testing;
-sub x {exit if $debug}                                                          # Stop if debugging
+sub x {exit if $debug}                                                          # Stop if debugging.
 
 #latest:;
 if (1)                                                                          #TNew
@@ -1480,7 +1516,9 @@ if (1)                                                                          
    {my ($find) = @_;                                                            # Find result
     my $k = FindResult_key($find);
     Out $k;
+    Tally 2;
     my $f = Find($t, $k);                                                       # Find
+    Tally 0;
     my $d = FindResult_data($f);
     my $K = Add $k, $k;
     AssertEq $K, $d;                                                            # Check result
@@ -1490,9 +1528,11 @@ if (1)                                                                          
 
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
-  is_deeply $e->tallyCount,  23612;                                             # Insertion instruction counts
+  #say STDERR dump $e->tallyCount;
+  is_deeply $e->tallyCount,  31354;                                             # Insertion instruction counts
 
-  #say STDERR "AAAA\n", dump($e->tallyCounts->{1});
+  #say STDERR dump $e->tallyTotal;
+  is_deeply $e->tallyTotal, { 1 => 23612, 2 => 7742 };
 
   is_deeply $e->tallyCounts->{1}, {
   add => 860,
@@ -1518,6 +1558,25 @@ if (1)                                                                          
   shiftUp => 300,
   subtract => 641,
 };
+
+  #say STDERR dump $e->tallyCounts->{2};
+  is_deeply $e->tallyCounts->{2},
+{ array => 107,
+  arrayCountLess => 223,
+  arrayIndex => 330,
+  dec => 107,
+  inc => 360,
+  jEq => 690,
+  jGe => 467,
+  jLe => 467,
+  jmp => 604,
+  jNe => 107,
+  mov => 3453,
+  not => 360,
+  subtract => 467,
+};
+
+x
  }
 
 done_testing;
