@@ -293,7 +293,7 @@ my sub FindResult($$)                                                           
   return 3 if $cmp eq q(notFound);
  }
 
-my sub Node_open($$$$$)                                                         # Open a gap in an interior node
+my sub Node_open2222($$$$$)                                                         # Open a gap in an interior node
  {my ($node, $offset, $length, $K, $D) = @_;                                    # Node
 
   my $k = Node_fieldKeys $node;
@@ -446,7 +446,7 @@ my sub Node_indexInParent($%)                                                   
   $r
  }
 
-my sub Node_indexInParent2($%)                                                  # Get the index of a node in its parent.
+my sub Node_indexInParentP1($%)                                                 # Get the index of a node in its parent.
  {my ($node, %options) = @_;                                                    # Node, options
   my $p = $options{parent} // Node_up($node);                                   # Parent
   AssertNe($p, 0);                                                              # Number of children as opposed to the number of keys
@@ -488,8 +488,7 @@ my sub Node_SplitIfFull($%)                                                     
        {Node_allocDown $r;                                                      # Add down area on right
         Node_copy($r, $node, 0, $R, $n);                                        # New right node
         ReUp($r) unless $options{test};                                         # Simplify test set up
-        my $N = Node_fieldDown $node;
-        Resize $N, $R;
+        my $N = Node_fieldDown $node; Resize $N, $R;
        },
       Else
        {Node_copy_leaf($r, $node, 0, $R, $n);                                   # New right leaf
@@ -498,6 +497,7 @@ my sub Node_SplitIfFull($%)                                                     
 
       my $pl = Node_length($p);
       Node_setUp($r, $p);
+
       IfEq Node_down($p, $pl), $node,                                           # Splitting the last child - just add it on the end
       Then
        {my $pk = Node_keys($node, $n);
@@ -507,24 +507,20 @@ my sub Node_SplitIfFull($%)                                                     
         my $pl1 = Add $pl, 1;
         Node_setLength($p, $pl1);
         Node_setDown  ($p, $pl1, $r);
-        my $K = Node_fieldKeys $node;
-        Resize $K, $n;
-        my $D = Node_fieldData $node;
-        Resize $D, $n;
+        my $K = Node_fieldKeys $node; Resize $K, $n;
+        my $D = Node_fieldData $node; Resize $D, $n;
+        Jmp $good;
+       },
+      Else
+       {my $i = Node_indexInParentP1($node, parent=>$p, children=>$pl);         # Index of the node being split in its parent
+        my $pk = Node_keys($node, $n);
+        my $pd = Node_data($node, $n);
+        my $I = Subtract $i, 1;
+        Node_open2($p, $I, $pk, $pd, $r);
+        my $K = Node_fieldKeys $node; Resize $K, $n;
+        my $D = Node_fieldData $node; Resize $D, $n;
         Jmp $good;
        };
-
-      my $i = Node_indexInParent2($node, parent=>$p, children=>$pl);             # Index of the node being split in its parent
-      my $pk = Node_keys($node, $n);
-      my $pd = Node_data($node, $n);
-      my $I = Subtract $i, 1;
-      Node_open2($p, $I, $pk, $pd, $r);
-      my $K = Node_fieldKeys $node;
-      Resize $K, $n;
-      my $D = Node_fieldData $node;
-      Resize $D, $n;
-
-      Jmp $good;
      };
 
 # Root node
@@ -559,12 +555,9 @@ my sub Node_SplitIfFull($%)                                                     
     Node_setLength($node, 1);
 
     if (1)                                                                      # Resize split node
-     {my $K = Node_fieldKeys $node;
-      my $D = Node_fieldData $node;
-      my $N = Node_fieldDown $node;
-      Resize $K, 1;
-      Resize $D, 1;
-      Resize $N, 2;
+     {my $K = Node_fieldKeys $node; Resize $K, 1;
+      my $D = Node_fieldData $node; Resize $D, 1;
+      my $N = Node_fieldDown $node; Resize $N, 2;
      }
 
     Jmp $good;
