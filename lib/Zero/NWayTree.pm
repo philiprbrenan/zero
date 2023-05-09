@@ -454,8 +454,6 @@ my sub Node_indexInParent2($%)                                                  
   ArrayIndex $d, $node;
  }
 
-# maximum number of keys, parent can often be passed in optionally
-# new version
 my sub Node_SplitIfFull($%)                                                     # Split a node if it is full. Return true if the node was split else false
  {my ($node, %options) = @_;                                                    # Node to split, options
   my $split = Var;
@@ -463,8 +461,10 @@ my sub Node_SplitIfFull($%)                                                     
   Block                                                                         # Various splitting scenarios
    {my ($start, $good, $bad, $end) = @_;
     my $nl = Node_length($node);
-    my $m = $options{maximumNumberOfKeys};                                      # Supplied by caller
-    Jlt $bad, $nl, $m if defined $m;
+
+    my $m = $options{maximumNumberOfKeys};                                      # Maximum number of keys supplied by caller
+    Jlt $bad, $nl, $m if defined $m;                                            # Must be a full node
+
     my $t = Node_tree($node);                                                   # Tree we are splitting in
     my $N = $m // maximumNumberOfKeys($t);                                      # Maximum size of a node
     Jlt $bad, $nl, $N unless defined $m;                                        # Must be a full node
@@ -473,27 +473,24 @@ my sub Node_SplitIfFull($%)                                                     
     ShiftRight $n, 1;                                                           # Index of key that will be placed in parent
 
     my $L = Add $n, 1;
-    my $R = Subtract $N, $L;
-
     my $p = Node_up($node);                                                     # Existing parent node
 
     IfTrue $p,
     Then                                                                        # Not a root node
-     {my $r = Node_new($t, length=>$R);
+     {my $r = Node_new($t, length=>$n);
 
       IfFalse Node_isLeaf($node),                                               # Not a leaf
       Then
        {Node_allocDown $r;                                                      # Add down area on right
-        Node_copy($r, $node, 0, $L, $R);                                        # New right node
+        Node_copy($r, $node, 0, $L, $n);                                        # New right node
         ReUp($r) unless $options{test};                                         # Simplify test set up
         my $N = Node_fieldDown $node;
         Resize $N, $L;
        },
       Else
-       {Node_copy_leaf($r, $node, 0, $L, $R);                                   # New right leaf
+       {Node_copy_leaf($r, $node, 0, $L, $n);                                   # New right leaf
        };
       Node_setLength($node, $n);
-
 
       my $pl = Node_length($p);
       Node_setUp($r, $p);
@@ -529,21 +526,21 @@ my sub Node_SplitIfFull($%)                                                     
 # Root node
 
     my $l = Node_new($t, length=>$n);                                           # New child nodes
-    my $r = Node_new($t, length=>$R);
+    my $r = Node_new($t, length=>$n);
 
     IfFalse Node_isLeaf($node),                                                 # Not a leaf
     Then
      {Node_allocDown $l;                                                        # Add down area on left
       Node_allocDown $r;                                                        # Add down area on right
       Node_copy($l, $node, 0, 0,  $n);                                          # New left  node
-      Node_copy($r, $node, 0, $L, $R);                                          # New right node
+      Node_copy($r, $node, 0, $L, $n);                                          # New right node
       ReUp($l) unless $options{test};                                           # Simplify testing
       ReUp($r) unless $options{test};
      },
     Else
      {Node_allocDown $node;                                                     # Add down area
       Node_copy_leaf($l, $node, 0, 0,  $n);                                     # New left  leaf
-      Node_copy_leaf($r, $node, 0, $L, $R);                                     # New right leaf
+      Node_copy_leaf($r, $node, 0, $L, $n);                                     # New right leaf
      };
 
     Node_setUp($l, $node);                                                      # Root node with single key after split
@@ -1607,10 +1604,10 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  26781;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  26713;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 17735, 2 => 6294, 3=>2752};
+  is_deeply $e->tallyTotal, { 1 => 17667, 2 => 6294, 3=>2752};
 
   #say STDERR dump $e->tallyCounts->{1};
   is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -1629,7 +1626,7 @@ if (1)                                                                          
   resize => 161,
   shiftRight => 68,
   shiftUp => 300,
-  subtract => 704};
+  subtract => 636};
 
   #say STDERR dump $e->tallyCounts->{2};
   is_deeply $e->tallyCounts->{2}, {                                             # Find tally
