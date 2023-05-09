@@ -119,6 +119,11 @@ my sub Node_length($)                                                           
   Node_getField($node, q(length));                                              # Get length
  }
 
+my sub Node_lengthM1($)                                                         # Get number of keys in a node minus 1
+ {my ($node) = @_;                                                              # Node
+  Subtract [$node, $Node->address(q(length)), 'Node'], 1;                       # Get attribute from node descriptor
+ }
+
 my sub Node_setLength($$)                                                       # Set the length of a node
  {my ($node, $length) = @_;                                                     # Node, length
   Mov [$node, $Node->address(q(length)), 'Node'], $length;                      # Set length attribute
@@ -607,13 +612,13 @@ sub Find($$%)                                                                   
 
     For                                                                         # Step down through tree
      {my ($j, $check, $next, $end) = @_;                                        # Parameters
-      my $nl = Node_length($node);
-      my $nl1 = Subtract $nl, 1;
+      my $nl1 = Node_lengthM1($node);
       my $K = Node_fieldKeys($node);                                            # Keys
 
       IfGt $key, [$K, \$nl1, 'Keys'],                                           # Bigger than every key
       Then
-       {IfTrue Node_isLeaf($node),                                              # Leaf
+       {my $nl = Add $nl1, 1;
+        IfTrue Node_isLeaf($node),                                              # Leaf
         Then
          {FindResult_renew($find, $node, FindResult_higher, $nl);
           Jmp $End;
@@ -1291,10 +1296,10 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  28697;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  28367;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 22073, 2 => 6624 };
+  is_deeply $e->tallyTotal, { 1 => 22073, 2 => 6294 };
 
   is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
   add => 700,
@@ -1318,6 +1323,7 @@ if (1)                                                                          
 
   #say STDERR dump $e->tallyCounts->{2};
   is_deeply $e->tallyCounts->{2}, {                                             # Find tally
+  add => 137,
   arrayCountLess => 223,
   arrayIndex => 330,
   inc => 360,
@@ -1326,7 +1332,7 @@ if (1)                                                                          
   jLe => 467,
   jmp => 604,
   jNe => 107,
-  mov => 2442,
+  mov => 1975,
   not => 360,
   subtract => 574};
 
