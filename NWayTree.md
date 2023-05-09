@@ -161,7 +161,7 @@ Get the number of keys in the tree..
         AssertEq $n, $i;                                                            # Check tree size
         my $K = Add $k, $k;
         Tally 1;
-        Insert($t, $k, $K, findResult=>$f);                                         # Insert a new node
+        Insert($t, $k, $K, findResult=>$f, maximumNumberOfKeys=>$W);                # Insert a new node
         Tally 0;
        } $a, q(aaa);
     
@@ -186,10 +186,10 @@ Get the number of keys in the tree..
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  27911;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  27346;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 18865, 2 => 6294, 3=>2752};
+      is_deeply $e->tallyTotal, { 1 => 18300, 2 => 6294, 3=>2752};
     
       #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -203,7 +203,7 @@ Get the number of keys in the tree..
       jLt => 565,
       jmp => 1223,
       jNe => 983,
-      mov => 10120,
+      mov => 9555,
       not => 631,
       resize => 161,
       shiftRight => 68,
@@ -331,7 +331,7 @@ Get data field from find results.
         AssertEq $n, $i;                                                            # Check tree size
         my $K = Add $k, $k;
         Tally 1;
-        Insert($t, $k, $K, findResult=>$f);                                         # Insert a new node
+        Insert($t, $k, $K, findResult=>$f, maximumNumberOfKeys=>$W);                # Insert a new node
         Tally 0;
        } $a, q(aaa);
     
@@ -358,10 +358,10 @@ Get data field from find results.
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  27911;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  27346;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 18865, 2 => 6294, 3=>2752};
+      is_deeply $e->tallyTotal, { 1 => 18300, 2 => 6294, 3=>2752};
     
       #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -375,7 +375,7 @@ Get data field from find results.
       jLt => 565,
       jmp => 1223,
       jNe => 983,
-      mov => 10120,
+      mov => 9555,
       not => 631,
       resize => 161,
       shiftRight => 68,
@@ -464,7 +464,7 @@ Get key field from find results.
         AssertEq $n, $i;                                                            # Check tree size
         my $K = Add $k, $k;
         Tally 1;
-        Insert($t, $k, $K, findResult=>$f);                                         # Insert a new node
+        Insert($t, $k, $K, findResult=>$f, maximumNumberOfKeys=>$W);                # Insert a new node
         Tally 0;
        } $a, q(aaa);
     
@@ -491,10 +491,10 @@ Get key field from find results.
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  27911;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  27346;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 18865, 2 => 6294, 3=>2752};
+      is_deeply $e->tallyTotal, { 1 => 18300, 2 => 6294, 3=>2752};
     
       #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -508,7 +508,7 @@ Get key field from find results.
       jLt => 565,
       jmp => 1223,
       jNe => 983,
-      mov => 10120,
+      mov => 9555,
       not => 631,
       resize => 161,
       shiftRight => 68,
@@ -636,7 +636,7 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
         AssertEq $n, $i;                                                            # Check tree size
         my $K = Add $k, $k;
         Tally 1;
-        Insert($t, $k, $K, findResult=>$f);                                         # Insert a new node
+        Insert($t, $k, $K, findResult=>$f, maximumNumberOfKeys=>$W);                # Insert a new node
         Tally 0;
        } $a, q(aaa);
     
@@ -665,10 +665,10 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  27911;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  27346;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 18865, 2 => 6294, 3=>2752};
+      is_deeply $e->tallyTotal, { 1 => 18300, 2 => 6294, 3=>2752};
     
       #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -682,7 +682,7 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
       jLt => 565,
       jmp => 1223,
       jNe => 983,
-      mov => 10120,
+      mov => 9555,
       not => 631,
       resize => 161,
       shiftRight => 68,
@@ -954,7 +954,7 @@ Iterate over a tree.
         AssertEq $n, $i;                                                            # Check tree size
         my $K = Add $k, $k;
         Tally 1;
-        Insert($t, $k, $K, findResult=>$f);                                         # Insert a new node
+        Insert($t, $k, $K, findResult=>$f, maximumNumberOfKeys=>$W);                # Insert a new node
         Tally 0;
        } $a, q(aaa);
     
@@ -983,10 +983,10 @@ Iterate over a tree.
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  27911;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  27346;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 18865, 2 => 6294, 3=>2752};
+      is_deeply $e->tallyTotal, { 1 => 18300, 2 => 6294, 3=>2752};
     
       #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -1000,7 +1000,7 @@ Iterate over a tree.
       jLt => 565,
       jmp => 1223,
       jNe => 983,
-      mov => 10120,
+      mov => 9555,
       not => 631,
       resize => 161,
       shiftRight => 68,
@@ -1095,7 +1095,7 @@ Print the keys held in a tree.
         AssertEq $n, $i;                                                            # Check tree size
         my $K = Add $k, $k;
         Tally 1;
-        Insert($t, $k, $K, findResult=>$f);                                         # Insert a new node
+        Insert($t, $k, $K, findResult=>$f, maximumNumberOfKeys=>$W);                # Insert a new node
         Tally 0;
        } $a, q(aaa);
     
@@ -1120,10 +1120,10 @@ Print the keys held in a tree.
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  27911;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  27346;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 18865, 2 => 6294, 3=>2752};
+      is_deeply $e->tallyTotal, { 1 => 18300, 2 => 6294, 3=>2752};
     
       #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -1137,7 +1137,7 @@ Print the keys held in a tree.
       jLt => 565,
       jmp => 1223,
       jNe => 983,
-      mov => 10120,
+      mov => 9555,
       not => 631,
       resize => 161,
       shiftRight => 68,
@@ -1230,7 +1230,7 @@ Print the data held in a tree.
         AssertEq $n, $i;                                                            # Check tree size
         my $K = Add $k, $k;
         Tally 1;
-        Insert($t, $k, $K, findResult=>$f);                                         # Insert a new node
+        Insert($t, $k, $K, findResult=>$f, maximumNumberOfKeys=>$W);                # Insert a new node
         Tally 0;
        } $a, q(aaa);
     
@@ -1255,10 +1255,10 @@ Print the data held in a tree.
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  27911;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  27346;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 18865, 2 => 6294, 3=>2752};
+      is_deeply $e->tallyTotal, { 1 => 18300, 2 => 6294, 3=>2752};
     
       #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -1272,7 +1272,7 @@ Print the data held in a tree.
       jLt => 565,
       jmp => 1223,
       jNe => 983,
-      mov => 10120,
+      mov => 9555,
       not => 631,
       resize => 161,
       shiftRight => 68,
