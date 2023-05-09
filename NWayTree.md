@@ -634,15 +634,6 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
      }
     
 
-## Find2($tree, $key, %options)
-
-Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResult) describing the outcome of the search.
-
-       Parameter  Description
-    1  $tree      Tree to search
-    2  $key       Key to find
-    3  %options   Options
-
 # Insert
 
 Create a new entry ina tree connecting a key to data.
@@ -1041,27 +1032,25 @@ Create a random array.
 
 1 [Find](#find) - Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResult) describing the outcome of the search.
 
-2 [Find2](#find2) - Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResult) describing the outcome of the search.
+2 [FindResult\_cmp](#findresult_cmp) - Get comparison from find result.
 
-3 [FindResult\_cmp](#findresult_cmp) - Get comparison from find result.
+3 [FindResult\_data](#findresult_data) - Get data field from find results.
 
-4 [FindResult\_data](#findresult_data) - Get data field from find results.
+4 [FindResult\_key](#findresult_key) - Get key from find result.
 
-5 [FindResult\_key](#findresult_key) - Get key from find result.
+5 [Insert](#insert) - Insert a key and its associated data into a tree.
 
-6 [Insert](#insert) - Insert a key and its associated data into a tree.
+6 [Iterate](#iterate) - Iterate over a tree.
 
-7 [Iterate](#iterate) - Iterate over a tree.
+7 [Keys](#keys) - Get the number of keys in the tree.
 
-8 [Keys](#keys) - Get the number of keys in the tree.
+8 [New](#new) - Create a variable referring to a new tree descriptor.
 
-9 [New](#new) - Create a variable referring to a new tree descriptor.
+9 [printTreeData](#printtreedata) - Print the data held in a tree.
 
-10 [printTreeData](#printtreedata) - Print the data held in a tree.
+10 [printTreeKeys](#printtreekeys) - Print the keys held in a tree.
 
-11 [printTreeKeys](#printtreekeys) - Print the keys held in a tree.
-
-12 [randomArray](#randomarray) - Create a random array.
+11 [randomArray](#randomarray) - Create a random array.
 
 # Installation
 
