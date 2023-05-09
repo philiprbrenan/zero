@@ -639,64 +639,6 @@ sub Find($$%)                                                                   
   $find
  }
 
-sub Find2($$%)                                                                   # Find a key in a tree returning a L<FindResult> describing the outcome of the search.
- {my ($tree, $key, %options) = @_;                                              # Tree to search, key to find, options
-
-  my $p = Procedure 'NWayTree_Find', sub
-   {my ($p) = @_;                                                               # Procedure description
-    my $tree = ParamsGet 0;
-    my $key  = ParamsGet 1;
-
-    my $node = root($tree);                                                     # Current node we are searching
-
-    IfFalse $node,                                                              # Empty tree
-    Then
-     {ReturnPut 0, FindResult_new($node, $key, FindResult_notFound, -1);
-      Return;
-     };
-
-    For                                                                         # Step down through tree
-     {my ($j, $check, $next, $end) = @_;                                        # Parameters
-      my $nl = Node_length($node);
-      my $nl1 = Subtract $nl, 1;
-
-      IfGt $key, Node_keys($node, $nl1),                                        # Bigger than every key
-      Then
-       {IfTrue Node_isLeaf($node),                                              # Leaf
-        Then
-         {ReturnPut 0, FindResult_new($node, $key, FindResult_higher, $nl);
-          Return;
-         };
-        Mov $node, Node_down($node, $nl);
-        Jmp $next;
-       };
-
-      my $K = Node_fieldKeys($node);                                            # Keys
-      my $e = ArrayIndex $K, $key;                                              # Check for equal keys
-      IfTrue $e,                                                                # Found a matching key
-      Then
-       {Dec $e;                                                                 # Make zero based
-        ReturnPut 0, FindResult_new($node, $key, FindResult_found, $e);         # Find result
-        Return;
-       };
-
-      my $i = ArrayCountLess $K, $key;                                          # Check for smaller keys
-      IfTrue Node_isLeaf($node),                                                # Leaf
-      Then
-       {ReturnPut 0, FindResult_new($node, $key, FindResult_lower, $i);
-        Return;
-       };
-      Mov $node, Node_down($node, $i);
-     } MaxIterations;
-    Assert;
-   };
-
-  ParamsPut 0, $tree;                                                           # Set parameters and call insert procedure
-  ParamsPut 1, $key;
-  Call $p;
-  ReturnGet 0;
- }
-
 #D1 Insert                                                                      # Create a new entry ina tree connecting a key to data.
 
 sub Insert($$$%)                                                                # Insert a key and its associated data into a tree.
