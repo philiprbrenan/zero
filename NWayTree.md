@@ -229,7 +229,7 @@ Get the number of keys in the tree..
     
       #say STDERR dump $e->tallyCounts->{3};
       is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally
-      add        => 62,
+      add        => 107,
       array      => 1,
       arrayIndex => 72,
       dec        => 72,
@@ -241,9 +241,8 @@ Get the number of keys in the tree..
       jmp        => 252,
       jNe        => 117,
       jTrue      => 73,
-      mov        => 1093,
-      not        => 180,
-      subtract   => 63};
+      mov        => 1111,
+      not        => 180};
     
       #say STDERR printTreeKeys($e->memory); x;
       #say STDERR printTreeData($e->memory); x;
@@ -404,7 +403,7 @@ Get data field from find results.
     
       #say STDERR dump $e->tallyCounts->{3};
       is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally
-      add        => 62,
+      add        => 107,
       array      => 1,
       arrayIndex => 72,
       dec        => 72,
@@ -416,9 +415,8 @@ Get data field from find results.
       jmp        => 252,
       jNe        => 117,
       jTrue      => 73,
-      mov        => 1093,
-      not        => 180,
-      subtract   => 63};
+      mov        => 1111,
+      not        => 180};
     
       #say STDERR printTreeKeys($e->memory); x;
       #say STDERR printTreeData($e->memory); x;
@@ -540,7 +538,7 @@ Get key field from find results.
     
       #say STDERR dump $e->tallyCounts->{3};
       is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally
-      add        => 62,
+      add        => 107,
       array      => 1,
       arrayIndex => 72,
       dec        => 72,
@@ -552,9 +550,8 @@ Get key field from find results.
       jmp        => 252,
       jNe        => 117,
       jTrue      => 73,
-      mov        => 1093,
-      not        => 180,
-      subtract   => 63};
+      mov        => 1111,
+      not        => 180};
     
       #say STDERR printTreeKeys($e->memory); x;
       #say STDERR printTreeData($e->memory); x;
@@ -719,7 +716,7 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
     
       #say STDERR dump $e->tallyCounts->{3};
       is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally
-      add        => 62,
+      add        => 107,
       array      => 1,
       arrayIndex => 72,
       dec        => 72,
@@ -731,9 +728,8 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
       jmp        => 252,
       jNe        => 117,
       jTrue      => 73,
-      mov        => 1093,
-      not        => 180,
-      subtract   => 63};
+      mov        => 1111,
+      not        => 180};
     
       #say STDERR printTreeKeys($e->memory); x;
       #say STDERR printTreeData($e->memory); x;
@@ -1057,7 +1053,7 @@ Iterate over a tree.
     
       is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      add        => 62,
+      add        => 107,
       array      => 1,
       arrayIndex => 72,
       dec        => 72,
@@ -1069,9 +1065,8 @@ Iterate over a tree.
       jmp        => 252,
       jNe        => 117,
       jTrue      => 73,
-      mov        => 1093,
-      not        => 180,
-      subtract   => 63};
+      mov        => 1111,
+      not        => 180};
     
       #say STDERR printTreeKeys($e->memory); x;
       #say STDERR printTreeData($e->memory); x;
@@ -1195,7 +1190,7 @@ Print the keys held in a tree.
     
       #say STDERR dump $e->tallyCounts->{3};
       is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally
-      add        => 62,
+      add        => 107,
       array      => 1,
       arrayIndex => 72,
       dec        => 72,
@@ -1207,9 +1202,8 @@ Print the keys held in a tree.
       jmp        => 252,
       jNe        => 117,
       jTrue      => 73,
-      mov        => 1093,
-      not        => 180,
-      subtract   => 63};
+      mov        => 1111,
+      not        => 180};
     
     
       #say STDERR printTreeKeys($e->memory); x;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -1333,7 +1327,7 @@ Print the data held in a tree.
     
       #say STDERR dump $e->tallyCounts->{3};
       is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally
-      add        => 62,
+      add        => 107,
       array      => 1,
       arrayIndex => 72,
       dec        => 72,
@@ -1345,9 +1339,8 @@ Print the data held in a tree.
       jmp        => 252,
       jNe        => 117,
       jTrue      => 73,
-      mov        => 1093,
-      not        => 180,
-      subtract   => 63};
+      mov        => 1111,
+      not        => 180};
     
       #say STDERR printTreeKeys($e->memory); x;
     
