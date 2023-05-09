@@ -761,11 +761,11 @@ my sub GoUpAndAround($)                                                         
 
     IfTrue Node_isLeaf($node),                                                  # Leaf
     Then
-     {my $I = FindResult_index($find);
-      my $L = Node_lengthM1($node);
+     {my $I = FindResult_indexP1($find);
+      my $L = Node_length($node);
       IfLt $I, $L,                                                              # More keys in leaf
       Then
-       {FindResult_renew($find, $node, FindResult_found, $I, add=>1);
+       {FindResult_renew($find, $node, FindResult_found, $I);
         Jmp $Finish;
        };
 
@@ -1322,7 +1322,7 @@ if (1)                                                                          
 
   #say STDERR dump $e->tallyCounts->{3};
   is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally
-  add        => 62,
+  add        => 107,
   array      => 1,
   arrayIndex => 72,
   dec        => 72,
@@ -1334,9 +1334,8 @@ if (1)                                                                          
   jmp        => 252,
   jNe        => 117,
   jTrue      => 73,
-  mov        => 1093,
-  not        => 180,
-  subtract   => 63};
+  mov        => 1111,
+  not        => 180};
 
   #say STDERR printTreeKeys($e->memory); x;
   #say STDERR printTreeData($e->memory); x;
