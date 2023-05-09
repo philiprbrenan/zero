@@ -472,7 +472,7 @@ my sub Node_SplitIfFull($%)                                                     
     my $n = Mov $N;                                                             # Split point
     ShiftRight $n, 1;                                                           # Index of key that will be placed in parent
 
-    my $L = Add $n, 1;
+    my $R = Add $n, 1;                                                          # Number of Children
     my $p = Node_up($node);                                                     # Existing parent node
 
     IfTrue $p,
@@ -482,13 +482,13 @@ my sub Node_SplitIfFull($%)                                                     
       IfFalse Node_isLeaf($node),                                               # Not a leaf
       Then
        {Node_allocDown $r;                                                      # Add down area on right
-        Node_copy($r, $node, 0, $L, $n);                                        # New right node
+        Node_copy($r, $node, 0, $R, $n);                                        # New right node
         ReUp($r) unless $options{test};                                         # Simplify test set up
         my $N = Node_fieldDown $node;
-        Resize $N, $L;
+        Resize $N, $R;
        },
       Else
-       {Node_copy_leaf($r, $node, 0, $L, $n);                                   # New right leaf
+       {Node_copy_leaf($r, $node, 0, $R, $n);                                   # New right leaf
        };
       Node_setLength($node, $n);
 
@@ -533,14 +533,14 @@ my sub Node_SplitIfFull($%)                                                     
      {Node_allocDown $l;                                                        # Add down area on left
       Node_allocDown $r;                                                        # Add down area on right
       Node_copy($l, $node, 0, 0,  $n);                                          # New left  node
-      Node_copy($r, $node, 0, $L, $n);                                          # New right node
+      Node_copy($r, $node, 0, $R, $n);                                          # New right node
       ReUp($l) unless $options{test};                                           # Simplify testing
       ReUp($r) unless $options{test};
      },
     Else
      {Node_allocDown $node;                                                     # Add down area
       Node_copy_leaf($l, $node, 0, 0,  $n);                                     # New left  leaf
-      Node_copy_leaf($r, $node, 0, $L, $n);                                     # New right leaf
+      Node_copy_leaf($r, $node, 0, $R, $n);                                     # New right leaf
      };
 
     Node_setUp($l, $node);                                                      # Root node with single key after split
