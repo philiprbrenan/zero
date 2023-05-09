@@ -102,7 +102,7 @@ Create a variable referring to a new tree descriptor.
       is_deeply $e->memory, { 1 => bless([0, 0, 3, 0], "Tree") };
      }
     
-    if (1)                                                                            
+    if (1)                                                                             
      {my $W = 3; my $N = 66;
     
       Start 1;
@@ -151,7 +151,7 @@ Get the number of keys in the tree..
         Mov [$a, $i, "aaa"], $r[$i];
        }
     
-      my $f = FindResult_create;
+      my $f = FindResult_new;
     
       ForArray                                                                      # Create tree
        {my ($i, $k) = @_;
@@ -242,19 +242,44 @@ Get the number of keys in the tree..
      }
     
 
-## FindResult\_key22($f)
-
-Get key from find result.
-
-       Parameter  Description
-    1  $f         Find result
-
 ## FindResult\_cmp($f)
 
 Get comparison from find result.
 
        Parameter  Description
     1  $f         Find result
+
+**Example:**
+
+    if (1)                                                                             
+     {my $W = 3; my $N = 66;
+    
+      Start 1;
+      my $t = New($W);
+    
+      For
+       {my ($i, $check, $next, $end) = @_;                                          # Insert
+        my $d = Add $i, $i;
+    
+        Insert($t, $i, $d);
+       } $N;
+    
+      For                                                                           # Find each prior element
+       {my ($j, $check, $next, $end) = @_;
+        my $d = Add $j, $j;
+        AssertEq $d, FindResult_data(Find($t, $j));
+       } $N;
+    
+      AssertNe FindResult_found, FindResult_cmp(Find($t, -1));                      # Should not be present  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+    
+      AssertNe FindResult_found, FindResult_cmp(Find($t, $N));  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+    
+      my $e = Execute(suppressOutput=>1);
+      is_deeply $e->out, [];                                                        # No asserts
+     }
+    
 
 ## FindResult\_data($f)
 
@@ -277,7 +302,7 @@ Get data field from find results.
         Mov [$a, $i, "aaa"], $r[$i];
        }
     
-      my $f = FindResult_create;
+      my $f = FindResult_new;
     
       ForArray                                                                      # Create tree
        {my ($i, $k) = @_;
@@ -389,7 +414,7 @@ Get key field from find results.
         Mov [$a, $i, "aaa"], $r[$i];
        }
     
-      my $f = FindResult_create;
+      my $f = FindResult_new;
     
       ForArray                                                                      # Create tree
        {my ($i, $k) = @_;
@@ -495,7 +520,7 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
 
 **Example:**
 
-    if (1)                                                                            
+    if (1)                                                                             
      {my $W = 3; my $N = 66;
     
       Start 1;
@@ -540,7 +565,7 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
         Mov [$a, $i, "aaa"], $r[$i];
        }
     
-      my $f = FindResult_create;
+      my $f = FindResult_new;
     
       ForArray                                                                      # Create tree
        {my ($i, $k) = @_;
@@ -798,7 +823,7 @@ Insert a key and its associated data into a tree.
       22 => bless([55, 66], "Data")}
      }
     
-    if (1)                                                                            
+    if (1)                                                                             
      {my $W = 3; my $N = 66;
     
       Start 1;
@@ -854,7 +879,7 @@ Iterate over a tree.
         Mov [$a, $i, "aaa"], $r[$i];
        }
     
-      my $f = FindResult_create;
+      my $f = FindResult_new;
     
       ForArray                                                                      # Create tree
        {my ($i, $k) = @_;
@@ -970,7 +995,7 @@ Print the keys held in a tree.
         Mov [$a, $i, "aaa"], $r[$i];
        }
     
-      my $f = FindResult_create;
+      my $f = FindResult_new;
     
       ForArray                                                                      # Create tree
        {my ($i, $k) = @_;
@@ -1084,7 +1109,7 @@ Print the data held in a tree.
         Mov [$a, $i, "aaa"], $r[$i];
        }
     
-      my $f = FindResult_create;
+      my $f = FindResult_new;
     
       ForArray                                                                      # Create tree
        {my ($i, $k) = @_;
@@ -1223,21 +1248,19 @@ Create a random array.
 
 4 [FindResult\_key](#findresult_key) - Get key field from find results.
 
-5 [FindResult\_key22](#findresult_key22) - Get key from find result.
+5 [Insert](#insert) - Insert a key and its associated data into a tree.
 
-6 [Insert](#insert) - Insert a key and its associated data into a tree.
+6 [Iterate](#iterate) - Iterate over a tree.
 
-7 [Iterate](#iterate) - Iterate over a tree.
+7 [Keys](#keys) - Get the number of keys in the tree.
 
-8 [Keys](#keys) - Get the number of keys in the tree.
+8 [New](#new) - Create a variable referring to a new tree descriptor.
 
-9 [New](#new) - Create a variable referring to a new tree descriptor.
+9 [printTreeData](#printtreedata) - Print the data held in a tree.
 
-10 [printTreeData](#printtreedata) - Print the data held in a tree.
+10 [printTreeKeys](#printtreekeys) - Print the keys held in a tree.
 
-11 [printTreeKeys](#printtreekeys) - Print the keys held in a tree.
-
-12 [randomArray](#randomarray) - Create a random array.
+11 [randomArray](#randomarray) - Create a random array.
 
 # Installation
 
