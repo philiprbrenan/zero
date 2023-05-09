@@ -362,14 +362,20 @@ my sub Node_free($)                                                             
   Free $node, "Node";
  }
 
-my sub FindResult_renew($$$$$)                                                  # Reuse an existing find result
- {my ($find, $node, $key, $cmp, $index) = @_;                                   # Find result, node, search key, comparison result, index
+my sub FindResult_renew($$$$$%)                                                 # Reuse an existing find result
+ {my ($find, $node, $key, $cmp, $index, %options) = @_;                         # Find result, node, search key, comparison result, index, options
   my $f = $find;
 
   Mov [$f, $FindResult->address(q(node)) , 'FindResult'], $node;
   Mov [$f, $FindResult->address(q(key))  , 'FindResult'], $key;
   Mov [$f, $FindResult->address(q(cmp))  , 'FindResult'], $cmp;
-  Mov [$f, $FindResult->address(q(index)), 'FindResult'], $index;
+
+  if (my $d = $options{subtract})                                               # Adjust index if necessary
+   {Subtract [$f, $FindResult->address(q(index)), 'FindResult'], $index, $d;
+   }
+  else
+   {Mov [$f, $FindResult->address(q(index)), 'FindResult'], $index;
+   }
   $f
  }
 
@@ -606,8 +612,9 @@ sub Find($$%)                                                                   
      {my ($j, $check, $next, $end) = @_;                                        # Parameters
       my $nl = Node_length($node);
       my $nl1 = Subtract $nl, 1;
+      my $K = Node_fieldKeys($node);                                            # Keys
 
-      IfGt $key, Node_keys($node, $nl1),                                        # Bigger than every key
+      IfGt $key, [$K, \$nl1, 'Keys'],                                           # Bigger than every key
       Then
        {IfTrue Node_isLeaf($node),                                              # Leaf
         Then
@@ -618,12 +625,10 @@ sub Find($$%)                                                                   
         Jmp $next;
        };
 
-      my $K = Node_fieldKeys($node);                                            # Keys
       my $e = ArrayIndex $K, $key;                                              # Check for equal keys
       IfTrue $e,                                                                # Found a matching key
       Then
-       {Dec $e;                                                                 # Make zero based
-        FindResult_renew($find, $node, $key, FindResult_found, $e);                # Find result
+       {FindResult_renew($find, $node, $key, FindResult_found, $e, subtract=>1);# Find result
         Jmp $End;
        };
 
@@ -739,7 +744,7 @@ my sub GoAllTheWayLeft($$)                                                      
       JTrue $end, Node_isLeaf($node);                                           # Reached leaf
       Mov $node, Node_down($node, 0);
      } MaxIterations;
-    FindResult_renew($find, $node, Node_keys($node, 0), FindResult_found,0);    # Leaf - place us on the first key
+    FindResult_renew($find, $node, Node_keys($node, 0), FindResult_found, 0);   # Leaf - place us on the first key
    };
   $find
  }
@@ -1306,10 +1311,10 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  29972;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  29068;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7635 };
+  is_deeply $e->tallyTotal, { 1 => 22337, 2 => 6731 };
 
   is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
   add => 860,
@@ -1335,19 +1340,18 @@ if (1)                                                                          
   is_deeply $e->tallyCounts->{2}, {                                             # Find tally
   arrayCountLess => 223,
   arrayIndex => 330,
-  dec => 107,
   inc => 360,
   jEq => 690,
   jGe => 467,
   jLe => 467,
   jmp => 604,
   jNe => 107,
-  mov => 3453,
+  mov => 2549,
   not => 360,
-  subtract => 467};
+  subtract => 574};
 
   #say STDERR printTreeKeys($e->memory); x;
-  #say STDERR printTreeData($e->memory);
+  #say STDERR printTreeData($e->memory); x;
   is_deeply printTreeKeys($e->memory), <<END;
                                                                                                                 38                                                                                                    72
                                                              21                                                                                                       56                                                                                                 89
