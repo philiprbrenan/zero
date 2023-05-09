@@ -14,7 +14,7 @@ use Carp qw(cluck confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
-eval "use Test::More tests=>23" unless caller;
+eval "use Test::More tests=>32" unless caller;
 
 makeDieConfess;
 
