@@ -780,8 +780,7 @@ my sub GoUpAndAround($)                                                         
           IfEq $i, $pl,                                                         # Last key - continue up
           Then
            {Mov $node, $parent;
-            my $Parent = Node_up($parent);                                      # Parent
-            Mov $parent, $Parent;
+            Mov $parent, [$node, $Node->address(q(up)), 'Node'];                # Parent
             JFalse $end, $parent;
            },
           Else
@@ -1280,10 +1279,10 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  30927;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  30899;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 21853, 2 => 6294, 3=>2780};
+  is_deeply $e->tallyTotal, { 1 => 21853, 2 => 6294, 3=>2752};
 
   #say STDERR dump $e->tallyCounts->{1};
   is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -1335,7 +1334,7 @@ if (1)                                                                          
   jmp        => 252,
   jNe        => 117,
   jTrue      => 73,
-  mov        => 1121,
+  mov        => 1093,
   not        => 180,
   subtract   => 63};
 
