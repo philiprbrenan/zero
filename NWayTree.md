@@ -169,6 +169,8 @@ Get the number of keys in the tree..
         Mov [$a, $i, "aaa"], $r[$i];
        }
     
+      my $f = FindResult_create;
+    
       ForArray                                                                      # Create tree
        {my ($i, $k) = @_;
     
@@ -177,7 +179,7 @@ Get the number of keys in the tree..
         AssertEq $n, $i;                                                            # Check tree size
         my $K = Add $k, $k;
         Tally 1;
-        Insert($t, $k, $K);                                                         # Insert a new node
+        Insert($t, $k, $K, findResult=>$f);                                         # Insert a new node
         Tally 0;
        } $a, q(aaa);
     
@@ -198,31 +200,27 @@ Get the number of keys in the tree..
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  31354;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  30079;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 23612, 2 => 7742 };
+      is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7742 };
     
       is_deeply $e->tallyCounts->{1}, {
       add => 860,
-      array => 607,
+      array => 503,
       arrayIndex => 7,
-      call => 107,
       dec => 7,
-      free => 360,
+      free => 256,
       inc => 1044,
       jEq => 631,
       jGe => 1660,
       jLe => 461,
       jLt => 565,
-      jmp => 1436,
+      jmp => 1329,
       jNe => 1088,
-      mov => 12314,
+      mov => 12210,
       not => 695,
-      paramsGet => 321,
-      paramsPut => 321,
       resize => 12,
-      return => 107,
       shiftRight => 68,
       shiftUp => 300,
       subtract => 641,
@@ -270,13 +268,15 @@ Get key from find result..
         Mov [$a, $i, "aaa"], $r[$i];
        }
     
+      my $f = FindResult_create;
+    
       ForArray                                                                      # Create tree
        {my ($i, $k) = @_;
         my $n = Keys($t);
         AssertEq $n, $i;                                                            # Check tree size
         my $K = Add $k, $k;
         Tally 1;
-        Insert($t, $k, $K);                                                         # Insert a new node
+        Insert($t, $k, $K, findResult=>$f);                                         # Insert a new node
         Tally 0;
        } $a, q(aaa);
     
@@ -299,31 +299,27 @@ Get key from find result..
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  31354;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  30079;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 23612, 2 => 7742 };
+      is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7742 };
     
       is_deeply $e->tallyCounts->{1}, {
       add => 860,
-      array => 607,
+      array => 503,
       arrayIndex => 7,
-      call => 107,
       dec => 7,
-      free => 360,
+      free => 256,
       inc => 1044,
       jEq => 631,
       jGe => 1660,
       jLe => 461,
       jLt => 565,
-      jmp => 1436,
+      jmp => 1329,
       jNe => 1088,
-      mov => 12314,
+      mov => 12210,
       not => 695,
-      paramsGet => 321,
-      paramsPut => 321,
       resize => 12,
-      return => 107,
       shiftRight => 68,
       shiftUp => 300,
       subtract => 641,
@@ -396,13 +392,15 @@ Get data field from find results..
         Mov [$a, $i, "aaa"], $r[$i];
        }
     
+      my $f = FindResult_create;
+    
       ForArray                                                                      # Create tree
        {my ($i, $k) = @_;
         my $n = Keys($t);
         AssertEq $n, $i;                                                            # Check tree size
         my $K = Add $k, $k;
         Tally 1;
-        Insert($t, $k, $K);                                                         # Insert a new node
+        Insert($t, $k, $K, findResult=>$f);                                         # Insert a new node
         Tally 0;
        } $a, q(aaa);
     
@@ -425,31 +423,27 @@ Get data field from find results..
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  31354;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  30079;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 23612, 2 => 7742 };
+      is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7742 };
     
       is_deeply $e->tallyCounts->{1}, {
       add => 860,
-      array => 607,
+      array => 503,
       arrayIndex => 7,
-      call => 107,
       dec => 7,
-      free => 360,
+      free => 256,
       inc => 1044,
       jEq => 631,
       jGe => 1660,
       jLe => 461,
       jLt => 565,
-      jmp => 1436,
+      jmp => 1329,
       jNe => 1088,
-      mov => 12314,
+      mov => 12210,
       not => 695,
-      paramsGet => 321,
-      paramsPut => 321,
       resize => 12,
-      return => 107,
       shiftRight => 68,
       shiftUp => 300,
       subtract => 641,
@@ -552,13 +546,15 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
         Mov [$a, $i, "aaa"], $r[$i];
        }
     
+      my $f = FindResult_create;
+    
       ForArray                                                                      # Create tree
        {my ($i, $k) = @_;
         my $n = Keys($t);
         AssertEq $n, $i;                                                            # Check tree size
         my $K = Add $k, $k;
         Tally 1;
-        Insert($t, $k, $K);                                                         # Insert a new node
+        Insert($t, $k, $K, findResult=>$f);                                         # Insert a new node
         Tally 0;
        } $a, q(aaa);
     
@@ -583,31 +579,27 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  31354;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  30079;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 23612, 2 => 7742 };
+      is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7742 };
     
       is_deeply $e->tallyCounts->{1}, {
       add => 860,
-      array => 607,
+      array => 503,
       arrayIndex => 7,
-      call => 107,
       dec => 7,
-      free => 360,
+      free => 256,
       inc => 1044,
       jEq => 631,
       jGe => 1660,
       jLe => 461,
       jLt => 565,
-      jmp => 1436,
+      jmp => 1329,
       jNe => 1088,
-      mov => 12314,
+      mov => 12210,
       not => 695,
-      paramsGet => 321,
-      paramsPut => 321,
       resize => 12,
-      return => 107,
       shiftRight => 68,
       shiftUp => 300,
       subtract => 641,
@@ -854,13 +846,15 @@ Iterate over a tree.
         Mov [$a, $i, "aaa"], $r[$i];
        }
     
+      my $f = FindResult_create;
+    
       ForArray                                                                      # Create tree
        {my ($i, $k) = @_;
         my $n = Keys($t);
         AssertEq $n, $i;                                                            # Check tree size
         my $K = Add $k, $k;
         Tally 1;
-        Insert($t, $k, $K);                                                         # Insert a new node
+        Insert($t, $k, $K, findResult=>$f);                                         # Insert a new node
         Tally 0;
        } $a, q(aaa);
     
@@ -883,31 +877,27 @@ Iterate over a tree.
       is_deeply $e->out, [1..$N];                                                   # Expected sequence
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  31354;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  30079;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 23612, 2 => 7742 };
+      is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7742 };
     
       is_deeply $e->tallyCounts->{1}, {
       add => 860,
-      array => 607,
+      array => 503,
       arrayIndex => 7,
-      call => 107,
       dec => 7,
-      free => 360,
+      free => 256,
       inc => 1044,
       jEq => 631,
       jGe => 1660,
       jLe => 461,
       jLt => 565,
-      jmp => 1436,
+      jmp => 1329,
       jNe => 1088,
-      mov => 12314,
+      mov => 12210,
       not => 695,
-      paramsGet => 321,
-      paramsPut => 321,
       resize => 12,
-      return => 107,
       shiftRight => 68,
       shiftUp => 300,
       subtract => 641,
