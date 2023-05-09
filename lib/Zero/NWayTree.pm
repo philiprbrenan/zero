@@ -1241,6 +1241,7 @@ if (1)                                                                          
   is_deeply $e->out, [];                                                        # No asserts
  }
 
+
 #latest:;
 if (1)                                                                          #TrandomArray
  {my $W = 3; my $N = 76; my @r = randomArray $N;
@@ -1261,6 +1262,7 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, [1..$N];
  }
+
 
 #latest:;
 if (1)                                                                          #TIterate #TKeys #TFindResult_key #TFindResult_data #TFind #TprintTreeKeys #TprintTreeData
@@ -1292,7 +1294,7 @@ if (1)                                                                          
     my $k = FindResult_key($find);
     Out $k;
     Tally 2;
-    my $f = Find($t, $k);                                                       # Find
+    my $f = Find($t, $k, findResult=>$f);                                       # Find
     Tally 0;
     my $d = FindResult_data($f);
     my $K = Add $k, $k;
@@ -1304,12 +1306,12 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  30079;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  29972;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7742 };
+  is_deeply $e->tallyTotal, { 1 => 22337, 2 => 7635 };
 
-  is_deeply $e->tallyCounts->{1}, {
+  is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
   add => 860,
   array => 503,
   arrayIndex => 7,
@@ -1330,8 +1332,7 @@ if (1)                                                                          
   subtract => 641};
 
   #say STDERR dump $e->tallyCounts->{2};
-  is_deeply $e->tallyCounts->{2}, {
-  array => 107,
+  is_deeply $e->tallyCounts->{2}, {                                             # Find tally
   arrayCountLess => 223,
   arrayIndex => 330,
   dec => 107,
