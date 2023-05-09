@@ -458,17 +458,18 @@ my sub Node_indexInParent2($%)                                                  
 # new version
 my sub Node_SplitIfFull($%)                                                     # Split a node if it is full. Return true if the node was split else false
  {my ($node, %options) = @_;                                                    # Node to split, options
-  my $nl = Node_length($node);
-  my $t = Node_tree($node);                                                     # Associated tree
-  my $m = $options{maximumNumberOfKeys} // maximumNumberOfKeys($t);
   my $split = Var;
 
   Block                                                                         # Various splitting scenarios
    {my ($start, $good, $bad, $end) = @_;
-    Jlt $bad, $nl, $m;                                                          # Must be a full node
+    my $nl = Node_length($node);
+    my $m = $options{maximumNumberOfKeys};                                      # Supplied by caller
+    Jlt $bad, $nl, $m if defined $m;
+    my $t = Node_tree($node);                                                   # Tree we are splitting in
+    my $N = $m // maximumNumberOfKeys($t);                                      # Maximum size of a node
+    Jlt $bad, $nl, $N unless defined $m;                                        # Must be a full node
 
-    my $N = maximumNumberOfKeys($t);                                            # Split points
-    my $n = Mov $N;                                                             # Copy
+    my $n = Mov $N;                                                             # Split point
     ShiftRight $n, 1;                                                           # Index of key that will be placed in parent
 
     my $L = Add $n, 1;
@@ -1152,7 +1153,7 @@ if (1)                                                                          
  }
 
 
-latest:;
+#latest:;
 if (1)                                                                          ##Node_SplitIfFull split at start non root
  {Start 1;
   my $N = 7;
@@ -1312,7 +1313,7 @@ if (1)                                                                          
   9 => bless([2005, 2015, 2025, 2035, 2045, 2055, 2065, 2075], "Down")};
  }
 
-latest:;
+#latest:;
 if (1)                                                                          ##Node_SplitIfFull at end non root
  {Start 1;
   my $N = 7;
@@ -1606,10 +1607,10 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  27346;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  26781;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 18300, 2 => 6294, 3=>2752};
+  is_deeply $e->tallyTotal, { 1 => 17735, 2 => 6294, 3=>2752};
 
   #say STDERR dump $e->tallyCounts->{1};
   is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -1623,7 +1624,7 @@ if (1)                                                                          
   jLt => 565,
   jmp => 1223,
   jNe => 983,
-  mov => 9555,
+  mov => 8990,
   not => 631,
   resize => 161,
   shiftRight => 68,
