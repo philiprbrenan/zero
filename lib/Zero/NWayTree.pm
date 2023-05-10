@@ -482,9 +482,7 @@ my sub Node_SplitIfFull($%)                                                     
        };
      };
 
-# Root node
-
-    my $l = Node_new($t, length=>$n);                                           # New child nodes
+    my $l = Node_new($t, length=>$n);                                           # Split root node into two children
     my $r = Node_new($t, length=>$n);
 
     IfFalse Node_isLeaf($node),                                                 # Not a leaf
@@ -513,7 +511,7 @@ my sub Node_SplitIfFull($%)                                                     
     Node_setDown  ($node, 1, $r);
     Node_setLength($node, 1);
 
-    if (1)                                                                      # Resize split node
+    if (1)                                                                      # Resize split root node
      {my $K = Node_fieldKeys $node; Resize $K, 1;
       my $D = Node_fieldData $node; Resize $D, 1;
       my $N = Node_fieldDown $node; Resize $N, 2;
@@ -640,7 +638,7 @@ sub Find($$%)                                                                   
   $find
  }
 
-#D1 Insert                                                                      # Create a new entry ina tree connecting a key to data.
+#D1 Insert                                                                      # Create a new entry in a tree to connect a key to data.
 
 sub Insert($$$%)                                                                # Insert a key and its associated data into a tree.
  {my ($tree, $key, $data, %options) = @_;                                       # Tree, key, data
