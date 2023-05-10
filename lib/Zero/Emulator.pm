@@ -2288,7 +2288,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          ##Add ##Subtract
+if (1)                                                                          ##Subtract
  {Start 1;
   my $a = Subtract 4, 2;
   Out $a;
@@ -3091,7 +3091,9 @@ if (1)                                                                          
     Mov [$a, 0, "aaa"], 1;
     Mov [$a, 1, "aaa"], 22;
     Mov [$a, 2, "aaa"], 333;
+
   my $n = ArraySize $a, "aaa";
+  Out "Array size:"; Out $n;
   DumpArray $a, "AAAA";
 
   ForArray
@@ -3105,16 +3107,15 @@ if (1)                                                                          
   is_deeply $e->memory, {1=>[1, 22, 333]};
 
   is_deeply $e->out,
-[ "AAAA",
+[ "Array size:", 3,
+  "AAAA",
   "bless([1, 22, 333], \"aaa\")",
   "Stack trace",
-  "    1     6 dumpArray",
-  0,
-  1,
-  1,
-  22,
-  2,
-  333];
+  "    1     8 dumpArray",
+  0, 1,
+  1, 22,
+  2, 333,
+];
  }
 
 #latest:;
