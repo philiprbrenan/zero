@@ -2,11 +2,12 @@
 
 ![Test](https://github.com/philiprbrenan/zero/workflows/Test/badge.svg)
 
-A minimal [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) and [emulator](https://en.wikipedia.org/wiki/Emulator) for the Zero programming language.
+A minimal [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) and [emulator](https://en.wikipedia.org/wiki/Emulator) for the Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) programming language.
 
-The goal is to implement N-Way [trees](https://en.wikipedia.org/wiki/Tree_(data_structure)) in Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) [code](https://en.wikipedia.org/wiki/Computer_program), optimize the [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) [code](https://en.wikipedia.org/wiki/Computer_program) assiduously through exhaustive testing, then realize the
-algorithm as an [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) rather than as software on a conventional [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) so that large,
-extremely fast associative memories can be manufactured on an industrial scale.
+An implementation of N-Way [trees](https://en.wikipedia.org/wiki/Tree_(data_structure)) in [code](https://en.wikipedia.org/wiki/Computer_program) written in the Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) programming language: assiduously optimized through exhaustive testing, ready
+for realizationalize in [Silicon](https://en.wikipedia.org/wiki/Silicon) as an [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) rather than as software on a
+conventional [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) so that large, extremely fast associative memories can be
+manufactured on an industrial scale.
 
 Open the __Actions__ [tab](https://en.wikipedia.org/wiki/Tab_key) to see the [code](https://en.wikipedia.org/wiki/Computer_program) in action.
 
@@ -58,26 +59,18 @@ in the current stack frame is represented as a single scalar with the
 appropriate levels of dereferencing.  The area name is used to confirm that the
 area being processed is the one that should be being processed.
 
-If you would like to be involved with this interesting project, please raise an
-issue saying so!
+If you would like to be involved with this interesting and potentially
+lucrative project, please raise an issue saying so!
 
 ## Emulator:
 
 The [emulator](https://en.wikipedia.org/wiki/Emulator) converts a Perl representation of the [assembly](https://en.wikipedia.org/wiki/Assembly_language) source [code](https://en.wikipedia.org/wiki/Computer_program) to
 executable instructions and then executes these instructions.
 
-[Documentation](https://github.com/philiprbrenan/zero/blob/ce00d94208e515c3fd7b6e3252060a6776a80c93/Emulator.md)
-
-[Code](https://github.com/philiprbrenan/zero/blob/ce00d94208e515c3fd7b6e3252060a6776a80c93/lib/Zero/Emulator.pm)
-
-[Tests](https://github.com/philiprbrenan/zero/blob/ce00d94208e515c3fd7b6e3252060a6776a80c93/testEmulator.pl)
+[Documentation](https://metacpan.org/dist/Zero-Emulator/view/Emulator.pod)
 
 ## N-Way-Tree
 
 An implementation of N-Way-Trees in Zero assembler.
 
-[Documentation](https://github.com/philiprbrenan/zero/blob/ce00d94208e515c3fd7b6e3252060a6776a80c93/NWayTree.md)
-
-[Code](https://github.com/philiprbrenan/zero/blob/ce00d94208e515c3fd7b6e3252060a6776a80c93/lib/Zero/NWayTree.pm)
-
-[Tests](https://github.com/philiprbrenan/zero/blob/ce00d94208e515c3fd7b6e3252060a6776a80c93/testNWayTree.pl)
+[Documentation](https://metacpan.org/dist/Zero-Emulator/view/NWayTree.pod)
