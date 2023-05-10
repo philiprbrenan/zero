@@ -469,15 +469,13 @@ my sub Node_SplitIfFull($%)                                                     
        };
       Node_setLength($node, $n);
 
-      my $pl = Node_length($p);
       Node_setUp($r, $p);
+      my $pl = Node_length($p);
 
       IfEq Node_down($p, $pl), $node,                                           # Splitting the last child - just add it on the end
       Then
-       {my $pk = Node_keys($node, $n);
-        Node_setKeys  ($p, $pl, $pk);
-        my $nd = Node_data($node, $n);
-        Node_setData  ($p, $pl, $nd);
+       {my $pk = Node_keys($node, $n); Node_setKeys  ($p, $pl, $pk);
+        my $nd = Node_data($node, $n); Node_setData  ($p, $pl, $nd);
         my $pl1 = Add $pl, 1;
         Node_setLength($p, $pl1);
         Node_setDown  ($p, $pl1, $r);
@@ -485,12 +483,11 @@ my sub Node_SplitIfFull($%)                                                     
         my $D = Node_fieldData $node; Resize $D, $n;
         Jmp $good;
        },
-      Else
-       {my $i = Node_indexInParentP1($node, parent=>$p, children=>$pl);         # Index of the node being split in its parent
+      Else                                                                      # Splitting elsewhere in the node
+       {my $i = Node_indexInParent($node, parent=>$p, children=>$pl);           # Index of the node being split in its parent
         my $pk = Node_keys($node, $n);
         my $pd = Node_data($node, $n);
-        my $I = Subtract $i, 1;
-        Node_open($p, $I, $pk, $pd, $r);
+        Node_open($p, $i, $pk, $pd, $r);
         my $K = Node_fieldKeys $node; Resize $K, $n;
         my $D = Node_fieldData $node; Resize $D, $n;
         Jmp $good;
@@ -577,32 +574,27 @@ my sub FindAndSplit($$%)                                                        
         Jmp $next;
        };
 
-      For                                                                       # Search the keys in this node as greater than least key and less than largest key
-       {my ($i, $check, $next, $end) = @_;                                      # Parameters
-        my $k = Node_keys($node, $i);                                           # Current key
+      my $K = Node_fieldKeys($node);                                            # Keys arrays
+      my $e = ArrayIndex $K, $key;
+      IfTrue $e,
+      Then
+       {FindResult_renew($find, $node, FindResult_found, $e, subtract=>1);
+        Jmp $Found;
+       };
 
-        IfLt $key, $k,                                                          # Greater than current key
-        Then
-         {IfTrue Node_isLeaf($node),
-          Then
-           {FindResult_renew($find, $node, FindResult_lower, $i);
-            Jmp $Found;
-           };
+      my $I = ArrayCountLess $K, $key;                                          # Index at which to step down
 
-          my $n = Node_down($node, $i);
-          IfFalse Node_SplitIfFull($n, %options),                               # Split the node we have stepped to if necessary - if we do we will have to restart the descent from one level up because the key might have moved to the other  node.
-          Then
-           {Mov $node, $n;
-           };
-          Jmp $end;
-         };
+      IfTrue Node_isLeaf($node),
+      Then
+       {FindResult_renew($find, $node, FindResult_lower, $I);
+        Jmp $Found;
+       };
 
-        IfEq $key, $k,                                                          # Found key
-        Then
-         {FindResult_renew($find, $node, FindResult_found, $i);
-          Jmp $Found;
-         };
-       } $nl;
+      my $n = Node_down($node, $I);
+      IfFalse Node_SplitIfFull($n, %options),                               # Split the node we have stepped to if necessary - if we do we will have to restart the descent from one level up because the key might have moved to the other  node.
+      Then
+       {Mov $node, $n;
+       };
      }  MaxIterations;
     Assert;                                                                     # Failed to descend through the tree to the key.
    };
@@ -813,16 +805,11 @@ my sub GoUpAndAround($)                                                         
   $find
  }
 
-my sub IterStart($)                                                             # Start an iterator
- {my ($tree) = @_;                                                              # Tree to iterate
+sub Iterate(&$)                                                                 # Iterate over a tree.
+ {my ($block, $tree) = @_;                                                      # Block of code to execute for each key in tree, tree
   my $n = root($tree);
   my $f = FindResult_new;
   GoAllTheWayLeft($f, $n);
- }
-
-sub Iterate(&$)                                                                 # Iterate over a tree.
- {my ($block, $tree) = @_;                                                      # Block of code to execute for each key in tree, tree
-  my $f = IterStart($tree);
 
   For
    {my ($i, $check, $next, $end) = @_;                                          # Parameters
@@ -1500,7 +1487,7 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];
  }
 
-#latest:;
+latest:;
 if (1)                                                                          ##Iterate ##Keys ##FindResult_key ##FindResult_data ##Find ##printTreeKeys ##printTreeData
  {my $W = 3; my $N = 107; my @r = randomArray $N;
 
@@ -1551,28 +1538,30 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  26509;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  25526;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 17463, 2 => 6294, 3=>2752};
+  is_deeply $e->tallyTotal, { 1 => 16480, 2 => 6294, 3 => 2752};
 
   #say STDERR dump $e->tallyCounts->{1};
   is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
   add => 330,
   array => 247,
-  arrayIndex => 30,
-  inc => 874,
-  jEq => 631,
-  jGe => 1469,
+  arrayIndex => 291,
+  arrayCountLess => 261,
+  dec => 30,
+  inc => 799,
+  jEq => 892,
+  jGe => 797,
   jLe => 461,
   jLt => 565,
-  jmp => 1223,
-  jNe => 983,
-  mov => 8922,
+  jmp => 951,
+  jNe => 908,
+  mov => 8250,
   not => 631,
   resize => 161,
   shiftUp => 300,
-  subtract => 636};
+  subtract => 606};
 
   #say STDERR dump $e->tallyCounts->{2};
   is_deeply $e->tallyCounts->{2}, {                                             # Find tally
