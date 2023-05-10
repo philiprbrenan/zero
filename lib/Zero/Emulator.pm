@@ -1746,7 +1746,7 @@ sub Mov($;$) {                                                                  
    }
  }
 
-sub MoveLong($$$)                                                               # Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand
+sub MoveLong($$$)                                                               # Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand.
  {my ($target, $source, $source2) = @_;                                         # Target of move, source of move, length of move
   $assembly->instruction(action=>"moveLong", xTarget($target),
     xSource($source), xSource2($source2));
