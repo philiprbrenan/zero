@@ -2170,7 +2170,7 @@ sub Block(&%)                                                                   
   setLabel($End);                                                               # End
  }
 
-sub Var(;$)                                                                     #i Create a variable initialized to the specified value.
+sub Var(;$)                                                                     #P Create a variable initialized to the specified value.
  {my ($value) = @_;                                                             # Value
   my $i = $assembly->registers;
   my $a = $assembly->variables;
