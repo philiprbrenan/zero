@@ -8,7 +8,7 @@ An implementation of N-Way [trees](https://en.wikipedia.org/wiki/Tree_(data_stru
 for realization in [Silicon](https://en.wikipedia.org/wiki/Silicon) as an [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) rather than as software on a conventional [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) so that large, extremely fast, associative memories can be manufactured on
 an industrial scale.
 
-Open the __Actions__ [tab](https://en.wikipedia.org/wiki/Tab_key) to see the [code](https://en.wikipedia.org/wiki/Computer_program) in action.
+Open the __Actions__ [tab](https://en.wikipedia.org/wiki/Tab_key) to see the [code](https://en.wikipedia.org/wiki/Computer_program) in action on [Ubuntu](https://ubuntu.com/download/desktop) and [Windows Services for Linux](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux) for [Ubuntu](https://ubuntu.com/download/desktop) on windows.
 
 The initial idea is to produce a small CPU which implements just the
 instructions needed to implement the algorithm.  The small CPU will then be
