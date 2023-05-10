@@ -1543,7 +1543,7 @@ sub ArraySize($$)                                                               
   $t
  }
 
-sub ArrayIndex($$;$) {                                                          #i Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.  The business of returning -1 leads to the inferno of try catch.
+sub ArrayIndex($$;$) {                                                          #i Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.  The business of returning -1 would have led to the confusion of "try catch" and we certainly do not want that.
   if (@_ == 2)
    {my ($area, $element) = @_;                                                  # Area, element to find
     my $t = &Var();
@@ -1594,11 +1594,11 @@ sub Call($)                                                                     
     target=>RefLeft($p->target), source=>$p);
  }
 
-sub Confess()                                                                   #i Confess with a stack trace back.
+sub Confess()                                                                   #i Confess with a stack trace showing the location bioth in the emulated code and in the code that produced the emulated code.
  {$assembly->instruction(action=>"confess");
  }
 
-sub Dump(;$)                                                                    #i Dump memory.
+sub Dump(;$)                                                                    #i Dump all the arrays currently in memory.
  {my ($title) = @_;                                                             # Title
   $assembly->instruction(action=>"dump", source=>$title);
  }
@@ -2894,13 +2894,13 @@ if (1)                                                                          
  {Start 1;
   my $set = Procedure 'set', sub
    {my $a = ParamsGet 0;
+    Out $a;
    };
-  ParamsPut 0, 1;
-  Call $set;
-  ParamsPut 0, 1;
-  Call $set;
+  ParamsPut 0, 1;  Call $set;
+  ParamsPut 0, 2;  Call $set;
+  ParamsPut 0, 3;  Call $set;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [];
+  is_deeply $e->out, [1..3];
  }
 
 #latest:;
