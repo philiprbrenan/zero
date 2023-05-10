@@ -680,28 +680,31 @@ sub Insert($$$%)                                                                
     Then
      {IfFalse Node_up($n),                                                      # Root node
       Then
-       {IfTrue Node_isLeaf($n),
+       {IfTrue Node_isLeaf($n),                                                 # Leaf root node
         Then
-         {For                                                                   # Each key
-           {my ($i, $check, $next, $end) = @_;                                  # Parameters
-            my $k = Node_keys($n, $i);                                          # Key to check
-            IfEq $key, $k,                                                      # Key already present
-            Then
-             {Node_setData($n, $i, $data);
-              Jmp $Finish;
-             };
-            IfLt $key, $k,                                                      # We have reached the insertion point
-            Then
-             {my $nli = Subtract $nl, $i;
-              Node_openLeaf($n, $i, $nli, $key, $data);
-              incKeys($tree);
-              Jmp $Finish;
-             };
-           } $nl;
-          Node_setKeys($n, $nl, $key);                                          # Insert the key at the end of the block because it is greater than all the other keys in the block
-          Node_setData($n, $nl, $data);
-          my $nl1 = Add $nl, 1;
-          Node_setLength($n, $nl1);
+         {my $K = Node_fieldKeys($n);                                           # Keys arrays
+          my $e = ArrayIndex $K, $key;
+          IfTrue $e,                                                            # Key already exists in leaf root node
+          Then
+           {Dec $e;
+            Node_setData($n, $e, $data);  ## Needs -1
+            Jmp $Finish;
+           };
+
+          my $I = ArrayCountGreater $K, $key;                                   # Greater than all keys in leaf root node
+          IfFalse $I,
+          Then
+           {Node_setKeys($n, $nl, $key);                                        # Append the key at the end of the leaf root node because it is greater than all the other keys in the block and there is room for it
+            Node_setData($n, $nl, $data);
+            my $nl1 = Add $nl, 1;
+            Node_setLength($n, $nl1);
+            incKeys($tree);
+            Jmp $Finish;
+           };
+
+          my $i = ArrayCountLess $K, $key;                                      # Insert position
+          my $nli = Subtract $nl, $i;
+          Node_openLeaf($n, $i, $nli, $key, $data);                             # insert into the root leaf node
           incKeys($tree);
           Jmp $Finish;
          };
@@ -1538,30 +1541,32 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  25526;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  25522;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 16480, 2 => 6294, 3 => 2752};
+  is_deeply $e->tallyTotal, { 1 => 16476, 2 => 6294, 3 => 2752};
 
   #say STDERR dump $e->tallyCounts->{1};
   is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
-  add => 330,
-  array => 247,
-  arrayIndex => 291,
-  arrayCountLess => 261,
-  dec => 30,
-  inc => 799,
-  jEq => 892,
-  jGe => 797,
-  jLe => 461,
-  jLt => 565,
-  jmp => 951,
-  jNe => 908,
-  mov => 8250,
-  not => 631,
-  resize => 161,
-  shiftUp => 300,
-  subtract => 606};
+  add               => 330,
+  array             => 247,
+  arrayCountGreater => 2,
+  arrayCountLess    => 262,
+  arrayIndex        => 293,
+  dec               => 30,
+  inc               => 798,
+  jEq               => 894,
+  jGe               => 792,
+  jLe               => 461,
+  jLt               => 565,
+  jmp               => 950,
+  jNe               => 908,
+  mov               => 8246,
+  not               => 631,
+  resize            => 161,
+  shiftUp           => 300,
+  subtract          => 606,
+};
 
   #say STDERR dump $e->tallyCounts->{2};
   is_deeply $e->tallyCounts->{2}, {                                             # Find tally
