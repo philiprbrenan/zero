@@ -1239,14 +1239,14 @@ sub Zero::Emulator::Code::execute($%)                                           
        }
      },
 
-    leAddress=> sub                                                             # Load the address component of a reference
+    loadAddress=> sub                                                           # Load the address component of a reference
      {my $i = $exec->currentInstruction;
       my $s = $exec->left($i->source);
       my $t = $exec->left($i->target);
       $exec->assign($t, $s->address);
      },
 
-    leArea=> sub                                                                # Load the area component of an address
+    loadArea=> sub                                                              # Load the area component of an address
      {my $i = $exec->currentInstruction;
       my $s = $exec->left($i->source);
       my $t = $exec->left($i->target);
@@ -1502,23 +1502,17 @@ my sub xTarget($)                                                               
   (q(target), RefLeft $t)
  }
 
-sub Start($)                                                                    #i Start the current assembly using the specified version of the Zero language.  At  the moment only version 1 works.
- {my ($version) = @_;                                                           # Version desired - at the moment only 1
-  $version == 1 or confess "Version 1 is currently the only version available\n";
-  $allocs = $allocsStacked = 0;
-  $assembly = Code;                                                             # The current assembly
- }
+sub Inc($);
+sub Jge($$$);
+sub Jlt($$$);
+sub Jmp($);
+sub Mov($;$);
+sub Subtract($$;$);
+sub TracePoint(%);
 
 sub Add($$;$)                                                                   #i Add the source locations together and store the result in the target area.
  {my ($target, $s1, $s2) = @_ == 2 ? (&Var(), @_) : @_;                         # Target address, source one, source two
   $assembly->instruction(action=>"add", xTarget($target),
-    xSource($s1), xSource2($s2));
-  $target
- }
-
-sub Subtract($$;$)                                                              #i Subtract the second source operand value from the first source operand value and store the result in the target area.
- {my ($target, $s1, $s2) = @_ == 2 ? (&Var(), @_) : @_;                         # Target address, source one, source two
-  $assembly->instruction(action=>"subtract", xTarget($target),
     xSource($s1), xSource2($s2));
   $target
  }
@@ -1528,34 +1522,6 @@ sub Array($)                                                                    
   my $t = &Var();
   $assembly->instruction(action=>"array", target=>RefLeft($t), source=>$name);
   $t;
- }
-
-sub Free($$)                                                                    #i Free the memory area named by the target operand after confirming that it has the name specified on the source operand.
- {my ($target, $source) = @_;                                                   # Target area yielding the id of the area to be freed, source area yielding the name of the area to be freed
-  $assembly->instruction(action=>"free", xTarget($target), xSource($source));
- }
-
-sub ArraySize($$)                                                               #i The current size of an array.
- {my ($area, $name) = @_;                                                       # Location of area, name of area
-  my $t = &Var();
-  $assembly->instruction(action=>"arraySize",                                   # Target - location to place the size in, source - address of the area, source2 - the name of the area which cannot be taken from the area of the first source operand because that area name is the name of the area that contains the location of the area we wish to work on.
-    target=>RefLeft($t), xSource($area), source2=>$name);
-  $t
- }
-
-sub ArrayIndex($$;$) {                                                          #i Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.  The business of returning -1 would have led to the confusion of "try catch" and we certainly do not want that.
-  if (@_ == 2)
-   {my ($area, $element) = @_;                                                  # Area, element to find
-    my $t = &Var();
-    $assembly->instruction(action=>"arrayIndex",
-    target=>RefLeft($t), xSource($area), xSource2($element));
-    $t
-   }
-  else
-   {my ($target, $area, $element) = @_;                                         # Target, area, element to find
-    $assembly->instruction(action=>"arrayIndex",
-    xTarget($target), xSource($area), xSource2($element));
-   }
  }
 
 sub ArrayCountLess($$;$) {                                                      #i Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result in the target location.
@@ -1588,433 +1554,29 @@ sub ArrayCountGreater($$;$) {                                                   
    }
  }
 
-sub Call($)                                                                     #i Call the subroutine at the target address.
- {my ($p) = @_;                                                                 # Procedure description
-  $assembly->instruction(action=>"call",
-    target=>RefLeft($p->target), source=>$p);
- }
 
-sub Confess()                                                                   #i Confess with a stack trace showing the location bioth in the emulated code and in the code that produced the emulated code.
- {$assembly->instruction(action=>"confess");
- }
-
-sub Dump(;$)                                                                    #i Dump all the arrays currently in memory.
- {my ($title) = @_;                                                             # Title
-  $assembly->instruction(action=>"dump", source=>$title);
- }
-
-sub DumpArray($;$)                                                              #i Dump an array.
- {my ($target, $title) = @_;                                                    # Array to dump, title of dump
-  $assembly->instruction(action=>"dumpArray", target=>RefRight($target), source=>$title);
- }
-
-sub Trace($)                                                                    #i Start or stop tracing.  Tracing prints each instruction executed and its effect on memeory.
- {my ($source) = @_;                                                            # Trace setting
-  $assembly->instruction(action=>"trace", xSource($source));
- }
-
-sub TracePoints($)                                                              #i Enable or disable trace points.  If trace points are enabled a stack trace is printed for each instructyion executed showing the call stack at the time the instruction was generated as well as the current stack frames.
- {my ($source) = @_;                                                            # Trace points if true
-  $assembly->instruction(action=>"tracePoints", xSource($source));
- }
-
-sub TracePoint(%)                                                               #P Trace point - a point in the code where the flow of execution might change.
- {my (%options) = @_;                                                           # Parameters
-  $assembly->instruction(action=>"tracePoint", %options);
- }
-
-sub Dec($)                                                                      #i Decrement the target.
- {my ($target) = @_;                                                            # Target address
-  $assembly->instruction(action=>"dec", xTarget($target))
- }
-
-sub Inc($)                                                                      #i Increment the target.
- {my ($target) = @_;                                                            # Target address
-  $assembly->instruction(action=>"inc", xTarget($target))
- }
-
-sub Jmp($)                                                                      #i Jump to a label.
- {my ($target) = @_;                                                            # Target address
-  $assembly->instruction(action=>"jmp", xTarget($target));
- }
-
-sub Jle($$$)                                                                    #i Jump to a target label if the first source field is less than or equal to the second source field.
- {my ($target, $source, $source2) = @_;                                         # Target label, source to test
-  $assembly->instruction(action=>"jLe",
-    xTarget($target), xSource($source), xSource2($source2));
- }
-
-sub Jlt($$$)                                                                    #i Jump to a target label if the first source field is less than the second source field.
- {my ($target, $source, $source2) = @_;                                         # Target label, source to test
-  $assembly->instruction(action=>"jLt",
-    xTarget($target), xSource($source), xSource2($source2));
- }
-
-sub Jge($$$)                                                                    #i Jump to a target label if the first source field is greater than or equal to the second source field.
- {my ($target, $source, $source2) = @_;                                         # Target label, source to test
-  $assembly->instruction(action=>"jGe",
-    xTarget($target), xSource($source), xSource2($source2));
- }
-
-sub Jgt($$$)                                                                    #i Jump to a target label if the first source field is greater than the second source field.
- {my ($target, $source, $source2) = @_;                                         # Target label, source to test
-  $assembly->instruction(action=>"jGt",
-    xTarget($target), xSource($source), xSource2($source2));
- }
-
-sub Jeq($$$)                                                                    #i Jump to a target label if the first source field is equal to the second source field.
- {my ($target, $source, $source2) = @_;                                         # Target label, source to test
-  $assembly->instruction(action=>"jEq",
-    xTarget($target), xSource($source), xSource2($source2));
- }
-
-sub Jne($$$)                                                                    #i Jump to a target label if the first source field is not equal to the second source field.
- {my ($target, $source, $source2) = @_;                                         # Target label, source to test
-  $assembly->instruction(action=>"jNe",
-    xTarget($target), xSource($source), xSource2($source2));
- }
-
-sub JFalse($$)                                                                  #i Jump to a target label if the first source field is equal to zero.
- {my ($target, $source) = @_;                                                   # Target label, source to test
-  $assembly->instruction(action=>"jFalse", xTarget($target), xSource($source));
- }
-
-sub JTrue($$)                                                                   #i Jump to a target label if the first source field is not equal to zero.
- {my ($target, $source) = @_;                                                   # Target label, source to test
-  $assembly->instruction(action=>"jTrue", xTarget($target), xSource($source));
- }
-
-sub Label($)                                                                    #P Create a label.
- {my ($source) = @_;                                                            # Name of label
-  $assembly->instruction(action=>"label", xSource($source));
- }
-
-sub Clear($)                                                                    #i Clear the first bytes of an area.  The area is specified by the first element of the address, the number of locations to clear is specified by the second element of the target address.
- {my ($target) = @_;                                                            # Target address, source address
-  $assembly->instruction(action=>"clear", xTarget($target));
- }
-
-sub LeAddress($;$) {                                                            #i Load the address component of an address.
-  if (@_ == 1)
-   {my ($source) = @_;                                                          # Target address, source address
+sub ArrayIndex($$;$) {                                                          #i Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.  The business of returning -1 would have led to the confusion of "try catch" and we certainly do not want that.
+  if (@_ == 2)
+   {my ($area, $element) = @_;                                                  # Area, element to find
     my $t = &Var();
-    $assembly->instruction(action=>"leAddress",
-      target=>RefLeft($t), xSource($source));
-    return $t;
-   }
-  elsif (@ == 2)
-   {my ($target, $source) = @_;                                                 # Target address, source address
-    $assembly->instruction(action=>"leAddress",
-      xTarget($target), xSource($source));
+    $assembly->instruction(action=>"arrayIndex",
+    target=>RefLeft($t), xSource($area), xSource2($element));
+    $t
    }
   else
-   {confess "One or two parameters required";
+   {my ($target, $area, $element) = @_;                                         # Target, area, element to find
+    $assembly->instruction(action=>"arrayIndex",
+    xTarget($target), xSource($area), xSource2($element));
    }
  }
 
-sub LeArea($;$) {                                                               #i Load the area component of an address.
-  if (@_ == 1)
-   {my ($source) = @_;                                                          # Target address, source address
-    my $t = &Var();
-    $assembly->instruction(action=>"leArea",
-      target=>RefLeft($t), xSource($source));
-    return $t;
-   }
-  elsif (@ == 2)
-   {my ($target, $source) = @_;                                                 # Target address, source address
-    $assembly->instruction(action=>"leArea",
-      xTarget($target), xSource($source));
-   }
-  else
-   {confess "One or two parameters required";
-   }
+sub ArraySize($$)                                                               #i The current size of an array.
+ {my ($area, $name) = @_;                                                       # Location of area, name of area
+  my $t = &Var();
+  $assembly->instruction(action=>"arraySize",                                   # Target - location to place the size in, source - address of the area, source2 - the name of the area which cannot be taken from the area of the first source operand because that area name is the name of the area that contains the location of the area we wish to work on.
+    target=>RefLeft($t), xSource($area), source2=>$name);
+  $t
  }
-
-sub Mov($;$) {                                                                  #i Copy a constant or memory address to the target address.
-  if (@_ == 1)
-   {my ($source) = @_;                                                          # Target address, source address
-    my $t = &Var();
-    $assembly->instruction(action=>"mov", target=>RefLeft($t),xSource($source));
-    return $t;
-   }
-  elsif (@ == 2)
-   {my ($target, $source) = @_;                                                 # Target address, source address
-    $assembly->instruction(action=>"mov", xTarget($target), xSource($source));
-   }
-  else
-   {confess "One or two parameters required for mov";
-   }
- }
-
-sub MoveLong($$$)                                                               #i Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand.
- {my ($target, $source, $source2) = @_;                                         # Target of move, source of move, length of move
-  $assembly->instruction(action=>"moveLong", xTarget($target),
-    xSource($source), xSource2($source2));
- }
-
-sub Not($) {                                                                    #i Move and not.
-  if (@_ == 1)
-   {my ($source) = @_;                                                          # Target address, source address
-    my $t = &Var();
-    $assembly->instruction(action=>"not", target=>RefLeft($t),xSource($source));
-    return $t;
-   }
-  elsif (@ == 2)
-   {my ($target, $source) = @_;                                                 # Target address, source address
-    $assembly->instruction(action=>"not", xTarget($target), xSource($source));
-   }
-  else
-   {confess "One or two parameters required for not";
-   }
- }
-
-sub Nop()                                                                       #i Do nothing (but do it well!).
- {$assembly->instruction(action=>"nop");
- }
-
-sub Out($)                                                                      #i Write memory location contents to out.
- {my ($source) = @_;                                                            # Either a scalar constant or memory address to output
-  $assembly->instruction(action=>"out", xSource($source))
- }
-
-sub Procedure($$)                                                               #i Define a procedure.
- {my ($name, $source) = @_;                                                     # Name of procedure, source code as a subroutine# $assembly->instruction(action=>"procedure", target=>$target, source=>$source);
-  if ($name and my $n = $assembly->procedures->{$name})                         # Reuse existing named procedure
-   {return $n;
-   }
-
-  Jmp(my $end = label);                                                         # Jump over the code of the procedure body
-  my $start = setLabel;
-  my $p = procedure($start);                                                    # Procedure description
-  my $save_registers = $assembly->variables;
-  $assembly->variables = $p->variables;
-  &$source($p);                                                                 # Code of procedure called with start label as a parameter
-  &Return;
-  $assembly->variables = $save_registers;
-
-  setLabel $end;
-  $assembly->procedures->{$name} = $p;                                          # Return the start of the procedure
- }
-
-sub ParamsGet($;$) {                                                            #i Get a word from the parameters in the previous frame and store it in the current frame.
-  if (@_ == 1)
-   {my ($source) = @_;                                                          # Memory address to place parameter in, parameter number
-    my $p = &Var();
-    $assembly->instruction(action=>"paramsGet",
-      target=>RefLeft($p), xSource($source));
-    return $p;
-   }
-  elsif (@_ == 2)
-   {my ($target, $source) = @_;                                                 # Memory address to place parameter in, parameter number
-    $assembly->instruction(action=>"paramsGet",
-      xTarget($target), xSource($source));
-   }
-  else
-   {confess "One or two parameters required";
-   }
- }
-
-sub ParamsPut($$)                                                               #i Put a word into the parameters list to make it visible in a called procedure.
- {my ($target, $source) = @_;                                                   # Parameter number, address to fetch parameter from
-  $assembly->instruction(action=>"paramsPut",
-    xTarget($target), xSource($source));
- }
-
-sub Return()                                                                    #i Return from a procedure via the call stack.
- {$assembly->instruction(action=>"return");
- }
-
-sub ReturnGet($;$) {                                                            #i Get a word from the return area and save it.
-  if (@_ == 1)                                                                  # Create a variable
-   {my ($source) = @_;                                                          # Memory address to place return value in, return value to get
-    my $p = &Var();
-    $assembly->instruction(action=>"returnGet",
-      target=>RefLeft($p), xSource($source));
-    return $p;
-   }
-  elsif (@_ == 2)
-   {my ($target, $source) = @_;                                                 # Memory address to place return value in, return value to get
-    $assembly->instruction(action=>"returnGet",
-      xTarget($target), xSource($source));
-   }
-  else
-   {confess "One or two parameters required";
-   }
- }
-
-sub ReturnPut($$)                                                               #i Put a word into the return area.
- {my ($target, $source) = @_;                                                   # Offset in return area to write to, memory address whose contents are to be placed in the return area
-  $assembly->instruction(action=>"returnPut",
-    xTarget($target), xSource($source));
- }
-
-sub Resize($$)                                                                  #i Resize the target area to the source size.
- {my ($target, $source) = @_;                                                   # Target address, source address
-  $assembly->instruction(action=>"resize", xTarget($target), xSource($source));
- }
-
-sub Pop(;$$) {                                                                  #i Pop the memory area specified by the source operand into the memory address specified by the target operand.
-  if (@_ == 0)                                                                  # Pop current stack frame into a local variable
-   {my $p = &Var();
-    my $i = $assembly->instruction(action=>"pop", target=>RefLeft($p));
-    $i->source = undef;
-    return $p;
-   }
-  elsif (@_ == 1)                                                               # Pop indicated area into a local variable
-   {my ($source) = @_;                                                          # Memory address to place return value in, return value to get
-    my $p = &Var();
-    $assembly->instruction(action=>"pop", target=>RefLeft($p),xSource($source));
-    return $p;
-   }
-  elsif (@_ == 2)
-   {my ($target, $source) = @_;                                                 # Pop indicated area into target address
-    $assembly->instruction(action=>"pop", xTarget($target), xSource($source));
-   }
-  else
-   {confess "Zero, One or two parameters required";
-   }
- }
-
-sub Push($;$) {                                                                 #i Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
-  if (@_ == 1)
-   {my ($source) = @_;                                                          # Push a value onto the current stack frame
-    $assembly->instruction(action=>"push", xSource($source));
-   }
-  elsif (@_ == 2)                                                               # Push a value onto the specified memory area
-   {my ($target, $source) = @_;                                                 # Memory area to push to, memory containing value to push
-    $assembly->instruction(action=>"push", xTarget($target), xSource($source));
-   }
-  else
-   {confess "One or two parameters required";
-   }
- }
-
-sub ShiftLeft($;$) {                                                            #i Shift left within an element.
-  my ($target, $source) = @_;                                                   # Target to shift, amount to shift
-  $assembly->instruction(action=>"shiftLeft",
-    xTarget($target), xSource($source));
-  $target
- }
-
-sub ShiftRight($;$) {                                                           #i Shift right with an element.
-  my ($target, $source) = @_;                                                   # Target to shift, amount to shift
-  $assembly->instruction(action=>"shiftRight",
-    xTarget($target), xSource($source));
-  $target
- }
-
-sub ShiftUp($;$)                                                                #i Shift an element up one in an area.
- {my ($target, $source) = @_;                                                   # Target to shift, amount to shift
-  $assembly->instruction(action=>"shiftUp",
-    xTarget($target), xSource($source));
-  $target
- }
-
-sub ShiftDown($;$) {                                                            #i Shift an element down one in an area.
-  if (@_ == 1)                                                                  # Create a variable
-   {my ($source) = @_;                                                          # Memory address to place return value in, return value to get
-    my $p = &Var();
-    $assembly->instruction(action=>"shiftDown",
-      target=>RefLeft($p), xSource($source));
-    return $p;
-   }
-  elsif (@_ == 2)
-   {my ($target, $source) = @_;                                                 # Memory address to place return value in, return value to get
-    $assembly->instruction(action=>"shiftDown",
-      xTarget($target), xSource($source));
-    confess "Needs work";
-    return $target;
-   }
-  else
-   {confess "One or two parameters required";
-   }
- }
-
-sub Watch($)                                                                    #i Watches for changes to the specified memory location.
- {my ($target) = @_;                                                            # Memory address to watch
-  $assembly->instruction(action=>"watch", xTarget($target));
- }
-
-sub Tally($)                                                                    #i Counts instructions when enabled.
- {my ($source) = @_;                                                            # Tally instructions when true
-  $assembly->instruction(action=>"tally", xSource($source));
- }
-
-sub Then(&)                                                                     #i Then block.
- {my ($t) = @_;                                                                 # Then block subroutine
-  @_ == 1 or confess "One parameter";
-  (then=>  $t)
- }
-
-sub Else(&)                                                                     #i Else block.
- {my ($e) = @_;                                                                 # Else block subroutine
-  @_ == 1 or confess "One parameter";
-  (else=>  $e)
- }
-
-sub Ifx($$$%)                                                                   #P Execute then or else clause depending on whether two memory locations are equal.
- {my ($cmp, $a, $b, %options) = @_;                                             # Comparison, first memory address, second memory address, then block, else block
-  confess "Then required" unless $options{then};
-  if ($options{else})
-   {my $else = label;
-    my $end  = label;
-    &$cmp($else, $a, $b);
-      TracePoint level=>2;
-      &{$options{then}};
-      Jmp $end;
-    setLabel($else);
-      TracePoint level=>2;
-      &{$options{else}};
-    setLabel($end);
-   }
-  else
-   {my $end  = label;
-    &$cmp($end, $a, $b);
-      &{$options{then}};
-    setLabel($end);
-   }
- }
-
-sub IfFalse($%)                                                                 #i Execute then clause if the specified memory address is zero thus representing false.
- {my ($a, %options) = @_;                                                       # Memory address, then block, else block
-  Ifx(\&Jne, $a, 0, %options);
- }
-
-sub IfTrue($%)                                                                  #i Execute then clause if the specified memory address is not zero thus representing true.
- {my ($a, %options) = @_;                                                       # Memory address, then block, else block
-  Ifx(\&Jeq, $a, 0, %options);
- }
-
-sub IfEq($$%)                                                                   #i Execute then or else clause depending on whether two memory locations are equal.
- {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
-  Ifx(\&Jne, $a, $b, %options);
- }
-
-sub IfNe($$%)                                                                   #i Execute then or else clause depending on whether two memory locations are not equal.
- {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
-  Ifx(\&Jeq, $a, $b, %options);
- }
-
-sub IfLt($$%)                                                                   #i Execute then or else clause depending on whether two memory locations are less than.
- {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
-  Ifx(\&Jge, $a, $b, %options);
- }
-
-sub IfLe($$%)                                                                   #i Execute then or else clause depending on whether two memory locations are less than or equal.
- {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
-  Ifx(\&Jgt, $a, $b, %options);
- }
-
-sub IfGt($$%)                                                                   #i Execute then or else clause depending on whether two memory locations are greater than.
- {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
-  Ifx(\&Jle, $a, $b, %options);
- }
-
-sub IfGe($$%)                                                                   #i Execute then or else clause depending on whether two memory locations are greater than or equal.
- {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
-  Ifx(\&Jlt, $a, $b, %options);
- }
-
 sub Assert1($$)                                                                 #P Assert operation.
  {my ($op, $a) = @_;                                                            # Operation, Source operand
   $assembly->instruction(action=>"assert$op", xSource($a), level=>2);
@@ -2036,24 +1598,9 @@ sub AssertEq($$%)                                                               
   Assert2("Eq", $a, $b);
  }
 
-sub AssertNe($$%)                                                               #i Assert two memory locations are not equal.
- {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
-  Assert2("Ne", $a, $b);
- }
-
-sub AssertLt($$%)                                                               #i Assert two memory locations are less than.
- {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
-  Assert2("Lt", $a, $b);
- }
-
-sub AssertLe($$%)                                                               #i Assert two memory locations are less than or equal.
- {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
-  Assert2("Le", $a, $b);
- }
-
-sub AssertGt($$%)                                                               #i Assert two memory locations are greater than.
- {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
-  Assert2("Gt", $a, $b);
+sub AssertFalse($%)                                                             #i Assert false.
+ {my ($a, %options) = @_;                                                       # Source operand
+  Assert1("False", $a);
  }
 
 sub AssertGe($$%)                                                               #i Assert are greater than or equal.
@@ -2061,14 +1608,120 @@ sub AssertGe($$%)                                                               
   Assert2("Ge", $a, $b);
  }
 
+sub AssertGt($$%)                                                               #i Assert two memory locations are greater than.
+ {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
+  Assert2("Gt", $a, $b);
+ }
+
+sub AssertLe($$%)                                                               #i Assert two memory locations are less than or equal.
+ {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
+  Assert2("Le", $a, $b);
+ }
+
+sub AssertLt($$%)                                                               #i Assert two memory locations are less than.
+ {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
+  Assert2("Lt", $a, $b);
+ }
+
+sub AssertNe($$%)                                                               #i Assert two memory locations are not equal.
+ {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
+  Assert2("Ne", $a, $b);
+ }
+
 sub AssertTrue($%)                                                              #i Assert true.
  {my ($a, %options) = @_;                                                       # Source operand
   Assert1("True", $a);
  }
 
-sub AssertFalse($%)                                                             #i Assert false.
- {my ($a, %options) = @_;                                                       # Source operand
-  Assert1("False", $a);
+sub Bad(&)                                                                      #i A bad ending.
+ {my ($bad) = @_;                                                               # What to do on a bad ending
+  @_ == 1 or confess "One parameter";
+  (bad=>  $bad)
+ }
+
+sub Block(&%)                                                                   #i Block of code that can either be restarted or come to a good or a bad ending.
+ {my ($block, %options) = @_;                                                   # Block, options
+  my ($Start, $Good, $Bad, $End) = (label, label, label, label);
+
+  my $g = $options{good};
+  my $b = $options{bad};
+
+  setLabel($Start);                                                             # Start
+
+  TracePoint level=>2;
+  &$block($Start, $Good, $Bad, $End);                                           # Code of block
+
+  if ($g)                                                                       # Good
+   {Jmp $End;
+    setLabel($Good);
+    TracePoint level=>2;
+    &$g;
+   }
+
+  if ($b)                                                                       # Bad
+   {Jmp $End;
+    setLabel($Bad);
+    TracePoint level=>2;
+    &$b;
+   }
+  setLabel($End);                                                               # End
+ }
+
+sub Call($)                                                                     #i Call the subroutine at the target address.
+ {my ($p) = @_;                                                                 # Procedure description
+  $assembly->instruction(action=>"call",
+    target=>RefLeft($p->target), source=>$p);
+ }
+
+sub Clear($)                                                                    #i Clear the first bytes of an area.  The area is specified by the first element of the address, the number of locations to clear is specified by the second element of the target address.
+ {my ($target) = @_;                                                            # Target address, source address
+  $assembly->instruction(action=>"clear", xTarget($target));
+ }
+
+sub Confess()                                                                   #i Confess with a stack trace showing the location bioth in the emulated code and in the code that produced the emulated code.
+ {$assembly->instruction(action=>"confess");
+ }
+
+sub Dec($)                                                                      #i Decrement the target.
+ {my ($target) = @_;                                                            # Target address
+  $assembly->instruction(action=>"dec", xTarget($target))
+ }
+
+sub Dump(;$)                                                                    #i Dump all the arrays currently in memory.
+ {my ($title) = @_;                                                             # Title
+  $assembly->instruction(action=>"dump", source=>$title);
+ }
+
+sub DumpArray($;$)                                                              #i Dump an array.
+ {my ($target, $title) = @_;                                                    # Array to dump, title of dump
+  $assembly->instruction(action=>"dumpArray", target=>RefRight($target), source=>$title);
+ }
+
+sub Else(&)                                                                     #i Else block.
+ {my ($e) = @_;                                                                 # Else block subroutine
+  @_ == 1 or confess "One parameter";
+  (else=>  $e)
+ }
+
+sub Execute(%)                                                                  #i Execute the current assembly.
+ {my (%options) = @_;                                                           # Options
+  my $r = $assembly->execute(%options);                                         # Execute the code in the current assembly
+  if (my $out = $options{out})
+   {my $c = compareArraysAndExplain $r->out, $out;
+    lll $c if $c;
+    say STDERR dump($r->out) if $c;
+    return 0 if $c;
+   }
+  if (my $memory = $options{memory})
+   {my $E = dump $memory;
+    my $G = dump $r->memory;
+    my $e = [split "\n", $E];
+    my $g = [split "\n", $G];
+    my $c = compareArraysAndExplain $g, $e;
+    lll "$c\n$G\n" if $c;
+    return 0 if $c;
+   }
+  return $r;
  }
 
 sub For(&$%)                                                                    #i For loop 0..range-1 or in reverse.
@@ -2130,44 +1783,415 @@ sub ForArray(&$$%)                                                              
   setLabel($End);                                                               # End
  }
 
+sub Free($$)                                                                    #i Free the memory area named by the target operand after confirming that it has the name specified on the source operand.
+ {my ($target, $source) = @_;                                                   # Target area yielding the id of the area to be freed, source area yielding the name of the area to be freed
+  $assembly->instruction(action=>"free", xTarget($target), xSource($source));
+ }
+
 sub Good(&)                                                                     #i A good ending.
  {my ($good) = @_;                                                              # What to do on a good ending
   @_ == 1 or confess "One parameter";
   (good=>  $good)
  }
 
-sub Bad(&)                                                                      #i A bad ending.
- {my ($bad) = @_;                                                               # What to do on a bad ending
-  @_ == 1 or confess "One parameter";
-  (bad=>  $bad)
+sub Ifx($$$%)                                                                   #P Execute then or else clause depending on whether two memory locations are equal.
+ {my ($cmp, $a, $b, %options) = @_;                                             # Comparison, first memory address, second memory address, then block, else block
+  confess "Then required" unless $options{then};
+  if ($options{else})
+   {my $else = label;
+    my $end  = label;
+    &$cmp($else, $a, $b);
+      TracePoint level=>2;
+      &{$options{then}};
+      Jmp $end;
+    setLabel($else);
+      TracePoint level=>2;
+      &{$options{else}};
+    setLabel($end);
+   }
+  else
+   {my $end  = label;
+    &$cmp($end, $a, $b);
+      &{$options{then}};
+    setLabel($end);
+   }
  }
 
-sub Block(&%)                                                                   #i Block of code that can either be restarted or come to a good or a bad ending.
- {my ($block, %options) = @_;                                                   # Block, options
-  my ($Start, $Good, $Bad, $End) = (label, label, label, label);
+sub IfEq($$%)                                                                   #i Execute then or else clause depending on whether two memory locations are equal.
+ {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
+  Ifx(\&Jne, $a, $b, %options);
+ }
 
-  my $g = $options{good};
-  my $b = $options{bad};
+sub IfFalse($%)                                                                 #i Execute then clause if the specified memory address is zero thus representing false.
+ {my ($a, %options) = @_;                                                       # Memory address, then block, else block
+  Ifx(\&Jne, $a, 0, %options);
+ }
 
-  setLabel($Start);                                                             # Start
+sub IfGe($$%)                                                                   #i Execute then or else clause depending on whether two memory locations are greater than or equal.
+ {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
+  Ifx(\&Jlt, $a, $b, %options);
+ }
 
-  TracePoint level=>2;
-  &$block($Start, $Good, $Bad, $End);                                           # Code of block
+sub IfGt($$%)                                                                   #i Execute then or else clause depending on whether two memory locations are greater than.
+ {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
+  Ifx(\&Jle, $a, $b, %options);
+ }
 
-  if ($g)                                                                       # Good
-   {Jmp $End;
-    setLabel($Good);
-    TracePoint level=>2;
-    &$g;
+sub IfNe($$%)                                                                   #i Execute then or else clause depending on whether two memory locations are not equal.
+ {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
+  Ifx(\&Jeq, $a, $b, %options);
+ }
+
+sub IfLe($$%)                                                                   #i Execute then or else clause depending on whether two memory locations are less than or equal.
+ {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
+  Ifx(\&Jgt, $a, $b, %options);
+ }
+
+sub IfLt($$%)                                                                   #i Execute then or else clause depending on whether two memory locations are less than.
+ {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
+  Ifx(\&Jge, $a, $b, %options);
+ }
+
+sub IfTrue($%)                                                                  #i Execute then clause if the specified memory address is not zero thus representing true.
+ {my ($a, %options) = @_;                                                       # Memory address, then block, else block
+  Ifx(\&Jeq, $a, 0, %options);
+ }
+
+sub Inc($)                                                                      #i Increment the target.
+ {my ($target) = @_;                                                            # Target address
+  $assembly->instruction(action=>"inc", xTarget($target))
+ }
+
+sub Jeq($$$)                                                                    #i Jump to a target label if the first source field is equal to the second source field.
+ {my ($target, $source, $source2) = @_;                                         # Target label, source to test
+  $assembly->instruction(action=>"jEq",
+    xTarget($target), xSource($source), xSource2($source2));
+ }
+
+sub JFalse($$)                                                                  #i Jump to a target label if the first source field is equal to zero.
+ {my ($target, $source) = @_;                                                   # Target label, source to test
+  $assembly->instruction(action=>"jFalse", xTarget($target), xSource($source));
+ }
+
+sub Jge($$$)                                                                    #i Jump to a target label if the first source field is greater than or equal to the second source field.
+ {my ($target, $source, $source2) = @_;                                         # Target label, source to test
+  $assembly->instruction(action=>"jGe",
+    xTarget($target), xSource($source), xSource2($source2));
+ }
+
+sub Jgt($$$)                                                                    #i Jump to a target label if the first source field is greater than the second source field.
+ {my ($target, $source, $source2) = @_;                                         # Target label, source to test
+  $assembly->instruction(action=>"jGt",
+    xTarget($target), xSource($source), xSource2($source2));
+ }
+
+sub Jle($$$)                                                                    #i Jump to a target label if the first source field is less than or equal to the second source field.
+ {my ($target, $source, $source2) = @_;                                         # Target label, source to test
+  $assembly->instruction(action=>"jLe",
+    xTarget($target), xSource($source), xSource2($source2));
+ }
+
+sub Jlt($$$)                                                                    #i Jump to a target label if the first source field is less than the second source field.
+ {my ($target, $source, $source2) = @_;                                         # Target label, source to test
+  $assembly->instruction(action=>"jLt",
+    xTarget($target), xSource($source), xSource2($source2));
+ }
+
+sub Jmp($)                                                                      #i Jump to a label.
+ {my ($target) = @_;                                                            # Target address
+  $assembly->instruction(action=>"jmp", xTarget($target));
+ }
+
+sub Jne($$$)                                                                    #i Jump to a target label if the first source field is not equal to the second source field.
+ {my ($target, $source, $source2) = @_;                                         # Target label, source to test
+  $assembly->instruction(action=>"jNe",
+    xTarget($target), xSource($source), xSource2($source2));
+ }
+
+sub JTrue($$)                                                                   #i Jump to a target label if the first source field is not equal to zero.
+ {my ($target, $source) = @_;                                                   # Target label, source to test
+  $assembly->instruction(action=>"jTrue", xTarget($target), xSource($source));
+ }
+
+sub Label($)                                                                    #P Create a label.
+ {my ($source) = @_;                                                            # Name of label
+  $assembly->instruction(action=>"label", xSource($source));
+ }
+
+sub LoadAddress($;$) {                                                          #i Load the address component of an address.
+  if (@_ == 1)
+   {my ($source) = @_;                                                          # Target address, source address
+    my $t = &Var();
+    $assembly->instruction(action=>"loadAddress",
+      target=>RefLeft($t), xSource($source));
+    return $t;
+   }
+  elsif (@ == 2)
+   {my ($target, $source) = @_;                                                 # Target address, source address
+    $assembly->instruction(action=>"loadAddress",
+      xTarget($target), xSource($source));
+   }
+  else
+   {confess "One or two parameters required";
+   }
+ }
+
+sub LoadArea($;$) {                                                              #i Load the area component of an address.
+  if (@_ == 1)
+   {my ($source) = @_;                                                          # Target address, source address
+    my $t = &Var();
+    $assembly->instruction(action=>"loadArea",
+      target=>RefLeft($t), xSource($source));
+    return $t;
+   }
+  elsif (@ == 2)
+   {my ($target, $source) = @_;                                                 # Target address, source address
+    $assembly->instruction(action=>"loadArea",
+      xTarget($target), xSource($source));
+   }
+  else
+   {confess "One or two parameters required";
+   }
+ }
+
+sub Mov($;$) {                                                                  #i Copy a constant or memory address to the target address.
+  if (@_ == 1)
+   {my ($source) = @_;                                                          # Target address, source address
+    my $t = &Var();
+    $assembly->instruction(action=>"mov", target=>RefLeft($t),xSource($source));
+    return $t;
+   }
+  elsif (@ == 2)
+   {my ($target, $source) = @_;                                                 # Target address, source address
+    $assembly->instruction(action=>"mov", xTarget($target), xSource($source));
+   }
+  else
+   {confess "One or two parameters required for mov";
+   }
+ }
+
+sub MoveLong($$$)                                                               #i Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand.
+ {my ($target, $source, $source2) = @_;                                         # Target of move, source of move, length of move
+  $assembly->instruction(action=>"moveLong", xTarget($target),
+    xSource($source), xSource2($source2));
+ }
+
+sub Not($) {                                                                    #i Move and not.
+  if (@_ == 1)
+   {my ($source) = @_;                                                          # Target address, source address
+    my $t = &Var();
+    $assembly->instruction(action=>"not", target=>RefLeft($t),xSource($source));
+    return $t;
+   }
+  elsif (@ == 2)
+   {my ($target, $source) = @_;                                                 # Target address, source address
+    $assembly->instruction(action=>"not", xTarget($target), xSource($source));
+   }
+  else
+   {confess "One or two parameters required for not";
+   }
+ }
+
+sub Nop()                                                                       #i Do nothing (but do it well!).
+ {$assembly->instruction(action=>"nop");
+ }
+
+sub Out($)                                                                      #i Write memory location contents to out.
+ {my ($source) = @_;                                                            # Either a scalar constant or memory address to output
+  $assembly->instruction(action=>"out", xSource($source))
+ }
+
+sub ParamsGet($;$) {                                                            #i Get a word from the parameters in the previous frame and store it in the current frame.
+  if (@_ == 1)
+   {my ($source) = @_;                                                          # Memory address to place parameter in, parameter number
+    my $p = &Var();
+    $assembly->instruction(action=>"paramsGet",
+      target=>RefLeft($p), xSource($source));
+    return $p;
+   }
+  elsif (@_ == 2)
+   {my ($target, $source) = @_;                                                 # Memory address to place parameter in, parameter number
+    $assembly->instruction(action=>"paramsGet",
+      xTarget($target), xSource($source));
+   }
+  else
+   {confess "One or two parameters required";
+   }
+ }
+
+sub ParamsPut($$)                                                               #i Put a word into the parameters list to make it visible in a called procedure.
+ {my ($target, $source) = @_;                                                   # Parameter number, address to fetch parameter from
+  $assembly->instruction(action=>"paramsPut",
+    xTarget($target), xSource($source));
+ }
+
+sub Pop(;$$) {                                                                  #i Pop the memory area specified by the source operand into the memory address specified by the target operand.
+  if (@_ == 0)                                                                  # Pop current stack frame into a local variable
+   {my $p = &Var();
+    my $i = $assembly->instruction(action=>"pop", target=>RefLeft($p));
+    $i->source = undef;
+    return $p;
+   }
+  elsif (@_ == 1)                                                               # Pop indicated area into a local variable
+   {my ($source) = @_;                                                          # Memory address to place return value in, return value to get
+    my $p = &Var();
+    $assembly->instruction(action=>"pop", target=>RefLeft($p),xSource($source));
+    return $p;
+   }
+  elsif (@_ == 2)
+   {my ($target, $source) = @_;                                                 # Pop indicated area into target address
+    $assembly->instruction(action=>"pop", xTarget($target), xSource($source));
+   }
+  else
+   {confess "Zero, One or two parameters required";
+   }
+ }
+
+sub Procedure($$)                                                               #i Define a procedure.
+ {my ($name, $source) = @_;                                                     # Name of procedure, source code as a subroutine# $assembly->instruction(action=>"procedure", target=>$target, source=>$source);
+  if ($name and my $n = $assembly->procedures->{$name})                         # Reuse existing named procedure
+   {return $n;
    }
 
-  if ($b)                                                                       # Bad
-   {Jmp $End;
-    setLabel($Bad);
-    TracePoint level=>2;
-    &$b;
+  Jmp(my $end = label);                                                         # Jump over the code of the procedure body
+  my $start = setLabel;
+  my $p = procedure($start);                                                    # Procedure description
+  my $save_registers = $assembly->variables;
+  $assembly->variables = $p->variables;
+  &$source($p);                                                                 # Code of procedure called with start label as a parameter
+  &Return;
+  $assembly->variables = $save_registers;
+
+  setLabel $end;
+  $assembly->procedures->{$name} = $p;                                          # Return the start of the procedure
+ }
+
+sub Push($;$) {                                                                 #i Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
+  if (@_ == 1)
+   {my ($source) = @_;                                                          # Push a value onto the current stack frame
+    $assembly->instruction(action=>"push", xSource($source));
    }
-  setLabel($End);                                                               # End
+  elsif (@_ == 2)                                                               # Push a value onto the specified memory area
+   {my ($target, $source) = @_;                                                 # Memory area to push to, memory containing value to push
+    $assembly->instruction(action=>"push", xTarget($target), xSource($source));
+   }
+  else
+   {confess "One or two parameters required";
+   }
+ }
+
+sub Resize($$)                                                                  #i Resize the target area to the source size.
+ {my ($target, $source) = @_;                                                   # Target address, source address
+  $assembly->instruction(action=>"resize", xTarget($target), xSource($source));
+ }
+
+sub Return()                                                                    #i Return from a procedure via the call stack.
+ {$assembly->instruction(action=>"return");
+ }
+
+sub ReturnGet($;$) {                                                            #i Get a word from the return area and save it.
+  if (@_ == 1)                                                                  # Create a variable
+   {my ($source) = @_;                                                          # Memory address to place return value in, return value to get
+    my $p = &Var();
+    $assembly->instruction(action=>"returnGet",
+      target=>RefLeft($p), xSource($source));
+    return $p;
+   }
+  elsif (@_ == 2)
+   {my ($target, $source) = @_;                                                 # Memory address to place return value in, return value to get
+    $assembly->instruction(action=>"returnGet",
+      xTarget($target), xSource($source));
+   }
+  else
+   {confess "One or two parameters required";
+   }
+ }
+
+sub ReturnPut($$)                                                               #i Put a word into the return area.
+ {my ($target, $source) = @_;                                                   # Offset in return area to write to, memory address whose contents are to be placed in the return area
+  $assembly->instruction(action=>"returnPut",
+    xTarget($target), xSource($source));
+ }
+
+sub ShiftDown($;$) {                                                            #i Shift an element down one in an area.
+  if (@_ == 1)                                                                  # Create a variable
+   {my ($source) = @_;                                                          # Memory address to place return value in, return value to get
+    my $p = &Var();
+    $assembly->instruction(action=>"shiftDown",
+      target=>RefLeft($p), xSource($source));
+    return $p;
+   }
+  elsif (@_ == 2)
+   {my ($target, $source) = @_;                                                 # Memory address to place return value in, return value to get
+    $assembly->instruction(action=>"shiftDown",
+      xTarget($target), xSource($source));
+    confess "Needs work";
+    return $target;
+   }
+  else
+   {confess "One or two parameters required";
+   }
+ }
+
+sub ShiftLeft($;$) {                                                            #i Shift left within an element.
+  my ($target, $source) = @_;                                                   # Target to shift, amount to shift
+  $assembly->instruction(action=>"shiftLeft",
+    xTarget($target), xSource($source));
+  $target
+ }
+
+sub ShiftRight($;$) {                                                           #i Shift right with an element.
+  my ($target, $source) = @_;                                                   # Target to shift, amount to shift
+  $assembly->instruction(action=>"shiftRight",
+    xTarget($target), xSource($source));
+  $target
+ }
+
+sub ShiftUp($;$)                                                                #i Shift an element up one in an area.
+ {my ($target, $source) = @_;                                                   # Target to shift, amount to shift
+  $assembly->instruction(action=>"shiftUp",
+    xTarget($target), xSource($source));
+  $target
+ }
+
+sub Start($)                                                                    #i Start the current assembly using the specified version of the Zero language.  At  the moment only version 1 works.
+ {my ($version) = @_;                                                           # Version desired - at the moment only 1
+  $version == 1 or confess "Version 1 is currently the only version available\n";
+  $allocs = $allocsStacked = 0;
+  $assembly = Code;                                                             # The current assembly
+ }
+
+sub Subtract($$;$)                                                              #i Subtract the second source operand value from the first source operand value and store the result in the target area.
+ {my ($target, $s1, $s2) = @_ == 2 ? (&Var(), @_) : @_;                         # Target address, source one, source two
+  $assembly->instruction(action=>"subtract", xTarget($target),
+    xSource($s1), xSource2($s2));
+  $target
+ }
+
+sub Tally($)                                                                    #i Counts instructions when enabled.
+ {my ($source) = @_;                                                            # Tally instructions when true
+  $assembly->instruction(action=>"tally", xSource($source));
+ }
+
+sub Then(&)                                                                     #i Then block.
+ {my ($t) = @_;                                                                 # Then block subroutine
+  @_ == 1 or confess "One parameter";
+  (then=>  $t)
+ }
+
+sub Trace($)                                                                    #i Start or stop tracing.  Tracing prints each instruction executed and its effect on memeory.
+ {my ($source) = @_;                                                            # Trace setting
+  $assembly->instruction(action=>"trace", xSource($source));
+ }
+
+sub TracePoints($)                                                              #i Enable or disable trace points.  If trace points are enabled a stack trace is printed for each instructyion executed showing the call stack at the time the instruction was generated as well as the current stack frames.
+ {my ($source) = @_;                                                            # Trace points if true
+  $assembly->instruction(action=>"tracePoints", xSource($source));
+ }
+
+sub TracePoint(%)                                                               #P Trace point - a point in the code where the flow of execution might change.
+ {my (%options) = @_;                                                           # Parameters
+  $assembly->instruction(action=>"tracePoint", %options);
  }
 
 sub Var(;$)                                                                     #P Create a variable initialized to the specified value.
@@ -2178,28 +2202,26 @@ sub Var(;$)                                                                     
   $i
  }
 
-sub Execute(%)                                                                  # Execute the current assembly.
- {my (%options) = @_;                                                           # Options
-  my $r = $assembly->execute(%options);                                         # Execute the code in the current assembly
-  if (my $out = $options{out})
-   {my $c = compareArraysAndExplain $r->out, $out;
-    lll $c if $c;
-    say STDERR dump($r->out) if $c;
-    return 0 if $c;
-   }
-  if (my $memory = $options{memory})
-   {my $E = dump $memory;
-    my $G = dump $r->memory;
-    my $e = [split "\n", $E];
-    my $g = [split "\n", $G];
-    my $c = compareArraysAndExplain $g, $e;
-    lll "$c\n$G\n" if $c;
-    return 0 if $c;
-   }
-  return $r;
+sub Watch($)                                                                    #i Watches for changes to the specified memory location.
+ {my ($target) = @_;                                                            # Memory address to watch
+  $assembly->instruction(action=>"watch", xTarget($target));
  }
 
 #D0
+
+sub instructionList()
+ {my @i = sort grep {m(#i)} readFile $0;
+  my @j;
+  for my $i(@i)
+   {my @parse     = split /[ (){}]+/, $i, 5;
+    my $name = $parse[1];
+    my $sig  = $parse[2];
+    my $comment = $i =~ s(\A.*?#i\s*) ()r;
+    say STDERR sprintf("%10s  %8s   %s", $name, $sig, $comment);
+    #say STDERR "AAAA", dump(\@parse);
+   }
+ }
+#instructionList(); exit;
 
 sub extractDocumentationFlags($$) {1}
 
@@ -2909,13 +2931,13 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          ##LeArea ##LeAddress
+if (1)                                                                          ##LoadArea ##LoadAddress
  {Start 1;
   my $a = Array "array";
   my $b = Mov 2;
   my $c = Mov 5;
-  my $d = LeAddress $c;
-  my $f = LeArea    [$a, \0, 'array'];
+  my $d = LoadAddress $c;
+  my $f = LoadArea    [$a, \0, 'array'];
 
   Out $d;
   Out $f;
