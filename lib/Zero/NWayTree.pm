@@ -1230,10 +1230,8 @@ if (1)                                                                          
  {Start 1;
   my $N = 7;
   my $t = New($N);                                                              # Create tree
-  my $n = Node_new($t);                                                         # Create node
-          Node_allocDown $n;
-  my $o = Node_new($t);                                                         # Create node
-          Node_allocDown $o;
+  my $n = Node_new($t); Node_allocDown $n;                                      # Create node
+  my $o = Node_new($t); Node_allocDown $o;                                      # Create node
 
   Node_setLength $_, $N for $n, $o;
 
@@ -1585,7 +1583,6 @@ if (1)                                                                          
   not        => 180};
 
   #say STDERR printTreeKeys($e->memory); x;
-  #say STDERR printTreeData($e->memory); x;
   is_deeply printTreeKeys($e->memory), <<END;
                                                                                                                 38                                                                                                    72
                                                              21                                                                                                       56                                                                                                 89
@@ -1594,6 +1591,7 @@ if (1)                                                                          
   1  2     4  5     7     9    11 12    14    16    18    20    22    24 25    27    29 30    32    34 35    37    39    41    43 44    46    48    50 51    53    55    57    59    61    63 64    66    68    70 71    73 74    76 77    79 80    82    84 85    87 88    90    92 93    95    97    99100   102   104   106107
 END
 
+  #say STDERR printTreeData($e->memory); x;
   is_deeply printTreeData($e->memory), <<END;
                                                                                                                 76                                                                                                   144
                                                              42                                                                                                      112                                                                                                178
