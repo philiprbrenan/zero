@@ -2173,10 +2173,6 @@ sub Block(&%)                                                                   
 sub Var(;$)                                                                     #P Create a variable initialized to the specified value.
  {my ($value) = @_;                                                             # Value
   my $i = $assembly->registers;
-  my $a = $assembly->variables;
-  my $v = $a->count-1;
-  my $c = $assembly->code->@*;
-# $a->instructions->[$v] = $c;
 
   Mov $i, $value if defined $value;
   $i
