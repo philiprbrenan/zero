@@ -79,7 +79,6 @@ jobs:
 
     - name: Cpan
       run: |
-        sudo apt-get install build-essential                                    # Already installed but here to document what to do on systems where these important tools are not already installed
         sudo cpan install -T Data::Dump Data::Table::Text
 
     - name: Zero Emulator
@@ -114,7 +113,8 @@ jobs:
 
     - name: Cpan
       run: |
-        sudo apt-get install build-essential                                    # Already installed but here to document what to do on systems where these important tools are not already installed
+        sudo apt-get update
+        sudo apt-get install build-essential
         sudo cpan install -T Data::Dump Data::Table::Text
 
     - name: Zero Emulator
