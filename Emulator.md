@@ -2704,13 +2704,6 @@ Block of code that can either be restarted or come to a good or a bad ending.
      }
     
 
-## Var($value)
-
-Create a variable initialized to the specified value.
-
-       Parameter  Description
-    1  $value     Value
-
 ## Execute(%options)
 
 Execute the current assembly.
@@ -3114,6 +3107,13 @@ Assert operation.
     1  $op        Operation
     2  $a         First memory address
     3  $b         Second memory address
+
+## Var($value)
+
+Create a variable initialized to the specified value.
+
+       Parameter  Description
+    1  $value     Value
 
 # Index
 
