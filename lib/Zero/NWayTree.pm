@@ -17,18 +17,18 @@ eval "use Test::More tests=>31" unless caller;
 
 makeDieConfess;
 
-my sub MaxIterations{99};                                                       # The maximum number of levels in a tree
+my sub MaxIterations{99};                                                       # The maximum number of levels in an N-Way tree
 
-my $Tree = sub                                                                  # The structure of an n-way tree
+my $Tree = sub                                                                  # The structure of an N-Way tree
  {my $t = Zero::Emulator::AreaStructure("Structure");
      $t->name(q(keys));                                                         # Number of keys in tree
      $t->name(q(nodes));                                                        # Number of nodes in tree
-     $t->name(q(MaximumNumberOfKeys));                                          # The maximum number of keys in a node of this tree
+     $t->name(q(MaximumNumberOfKeys));                                          # The maximum number of keys in any node of this tree
      $t->name(q(root));                                                         # Root node
      $t
  }->();
 
-my $Node = sub                                                                  # The structure of an n-way tree node
+my $Node = sub                                                                  # The structure of a node in an N-Way tree node
  {my $n = Zero::Emulator::AreaStructure("Node_Structure");
      $n->name(q(length));                                                       # The current number of keys in the node
      $n->name(q(id));                                                           # A number identifying this node within this tree
@@ -53,7 +53,7 @@ my sub FindResult_found   {1}
 my sub FindResult_higher  {2}
 my sub FindResult_notFound{3}
 
-#D1 Constructor                                                                 # Create a new tree.
+#D1 Constructor                                                                 # Create a new N-Way tree.
 
 sub New($)                                                                      # Create a variable referring to a new tree descriptor.
  {my ($n) = @_;                                                                 # Maximum number of keys per node in this tree
@@ -356,7 +356,6 @@ my sub FindResult($$)                                                           
   return 3 if $cmp eq q(notFound);
  }
 
-
 my sub FindResult_renew($$$$%)                                                  # Reuse an existing find result
  {my ($find, $node, $cmp, $index, %options) = @_;                               # Find result, node, comparison result, index, options
   my $f = $find;
@@ -398,7 +397,7 @@ my sub ReUp($)                                                                  
    } $L;
  }
 
-my sub Node_indexInParent($%)                                                   # Get the index of a node in its parent.
+my sub Node_indexInParent($%)                                                   # Get the index of a node in its parent
  {my ($node, %options) = @_;                                                    # Node, options
   my $p = $options{parent} // Node_up($node);                                   # Parent
   AssertNe($p, 0);                                                              # Number of children as opposed to the number of keys
@@ -408,7 +407,7 @@ my sub Node_indexInParent($%)                                                   
   $r
  }
 
-my sub Node_indexInParentP1($%)                                                 # Get the index of a node in its parent.
+my sub Node_indexInParentP1($%)                                                 # Get the index of a node in its parent
  {my ($node, %options) = @_;                                                    # Node, options
   my $p = $options{parent} // Node_up($node);                                   # Parent
   AssertNe($p, 0);                                                              # Number of children as opposed to the number of keys
@@ -528,7 +527,7 @@ my sub Node_SplitIfFull($%)                                                     
   $split
  }
 
-my sub FindAndSplit($$%)                                                        # Find a key in a tree splitting full nodes along the path to the key.
+my sub FindAndSplit($$%)                                                        # Find a key in a tree splitting full nodes along the path to the key
  {my ($tree, $key, %options) = @_;                                              # Tree to search, key, options
   my $node = root($tree);
 
@@ -913,7 +912,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 return 1 if caller;
 
-#D0 Tests
+# Tests
 
 Test::More->builder->output("/dev/null");                                       # Reduce number of confirmation messages during testing
 
