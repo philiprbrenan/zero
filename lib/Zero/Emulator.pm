@@ -1,4 +1,4 @@
-#!/usr/bin/perl -Ilib
+#!/usr/bin/perl -I../lib/ -Ilib
 #-------------------------------------------------------------------------------
 # Assemble and execute code written in the Zero programming language.
 # Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
@@ -11,7 +11,7 @@ package Zero::Emulator;
 our $VERSION = 20230514;                                                        # Version
 use warnings FATAL=>qw(all);
 use strict;
-use Carp qw(cluck confess);
+use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 eval "use Test::More tests=>79" unless caller;
