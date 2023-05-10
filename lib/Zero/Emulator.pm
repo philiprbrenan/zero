@@ -1,6 +1,6 @@
 #!/usr/bin/perl -I../lib/ -Ilib
 #-------------------------------------------------------------------------------
-# Assemble and execute code written in the Zero programming language.
+# Assemble and execute code written in the Zero assembler programming language.
 # Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 #-------------------------------------------------------------------------------
 # Pointless adds and subtracts by 0. Perhaps we should flag adds and subtracts by 1 as well so we can have an instruction optimized for these variants.
