@@ -1502,40 +1502,40 @@ my sub xTarget($)                                                               
   (q(target), RefLeft $t)
  }
 
-sub Start($)                                                                    # Start the current assembly using the specified version of the Zero language.  At  the moment only version 1 works.
+sub Start($)                                                                    #i Start the current assembly using the specified version of the Zero language.  At  the moment only version 1 works.
  {my ($version) = @_;                                                           # Version desired - at the moment only 1
   $version == 1 or confess "Version 1 is currently the only version available\n";
   $allocs = $allocsStacked = 0;
   $assembly = Code;                                                             # The current assembly
  }
 
-sub Add($$;$)                                                                   # Add the source locations together and store the result in the target area.
+sub Add($$;$)                                                                   #i Add the source locations together and store the result in the target area.
  {my ($target, $s1, $s2) = @_ == 2 ? (&Var(), @_) : @_;                         # Target address, source one, source two
   $assembly->instruction(action=>"add", xTarget($target),
     xSource($s1), xSource2($s2));
   $target
  }
 
-sub Subtract($$;$)                                                              # Subtract the second source operand value from the first source operand value and store the result in the target area.
+sub Subtract($$;$)                                                              #i Subtract the second source operand value from the first source operand value and store the result in the target area.
  {my ($target, $s1, $s2) = @_ == 2 ? (&Var(), @_) : @_;                         # Target address, source one, source two
   $assembly->instruction(action=>"subtract", xTarget($target),
     xSource($s1), xSource2($s2));
   $target
  }
 
-sub Array($)                                                                    # Create a new memory area and write its number into the address named by the target operand.
+sub Array($)                                                                    #i Create a new memory area and write its number into the address named by the target operand.
  {my ($name) = @_;                                                              # Name of allocation
   my $t = &Var();
   $assembly->instruction(action=>"array", target=>RefLeft($t), source=>$name);
   $t;
  }
 
-sub Free($$)                                                                    # Free the memory area named by the target operand after confirming that it has the name specified on the source operand.
+sub Free($$)                                                                    #i Free the memory area named by the target operand after confirming that it has the name specified on the source operand.
  {my ($target, $source) = @_;                                                   # Target area yielding the id of the area to be freed, source area yielding the name of the area to be freed
   $assembly->instruction(action=>"free", xTarget($target), xSource($source));
  }
 
-sub ArraySize($$)                                                               # The current size of an array.
+sub ArraySize($$)                                                               #i The current size of an array.
  {my ($area, $name) = @_;                                                       # Location of area, name of area
   my $t = &Var();
   $assembly->instruction(action=>"arraySize",                                   # Target - location to place the size in, source - address of the area, source2 - the name of the area which cannot be taken from the area of the first source operand because that area name is the name of the area that contains the location of the area we wish to work on.
@@ -1543,7 +1543,7 @@ sub ArraySize($$)                                                               
   $t
  }
 
-sub ArrayIndex($$;$) {                                                          # Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.  The business of returning -1 leads to the inferno of try catch.
+sub ArrayIndex($$;$) {                                                          #i Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.  The business of returning -1 leads to the inferno of try catch.
   if (@_ == 2)
    {my ($area, $element) = @_;                                                  # Area, element to find
     my $t = &Var();
@@ -1558,7 +1558,7 @@ sub ArrayIndex($$;$) {                                                          
    }
  }
 
-sub ArrayCountLess($$;$) {                                                      # Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result in the target location.
+sub ArrayCountLess($$;$) {                                                      #i Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result in the target location.
   if (@_ == 2)
    {my ($area, $element) = @_;                                                  # Area, element to find
     my $t = &Var();
@@ -1573,7 +1573,7 @@ sub ArrayCountLess($$;$) {                                                      
    }
  }
 
-sub ArrayCountGreater($$;$) {                                                   # Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result in the target location.
+sub ArrayCountGreater($$;$) {                                                   #i Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result in the target location.
   if (@_ == 2)
    {my ($area, $element) = @_;                                                  # Area, element to find
     my $t = &Var();
@@ -1588,32 +1588,32 @@ sub ArrayCountGreater($$;$) {                                                   
    }
  }
 
-sub Call($)                                                                     # Call the subroutine at the target address.
+sub Call($)                                                                     #i Call the subroutine at the target address.
  {my ($p) = @_;                                                                 # Procedure description
   $assembly->instruction(action=>"call",
     target=>RefLeft($p->target), source=>$p);
  }
 
-sub Confess()                                                                   # Confess.
+sub Confess()                                                                   #i Confess with a stack trace back.
  {$assembly->instruction(action=>"confess");
  }
 
-sub Dump(;$)                                                                    # Dump memory.
+sub Dump(;$)                                                                    #i Dump memory.
  {my ($title) = @_;                                                             # Title
   $assembly->instruction(action=>"dump", source=>$title);
  }
 
-sub DumpArray($;$)                                                              # Dump an array.
+sub DumpArray($;$)                                                              #i Dump an array.
  {my ($target, $title) = @_;                                                    # Array to dump, title of dump
   $assembly->instruction(action=>"dumpArray", target=>RefRight($target), source=>$title);
  }
 
-sub Trace($)                                                                    # Trace.
+sub Trace($)                                                                    #i Start or stop tracing.  Tracing prints each instruction executed and its effect on memeory.
  {my ($source) = @_;                                                            # Trace setting
   $assembly->instruction(action=>"trace", xSource($source));
  }
 
-sub TracePoints($)                                                              # Enable trace points.
+sub TracePoints($)                                                              #i Enable or disable trace points.  If trace points are enabled a stack trace is printed for each instructyion executed showing the call stack at the time the instruction was generated as well as the current stack frames.
  {my ($source) = @_;                                                            # Trace points if true
   $assembly->instruction(action=>"tracePoints", xSource($source));
  }
@@ -1623,78 +1623,78 @@ sub TracePoint(%)                                                               
   $assembly->instruction(action=>"tracePoint", %options);
  }
 
-sub Dec($)                                                                      # Decrement the target.
+sub Dec($)                                                                      #i Decrement the target.
  {my ($target) = @_;                                                            # Target address
   $assembly->instruction(action=>"dec", xTarget($target))
  }
 
-sub Inc($)                                                                      # Increment the target.
+sub Inc($)                                                                      #i Increment the target.
  {my ($target) = @_;                                                            # Target address
   $assembly->instruction(action=>"inc", xTarget($target))
  }
 
-sub Jmp($)                                                                      # Jump to a label.
+sub Jmp($)                                                                      #i Jump to a label.
  {my ($target) = @_;                                                            # Target address
   $assembly->instruction(action=>"jmp", xTarget($target));
  }
 
-sub Jle($$$)                                                                    # Jump to a target label if the first source field is less than or equal to the second source field.
+sub Jle($$$)                                                                    #i Jump to a target label if the first source field is less than or equal to the second source field.
  {my ($target, $source, $source2) = @_;                                         # Target label, source to test
   $assembly->instruction(action=>"jLe",
     xTarget($target), xSource($source), xSource2($source2));
  }
 
-sub Jlt($$$)                                                                    # Jump to a target label if the first source field is less than the second source field.
+sub Jlt($$$)                                                                    #i Jump to a target label if the first source field is less than the second source field.
  {my ($target, $source, $source2) = @_;                                         # Target label, source to test
   $assembly->instruction(action=>"jLt",
     xTarget($target), xSource($source), xSource2($source2));
  }
 
-sub Jge($$$)                                                                    # Jump to a target label if the first source field is greater than or equal to the second source field.
+sub Jge($$$)                                                                    #i Jump to a target label if the first source field is greater than or equal to the second source field.
  {my ($target, $source, $source2) = @_;                                         # Target label, source to test
   $assembly->instruction(action=>"jGe",
     xTarget($target), xSource($source), xSource2($source2));
  }
 
-sub Jgt($$$)                                                                    # Jump to a target label if the first source field is greater than the second source field.
+sub Jgt($$$)                                                                    #i Jump to a target label if the first source field is greater than the second source field.
  {my ($target, $source, $source2) = @_;                                         # Target label, source to test
   $assembly->instruction(action=>"jGt",
     xTarget($target), xSource($source), xSource2($source2));
  }
 
-sub Jeq($$$)                                                                    # Jump to a target label if the first source field is equal to the second source field.
+sub Jeq($$$)                                                                    #i Jump to a target label if the first source field is equal to the second source field.
  {my ($target, $source, $source2) = @_;                                         # Target label, source to test
   $assembly->instruction(action=>"jEq",
     xTarget($target), xSource($source), xSource2($source2));
  }
 
-sub Jne($$$)                                                                    # Jump to a target label if the first source field is not equal to the second source field.
+sub Jne($$$)                                                                    #i Jump to a target label if the first source field is not equal to the second source field.
  {my ($target, $source, $source2) = @_;                                         # Target label, source to test
   $assembly->instruction(action=>"jNe",
     xTarget($target), xSource($source), xSource2($source2));
  }
 
-sub JFalse($$)                                                                  # Jump to a target label if the first source field is equal to zero.
+sub JFalse($$)                                                                  #i Jump to a target label if the first source field is equal to zero.
  {my ($target, $source) = @_;                                                   # Target label, source to test
   $assembly->instruction(action=>"jFalse", xTarget($target), xSource($source));
  }
 
-sub JTrue($$)                                                                   # Jump to a target label if the first source field is not equal to zero.
+sub JTrue($$)                                                                   #i Jump to a target label if the first source field is not equal to zero.
  {my ($target, $source) = @_;                                                   # Target label, source to test
   $assembly->instruction(action=>"jTrue", xTarget($target), xSource($source));
  }
 
-sub Label($)                                                                    # Create a label.
+sub Label($)                                                                    #P Create a label.
  {my ($source) = @_;                                                            # Name of label
   $assembly->instruction(action=>"label", xSource($source));
  }
 
-sub Clear($)                                                                    # Clear the first bytes of an area.  The area is specified by the first element of the address, the number of locations to clear is specified by the second element of the target address.
+sub Clear($)                                                                    #i Clear the first bytes of an area.  The area is specified by the first element of the address, the number of locations to clear is specified by the second element of the target address.
  {my ($target) = @_;                                                            # Target address, source address
   $assembly->instruction(action=>"clear", xTarget($target));
  }
 
-sub LeAddress($;$) {                                                            # Load the address component.
+sub LeAddress($;$) {                                                            #i Load the address component of an address.
   if (@_ == 1)
    {my ($source) = @_;                                                          # Target address, source address
     my $t = &Var();
@@ -1712,7 +1712,7 @@ sub LeAddress($;$) {                                                            
    }
  }
 
-sub LeArea($;$) {                                                               # Load the address component.
+sub LeArea($;$) {                                                               #i Load the area component of an address.
   if (@_ == 1)
    {my ($source) = @_;                                                          # Target address, source address
     my $t = &Var();
@@ -1730,7 +1730,7 @@ sub LeArea($;$) {                                                               
    }
  }
 
-sub Mov($;$) {                                                                  # Copy a constant or memory address to the target address.
+sub Mov($;$) {                                                                  #i Copy a constant or memory address to the target address.
   if (@_ == 1)
    {my ($source) = @_;                                                          # Target address, source address
     my $t = &Var();
@@ -1746,13 +1746,13 @@ sub Mov($;$) {                                                                  
    }
  }
 
-sub MoveLong($$$)                                                               # Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand.
+sub MoveLong($$$)                                                               #i Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand.
  {my ($target, $source, $source2) = @_;                                         # Target of move, source of move, length of move
   $assembly->instruction(action=>"moveLong", xTarget($target),
     xSource($source), xSource2($source2));
  }
 
-sub Not($) {                                                                    # Move and not.
+sub Not($) {                                                                    #i Move and not.
   if (@_ == 1)
    {my ($source) = @_;                                                          # Target address, source address
     my $t = &Var();
@@ -1768,16 +1768,16 @@ sub Not($) {                                                                    
    }
  }
 
-sub Nop()                                                                       # Do nothing (but do it well!).
+sub Nop()                                                                       #i Do nothing (but do it well!).
  {$assembly->instruction(action=>"nop");
  }
 
-sub Out($)                                                                      # Write memory contents to out.
+sub Out($)                                                                      #i Write memory location contents to out.
  {my ($source) = @_;                                                            # Either a scalar constant or memory address to output
   $assembly->instruction(action=>"out", xSource($source))
  }
 
-sub Procedure($$)                                                               # Define a procedure.
+sub Procedure($$)                                                               #i Define a procedure.
  {my ($name, $source) = @_;                                                     # Name of procedure, source code as a subroutine# $assembly->instruction(action=>"procedure", target=>$target, source=>$source);
   if ($name and my $n = $assembly->procedures->{$name})                         # Reuse existing named procedure
    {return $n;
@@ -1796,7 +1796,7 @@ sub Procedure($$)                                                               
   $assembly->procedures->{$name} = $p;                                          # Return the start of the procedure
  }
 
-sub ParamsGet($;$) {                                                            # Get a word from the parameters in the previous frame and store it in the current frame.
+sub ParamsGet($;$) {                                                            #i Get a word from the parameters in the previous frame and store it in the current frame.
   if (@_ == 1)
    {my ($source) = @_;                                                          # Memory address to place parameter in, parameter number
     my $p = &Var();
@@ -1814,17 +1814,17 @@ sub ParamsGet($;$) {                                                            
    }
  }
 
-sub ParamsPut($$)                                                               # Put a word into the parameters list to make it visible in a called procedure.
+sub ParamsPut($$)                                                               #i Put a word into the parameters list to make it visible in a called procedure.
  {my ($target, $source) = @_;                                                   # Parameter number, address to fetch parameter from
   $assembly->instruction(action=>"paramsPut",
     xTarget($target), xSource($source));
  }
 
-sub Return()                                                                    # Return from a procedure via the call stack.
+sub Return()                                                                    #i Return from a procedure via the call stack.
  {$assembly->instruction(action=>"return");
  }
 
-sub ReturnGet($;$) {                                                            # Get a word from the return area and save it.
+sub ReturnGet($;$) {                                                            #i Get a word from the return area and save it.
   if (@_ == 1)                                                                  # Create a variable
    {my ($source) = @_;                                                          # Memory address to place return value in, return value to get
     my $p = &Var();
@@ -1842,18 +1842,18 @@ sub ReturnGet($;$) {                                                            
    }
  }
 
-sub ReturnPut($$)                                                               # Put a word into the return area.
+sub ReturnPut($$)                                                               #i Put a word into the return area.
  {my ($target, $source) = @_;                                                   # Offset in return area to write to, memory address whose contents are to be placed in the return area
   $assembly->instruction(action=>"returnPut",
     xTarget($target), xSource($source));
  }
 
-sub Resize($$)                                                                  # Resize the target area to the source size.
+sub Resize($$)                                                                  #i Resize the target area to the source size.
  {my ($target, $source) = @_;                                                   # Target address, source address
   $assembly->instruction(action=>"resize", xTarget($target), xSource($source));
  }
 
-sub Pop(;$$) {                                                                  # Pop the memory area specified by the source operand into the memory address specified by the target operand.
+sub Pop(;$$) {                                                                  #i Pop the memory area specified by the source operand into the memory address specified by the target operand.
   if (@_ == 0)                                                                  # Pop current stack frame into a local variable
    {my $p = &Var();
     my $i = $assembly->instruction(action=>"pop", target=>RefLeft($p));
@@ -1875,7 +1875,7 @@ sub Pop(;$$) {                                                                  
    }
  }
 
-sub Push($;$) {                                                                 # Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
+sub Push($;$) {                                                                 #i Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
   if (@_ == 1)
    {my ($source) = @_;                                                          # Push a value onto the current stack frame
     $assembly->instruction(action=>"push", xSource($source));
@@ -1889,28 +1889,28 @@ sub Push($;$) {                                                                 
    }
  }
 
-sub ShiftLeft($;$) {                                                            # Shift left within an element.
+sub ShiftLeft($;$) {                                                            #i Shift left within an element.
   my ($target, $source) = @_;                                                   # Target to shift, amount to shift
   $assembly->instruction(action=>"shiftLeft",
     xTarget($target), xSource($source));
   $target
  }
 
-sub ShiftRight($;$) {                                                           # Shift right with an element.
+sub ShiftRight($;$) {                                                           #i Shift right with an element.
   my ($target, $source) = @_;                                                   # Target to shift, amount to shift
   $assembly->instruction(action=>"shiftRight",
     xTarget($target), xSource($source));
   $target
  }
 
-sub ShiftUp($;$)                                                                # Shift an element up one in an area.
+sub ShiftUp($;$)                                                                #i Shift an element up one in an area.
  {my ($target, $source) = @_;                                                   # Target to shift, amount to shift
   $assembly->instruction(action=>"shiftUp",
     xTarget($target), xSource($source));
   $target
  }
 
-sub ShiftDown($;$) {                                                            # Shift an element down one in an area.
+sub ShiftDown($;$) {                                                            #i Shift an element down one in an area.
   if (@_ == 1)                                                                  # Create a variable
    {my ($source) = @_;                                                          # Memory address to place return value in, return value to get
     my $p = &Var();
@@ -1930,23 +1930,23 @@ sub ShiftDown($;$) {                                                            
    }
  }
 
-sub Watch($)                                                                    # Shift an element down one in an area.
+sub Watch($)                                                                    #i Watches for changes to the specified memory location.
  {my ($target) = @_;                                                            # Memory address to watch
   $assembly->instruction(action=>"watch", xTarget($target));
  }
 
-sub Tally($)                                                                    # Counts instructions when enabled.
+sub Tally($)                                                                    #i Counts instructions when enabled.
  {my ($source) = @_;                                                            # Tally instructions when true
   $assembly->instruction(action=>"tally", xSource($source));
  }
 
-sub Then(&)                                                                     # Then block.
+sub Then(&)                                                                     #i Then block.
  {my ($t) = @_;                                                                 # Then block subroutine
   @_ == 1 or confess "One parameter";
   (then=>  $t)
  }
 
-sub Else(&)                                                                     # Else block.
+sub Else(&)                                                                     #i Else block.
  {my ($e) = @_;                                                                 # Else block subroutine
   @_ == 1 or confess "One parameter";
   (else=>  $e)
@@ -1975,42 +1975,42 @@ sub Ifx($$$%)                                                                   
    }
  }
 
-sub IfFalse($%)                                                                 # Execute then clause if the specified memory address is zero thus representing false.
+sub IfFalse($%)                                                                 #i Execute then clause if the specified memory address is zero thus representing false.
  {my ($a, %options) = @_;                                                       # Memory address, then block, else block
   Ifx(\&Jne, $a, 0, %options);
  }
 
-sub IfTrue($%)                                                                  # Execute then clause if the specified memory address is not zero thus representing true.
+sub IfTrue($%)                                                                  #i Execute then clause if the specified memory address is not zero thus representing true.
  {my ($a, %options) = @_;                                                       # Memory address, then block, else block
   Ifx(\&Jeq, $a, 0, %options);
  }
 
-sub IfEq($$%)                                                                   # Execute then or else clause depending on whether two memory locations are equal.
+sub IfEq($$%)                                                                   #i Execute then or else clause depending on whether two memory locations are equal.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
   Ifx(\&Jne, $a, $b, %options);
  }
 
-sub IfNe($$%)                                                                   # Execute then or else clause depending on whether two memory locations are not equal.
+sub IfNe($$%)                                                                   #i Execute then or else clause depending on whether two memory locations are not equal.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
   Ifx(\&Jeq, $a, $b, %options);
  }
 
-sub IfLt($$%)                                                                   # Execute then or else clause depending on whether two memory locations are less than.
+sub IfLt($$%)                                                                   #i Execute then or else clause depending on whether two memory locations are less than.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
   Ifx(\&Jge, $a, $b, %options);
  }
 
-sub IfLe($$%)                                                                   # Execute then or else clause depending on whether two memory locations are less than or equal.
+sub IfLe($$%)                                                                   #i Execute then or else clause depending on whether two memory locations are less than or equal.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
   Ifx(\&Jgt, $a, $b, %options);
  }
 
-sub IfGt($$%)                                                                   # Execute then or else clause depending on whether two memory locations are greater than.
+sub IfGt($$%)                                                                   #i Execute then or else clause depending on whether two memory locations are greater than.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
   Ifx(\&Jle, $a, $b, %options);
  }
 
-sub IfGe($$%)                                                                   # Execute then or else clause depending on whether two memory locations are greater than or equal.
+sub IfGe($$%)                                                                   #i Execute then or else clause depending on whether two memory locations are greater than or equal.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
   Ifx(\&Jlt, $a, $b, %options);
  }
@@ -2026,52 +2026,52 @@ sub Assert2($$$)                                                                
     xSource($a), xSource2($b), level=>2);
  }
 
-sub Assert(%)                                                                   # Assert regardless.
+sub Assert(%)                                                                   #i Assert regardless.
  {my (%options) = @_;                                                           # Options
   $assembly->instruction(action=>"assert");
  }
 
-sub AssertEq($$%)                                                               # Assert two memory locations are equal.
+sub AssertEq($$%)                                                               #i Assert two memory locations are equal.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
   Assert2("Eq", $a, $b);
  }
 
-sub AssertNe($$%)                                                               # Assert two memory locations are not equal.
+sub AssertNe($$%)                                                               #i Assert two memory locations are not equal.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
   Assert2("Ne", $a, $b);
  }
 
-sub AssertLt($$%)                                                               # Assert two memory locations are less than.
+sub AssertLt($$%)                                                               #i Assert two memory locations are less than.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
   Assert2("Lt", $a, $b);
  }
 
-sub AssertLe($$%)                                                               # Assert two memory locations are less than or equal.
+sub AssertLe($$%)                                                               #i Assert two memory locations are less than or equal.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
   Assert2("Le", $a, $b);
  }
 
-sub AssertGt($$%)                                                               # Assert two memory locations are greater than.
+sub AssertGt($$%)                                                               #i Assert two memory locations are greater than.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
   Assert2("Gt", $a, $b);
  }
 
-sub AssertGe($$%)                                                               # Assert are greater than or equal.
+sub AssertGe($$%)                                                               #i Assert are greater than or equal.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
   Assert2("Ge", $a, $b);
  }
 
-sub AssertTrue($%)                                                              # Assert true.
+sub AssertTrue($%)                                                              #i Assert true.
  {my ($a, %options) = @_;                                                       # Source operand
   Assert1("True", $a);
  }
 
-sub AssertFalse($%)                                                             # Assert false.
+sub AssertFalse($%)                                                             #i Assert false.
  {my ($a, %options) = @_;                                                       # Source operand
   Assert1("False", $a);
  }
 
-sub For(&$%)                                                                    # For loop 0..range-1 or in reverse.
+sub For(&$%)                                                                    #i For loop 0..range-1 or in reverse.
  {my ($block, $range, %options) = @_;                                           # Block, limit, options
   if (!exists $options{reverse})                                                # Ascending order
    {my $s = 0; my $e = $range;                                                  # Start, end
@@ -2110,7 +2110,7 @@ sub For(&$%)                                                                    
    }
  }
 
-sub ForArray(&$$%)                                                              # For loop to process each element of the named area.
+sub ForArray(&$$%)                                                              #i For loop to process each element of the named area.
  {my ($block, $area, $name, %options) = @_;                                     # Block of code, area, area name, options
   my $e = ArraySize $area, $name;                                               # End
   my $s = 0;                                                                    # Start
@@ -2130,19 +2130,19 @@ sub ForArray(&$$%)                                                              
   setLabel($End);                                                               # End
  }
 
-sub Good(&)                                                                     # A good ending.
+sub Good(&)                                                                     #i A good ending.
  {my ($good) = @_;                                                              # What to do on a good ending
   @_ == 1 or confess "One parameter";
   (good=>  $good)
  }
 
-sub Bad(&)                                                                      # A bad ending.
+sub Bad(&)                                                                      #i A bad ending.
  {my ($bad) = @_;                                                               # What to do on a bad ending
   @_ == 1 or confess "One parameter";
   (bad=>  $bad)
  }
 
-sub Block(&%)                                                                   # Block of code that can either be restarted or come to a good or a bad ending.
+sub Block(&%)                                                                   #i Block of code that can either be restarted or come to a good or a bad ending.
  {my ($block, %options) = @_;                                                   # Block, options
   my ($Start, $Good, $Bad, $End) = (label, label, label, label);
 
@@ -2170,7 +2170,7 @@ sub Block(&%)                                                                   
   setLabel($End);                                                               # End
  }
 
-sub Var(;$)                                                                     #P Create a variable initialized to the specified value.
+sub Var(;$)                                                                     #i Create a variable initialized to the specified value.
  {my ($value) = @_;                                                             # Value
   my $i = $assembly->registers;
   my $a = $assembly->variables;
@@ -2202,6 +2202,10 @@ sub Execute(%)                                                                  
    }
   return $r;
  }
+
+#D0
+
+sub extractDocumentationFlags($$) {1}
 
 use Exporter qw(import);
 use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
