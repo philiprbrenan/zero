@@ -1184,7 +1184,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       push $exec->out->@*, @m;
      },
 
-    dumpArray=> sub                                                             # Dump array in memory
+    arrayDump=> sub                                                             # Dump array in memory
      {my $i = $exec->currentInstruction;
       my @m;
       push @m, $i->source // "Array dump";
@@ -1435,6 +1435,7 @@ sub Zero::Emulator::Code::execute($%)                                           
        }
 
       $exec->lastAssignArea = $exec->lastAssignAddress = $exec->lastAssignValue = undef;
+      defined $c or confess "No implemnatation for instruction: $a";
       $c->($i);                                                                 # Execute instruction
 
       $exec->instructionCounts->{$i->number}++;                                 # Execution count by actual instruction
@@ -1554,6 +1555,10 @@ sub ArrayCountGreater($$;$) {                                                   
    }
  }
 
+sub ArrayDump($;$)                                                              #i Dump an array.
+ {my ($target, $title) = @_;                                                    # Array to dump, title of dump
+  $assembly->instruction(action=>"arrayDump", target=>RefRight($target), source=>$title);
+ }
 
 sub ArrayIndex($$;$) {                                                          #i Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.  The business of returning -1 would have led to the confusion of "try catch" and we certainly do not want that.
   if (@_ == 2)
@@ -1690,11 +1695,6 @@ sub Dec($)                                                                      
 sub Dump(;$)                                                                    #i Dump all the arrays currently in memory.
  {my ($title) = @_;                                                             # Title
   $assembly->instruction(action=>"dump", source=>$title);
- }
-
-sub DumpArray($;$)                                                              #i Dump an array.
- {my ($target, $title) = @_;                                                    # Array to dump, title of dump
-  $assembly->instruction(action=>"dumpArray", target=>RefRight($target), source=>$title);
  }
 
 sub Else(&)                                                                     #i Else block.
@@ -3128,7 +3128,7 @@ if (1)                                                                          
 
   my $n = ArraySize $a, "aaa";
   Out "Array size:"; Out $n;
-  DumpArray $a, "AAAA";
+  ArrayDump $a, "AAAA";
 
   ForArray
    {my ($i, $e, $check, $next, $end) = @_;
@@ -3159,14 +3159,14 @@ if (1)                                                                          
     Mov [$a, 0, "aaa"], 1;
     Mov [$a, 1, "aaa"], 22;
     Mov [$a, 2, "aaa"], 333;
-  DumpArray $a, "AAAA";
+  ArrayDump $a, "AAAA";
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->out, [
   "AAAA",
   "bless([1, 22, 333], \"aaa\")",
   "Stack trace",
-  "    1     5 dumpArray"];
+  "    1     5 arrayDump"];
  }
 
 #latest:;
