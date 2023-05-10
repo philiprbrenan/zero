@@ -239,7 +239,7 @@ The current size of an array.
 
 ## ArrayIndex()
 
-Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.  The business of returning -1 leads to the inferno of try catch.
+Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.  The business of returning -1 would have led to the confusion of "try catch" and we certainly do not want that.
 
 **Example:**
 
@@ -456,23 +456,25 @@ Call the subroutine at the target address.
      {Start 1;
       my $set = Procedure 'set', sub
        {my $a = ParamsGet 0;
+        Out $a;
        };
-      ParamsPut 0, 1;
     
-      Call $set;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      ParamsPut 0, 1;  Call $set;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      ParamsPut 0, 1;
     
-      Call $set;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      ParamsPut 0, 2;  Call $set;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+    
+      ParamsPut 0, 3;  Call $set;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [];
+      is_deeply $e->out, [1..3];
      }
     
 
 ## Confess()
 
-Confess with a stack trace back.
+Confess with a stack trace showing the location bioth in the emulated code and in the code that produced the emulated code.
 
 **Example:**
 
@@ -493,7 +495,7 @@ Confess with a stack trace back.
 
 ## Dump($title)
 
-Dump memory.
+Dump all the arrays currently in memory.
 
        Parameter  Description
     1  $title     Title
@@ -1199,13 +1201,13 @@ Copy a constant or memory address to the target address.
      {Start 1;
       my $set = Procedure 'set', sub
        {my $a = ParamsGet 0;
+        Out $a;
        };
-      ParamsPut 0, 1;
-      Call $set;
-      ParamsPut 0, 1;
-      Call $set;
+      ParamsPut 0, 1;  Call $set;
+      ParamsPut 0, 2;  Call $set;
+      ParamsPut 0, 3;  Call $set;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [];
+      is_deeply $e->out, [1..3];
      }
     
     if (1)                                                                                 
@@ -3192,11 +3194,11 @@ Create a variable initialized to the specified value.
 
 21 [Clear](#clear) - Clear the first bytes of an area.
 
-22 [Confess](#confess) - Confess with a stack trace back.
+22 [Confess](#confess) - Confess with a stack trace showing the location bioth in the emulated code and in the code that produced the emulated code.
 
 23 [Dec](#dec) - Decrement the target.
 
-24 [Dump](#dump) - Dump memory.
+24 [Dump](#dump) - Dump all the arrays currently in memory.
 
 25 [DumpArray](#dumparray) - Dump an array.
 
