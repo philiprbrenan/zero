@@ -170,3 +170,10 @@ to location 3 in the current stack frame.
 ## Instructions
 
 [The instruction set](https://metacpan.org/dist/Zero-Emulator/view/Emulator.pod)
+
+## Macro Preprocessor
+
+Every [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) needs a macro preocessor to generate [code](https://en.wikipedia.org/wiki/Computer_program) from macro
+specifications.  Writing each instruction by hand is hard work, but using a
+good [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) saves programmer time by allowing common instruction
+sequences to be captured as macros which can then be called upon as needed.
