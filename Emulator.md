@@ -2760,7 +2760,7 @@ Watches for changes to the specified memory location.
 
 # Private Methods
 
-## Zero::Emulator::Execution::areaContent($exec, $address)
+## Zero::Emulator::areaContent($exec, $address)
 
 Content of an area containing a address in memory in the specified execution.
 
@@ -2768,14 +2768,14 @@ Content of an area containing a address in memory in the specified execution.
     1  $exec      Execution environment
     2  $address   Address specification
 
-## Zero::Emulator::Execution::dumpMemory($exec)
+## Zero::Emulator::dumpMemory($exec)
 
 Dump memory.
 
        Parameter  Description
     1  $exec      Execution environment
 
-## Zero::Emulator::Execution::analyzeExecutionResultsLeast($exec, %options)
+## Zero::Emulator::analyzeExecutionResultsLeast($exec, %options)
 
 Analyze execution results for least used code.
 
@@ -2783,7 +2783,7 @@ Analyze execution results for least used code.
     1  $exec      Execution results
     2  %options   Options
 
-## Zero::Emulator::Execution::analyzeExecutionResultsMost($exec, %options)
+## Zero::Emulator::analyzeExecutionResultsMost($exec, %options)
 
 Analyze execution results for most used code.
 
@@ -2791,7 +2791,7 @@ Analyze execution results for most used code.
     1  $exec      Execution results
     2  %options   Options
 
-## Zero::Emulator::Execution::analyzeExecutionNotRead($exec, %options)
+## Zero::Emulator::analyzeExecutionNotRead($exec, %options)
 
 Analyze execution results for variables never read.
 
@@ -2799,7 +2799,7 @@ Analyze execution results for variables never read.
     1  $exec      Execution results
     2  %options   Options
 
-## Zero::Emulator::Execution::analyzeExecutionResultsDoubleWrite($exec, %options)
+## Zero::Emulator::analyzeExecutionResultsDoubleWrite($exec, %options)
 
 Analyze execution results - double writes.
 
@@ -2807,7 +2807,7 @@ Analyze execution results - double writes.
     1  $exec      Execution results
     2  %options   Options
 
-## Zero::Emulator::Execution::analyzeExecutionResults($exec, %options)
+## Zero::Emulator::analyzeExecutionResults($exec, %options)
 
 Analyze execution results.
 
@@ -2815,7 +2815,7 @@ Analyze execution results.
     1  $exec      Execution results
     2  %options   Options
 
-## Zero::Emulator::Execution::check($exec, $area, $name)
+## Zero::Emulator::check($exec, $area, $name)
 
 Check that a user area access is valid.
 
@@ -2824,7 +2824,7 @@ Check that a user area access is valid.
     2  $area      Area
     3  $name      Expected area name
 
-## Zero::Emulator::Execution::getMemory($exec, $area, $address, $name, %options)
+## Zero::Emulator::getMemory($exec, $area, $address, $name, %options)
 
 Get from memory.
 
@@ -2835,7 +2835,7 @@ Get from memory.
     4  $name      Expected name of area
     5  %options   Options
 
-## Zero::Emulator::Execution::get($exec, $area, $address)
+## Zero::Emulator::get($exec, $area, $address)
 
 Get from memory.
 
@@ -2844,7 +2844,7 @@ Get from memory.
     2  $area      Area
     3  $address   Address
 
-## Zero::Emulator::Execution::set($exec, $address, $value)
+## Zero::Emulator::set($exec, $address, $value)
 
 Set the value of an address at the specified address in memory in the current execution environment.
 
@@ -2853,14 +2853,14 @@ Set the value of an address at the specified address in memory in the current ex
     2  $address   Address specification
     3  $value     Value
 
-## Zero::Emulator::Execution::stackArea($exec)
+## Zero::Emulator::stackArea($exec)
 
 Current stack frame.
 
        Parameter  Description
     1  $exec      Execution environment
 
-## Zero::Emulator::Execution::address($exec, $area, $address, $name)
+## Zero::Emulator::address($exec, $area, $address, $name)
 
 Record a reference to memory.
 
@@ -2870,7 +2870,7 @@ Record a reference to memory.
     3  $address   Address in area
     4  $name      Memory
 
-## Zero::Emulator::Execution::stackTrace($exec, $title)
+## Zero::Emulator::stackTrace($exec, $title)
 
 Create a stack trace.
 
@@ -2878,7 +2878,7 @@ Create a stack trace.
     1  $exec      Execution environment
     2  $title     Title
 
-## Zero::Emulator::Execution::stackTraceAndExit($exec, $title, %options)
+## Zero::Emulator::stackTraceAndExit($exec, $title, %options)
 
 Create a stack trace and exit from the emulated program.
 
@@ -2887,7 +2887,7 @@ Create a stack trace and exit from the emulated program.
     2  $title     Title
     3  %options   Options
 
-## Zero::Emulator::Execution::allocMemory($exec, $name, $stacked)
+## Zero::Emulator::allocMemory($exec, $name, $stacked)
 
 Create the name of a new memory area.
 
@@ -2896,7 +2896,7 @@ Create the name of a new memory area.
     2  $name      Name of allocation
     3  $stacked   Stacked if true
 
-## Zero::Emulator::Execution::setMemoryType($exec, $area, $name)
+## Zero::Emulator::setMemoryType($exec, $area, $name)
 
 Set the type of a memory area - a name that can be used to confirm the validity of reads and writes to that array represented by that area.
 
@@ -2905,11 +2905,11 @@ Set the type of a memory area - a name that can be used to confirm the validity 
     2  $area      Area name
     3  $name      Name of allocation
 
-## Zero::Emulator::Execution::notRead()
+## Zero::Emulator::notRead()
 
 Record the unused memory locations in the current stack frame.
 
-## Zero::Emulator::Execution::rwWrite($exec, $area, $address)
+## Zero::Emulator::rwWrite($exec, $area, $address)
 
 Observe write to memory.
 
@@ -2918,7 +2918,7 @@ Observe write to memory.
     2  $area      Address within area
     3  $address
 
-## Zero::Emulator::Execution::markAsRead($exec, $area, $address)
+## Zero::Emulator::markAsRead($exec, $area, $address)
 
 Mark a memory address as having been read from.
 
@@ -2927,7 +2927,7 @@ Mark a memory address as having been read from.
     2  $area      Address within area
     3  $address
 
-## Zero::Emulator::Execution::rwRead($exec, $area, $address)
+## Zero::Emulator::rwRead($exec, $area, $address)
 
 Observe read from memory.
 
@@ -2936,7 +2936,7 @@ Observe read from memory.
     2  $area      Address within area
     3  $address
 
-## Zero::Emulator::Execution::left($exec, $ref, $extra)
+## Zero::Emulator::left($exec, $ref, $extra)
 
 Address a memory address.
 
@@ -2945,7 +2945,7 @@ Address a memory address.
     2  $ref       An optional extra offset to add or subtract to the final memory address
     3  $extra
 
-## Zero::Emulator::Execution::leftSuppress($exec, $ref)
+## Zero::Emulator::leftSuppress($exec, $ref)
 
 Indicate that a memory address has been read.
 
@@ -2953,7 +2953,7 @@ Indicate that a memory address has been read.
     1  $exec      Execution environment
     2  $ref       Reference
 
-## Zero::Emulator::Execution::right($exec, $ref)
+## Zero::Emulator::right($exec, $ref)
 
 Get a constant or a memory address.
 
@@ -2961,7 +2961,7 @@ Get a constant or a memory address.
     1  $exec      Location
     2  $ref       Optional area
 
-## Zero::Emulator::Execution::jumpOp($exec, $i, $check)
+## Zero::Emulator::jumpOp($exec, $i, $check)
 
 Jump to the target address if the tested memory area if the condition is matched.
 
@@ -2970,7 +2970,7 @@ Jump to the target address if the tested memory area if the condition is matched
     2  $i         Instruction
     3  $check     Check
 
-## Zero::Emulator::Execution::assert1($exec, $test, $sub)
+## Zero::Emulator::assert1($exec, $test, $sub)
 
 Assert true or false.
 
@@ -2979,7 +2979,7 @@ Assert true or false.
     2  $test      Text of test
     3  $sub       Subroutine of test
 
-## Zero::Emulator::Execution::assert($exec, $test, $sub)
+## Zero::Emulator::assert($exec, $test, $sub)
 
 Assert generically.
 
@@ -2988,7 +2988,7 @@ Assert generically.
     2  $test      Text of test
     3  $sub       Subroutine of test
 
-## Zero::Emulator::Execution::assign($exec, $target, $value)
+## Zero::Emulator::assign($exec, $target, $value)
 
 Assign - check for pointless assignments.
 
@@ -2997,14 +2997,14 @@ Assign - check for pointless assignments.
     2  $target    Target of assign
     3  $value     Value to assign
 
-## Zero::Emulator::Execution::allocateSystemAreas($exec)
+## Zero::Emulator::allocateSystemAreas($exec)
 
 Allocate system areas for a new stack frame.
 
        Parameter  Description
     1  $exec      Execution environment
 
-## Zero::Emulator::Execution::freeSystemAreas($exec, $c)
+## Zero::Emulator::freeSystemAreas($exec, $c)
 
 Free system areas for the specified stack frame.
 
@@ -3012,21 +3012,21 @@ Free system areas for the specified stack frame.
     1  $exec      Execution environment
     2  $c         Stack frame
 
-## Zero::Emulator::Execution::currentInstruction($exec)
+## Zero::Emulator::currentInstruction($exec)
 
 Locate current instruction.
 
        Parameter  Description
     1  $exec      Execution environment
 
-## Zero::Emulator::Execution::createInitialStackEntry($exec)
+## Zero::Emulator::createInitialStackEntry($exec)
 
 Create the initial stack frame.
 
        Parameter  Description
     1  $exec      Execution environment
 
-## Zero::Emulator::Execution::checkArrayName($exec, $area, $name)
+## Zero::Emulator::checkArrayName($exec, $area, $name)
 
 Check the name of an array.
 
@@ -3035,7 +3035,7 @@ Check the name of an array.
     2  $area      Array
     3  $name      Array name
 
-## Zero::Emulator::Execution::locateAreaElement($exec, $area, $op)
+## Zero::Emulator::locateAreaElement($exec, $area, $op)
 
 Locate an element in an array.
 
@@ -3044,7 +3044,7 @@ Locate an element in an array.
     2  $area      Array
     3  $op        Operation
 
-## Zero::Emulator::Execution::countAreaElement($exec, $area, $op)
+## Zero::Emulator::countAreaElement($exec, $area, $op)
 
 Count the number of elements in array that meet some specification.
 
@@ -3061,7 +3061,7 @@ Execute a block of code.
     1  $block     Block of code
     2  %options   Execution options
 
-## Zero::Emulator::Execution::formatTrace($exec)
+## Zero::Emulator::formatTrace($exec)
 
 Describe last memory assignment.
 
@@ -3312,79 +3312,79 @@ Create a variable initialized to the specified value.
 
 80 [Watch](#watch) - Watches for changes to the specified memory location.
 
-81 [Zero::Emulator::Code::execute](#zero-emulator-code-execute) - Execute a block of code.
+81 [Zero::Emulator::address](#zero-emulator-address) - Record a reference to memory.
 
-82 [Zero::Emulator::Execution::address](#zero-emulator-execution-address) - Record a reference to memory.
+82 [Zero::Emulator::allocateSystemAreas](#zero-emulator-allocatesystemareas) - Allocate system areas for a new stack frame.
 
-83 [Zero::Emulator::Execution::allocateSystemAreas](#zero-emulator-execution-allocatesystemareas) - Allocate system areas for a new stack frame.
+83 [Zero::Emulator::allocMemory](#zero-emulator-allocmemory) - Create the name of a new memory area.
 
-84 [Zero::Emulator::Execution::allocMemory](#zero-emulator-execution-allocmemory) - Create the name of a new memory area.
+84 [Zero::Emulator::analyzeExecutionNotRead](#zero-emulator-analyzeexecutionnotread) - Analyze execution results for variables never read.
 
-85 [Zero::Emulator::Execution::analyzeExecutionNotRead](#zero-emulator-execution-analyzeexecutionnotread) - Analyze execution results for variables never read.
+85 [Zero::Emulator::analyzeExecutionResults](#zero-emulator-analyzeexecutionresults) - Analyze execution results.
 
-86 [Zero::Emulator::Execution::analyzeExecutionResults](#zero-emulator-execution-analyzeexecutionresults) - Analyze execution results.
+86 [Zero::Emulator::analyzeExecutionResultsDoubleWrite](#zero-emulator-analyzeexecutionresultsdoublewrite) - Analyze execution results - double writes.
 
-87 [Zero::Emulator::Execution::analyzeExecutionResultsDoubleWrite](#zero-emulator-execution-analyzeexecutionresultsdoublewrite) - Analyze execution results - double writes.
+87 [Zero::Emulator::analyzeExecutionResultsLeast](#zero-emulator-analyzeexecutionresultsleast) - Analyze execution results for least used code.
 
-88 [Zero::Emulator::Execution::analyzeExecutionResultsLeast](#zero-emulator-execution-analyzeexecutionresultsleast) - Analyze execution results for least used code.
+88 [Zero::Emulator::analyzeExecutionResultsMost](#zero-emulator-analyzeexecutionresultsmost) - Analyze execution results for most used code.
 
-89 [Zero::Emulator::Execution::analyzeExecutionResultsMost](#zero-emulator-execution-analyzeexecutionresultsmost) - Analyze execution results for most used code.
+89 [Zero::Emulator::areaContent](#zero-emulator-areacontent) - Content of an area containing a address in memory in the specified execution.
 
-90 [Zero::Emulator::Execution::areaContent](#zero-emulator-execution-areacontent) - Content of an area containing a address in memory in the specified execution.
+90 [Zero::Emulator::assert](#zero-emulator-assert) - Assert generically.
 
-91 [Zero::Emulator::Execution::assert](#zero-emulator-execution-assert) - Assert generically.
+91 [Zero::Emulator::assert1](#zero-emulator-assert1) - Assert true or false.
 
-92 [Zero::Emulator::Execution::assert1](#zero-emulator-execution-assert1) - Assert true or false.
+92 [Zero::Emulator::assign](#zero-emulator-assign) - Assign - check for pointless assignments.
 
-93 [Zero::Emulator::Execution::assign](#zero-emulator-execution-assign) - Assign - check for pointless assignments.
+93 [Zero::Emulator::check](#zero-emulator-check) - Check that a user area access is valid.
 
-94 [Zero::Emulator::Execution::check](#zero-emulator-execution-check) - Check that a user area access is valid.
+94 [Zero::Emulator::checkArrayName](#zero-emulator-checkarrayname) - Check the name of an array.
 
-95 [Zero::Emulator::Execution::checkArrayName](#zero-emulator-execution-checkarrayname) - Check the name of an array.
+95 [Zero::Emulator::Code::execute](#zero-emulator-code-execute) - Execute a block of code.
 
-96 [Zero::Emulator::Execution::countAreaElement](#zero-emulator-execution-countareaelement) - Count the number of elements in array that meet some specification.
+96 [Zero::Emulator::countAreaElement](#zero-emulator-countareaelement) - Count the number of elements in array that meet some specification.
 
-97 [Zero::Emulator::Execution::createInitialStackEntry](#zero-emulator-execution-createinitialstackentry) - Create the initial stack frame.
+97 [Zero::Emulator::createInitialStackEntry](#zero-emulator-createinitialstackentry) - Create the initial stack frame.
 
-98 [Zero::Emulator::Execution::currentInstruction](#zero-emulator-execution-currentinstruction) - Locate current instruction.
+98 [Zero::Emulator::currentInstruction](#zero-emulator-currentinstruction) - Locate current instruction.
 
-99 [Zero::Emulator::Execution::dumpMemory](#zero-emulator-execution-dumpmemory) - Dump memory.
+99 [Zero::Emulator::dumpMemory](#zero-emulator-dumpmemory) - Dump memory.
 
-100 [Zero::Emulator::Execution::formatTrace](#zero-emulator-execution-formattrace) - Describe last memory assignment.
+100 [Zero::Emulator::formatTrace](#zero-emulator-formattrace) - Describe last memory assignment.
 
-101 [Zero::Emulator::Execution::freeSystemAreas](#zero-emulator-execution-freesystemareas) - Free system areas for the specified stack frame.
+101 [Zero::Emulator::freeSystemAreas](#zero-emulator-freesystemareas) - Free system areas for the specified stack frame.
 
-102 [Zero::Emulator::Execution::get](#zero-emulator-execution-get) - Get from memory.
+102 [Zero::Emulator::get](#zero-emulator-get) - Get from memory.
 
-103 [Zero::Emulator::Execution::getMemory](#zero-emulator-execution-getmemory) - Get from memory.
+103 [Zero::Emulator::getMemory](#zero-emulator-getmemory) - Get from memory.
 
-104 [Zero::Emulator::Execution::jumpOp](#zero-emulator-execution-jumpop) - Jump to the target address if the tested memory area if the condition is matched.
+104 [Zero::Emulator::jumpOp](#zero-emulator-jumpop) - Jump to the target address if the tested memory area if the condition is matched.
 
-105 [Zero::Emulator::Execution::left](#zero-emulator-execution-left) - Address a memory address.
+105 [Zero::Emulator::left](#zero-emulator-left) - Address a memory address.
 
-106 [Zero::Emulator::Execution::leftSuppress](#zero-emulator-execution-leftsuppress) - Indicate that a memory address has been read.
+106 [Zero::Emulator::leftSuppress](#zero-emulator-leftsuppress) - Indicate that a memory address has been read.
 
-107 [Zero::Emulator::Execution::locateAreaElement](#zero-emulator-execution-locateareaelement) - Locate an element in an array.
+107 [Zero::Emulator::locateAreaElement](#zero-emulator-locateareaelement) - Locate an element in an array.
 
-108 [Zero::Emulator::Execution::markAsRead](#zero-emulator-execution-markasread) - Mark a memory address as having been read from.
+108 [Zero::Emulator::markAsRead](#zero-emulator-markasread) - Mark a memory address as having been read from.
 
-109 [Zero::Emulator::Execution::notRead](#zero-emulator-execution-notread) - Record the unused memory locations in the current stack frame.
+109 [Zero::Emulator::notRead](#zero-emulator-notread) - Record the unused memory locations in the current stack frame.
 
-110 [Zero::Emulator::Execution::right](#zero-emulator-execution-right) - Get a constant or a memory address.
+110 [Zero::Emulator::right](#zero-emulator-right) - Get a constant or a memory address.
 
-111 [Zero::Emulator::Execution::rwRead](#zero-emulator-execution-rwread) - Observe read from memory.
+111 [Zero::Emulator::rwRead](#zero-emulator-rwread) - Observe read from memory.
 
-112 [Zero::Emulator::Execution::rwWrite](#zero-emulator-execution-rwwrite) - Observe write to memory.
+112 [Zero::Emulator::rwWrite](#zero-emulator-rwwrite) - Observe write to memory.
 
-113 [Zero::Emulator::Execution::set](#zero-emulator-execution-set) - Set the value of an address at the specified address in memory in the current execution environment.
+113 [Zero::Emulator::set](#zero-emulator-set) - Set the value of an address at the specified address in memory in the current execution environment.
 
-114 [Zero::Emulator::Execution::setMemoryType](#zero-emulator-execution-setmemorytype) - Set the type of a memory area - a name that can be used to confirm the validity of reads and writes to that array represented by that area.
+114 [Zero::Emulator::setMemoryType](#zero-emulator-setmemorytype) - Set the type of a memory area - a name that can be used to confirm the validity of reads and writes to that array represented by that area.
 
-115 [Zero::Emulator::Execution::stackArea](#zero-emulator-execution-stackarea) - Current stack frame.
+115 [Zero::Emulator::stackArea](#zero-emulator-stackarea) - Current stack frame.
 
-116 [Zero::Emulator::Execution::stackTrace](#zero-emulator-execution-stacktrace) - Create a stack trace.
+116 [Zero::Emulator::stackTrace](#zero-emulator-stacktrace) - Create a stack trace.
 
-117 [Zero::Emulator::Execution::stackTraceAndExit](#zero-emulator-execution-stacktraceandexit) - Create a stack trace and exit from the emulated program.
+117 [Zero::Emulator::stackTraceAndExit](#zero-emulator-stacktraceandexit) - Create a stack trace and exit from the emulated program.
 
 # Installation
 
