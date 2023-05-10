@@ -68,14 +68,6 @@ Add the source locations together and store the result in the target area.
       is_deeply $e->out, [5];
      }
     
-    if (1)                                                                           
-     {Start 1;
-      my $a = Subtract 4, 2;
-      Out $a;
-      my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [2];
-     }
-    
 
 ## Subtract($target, $s1, $s2)
 
@@ -88,7 +80,7 @@ Subtract the second source operand value from the first source operand value and
 
 **Example:**
 
-    if (1)                                                                           
+    if (1)                                                                          
      {Start 1;
     
       my $a = Subtract 4, 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -116,7 +108,11 @@ Create a new memory area and write its number into the address named by the targ
         Mov [$a, 0, "aaa"], 1;
         Mov [$a, 1, "aaa"], 22;
         Mov [$a, 2, "aaa"], 333;
+    
       my $n = ArraySize $a, "aaa";
+    
+      Out "Array size:"; Out $n;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
       DumpArray $a, "AAAA";
     
       ForArray
@@ -130,16 +126,17 @@ Create a new memory area and write its number into the address named by the targ
       is_deeply $e->memory, {1=>[1, 22, 333]};
     
       is_deeply $e->out,
-    [ "AAAA",
+    
+    [ "Array size:", 3,  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      "AAAA",
       "bless([1, 22, 333], \"aaa\")",
       "Stack trace",
-      "    1     6 dumpArray",
-      0,
-      1,
-      1,
-      22,
-      2,
-      333];
+      "    1     8 dumpArray",
+      0, 1,
+      1, 22,
+      2, 333,
+    ];
      }
     
 
@@ -210,8 +207,10 @@ The current size of an array.
         Mov [$a, 1, "aaa"], 22;
         Mov [$a, 2, "aaa"], 333;
     
+    
       my $n = ArraySize $a, "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
+      Out "Array size:"; Out $n;
       DumpArray $a, "AAAA";
     
       ForArray
@@ -225,16 +224,15 @@ The current size of an array.
       is_deeply $e->memory, {1=>[1, 22, 333]};
     
       is_deeply $e->out,
-    [ "AAAA",
+    [ "Array size:", 3,
+      "AAAA",
       "bless([1, 22, 333], \"aaa\")",
       "Stack trace",
-      "    1     6 dumpArray",
-      0,
-      1,
-      1,
-      22,
-      2,
-      333];
+      "    1     8 dumpArray",
+      0, 1,
+      1, 22,
+      2, 333,
+    ];
      }
     
 
@@ -1338,7 +1336,9 @@ Do nothing (but do it well!).
         Mov [$a, 0, "aaa"], 1;
         Mov [$a, 1, "aaa"], 22;
         Mov [$a, 2, "aaa"], 333;
+    
       my $n = ArraySize $a, "aaa";
+      Out "Array size:"; Out $n;
       DumpArray $a, "AAAA";
     
       ForArray
@@ -1354,16 +1354,15 @@ Do nothing (but do it well!).
       is_deeply $e->memory, {1=>[1, 22, 333]};
     
       is_deeply $e->out,
-    [ "AAAA",
+    [ "Array size:", 3,
+      "AAAA",
       "bless([1, 22, 333], \"aaa\")",
       "Stack trace",
-      "    1     6 dumpArray",
-      0,
-      1,
-      1,
-      22,
-      2,
-      333];
+      "    1     8 dumpArray",
+      0, 1,
+      1, 22,
+      2, 333,
+    ];
      }
     
 
@@ -2564,7 +2563,9 @@ For loop to process each element of the named area.
         Mov [$a, 0, "aaa"], 1;
         Mov [$a, 1, "aaa"], 22;
         Mov [$a, 2, "aaa"], 333;
+    
       my $n = ArraySize $a, "aaa";
+      Out "Array size:"; Out $n;
       DumpArray $a, "AAAA";
     
     
@@ -2580,16 +2581,15 @@ For loop to process each element of the named area.
       is_deeply $e->memory, {1=>[1, 22, 333]};
     
       is_deeply $e->out,
-    [ "AAAA",
+    [ "Array size:", 3,
+      "AAAA",
       "bless([1, 22, 333], \"aaa\")",
       "Stack trace",
-      "    1     6 dumpArray",
-      0,
-      1,
-      1,
-      22,
-      2,
-      333];
+      "    1     8 dumpArray",
+      0, 1,
+      1, 22,
+      2, 333,
+    ];
      }
     
 
