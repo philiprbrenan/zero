@@ -150,7 +150,7 @@ module.  For an alphabetic listing of all methods by name see [Index](#index).
 
 # Constructor
 
-Create a new tree.
+Create a new N-Way tree.
 
 ## New($n)
 
@@ -1503,6 +1503,21 @@ Create a random array.
       is_deeply $e->out, [1..$N];
      }
     
+
+# Attributes
+
+The following is a list of all the attributes in this package.  A method coded
+with the same name in your package will over ride the method of the same name
+in this package and thus provide your value for the attribute in place of the
+default value supplied for this attribute by this package.
+
+## Replaceable Attribute List
+
+x 
+
+## x
+
+Stop if debugging.
 
 # Index
 
