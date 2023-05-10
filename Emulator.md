@@ -1301,7 +1301,7 @@ Copy a constant or memory address to the target address.
 
 ## MoveLong($target, $source, $source2)
 
-Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand
+Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand.
 
        Parameter  Description
     1  $target    Target of move
@@ -3225,7 +3225,7 @@ Create a variable initialized to the specified value.
 
 54 [Mov](#mov) - Copy a constant or memory address to the target address.
 
-55 [MoveLong](#movelong) - Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand
+55 [MoveLong](#movelong) - Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand.
 
 56 [Nop](#nop) - Do nothing (but do it well!).
 
