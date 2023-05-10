@@ -18,40 +18,8 @@ jobs:
       run: |
         sudo cpan install -T Data::Dump Data::Table::Text
 
-    - name: Zero Emulator
-      run: |
-        perl lib/Zero/Emulator.pm
-
-    - name: Zero NWayTree
-      run: |
-        perl lib/Zero/NWayTree.pm
-
-    - name: Zero testEmulator
-      run: |
-        perl testEmulator.pl
-
-    - name: Zero testNWayTree
-      run: |
-        perl testNWayTree.pl
-
-  testWindows:
-    runs-on: windows-latest
-
-    defaults:
-      run:
-        shell: wsl-bash {0}
-
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        ref: 'main'
-
-    - uses: Vampire/setup-wsl@v2
-
     - name: Cpan
       run: |
-        sudo apt-get -y update
-        sudo apt-get -y install build-essential
         sudo cpan install -T Data::Dump Data::Table::Text
 
     - name: Zero Emulator
@@ -69,3 +37,47 @@ jobs:
     - name: Zero testNWayTree
       run: |
         perl testNWayTree.pl
+
+
+  testWindows:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: wsl-bash {0}                                                     # Use Windows Services For Linux as the command line in subsequent steps
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: 'main'
+
+    - uses: Vampire/setup-wsl@v2                                                # Install Windows Services For Linux - just: wsl --install -D Ubuntu
+
+    - name: Ubuntu
+      run: |
+        sudo apt-get -y update                                                  # Configure Ubuntu
+
+    - name: Configure Ubuntu
+      run: |
+        sudo apt-get -y install build-essential
+
+    - name: Cpan
+      run: |
+        sudo cpan install -T Data::Dump Data::Table::Text
+
+    - name: Zero Emulator
+      run: |
+        perl lib/Zero/Emulator.pm
+
+    - name: Zero NWayTree
+      run: |
+        perl lib/Zero/NWayTree.pm
+
+    - name: Zero testEmulator
+      run: |
+        perl testEmulator.pl
+
+    - name: Zero testNWayTree
+      run: |
+        perl testNWayTree.pl
+
