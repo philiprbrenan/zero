@@ -5,9 +5,8 @@
 A minimal [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) and [emulator](https://en.wikipedia.org/wiki/Emulator) for the Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) programming language.
 
 An implementation of N-Way [trees](https://en.wikipedia.org/wiki/Tree_(data_structure)) in [code](https://en.wikipedia.org/wiki/Computer_program) written in the Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) programming language: assiduously optimized through exhaustive testing, ready
-for realizationalize in [Silicon](https://en.wikipedia.org/wiki/Silicon) as an [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) rather than as software on a
-conventional [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) so that large, extremely fast associative memories can be
-manufactured on an industrial scale.
+for realization in [Silicon](https://en.wikipedia.org/wiki/Silicon) as an [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) rather than as software on a conventional [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) so that large, extremely fast, associative memories can be manufactured on
+an industrial scale.
 
 Open the __Actions__ [tab](https://en.wikipedia.org/wiki/Tab_key) to see the [code](https://en.wikipedia.org/wiki/Computer_program) in action.
 
@@ -105,7 +104,7 @@ into an N-Way-Tree?
 
 ## Addresses
 
-Each [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) instruction can potentially affect a target area specified by
+Each [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) instruction can potentially affect a target [memory](https://en.wikipedia.org/wiki/Computer_memory) location specified by
 the target operand known as the "left hand" address.  Each [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) instruction can potentially read zero, one or two source operands to locate the
 data to be processed by the instruction.
 
@@ -174,6 +173,6 @@ to location 3 in the current stack frame.
 ## Macro Preprocessor
 
 Every [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) needs a macro preocessor to generate [code](https://en.wikipedia.org/wiki/Computer_program) from macro
-specifications.  Writing each instruction by hand is hard work, but using a
-good [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) saves programmer time by allowing common instruction
-sequences to be captured as macros which can then be called upon as needed.
+specifications as writing each instruction by hand is hard work. Using a [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) saves programmer time by allowing common instruction sequences to
+be captured as macros which can then be called upon as needed to generate the [code](https://en.wikipedia.org/wiki/Computer_program) for an application. The Zero [assembly](https://en.wikipedia.org/wiki/Assembly_language) programming languages uses [Perl](http://www.perl.org/) as
+its macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor). 
