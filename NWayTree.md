@@ -74,7 +74,7 @@ results:
 
 # Description
 
-Version 20230513.
+Version 20230514.
 
 The following sections describe the methods in each functional area of this
 module.  For an alphabetic listing of all methods by name see [Index](#index).
@@ -271,6 +271,10 @@ Get the number of keys in the tree..
     
      }
     
+
+# Find
+
+Find a key in a tree.
 
 ## FindResult\_cmp($f)
 
@@ -594,10 +598,6 @@ Get key field from find results.
     
      }
     
-
-# Find
-
-Find a key in a tree.
 
 ## Find($tree, $key, %options)
 
