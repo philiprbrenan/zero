@@ -166,3 +166,7 @@ frame.
 
 The example above moves the contents of location 4 in the current stack frame
 to location 3 in the current stack frame.
+
+## Instructions
+
+[The instruction set](https://metacpan.org/dist/Zero-Emulator/view/Emulator.pod)
