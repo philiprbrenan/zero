@@ -14,7 +14,7 @@ use strict;
 use Carp qw(cluck confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>78" unless caller;
+eval "use Test::More tests=>79" unless caller;
 
 makeDieConfess;
 
@@ -1265,6 +1265,18 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->assign($t, $s);
      },
 
+    moveLong=> sub                                                              # Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand
+     {my $i = $exec->currentInstruction;
+      my $s = $exec->left ($i->source);                                         # Source
+      my $l = $exec->right($i->source2);                                        # Length
+      my $t = $exec->left($i->target);                                          # Target
+      for my $j(0..$l-1)
+       {my $S = RefRight [$s->area, \($s->address+$j), $s->name];
+        my $T = RefLeft  [$t->area,   $t->address+$j,  $t->name];
+        $exec->assign($exec->left($T), $exec->right($S));
+       }
+     },
+
     not=> sub                                                                   # Not in place
      {my $i = $exec->currentInstruction;
       my $s = $exec->right($i->source);
@@ -1737,6 +1749,12 @@ sub Mov($;$) {                                                                  
   else
    {confess "One or two parameters required for mov";
    }
+ }
+
+sub MoveLong($$$)                                                               # Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand
+ {my ($target, $source, $source2) = @_;                                         # Target of move, source if move, length of move
+  $assembly->instruction(action=>"moveLong", xTarget($target),
+    xSource($source), xSource2($source2));
  }
 
 sub Not($) {                                                                    # Move and not.
@@ -3125,6 +3143,29 @@ if (1)                                                                          
   "Stack trace",
   "    1     5 dumpArray",
 ];
+ }
+
+#latest:;
+if (1)                                                                          #TMoveLong
+ {my $N = 10;
+  Start 1;
+  my $a = Array "aaa";
+  my $b = Array "bbb";
+  For
+   {my ($i, $Check, $Next, $End) = @_;
+    Mov [$a, \$i, "aaa"], $i;
+    my $j = Add $i, 100;
+    Mov [$b, \$i, "bbb"], $j;
+   } $N;
+
+  MoveLong [$b, \2, 'bbb'], [$a, \4, 'aaa'], 3;
+  my $e = Execute(suppressOutput=>1);
+
+  is_deeply $e->memory,
+{
+  1 => bless([0 .. 9], "aaa"),
+  2 => bless([100, 101, 4, 5, 6, 105 .. 109], "bbb"),
+};
  }
 
 
