@@ -1,6 +1,6 @@
 # Name
 
-Zero::Emulator - Assemble and emulate a program in the Zero assembly programming language
+Zero::Emulator - Assemble and emulate a program written in the [Zero](https://github.com/philiprbrenan/zero) assembly programming language.
 
 <div>
 
@@ -21,26 +21,16 @@ Say "hello world":
 
 # Description
 
-Version 20230513.
+Version 20230514.
 
 The following sections describe the methods in each functional area of this
 module.  For an alphabetic listing of all methods by name see [Index](#index).
 
 # Execution
 
-## Analysis
+## Start($version)
 
-## Memory
-
-Access memory
-
-## Execution
-
-Execute assembly code in the emulator
-
-### Start($version)
-
-Start the current assembly using the specified version of the Zero language.  At  the moment only version 1 works..
+Start the current assembly using the specified version of the Zero language.  At  the moment only version 1 works.
 
        Parameter  Description
     1  $version   Version desired - at the moment only 1
@@ -57,9 +47,9 @@ Start the current assembly using the specified version of the Zero language.  At
      }
     
 
-### Add($target, $s1, $s2)
+## Add($target, $s1, $s2)
 
-Add the source locations together and store in the result in the target area.
+Add the source locations together and store the result in the target area.
 
        Parameter  Description
     1  $target    Target address
@@ -87,9 +77,9 @@ Add the source locations together and store in the result in the target area.
      }
     
 
-### Subtract($target, $s1, $s2)
+## Subtract($target, $s1, $s2)
 
-Subtract the second source address from the first and store in the result in the target area.
+Subtract the second source operand value from the first source operand value and store the result in the target area.
 
        Parameter  Description
     1  $target    Target address
@@ -109,7 +99,7 @@ Subtract the second source address from the first and store in the result in the
      }
     
 
-### Array($name)
+## Array($name)
 
 Create a new memory area and write its number into the address named by the target operand.
 
@@ -118,7 +108,7 @@ Create a new memory area and write its number into the address named by the targ
 
 **Example:**
 
-    if (1)                                                                            
+    if (1)                                                                             
      {Start 1;
     
       my $a = Array "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -127,53 +117,33 @@ Create a new memory area and write its number into the address named by the targ
         Mov [$a, 1, "aaa"], 22;
         Mov [$a, 2, "aaa"], 333;
       my $n = ArraySize $a, "aaa";
-      Out $n;
+      DumpArray $a, "AAAA";
     
       ForArray
        {my ($i, $e, $check, $next, $end) = @_;
-        IfGt $i, 1,
-        Then
-         {Trace 1;
-         };
         Out $i; Out $e;
        }  $a, "aaa";
     
       Nop;
       my $e = Execute(suppressOutput=>1);
+    
       is_deeply $e->memory, {1=>[1, 22, 333]};
     
       is_deeply $e->out,
-     [3, 0, 1, 1, 22,
-      "Trace: 1",
-      "  37    14     1         trace                      
-  ",
-      "  38    15     3         label                      
-  ",
+    [ "AAAA",
+      "bless([1, 22, 333], \"aaa\")",
+      "Stack trace",
+      "    1     6 dumpArray",
+      0,
+      1,
+      1,
+      22,
       2,
-      "  39    16     3           out                      
-  ",
-      333,
-      "  40    17     3           out                      
-  ",
-      "  41    18     3         label                      
-  ",
-      "  42    19     3           inc  [0, 3, stackArea] = 3 was 2
-  ",
-      "  43    20     3           jmp                      
-  ",
-      "  44     9     4         label                      
-  ",
-      "  45    10     4           jGe                      
-  ",
-      "  46    21     1         label                      
-  ",
-      "  47    22     1           nop                      
-  ",
-    ];
+      333];
      }
     
 
-### Free($target, $source)
+## Free($target, $source)
 
 Free the memory area named by the target operand after confirming that it has the name specified on the source operand.
 
@@ -223,7 +193,7 @@ Free the memory area named by the target operand after confirming that it has th
      }
     
 
-### ArraySize($area, $name)
+## ArraySize($area, $name)
 
 The current size of an array.
 
@@ -233,7 +203,7 @@ The current size of an array.
 
 **Example:**
 
-    if (1)                                                                            
+    if (1)                                                                             
      {Start 1;
       my $a = Array "aaa";
         Mov [$a, 0, "aaa"], 1;
@@ -242,53 +212,33 @@ The current size of an array.
     
       my $n = ArraySize $a, "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      Out $n;
+      DumpArray $a, "AAAA";
     
       ForArray
        {my ($i, $e, $check, $next, $end) = @_;
-        IfGt $i, 1,
-        Then
-         {Trace 1;
-         };
         Out $i; Out $e;
        }  $a, "aaa";
     
       Nop;
       my $e = Execute(suppressOutput=>1);
+    
       is_deeply $e->memory, {1=>[1, 22, 333]};
     
       is_deeply $e->out,
-     [3, 0, 1, 1, 22,
-      "Trace: 1",
-      "  37    14     1         trace                      
-  ",
-      "  38    15     3         label                      
-  ",
+    [ "AAAA",
+      "bless([1, 22, 333], \"aaa\")",
+      "Stack trace",
+      "    1     6 dumpArray",
+      0,
+      1,
+      1,
+      22,
       2,
-      "  39    16     3           out                      
-  ",
-      333,
-      "  40    17     3           out                      
-  ",
-      "  41    18     3         label                      
-  ",
-      "  42    19     3           inc  [0, 3, stackArea] = 3 was 2
-  ",
-      "  43    20     3           jmp                      
-  ",
-      "  44     9     4         label                      
-  ",
-      "  45    10     4           jGe                      
-  ",
-      "  46    21     1         label                      
-  ",
-      "  47    22     1           nop                      
-  ",
-    ];
+      333];
      }
     
 
-### ArrayIndex()
+## ArrayIndex()
 
 Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.  The business of returning -1 leads to the inferno of try catch.
 
@@ -329,7 +279,7 @@ Find the 1 based index of the second source operand in the array referenced by t
      }
     
 
-### ArrayCountLess()
+## ArrayCountLess()
 
 Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result in the target location.
 
@@ -370,7 +320,7 @@ Count the number of elements in the array specified by the first source operand 
      }
     
 
-### ArrayCountGreater()
+## ArrayCountGreater()
 
 Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result in the target location.
 
@@ -411,7 +361,7 @@ Count the number of elements in the array specified by the first source operand 
      }
     
 
-### Call($p)
+## Call($p)
 
 Call the subroutine at the target address.
 
@@ -522,7 +472,7 @@ Call the subroutine at the target address.
      }
     
 
-### Confess()
+## Confess()
 
 Confess.
 
@@ -543,7 +493,7 @@ Confess.
      }
     
 
-### Dump($title)
+## Dump($title)
 
 Dump memory.
 
@@ -578,7 +528,7 @@ Dump memory.
      }
     
 
-### DumpArray($target, $title)
+## DumpArray($target, $title)
 
 Dump an array.
 
@@ -608,7 +558,7 @@ Dump an array.
      }
     
 
-### Trace($source)
+## Trace($source)
 
 Trace.
 
@@ -645,7 +595,7 @@ Trace.
      }
     
 
-### TracePoints($source)
+## TracePoints($source)
 
 Enable trace points.
 
@@ -683,7 +633,7 @@ Enable trace points.
      }
     
 
-### Dec($target)
+## Dec($target)
 
 Decrement the target.
 
@@ -704,7 +654,7 @@ Decrement the target.
      }
     
 
-### Inc($target)
+## Inc($target)
 
 Increment the target.
 
@@ -725,7 +675,7 @@ Increment the target.
      }
     
 
-### Jmp($target)
+## Jmp($target)
 
 Jump to a label.
 
@@ -751,7 +701,7 @@ Jump to a label.
      }
     
 
-### Jle($target, $source, $source2)
+## Jle($target, $source, $source2)
 
 Jump to a target label if the first source field is less than or equal to the second source field.
 
@@ -787,7 +737,7 @@ Jump to a target label if the first source field is less than or equal to the se
      }
     
 
-### Jlt($target, $source, $source2)
+## Jlt($target, $source, $source2)
 
 Jump to a target label if the first source field is less than the second source field.
 
@@ -823,7 +773,7 @@ Jump to a target label if the first source field is less than the second source 
      }
     
 
-### Jge($target, $source, $source2)
+## Jge($target, $source, $source2)
 
 Jump to a target label if the first source field is greater than or equal to the second source field.
 
@@ -859,7 +809,7 @@ Jump to a target label if the first source field is greater than or equal to the
      }
     
 
-### Jgt($target, $source, $source2)
+## Jgt($target, $source, $source2)
 
 Jump to a target label if the first source field is greater than the second source field.
 
@@ -895,7 +845,7 @@ Jump to a target label if the first source field is greater than the second sour
      }
     
 
-### Jeq($target, $source, $source2)
+## Jeq($target, $source, $source2)
 
 Jump to a target label if the first source field is equal to the second source field.
 
@@ -931,7 +881,7 @@ Jump to a target label if the first source field is equal to the second source f
      }
     
 
-### Jne($target, $source, $source2)
+## Jne($target, $source, $source2)
 
 Jump to a target label if the first source field is not equal to the second source field.
 
@@ -967,7 +917,7 @@ Jump to a target label if the first source field is not equal to the second sour
      }
     
 
-### JFalse($target, $source)
+## JFalse($target, $source)
 
 Jump to a target label if the first source field is equal to zero.
 
@@ -1010,7 +960,7 @@ Jump to a target label if the first source field is equal to zero.
      }
     
 
-### JTrue($target, $source)
+## JTrue($target, $source)
 
 Jump to a target label if the first source field is not equal to zero.
 
@@ -1053,9 +1003,9 @@ Jump to a target label if the first source field is not equal to zero.
      }
     
 
-### Label($source)
+## Label($source)
 
-Create a label..
+Create a label.
 
        Parameter  Description
     1  $source    Name of label
@@ -1094,9 +1044,9 @@ Create a label..
      }
     
 
-### Clear($target)
+## Clear($target)
 
-Clear the first bytes of an area.  The area is specified by the first element of the address, the number of locations to clear is specified by the second element of the target address..
+Clear the first bytes of an area.  The area is specified by the first element of the address, the number of locations to clear is specified by the second element of the target address.
 
        Parameter  Description
     1  $target    Target address
@@ -1114,7 +1064,7 @@ Clear the first bytes of an area.  The area is specified by the first element of
      }
     
 
-### LeAddress()
+## LeAddress()
 
 Load the address component.
 
@@ -1140,7 +1090,7 @@ Load the address component.
      }
     
 
-### LeArea()
+## LeArea()
 
 Load the address component.
 
@@ -1166,7 +1116,7 @@ Load the address component.
      }
     
 
-### Mov()
+## Mov()
 
 Copy a constant or memory address to the target address.
 
@@ -1349,7 +1299,7 @@ Copy a constant or memory address to the target address.
      }
     
 
-### MoveLong($target, $source, $source2)
+## MoveLong($target, $source, $source2)
 
 Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand
 
@@ -1386,7 +1336,7 @@ Copy the number of elements specified by the second source operand from the loca
      }
     
 
-### Not()
+## Not()
 
 Move and not.
 
@@ -1409,7 +1359,7 @@ Move and not.
      }
     
 
-### Nop()
+## Nop()
 
 Do nothing (but do it well!).
 
@@ -1423,8 +1373,42 @@ Do nothing (but do it well!).
       ok Execute(out=>[]);
      }
     
+    if (1)                                                                             
+     {Start 1;
+      my $a = Array "aaa";
+        Mov [$a, 0, "aaa"], 1;
+        Mov [$a, 1, "aaa"], 22;
+        Mov [$a, 2, "aaa"], 333;
+      my $n = ArraySize $a, "aaa";
+      DumpArray $a, "AAAA";
+    
+      ForArray
+       {my ($i, $e, $check, $next, $end) = @_;
+        Out $i; Out $e;
+       }  $a, "aaa";
+    
+    
+      Nop;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-### Out($source)
+      my $e = Execute(suppressOutput=>1);
+    
+      is_deeply $e->memory, {1=>[1, 22, 333]};
+    
+      is_deeply $e->out,
+    [ "AAAA",
+      "bless([1, 22, 333], \"aaa\")",
+      "Stack trace",
+      "    1     6 dumpArray",
+      0,
+      1,
+      1,
+      22,
+      2,
+      333];
+     }
+    
+
+## Out($source)
 
 Write memory contents to out.
 
@@ -1443,7 +1427,7 @@ Write memory contents to out.
      }
     
 
-### Procedure($name, $source)
+## Procedure($name, $source)
 
 Define a procedure.
 
@@ -1485,7 +1469,7 @@ Define a procedure.
      }
     
 
-### ParamsGet()
+## ParamsGet()
 
 Get a word from the parameters in the previous frame and store it in the current frame.
 
@@ -1521,7 +1505,7 @@ Get a word from the parameters in the previous frame and store it in the current
      }
     
 
-### ParamsPut($target, $source)
+## ParamsPut($target, $source)
 
 Put a word into the parameters list to make it visible in a called procedure.
 
@@ -1561,7 +1545,7 @@ Put a word into the parameters list to make it visible in a called procedure.
      }
     
 
-### Return()
+## Return()
 
 Return from a procedure via the call stack.
 
@@ -1581,7 +1565,7 @@ Return from a procedure via the call stack.
      }
     
 
-### ReturnGet(if (@\_ == 1))
+## ReturnGet(if (@\_ == 1))
 
 Get a word from the return area and save it.
 
@@ -1606,7 +1590,7 @@ Get a word from the return area and save it.
      }
     
 
-### ReturnPut($target, $source)
+## ReturnPut($target, $source)
 
 Put a word into the return area.
 
@@ -1632,7 +1616,7 @@ Put a word into the return area.
      }
     
 
-### Resize($target, $source)
+## Resize($target, $source)
 
 Resize the target area to the source size.
 
@@ -1656,7 +1640,7 @@ Resize the target area to the source size.
      }
     
 
-### Pop(if (@\_ == 0))
+## Pop(if (@\_ == 0))
 
 Pop the memory area specified by the source operand into the memory address specified by the target operand.
 
@@ -1685,9 +1669,9 @@ Pop the memory area specified by the source operand into the memory address spec
      }
     
 
-### Push()
+## Push()
 
-Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand..
+Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
 
 **Example:**
 
@@ -1711,7 +1695,7 @@ Push the value in the current stack frame specified by the source operand onto t
      }
     
 
-### ShiftLeft(my ($target, $source)
+## ShiftLeft(my ($target, $source)
 
 Shift left within an element.
 
@@ -1733,7 +1717,7 @@ Shift left within an element.
      }
     
 
-### ShiftRight(my ($target, $source)
+## ShiftRight(my ($target, $source)
 
 Shift right with an element.
 
@@ -1755,7 +1739,7 @@ Shift right with an element.
      }
     
 
-### ShiftUp($target, $source)
+## ShiftUp($target, $source)
 
 Shift an element up one in an area.
 
@@ -1779,7 +1763,7 @@ Shift an element up one in an area.
      }
     
 
-### ShiftDown(if (@\_ == 1))
+## ShiftDown(if (@\_ == 1))
 
 Shift an element down one in an area.
 
@@ -1804,7 +1788,7 @@ Shift an element down one in an area.
      }
     
 
-### Watch($target)
+## Watch($target)
 
 Shift an element down one in an area.
 
@@ -1839,7 +1823,7 @@ Shift an element down one in an area.
      }
     
 
-### Tally($source)
+## Tally($source)
 
 Counts instructions when enabled.
 
@@ -1871,7 +1855,7 @@ Counts instructions when enabled.
      }
     
 
-### Then($t)
+## Then($t)
 
 Then block.
 
@@ -1910,7 +1894,7 @@ Then block.
      }
     
 
-### Else($e)
+## Else($e)
 
 Else block.
 
@@ -1949,7 +1933,7 @@ Else block.
      }
     
 
-### IfFalse($a, %options)
+## IfFalse($a, %options)
 
 Execute then clause if the specified memory address is zero representing false.
 
@@ -1975,7 +1959,7 @@ Execute then clause if the specified memory address is zero representing false.
      }
     
 
-### IfTrue($a, %options)
+## IfTrue($a, %options)
 
 Execute then clause if the specified memory address is not zero representing true.
 
@@ -2001,9 +1985,9 @@ Execute then clause if the specified memory address is not zero representing tru
      }
     
 
-### IfEq($a, $b, %options)
+## IfEq($a, $b, %options)
 
-Execute then or else clause depending on whether two memory locations are equal..
+Execute then or else clause depending on whether two memory locations are equal.
 
        Parameter  Description
     1  $a         First memory address
@@ -2061,9 +2045,9 @@ Execute then or else clause depending on whether two memory locations are equal.
      }
     
 
-### IfNe($a, $b, %options)
+## IfNe($a, $b, %options)
 
-Execute then or else clause depending on whether two memory locations are not equal..
+Execute then or else clause depending on whether two memory locations are not equal.
 
        Parameter  Description
     1  $a         First memory address
@@ -2121,9 +2105,9 @@ Execute then or else clause depending on whether two memory locations are not eq
      }
     
 
-### IfLt($a, $b, %options)
+## IfLt($a, $b, %options)
 
-Execute then or else clause depending on whether two memory locations are less than..
+Execute then or else clause depending on whether two memory locations are less than.
 
        Parameter  Description
     1  $a         First memory address
@@ -2181,9 +2165,9 @@ Execute then or else clause depending on whether two memory locations are less t
      }
     
 
-### IfLe($a, $b, %options)
+## IfLe($a, $b, %options)
 
-Execute then or else clause depending on whether two memory locations are less than or equal..
+Execute then or else clause depending on whether two memory locations are less than or equal.
 
        Parameter  Description
     1  $a         First memory address
@@ -2241,9 +2225,9 @@ Execute then or else clause depending on whether two memory locations are less t
      }
     
 
-### IfGt($a, $b, %options)
+## IfGt($a, $b, %options)
 
-Execute then or else clause depending on whether two memory locations are greater than..
+Execute then or else clause depending on whether two memory locations are greater than.
 
        Parameter  Description
     1  $a         First memory address
@@ -2301,9 +2285,9 @@ Execute then or else clause depending on whether two memory locations are greate
      }
     
 
-### IfGe($a, $b, %options)
+## IfGe($a, $b, %options)
 
-Execute then or else clause depending on whether two memory locations are greater than or equal..
+Execute then or else clause depending on whether two memory locations are greater than or equal.
 
        Parameter  Description
     1  $a         First memory address
@@ -2361,7 +2345,7 @@ Execute then or else clause depending on whether two memory locations are greate
      }
     
 
-### Assert(%options)
+## Assert(%options)
 
 Assert regardless.
 
@@ -2382,9 +2366,9 @@ Assert regardless.
      }
     
 
-### AssertEq($a, $b, %options)
+## AssertEq($a, $b, %options)
 
-Assert two memory locations are equal..
+Assert two memory locations are equal.
 
        Parameter  Description
     1  $a         First memory address
@@ -2404,9 +2388,9 @@ Assert two memory locations are equal..
      }
     
 
-### AssertNe($a, $b, %options)
+## AssertNe($a, $b, %options)
 
-Assert two memory locations are not equal..
+Assert two memory locations are not equal.
 
        Parameter  Description
     1  $a         First memory address
@@ -2426,9 +2410,9 @@ Assert two memory locations are not equal..
      }
     
 
-### AssertLt($a, $b, %options)
+## AssertLt($a, $b, %options)
 
-Assert two memory locations are less than..
+Assert two memory locations are less than.
 
        Parameter  Description
     1  $a         First memory address
@@ -2448,9 +2432,9 @@ Assert two memory locations are less than..
      }
     
 
-### AssertLe($a, $b, %options)
+## AssertLe($a, $b, %options)
 
-Assert two memory locations are less than or equal..
+Assert two memory locations are less than or equal.
 
        Parameter  Description
     1  $a         First memory address
@@ -2470,9 +2454,9 @@ Assert two memory locations are less than or equal..
      }
     
 
-### AssertGt($a, $b, %options)
+## AssertGt($a, $b, %options)
 
-Assert two memory locations are greater than..
+Assert two memory locations are greater than.
 
        Parameter  Description
     1  $a         First memory address
@@ -2492,9 +2476,9 @@ Assert two memory locations are greater than..
      }
     
 
-### AssertGe($a, $b, %options)
+## AssertGe($a, $b, %options)
 
-Assert are greater than or equal..
+Assert are greater than or equal.
 
        Parameter  Description
     1  $a         First memory address
@@ -2514,7 +2498,7 @@ Assert are greater than or equal..
      }
     
 
-### AssertTrue($a, %options)
+## AssertTrue($a, %options)
 
 Assert true.
 
@@ -2543,7 +2527,7 @@ Assert true.
      }
     
 
-### AssertFalse($a, %options)
+## AssertFalse($a, %options)
 
 Assert false.
 
@@ -2573,7 +2557,7 @@ Assert false.
      }
     
 
-### For($block, $range, %options)
+## For($block, $range, %options)
 
 For loop 0..range-1 or in reverse.
 
@@ -2603,7 +2587,7 @@ For loop 0..range-1 or in reverse.
      }
     
 
-### ForArray($block, $area, $name, %options)
+## ForArray($block, $area, $name, %options)
 
 For loop to process each element of the named area.
 
@@ -2615,62 +2599,42 @@ For loop to process each element of the named area.
 
 **Example:**
 
-    if (1)                                                                            
+    if (1)                                                                             
      {Start 1;
       my $a = Array "aaa";
         Mov [$a, 0, "aaa"], 1;
         Mov [$a, 1, "aaa"], 22;
         Mov [$a, 2, "aaa"], 333;
       my $n = ArraySize $a, "aaa";
-      Out $n;
+      DumpArray $a, "AAAA";
     
     
       ForArray  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
        {my ($i, $e, $check, $next, $end) = @_;
-        IfGt $i, 1,
-        Then
-         {Trace 1;
-         };
         Out $i; Out $e;
        }  $a, "aaa";
     
       Nop;
       my $e = Execute(suppressOutput=>1);
+    
       is_deeply $e->memory, {1=>[1, 22, 333]};
     
       is_deeply $e->out,
-     [3, 0, 1, 1, 22,
-      "Trace: 1",
-      "  37    14     1         trace                      
-  ",
-      "  38    15     3         label                      
-  ",
+    [ "AAAA",
+      "bless([1, 22, 333], \"aaa\")",
+      "Stack trace",
+      "    1     6 dumpArray",
+      0,
+      1,
+      1,
+      22,
       2,
-      "  39    16     3           out                      
-  ",
-      333,
-      "  40    17     3           out                      
-  ",
-      "  41    18     3         label                      
-  ",
-      "  42    19     3           inc  [0, 3, stackArea] = 3 was 2
-  ",
-      "  43    20     3           jmp                      
-  ",
-      "  44     9     4         label                      
-  ",
-      "  45    10     4           jGe                      
-  ",
-      "  46    21     1         label                      
-  ",
-      "  47    22     1           nop                      
-  ",
-    ];
+      333];
      }
     
 
-### Good($good)
+## Good($good)
 
 A good ending.
 
@@ -2700,7 +2664,7 @@ A good ending.
      }
     
 
-### Bad($bad)
+## Bad($bad)
 
 A bad ending.
 
@@ -2730,7 +2694,7 @@ A bad ending.
      }
     
 
-### Block($block, %options)
+## Block($block, %options)
 
 Block of code that can either be restarted or come to a good or a bad ending.
 
@@ -2781,7 +2745,7 @@ Block of code that can either be restarted or come to a good or a bad ending.
      }
     
 
-### Execute(%options)
+## Execute(%options)
 
 Execute the current assembly.
 
@@ -2799,10 +2763,6 @@ Execute the current assembly.
       is_deeply $e->out, ["hello World"];
      }
     
-
-# Tests
-
-# Examples
 
 # Private Methods
 
@@ -3123,7 +3083,7 @@ Trace point - a point in the code where the flow of execution might change.
 
 ## Ifx($cmp, $a, $b, %options)
 
-Execute then or else clause depending on whether two memory locations are equal..
+Execute then or else clause depending on whether two memory locations are equal.
 
        Parameter  Description
     1  $cmp       Comparison
@@ -3157,7 +3117,7 @@ Create a variable initialized to the specified value.
 
 # Index
 
-1 [Add](#add) - Add the source locations together and store in the result in the target area.
+1 [Add](#add) - Add the source locations together and store the result in the target area.
 
 2 [Array](#array) - Create a new memory area and write its number into the address named by the target operand.
 
@@ -3301,7 +3261,7 @@ Create a variable initialized to the specified value.
 
 72 [Start](#start) - Start the current assembly using the specified version of the Zero language.
 
-73 [Subtract](#subtract) - Subtract the second source address from the first and store in the result in the target area.
+73 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
 
 74 [Tally](#tally) - Counts instructions when enabled.
 
