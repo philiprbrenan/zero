@@ -72,7 +72,7 @@ Create a new memory area and write its number into the address named by the targ
     
       Out "Array size:"; Out $n;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      DumpArray $a, "AAAA";
+      ArrayDump $a, "AAAA";
     
       ForArray
        {my ($i, $e, $check, $next, $end) = @_;
@@ -181,6 +181,14 @@ Count the number of elements in the array specified by the first source operand 
      }
     
 
+## ArrayDump($target, $title)
+
+Dump an array.
+
+       Parameter  Description
+    1  $target    Array to dump
+    2  $title     Title of dump
+
 ## ArrayIndex()
 
 Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.  The business of returning -1 would have led to the confusion of "try catch" and we certainly do not want that.
@@ -243,7 +251,7 @@ The current size of an array.
       my $n = ArraySize $a, "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out "Array size:"; Out $n;
-      DumpArray $a, "AAAA";
+      ArrayDump $a, "AAAA";
     
       ForArray
        {my ($i, $e, $check, $next, $end) = @_;
@@ -771,35 +779,6 @@ Dump all the arrays currently in memory.
      }
     
 
-## DumpArray($target, $title)
-
-Dump an array.
-
-       Parameter  Description
-    1  $target    Array to dump
-    2  $title     Title of dump
-
-**Example:**
-
-    if (1)                                                                           
-     {Start 1;
-      my $a = Array "aaa";
-        Mov [$a, 0, "aaa"], 1;
-        Mov [$a, 1, "aaa"], 22;
-        Mov [$a, 2, "aaa"], 333;
-    
-      DumpArray $a, "AAAA";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-      my $e = Execute(suppressOutput=>1);
-    
-      is_deeply $e->out, [
-      "AAAA",
-      "bless([1, 22, 333], \"aaa\")",
-      "Stack trace",
-      "    1     5 dumpArray"];
-     }
-    
-
 ## Else($e)
 
 Else block.
@@ -909,7 +888,7 @@ For loop to process each element of the named area.
     
       my $n = ArraySize $a, "aaa";
       Out "Array size:"; Out $n;
-      DumpArray $a, "AAAA";
+      ArrayDump $a, "AAAA";
     
     
       ForArray  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -2032,14 +2011,14 @@ Copy a constant or memory address to the target address.
     
         Mov [$a, 2, "aaa"], 333;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      DumpArray $a, "AAAA";
+      ArrayDump $a, "AAAA";
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->out, [
       "AAAA",
       "bless([1, 22, 333], \"aaa\")",
       "Stack trace",
-      "    1     5 dumpArray"];
+      "    1     5 arrayDump"];
      }
     
 
@@ -2124,7 +2103,7 @@ Do nothing (but do it well!).
     
       my $n = ArraySize $a, "aaa";
       Out "Array size:"; Out $n;
-      DumpArray $a, "AAAA";
+      ArrayDump $a, "AAAA";
     
       ForArray
        {my ($i, $e, $check, $next, $end) = @_;
@@ -3160,47 +3139,47 @@ Create a variable initialized to the specified value.
 
 4 [ArrayCountLess](#arraycountless) - Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result in the target location.
 
-5 [ArrayIndex](#arrayindex) - Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.
+5 [ArrayDump](#arraydump) - Dump an array.
 
-6 [ArraySize](#arraysize) - The current size of an array.
+6 [ArrayIndex](#arrayindex) - Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.
 
-7 [Assert](#assert) - Assert regardless.
+7 [ArraySize](#arraysize) - The current size of an array.
 
-8 [Assert1](#assert1) - Assert operation.
+8 [Assert](#assert) - Assert regardless.
 
-9 [Assert2](#assert2) - Assert operation.
+9 [Assert1](#assert1) - Assert operation.
 
-10 [AssertEq](#asserteq) - Assert two memory locations are equal.
+10 [Assert2](#assert2) - Assert operation.
 
-11 [AssertFalse](#assertfalse) - Assert false.
+11 [AssertEq](#asserteq) - Assert two memory locations are equal.
 
-12 [AssertGe](#assertge) - Assert are greater than or equal.
+12 [AssertFalse](#assertfalse) - Assert false.
 
-13 [AssertGt](#assertgt) - Assert two memory locations are greater than.
+13 [AssertGe](#assertge) - Assert are greater than or equal.
 
-14 [AssertLe](#assertle) - Assert two memory locations are less than or equal.
+14 [AssertGt](#assertgt) - Assert two memory locations are greater than.
 
-15 [AssertLt](#assertlt) - Assert two memory locations are less than.
+15 [AssertLe](#assertle) - Assert two memory locations are less than or equal.
 
-16 [AssertNe](#assertne) - Assert two memory locations are not equal.
+16 [AssertLt](#assertlt) - Assert two memory locations are less than.
 
-17 [AssertTrue](#asserttrue) - Assert true.
+17 [AssertNe](#assertne) - Assert two memory locations are not equal.
 
-18 [Bad](#bad) - A bad ending.
+18 [AssertTrue](#asserttrue) - Assert true.
 
-19 [Block](#block) - Block of code that can either be restarted or come to a good or a bad ending.
+19 [Bad](#bad) - A bad ending.
 
-20 [Call](#call) - Call the subroutine at the target address.
+20 [Block](#block) - Block of code that can either be restarted or come to a good or a bad ending.
 
-21 [Clear](#clear) - Clear the first bytes of an area.
+21 [Call](#call) - Call the subroutine at the target address.
 
-22 [Confess](#confess) - Confess with a stack trace showing the location bioth in the emulated code and in the code that produced the emulated code.
+22 [Clear](#clear) - Clear the first bytes of an area.
 
-23 [Dec](#dec) - Decrement the target.
+23 [Confess](#confess) - Confess with a stack trace showing the location bioth in the emulated code and in the code that produced the emulated code.
 
-24 [Dump](#dump) - Dump all the arrays currently in memory.
+24 [Dec](#dec) - Decrement the target.
 
-25 [DumpArray](#dumparray) - Dump an array.
+25 [Dump](#dump) - Dump all the arrays currently in memory.
 
 26 [Else](#else) - Else block.
 
