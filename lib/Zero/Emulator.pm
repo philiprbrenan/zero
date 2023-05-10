@@ -8,7 +8,7 @@
 # Count number of ways an if statement actually goes.
 use v5.30;
 package Zero::Emulator;
-our $VERSION = 20230513;                                                        # Version
+our $VERSION = 20230514;                                                        # Version
 use warnings FATAL=>qw(all);
 use strict;
 use Carp qw(cluck confess);
@@ -20,7 +20,7 @@ makeDieConfess;
 
 my sub maximumInstructionsToExecute {1e6}                                       # Maximum number of subroutines to execute
 
-sub execute(%)                                                                  # Execute a block of code..
+sub execute(%)                                                                  # Execute a block of code.
  {my (%options) = @_;                                                           # Execution options
 
   my $exec=                 genHash("Zero::Emulator::Execution",                # Execution results
@@ -87,7 +87,7 @@ my sub stackFrame(%)                                                            
   );
  }
 
-sub Zero::Emulator::Code::instruction($%)                                       #P Create a new instruction..
+sub Zero::Emulator::Code::instruction($%)                                       #P Create a new instruction.
  {my ($block, %options) = @_;                                                   # Block of code descriptor, options
 
   my ($package, $fileName, $line) = caller($options{level} // 1);
@@ -119,7 +119,7 @@ sub Zero::Emulator::Code::instruction($%)                                       
    }
  }
 
-sub Zero::Emulator::Code::Instruction::contextString($$$)                       #P Stack trace back for this instruction..
+sub Zero::Emulator::Code::Instruction::contextString($$$)                       #P Stack trace back for this instruction.
  {my ($i, $exec, $title) = @_;                                                  # Instruction, execution environment, title
   @_ == 3 or confess "Three parameters";
   my @s;
@@ -132,7 +132,7 @@ sub Zero::Emulator::Code::Instruction::contextString($$$)                       
   @s
  }
 
-sub AreaStructure($@)                                                           # Describe a data structure mapping a memory area..
+sub AreaStructure($@)                                                           # Describe a data structure mapping a memory area.
  {my ($structureName, @names) = @_;                                             # Structure name, fields names
 
   my $d = genHash("Zero::Emulator::AreaStructure",                              # Description of a data structure mapping a memory area
@@ -150,12 +150,12 @@ my sub isScalar($)                                                              
   ! ref $value;
  }
 
-sub Zero::Emulator::AreaStructure::count($)                                     #P Add a field to a data structure..
+sub Zero::Emulator::AreaStructure::count($)                                     #P Add a field to a data structure.
  {my ($d) = @_;                                                                 # Area structure
   scalar $d->fieldOrder->@*
  }
 
-sub Zero::Emulator::AreaStructure::name($$)                                     #P Add a field to a data structure..
+sub Zero::Emulator::AreaStructure::name($$)                                     #P Add a field to a data structure.
  {my ($d, $name) = @_;                                                          # Parameters
   @_ == 2 or confess "Two parameters";
   if (!defined $d->fieldNames->{$name})
@@ -177,7 +177,7 @@ my sub procedure($%)                                                            
   );
  }
 
-sub Zero::Emulator::AreaStructure::registers($)                                 #P Create one or more temporary variables. Need to reuse registers no longer in use..
+sub Zero::Emulator::AreaStructure::registers($)                                 #P Create one or more temporary variables. Need to reuse registers no longer in use.
  {my ($d, $count) = @_;                                                         # Parameters
   @_ == 1 or confess "One parameter";
   if (!defined($count))
@@ -188,21 +188,21 @@ sub Zero::Emulator::AreaStructure::registers($)                                 
   map {__SUB__->($d)} 1..$count;                                                # Array of temporaries
  }
 
-sub Zero::Emulator::AreaStructure::offset($$)                                   #P Offset of a field in a data structure..
+sub Zero::Emulator::AreaStructure::offset($$)                                   #P Offset of a field in a data structure.
  {my ($d, $name) = @_;                                                          # Parameters
   @_ == 2 or confess "Two parameters";
   if (defined(my $n = $d->fieldNames->{$name})){return $n}
   confess "No such name: '$name' in structure: ".$d->structureName;
  }
 
-sub Zero::Emulator::AreaStructure::address($$)                                  #P Address of a field in a data structure..
+sub Zero::Emulator::AreaStructure::address($$)                                  #P Address of a field in a data structure.
  {my ($d, $name) = @_;                                                          # Parameters
   @_ == 2 or confess "Two parameters";
   if (defined(my $n = $d->fieldNames->{$name})){return \$n}
   confess "No such name: '$name' in structure: ".$d->structureName;
  }
 
-sub Zero::Emulator::Procedure::registers($)                                     #P Allocate a register within a procedure..
+sub Zero::Emulator::Procedure::registers($)                                     #P Allocate a register within a procedure.
  {my ($procedure) = @_;                                                         # Procedure description
   @_ == 1 or confess "One parameter";
   $procedure->variables->registers();
@@ -262,7 +262,7 @@ my sub RefLeft($)                                                               
    }
  }
 
-sub Zero::Emulator::Reference::print($)                                         #P Print the value of an address..
+sub Zero::Emulator::Reference::print($)                                         #P Print the value of an address.
  {my ($ref) = @_;                                                               # Reference specification
   @_ == 1 or confess "One parameter";
   my $a  = dump($ref->area);
@@ -271,7 +271,7 @@ sub Zero::Emulator::Reference::print($)                                         
   say STDERR $s;
  }
 
-sub Zero::Emulator::Address::print($$)                                          #P Print the value of an address in the current execution..
+sub Zero::Emulator::Address::print($$)                                          #P Print the value of an address in the current execution.
  {my ($address, $exec) = @_;                                                    # Address specification
   @_ == 2 or confess "Two parameters";
   my $e  = $exec;
@@ -284,7 +284,7 @@ sub Zero::Emulator::Address::print($$)                                          
      $s .= "address: $l";
  }
 
-sub Zero::Emulator::Address::get($$)                                            #P Get the value of the specified address in memory in the specified execution environment..
+sub Zero::Emulator::Address::get($$)                                            #P Get the value of the specified address in memory in the specified execution environment.
  {my ($address, $exec) = @_;                                                    # Address specification
   @_ == 2 or confess "Two parameters";
   my $e = $exec;
@@ -294,7 +294,7 @@ sub Zero::Emulator::Address::get($$)                                            
   $$m{$a}[$l];
  }
 
-sub Zero::Emulator::Address::at($$)                                             #P Reference to the specified address in memory of current execution environment..
+sub Zero::Emulator::Address::at($$)                                             #P Reference to the specified address in memory of current execution environment.
  {my ($address, $exec) = @_;                                                    # Address specification
   @_ == 2 or confess "Two parameters";
   my $e = $exec;
@@ -304,7 +304,7 @@ sub Zero::Emulator::Address::at($$)                                             
   \$$m{$a}[$l]
  }
 
-sub Zero::Emulator::Procedure::call($)                                          #P Call a procedure.  Arguments are supplied by the L<ParamsPut> and L<ParamsGet> commands, return values are supplied by the L<ReturnPut> and L<ReturnGet> commands..
+sub Zero::Emulator::Procedure::call($)                                          #P Call a procedure.  Arguments are supplied by the L<ParamsPut> and L<ParamsGet> commands, return values are supplied by the L<ReturnPut> and L<ReturnGet> commands.
  {my ($procedure) = @_;                                                         # Procedure description
   @_ == 1 or confess "One parameter";
   Zero::Emulator::Call($procedure->target);
@@ -352,7 +352,6 @@ sub Zero::Emulator::Code::assemble($%)                                          
  }
 
 #D1 Execution
-#D2 Analysis
 
 sub Zero::Emulator::Execution::areaContent($$)                                  #P Content of an area containing a address in memory in the specified execution.
  {my ($exec, $address) = @_;                                                    # Execution environment, address specification
@@ -494,8 +493,6 @@ sub Zero::Emulator::Execution::analyzeExecutionResults($%)                      
   join "\n", @r;
  }
 
-#D2 Memory                                                                      # Access memory
-
 sub Zero::Emulator::Execution::check($$$)                                       #P Check that a user area access is valid.
  {my ($exec, $area, $name) = @_;                                                # Execution environment, area, expected area name
   @_ == 3 or confess "Three parameters";
@@ -544,8 +541,6 @@ sub Zero::Emulator::Execution::set($$$)                                         
 
   $$m{$a}[$l] = $value;
  }
-
-#D2 Execution                                                                   # Execute assembly code in the emulator
 
 sub Zero::Emulator::Execution::stackArea($)                                     #P Current stack frame.
  {my ($exec) = @_;                                                              # Execution environment
@@ -1507,21 +1502,21 @@ my sub xTarget($)                                                               
   (q(target), RefLeft $t)
  }
 
-sub Start($)                                                                    # Start the current assembly using the specified version of the Zero language.  At  the moment only version 1 works..
+sub Start($)                                                                    # Start the current assembly using the specified version of the Zero language.  At  the moment only version 1 works.
  {my ($version) = @_;                                                           # Version desired - at the moment only 1
   $version == 1 or confess "Version 1 is currently the only version available\n";
   $allocs = $allocsStacked = 0;
   $assembly = Code;                                                             # The current assembly
  }
 
-sub Add($$;$)                                                                   # Add the source locations together and store in the result in the target area.
+sub Add($$;$)                                                                   # Add the source locations together and store the result in the target area.
  {my ($target, $s1, $s2) = @_ == 2 ? (&Var(), @_) : @_;                         # Target address, source one, source two
   $assembly->instruction(action=>"add", xTarget($target),
     xSource($s1), xSource2($s2));
   $target
  }
 
-sub Subtract($$;$)                                                              # Subtract the second source address from the first and store in the result in the target area.
+sub Subtract($$;$)                                                              # Subtract the second source operand value from the first source operand value and store the result in the target area.
  {my ($target, $s1, $s2) = @_ == 2 ? (&Var(), @_) : @_;                         # Target address, source one, source two
   $assembly->instruction(action=>"subtract", xTarget($target),
     xSource($s1), xSource2($s2));
@@ -1689,12 +1684,12 @@ sub JTrue($$)                                                                   
   $assembly->instruction(action=>"jTrue", xTarget($target), xSource($source));
  }
 
-sub Label($)                                                                    # Create a label..
+sub Label($)                                                                    # Create a label.
  {my ($source) = @_;                                                            # Name of label
   $assembly->instruction(action=>"label", xSource($source));
  }
 
-sub Clear($)                                                                    # Clear the first bytes of an area.  The area is specified by the first element of the address, the number of locations to clear is specified by the second element of the target address..
+sub Clear($)                                                                    # Clear the first bytes of an area.  The area is specified by the first element of the address, the number of locations to clear is specified by the second element of the target address.
  {my ($target) = @_;                                                            # Target address, source address
   $assembly->instruction(action=>"clear", xTarget($target));
  }
@@ -1880,7 +1875,7 @@ sub Pop(;$$) {                                                                  
    }
  }
 
-sub Push($;$) {                                                                 # Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand..
+sub Push($;$) {                                                                 # Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
   if (@_ == 1)
    {my ($source) = @_;                                                          # Push a value onto the current stack frame
     $assembly->instruction(action=>"push", xSource($source));
@@ -1957,7 +1952,7 @@ sub Else(&)                                                                     
   (else=>  $e)
  }
 
-sub Ifx($$$%)                                                                   #P Execute then or else clause depending on whether two memory locations are equal..
+sub Ifx($$$%)                                                                   #P Execute then or else clause depending on whether two memory locations are equal.
  {my ($cmp, $a, $b, %options) = @_;                                             # Comparison, first memory address, second memory address, then block, else block
   confess "Then required" unless $options{then};
   if ($options{else})
@@ -1990,32 +1985,32 @@ sub IfTrue($%)                                                                  
   Ifx(\&Jeq, $a, 0, %options);
  }
 
-sub IfEq($$%)                                                                   # Execute then or else clause depending on whether two memory locations are equal..
+sub IfEq($$%)                                                                   # Execute then or else clause depending on whether two memory locations are equal.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
   Ifx(\&Jne, $a, $b, %options);
  }
 
-sub IfNe($$%)                                                                   # Execute then or else clause depending on whether two memory locations are not equal..
+sub IfNe($$%)                                                                   # Execute then or else clause depending on whether two memory locations are not equal.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
   Ifx(\&Jeq, $a, $b, %options);
  }
 
-sub IfLt($$%)                                                                   # Execute then or else clause depending on whether two memory locations are less than..
+sub IfLt($$%)                                                                   # Execute then or else clause depending on whether two memory locations are less than.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
   Ifx(\&Jge, $a, $b, %options);
  }
 
-sub IfLe($$%)                                                                   # Execute then or else clause depending on whether two memory locations are less than or equal..
+sub IfLe($$%)                                                                   # Execute then or else clause depending on whether two memory locations are less than or equal.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
   Ifx(\&Jgt, $a, $b, %options);
  }
 
-sub IfGt($$%)                                                                   # Execute then or else clause depending on whether two memory locations are greater than..
+sub IfGt($$%)                                                                   # Execute then or else clause depending on whether two memory locations are greater than.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
   Ifx(\&Jle, $a, $b, %options);
  }
 
-sub IfGe($$%)                                                                   # Execute then or else clause depending on whether two memory locations are greater than or equal..
+sub IfGe($$%)                                                                   # Execute then or else clause depending on whether two memory locations are greater than or equal.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address, then block, else block
   Ifx(\&Jlt, $a, $b, %options);
  }
@@ -2036,32 +2031,32 @@ sub Assert(%)                                                                   
   $assembly->instruction(action=>"assert");
  }
 
-sub AssertEq($$%)                                                               # Assert two memory locations are equal..
+sub AssertEq($$%)                                                               # Assert two memory locations are equal.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
   Assert2("Eq", $a, $b);
  }
 
-sub AssertNe($$%)                                                               # Assert two memory locations are not equal..
+sub AssertNe($$%)                                                               # Assert two memory locations are not equal.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
   Assert2("Ne", $a, $b);
  }
 
-sub AssertLt($$%)                                                               # Assert two memory locations are less than..
+sub AssertLt($$%)                                                               # Assert two memory locations are less than.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
   Assert2("Lt", $a, $b);
  }
 
-sub AssertLe($$%)                                                               # Assert two memory locations are less than or equal..
+sub AssertLe($$%)                                                               # Assert two memory locations are less than or equal.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
   Assert2("Le", $a, $b);
  }
 
-sub AssertGt($$%)                                                               # Assert two memory locations are greater than..
+sub AssertGt($$%)                                                               # Assert two memory locations are greater than.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
   Assert2("Gt", $a, $b);
  }
 
-sub AssertGe($$%)                                                               # Assert are greater than or equal..
+sub AssertGe($$%)                                                               # Assert are greater than or equal.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
   Assert2("Ge", $a, $b);
  }
@@ -2225,7 +2220,7 @@ eval {goto latest};
 sub is_deeply;
 sub ok($;$);
 
-#D1 Tests
+# Tests
 
 if (1)                                                                          # Address dereferencing
  {my $e = execute->createInitialStackEntry->setMemoryType(1, 'aaa');
@@ -2241,7 +2236,7 @@ if (1)                                                                          
   is_deeply $e->left (RefLeft  [1, \\2,  'aaa']), {address=>1, area=>1, name=>"aaa"};
  }
 
-#D1 Examples
+# Examples
 
 #latest:;
 if (1)                                                                          ##Out ##Start ##Execute
@@ -3086,45 +3081,36 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          ##ArraySize ##ForArray ##Array
+if (1)                                                                          ##ArraySize ##ForArray ##Array ##Nop
  {Start 1;
   my $a = Array "aaa";
     Mov [$a, 0, "aaa"], 1;
     Mov [$a, 1, "aaa"], 22;
     Mov [$a, 2, "aaa"], 333;
   my $n = ArraySize $a, "aaa";
-  Out $n;
+  DumpArray $a, "AAAA";
 
   ForArray
    {my ($i, $e, $check, $next, $end) = @_;
-    IfGt $i, 1,
-    Then
-     {Trace 1;
-     };
     Out $i; Out $e;
    }  $a, "aaa";
 
   Nop;
   my $e = Execute(suppressOutput=>1);
+
   is_deeply $e->memory, {1=>[1, 22, 333]};
 
   is_deeply $e->out,
- [3, 0, 1, 1, 22,
-  "Trace: 1",
-  "  37    14     1         trace                      \n",
-  "  38    15     3         label                      \n",
+[ "AAAA",
+  "bless([1, 22, 333], \"aaa\")",
+  "Stack trace",
+  "    1     6 dumpArray",
+  0,
+  1,
+  1,
+  22,
   2,
-  "  39    16     3           out                      \n",
-  333,
-  "  40    17     3           out                      \n",
-  "  41    18     3         label                      \n",
-  "  42    19     3           inc  [0, 3, stackArea] = 3 was 2\n",
-  "  43    20     3           jmp                      \n",
-  "  44     9     4         label                      \n",
-  "  45    10     4           jGe                      \n",
-  "  46    21     1         label                      \n",
-  "  47    22     1           nop                      \n",
-];
+  333];
  }
 
 #latest:;
