@@ -1355,7 +1355,7 @@ Copy the number of elements specified by the second source operand from the loca
 
        Parameter  Description
     1  $target    Target of move
-    2  $source    Source if move
+    2  $source    Source of move
     3  $source2   Length of move
 
 **Example:**
@@ -1375,6 +1375,7 @@ Copy the number of elements specified by the second source operand from the loca
     
       MoveLong [$b, \2, 'bbb'], [$a, \4, 'aaa'], 3;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
+    
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->memory,
