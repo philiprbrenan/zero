@@ -50,8 +50,8 @@ jobs:
 
     - name: Cpan
       run: |
-        sudo apt-get update
-        sudo apt-get install build-essential
+        sudo apt-get -y update
+        sudo apt-get -y install build-essential
         sudo cpan install -T Data::Dump Data::Table::Text
 
     - name: Zero Emulator
