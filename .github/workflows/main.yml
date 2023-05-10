@@ -34,3 +34,38 @@ jobs:
     - name: Zero testNWayTree
       run: |
         perl testNWayTree.pl
+
+  testWindows:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: wsl-bash {0}
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: 'main'
+
+    - uses: Vampire/setup-wsl@v2
+
+    - name: Cpan
+      run: |
+        sudo apt-get install build-essential                                    # Already installed but here to document what to do on systems where these important tools are not already installed
+        sudo cpan install -T Data::Dump Data::Table::Text
+
+    - name: Zero Emulator
+      run: |
+        perl lib/Zero/Emulator.pm
+
+    - name: Zero NWayTree
+      run: |
+        perl lib/Zero/NWayTree.pm
+
+    - name: Zero testEmulator
+      run: |
+        perl testEmulator.pl
+
+    - name: Zero testNWayTree
+      run: |
+        perl testNWayTree.pl
