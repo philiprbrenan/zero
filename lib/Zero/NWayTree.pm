@@ -1,4 +1,4 @@
-#!/usr/bin/perl -I/home/phil/perl/cpan/ZeroEmulator/lib/ -Ilib
+#!/usr/bin/perl -I../lib/ -Ilib
 #-------------------------------------------------------------------------------
 # Zero assembler language implemention of a generic N-Way tree.
 # Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
@@ -9,7 +9,7 @@ package Zero::NWayTree;
 our $VERSION = 20230514;                                                        # Version
 use warnings FATAL => qw(all);
 use strict;
-use Carp qw(cluck confess);
+use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
