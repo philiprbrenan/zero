@@ -118,7 +118,7 @@ into an N-Way-Tree?
 
 ```Start``` starts a [program](https://en.wikipedia.org/wiki/Computer_program) using a specified version of the language.
 
-```Out``` writes a message to the ````out``` channel.
+```Out``` writes a message to the ```out``` channel.
 
 ```Execute``` causes the [program](https://en.wikipedia.org/wiki/Computer_program) to be assembled and then executed.  The execution results are stored in the [Perl](http://www.perl.org/) data structure returned by this instruction.
 
