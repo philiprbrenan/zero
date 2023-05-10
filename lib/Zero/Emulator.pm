@@ -2528,14 +2528,15 @@ if (1)                                                                          
 
   is_deeply $e->out, [
   1,
+
   "dddd",
   "-2=bless([], \"return\")",
   "-1=bless([], \"params\")",
   "0=bless([1, 1], \"stackArea\")",
   "1=bless([undef, 1, 2], \"node\")",
+
   "Stack trace",
-  "    1     6 dump",
-];
+  "    1     6 dump"];
  }
 
 #latest:;
@@ -2725,8 +2726,8 @@ if (1)                                                                          
   AssertFalse 0;
   AssertTrue  0;
   my $e = Execute(suppressOutput=>1, trace=>1);
-  is_deeply $e->out,
-[ "   1     0     1   assertFalse                      \n",
+  is_deeply $e->out, [
+  "   1     0     1   assertFalse                      \n",
   "AssertTrue 0 failed",
   "    1     2 assertTrue",
   "   2     1     1    assertTrue                      \n"];
@@ -2738,8 +2739,8 @@ if (1)                                                                          
   AssertTrue  1;
   AssertFalse 1;
   my $e = Execute(suppressOutput=>1, trace=>1);
-  is_deeply $e->out,
-[ "   1     0     1    assertTrue                      \n",
+  is_deeply $e->out, [
+  "   1     0     1    assertTrue                      \n",
   "AssertFalse 1 failed",
   "    1     2 assertFalse",
   "   2     1     1   assertFalse                      \n"];
@@ -2770,8 +2771,7 @@ if (1)                                                                          
   "0=bless([1], \"stackArea\")",
   "1=bless([], \"aaa\")",
   "Stack trace",
-  "    1     2 dump",
-];
+  "    1     2 dump"];
  }
 
 #latest:;
@@ -2920,12 +2920,16 @@ if (1)                                                                          
   my $c = Mov 5;
   my $d = LeAddress $c;
   my $f = LeArea    [$a, \0, 'array'];
+
   Out $d;
   Out $f;
+
   Mov [$a, \$b, 'array'], 22;
   Mov [$a, \$c, 'array'], 33;
   Mov [$f, \$d, 'array'], 44;
+
   my $e = Execute(suppressOutput=>1);
+
   is_deeply $e->out,    [2,1];
   is_deeply $e->memory, {1=>[undef, undef, 44, undef, undef, 33]};
  }
@@ -2934,11 +2938,14 @@ if (1)                                                                          
 if (1)                                                                          ##ShiftUp
  {Start 1;
   my $a = Array "array";
+
   Mov [$a, 0, 'array'], 0;
   Mov [$a, 1, 'array'], 1;
   Mov [$a, 2, 'array'], 2;
   ShiftUp [$a, 1, 'array'], 99;
+
   my $e = Execute(suppressOutput=>1);
+
   is_deeply $e->memory, {1=>[0, 99, 1, 2]};
  }
 
@@ -2949,9 +2956,12 @@ if (1)                                                                          
   Mov [$a, 0, 'array'], 0;
   Mov [$a, 1, 'array'], 99;
   Mov [$a, 2, 'array'], 2;
+
   my $b = ShiftDown [$a, \1, 'array'];
   Out $b;
+
   my $e = Execute(suppressOutput=>1);
+
   is_deeply $e->memory, {1=>[0, 2]};
   is_deeply $e->out,    [99];
  }
@@ -2963,6 +2973,7 @@ if (1)                                                                          
   my $b = Array "bbb";
   Mov [$a, 0, 'aaa'], $b;
   Mov [$b, 0, 'bbb'], 99;
+
   For
    {my ($i, $check, $next, $end) = @_;
     my $c = Mov [$a, \0, 'aaa'];
@@ -2974,7 +2985,9 @@ if (1)                                                                          
     Jge $next, $d, $d;
     Jgt $next, $d, $d;
    } 3;
+
   my $e = Execute(suppressOutput=>1);
+
   is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
   is_deeply $e->memory, { 1=>  bless([2], "aaa"), 2=>  bless([99], "bbb") };
  }
@@ -3013,12 +3026,15 @@ if (1)                                                                          
  {Start 1;
   my $a = Array 'aaa';
   my $b = Mov 2;                                                                # Location to move to in a
+
   For
    {my ($i, $check, $next, $end) = @_;
     Mov [$a, \$b, 'aaa'], 1;
     Jeq $next, [$a, \$b, 'aaa'], 1;
    } 3;
+
   my $e = Execute(suppressOutput=>1);
+
   is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       19 instructions executed";
   is_deeply $e->memory, {1=>  bless([undef, undef, 1], "aaa")};
  }
@@ -3031,7 +3047,9 @@ if (1)                                                                          
   Mov [$a, 1, 'aaa'], 2;
   Mov [$a, 2, 'aaa'], 3;
   Resize $a, 2;
+
   my $e = Execute(suppressOutput=>1);
+
   is_deeply $e->memory, {1=>  [1, 2]};
  }
 
@@ -3072,16 +3090,14 @@ if (1)                                                                          
   Mov $b, 5;
   Mov $c, 6;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out,
-[
+  is_deeply $e->out, [
   "Change at watched area: 0 (stackArea), address: 1\n",
   "    1     6 mov",
   "Current value: 2",
   "New     value: 5",
   "-2=bless([], \"return\")",
   "-1=bless([], \"params\")",
-  "0=bless([4, 2, 3], \"stackArea\")",
-];
+  "0=bless([4, 2, 3], \"stackArea\")"];
  }
 
 #latest:;
@@ -3106,16 +3122,16 @@ if (1)                                                                          
 
   is_deeply $e->memory, {1=>[1, 22, 333]};
 
-  is_deeply $e->out,
-[ "Array size:", 3,
-  "AAAA",
-  "bless([1, 22, 333], \"aaa\")",
+  is_deeply $e->out, [ "Array size:", 3,
+
+  "AAAA", "bless([1, 22, 333], \"aaa\")",
+
   "Stack trace",
   "    1     8 dumpArray",
-  0, 1,
-  1, 22,
-  2, 333,
-];
+
+  0,   1,
+  1,  22,
+  2, 333];
  }
 
 #latest:;
@@ -3128,12 +3144,11 @@ if (1)                                                                          
   DumpArray $a, "AAAA";
   my $e = Execute(suppressOutput=>1);
 
-  is_deeply $e->out,
- ["AAAA",
+  is_deeply $e->out, [
+  "AAAA",
   "bless([1, 22, 333], \"aaa\")",
   "Stack trace",
-  "    1     5 dumpArray",
-];
+  "    1     5 dumpArray"];
  }
 
 #latest:;
@@ -3153,11 +3168,9 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1);
 
-  is_deeply $e->memory,
-{
+  is_deeply $e->memory, {
   1 => bless([0 .. 9], "aaa"),
-  2 => bless([100, 101, 4, 5, 6, 105 .. 109], "bbb"),
-};
+  2 => bless([100, 101, 4, 5, 6, 105 .. 109], "bbb")};
  }
 
 
@@ -3189,7 +3202,7 @@ if (1)                                                                          
   Out ArrayCountGreater $a,  5;
 
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [3,2,1,0,  3,2,1,0, 0,1,2,3];
+  is_deeply $e->out, [3,2,1,0,  3,2,1,0,  0,1,2,3];
  }
 
 #latest:;
@@ -3206,7 +3219,7 @@ if (1)                                                                          
   my $e = Execute;
 
   is_deeply $e->tallyCount, 2 * $N;
-  is_deeply $e->tallyCounts,{ 1 => {mov => $N}, 2 => {inc => $N}};
+  is_deeply $e->tallyCounts, { 1 => {mov => $N}, 2 => {inc => $N}};
  }
 
 #latest:;
@@ -3230,6 +3243,5 @@ if (1)                                                                          
   "Trace",
   "    1     6 tracePoint",
   "Trace",
-  "    1     6 tracePoint",
-];
+  "    1     6 tracePoint"];
  }
