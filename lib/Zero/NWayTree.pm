@@ -333,57 +333,12 @@ my sub Node_copy_leaf($$$$$)                                                    
 my sub Node_copy($$$$$)                                                         # Copy part of one interior node into another node.
  {my ($t, $s, $to, $so, $length) = @_;                                          # Target node, source node, target offset, source offset, length
 
-  my $sk = Node_fieldKeys $s;
-  my $sd = Node_fieldData $s;
-  my $sn = Node_fieldDown $s;
+  &Node_copy_leaf(@_);                                                          # Keys and data
 
-  my $tk = Node_fieldKeys $t;
-  my $td = Node_fieldData $t;
+  my $sn = Node_fieldDown $s;                                                   # Child nodes
   my $tn = Node_fieldDown $t;
-
-  MoveLong [$tk, \$to, "Keys"],  [$sk, \$so, "Keys"], $length;                                                                             # Each key, data, down
-  MoveLong [$td, \$to, "Data"],  [$sd, \$so, "Data"], $length;                                                                             # Each key, data, down
-
   my $L = Add $length, 1;
   MoveLong [$tn, \$to, "Down"],  [$sn, \$so, "Down"], $L;
- }
-
-my sub Node_copy22($$$$$)                                                         # Copy part of one interior node into another node.
- {my ($t, $s, $to, $so, $length) = @_;                                          # Target node, source node, target offset, source offset, length
-
-  For                                                                           # Each key, data, down
-   {my ($i, $check, $next, $end) = @_;
-    my $S = Add $so, $i;
-    my $T = Add $to, $i;
-
-    my $k = Node_keys   ($s, $S);
-    my $d = Node_data   ($s, $S);
-    my $n = Node_down   ($s, $S);
-            Node_setKeys($t, $T, $k);
-            Node_setData($t, $T, $d);
-            Node_setDown($t, $T, $n);
-   } $length;
-
-  my $S = Add $so, $length;
-  my $T = Add $to, $length;
-
-  my $n = Node_down($s, $S);
-  Node_setDown($t, $T, $n);
- }
-
-my sub Node_copy_leaf22($$$$$)                                                    # Copy part of one leaf node into another node.
- {my ($t, $s, $to, $so, $length) = @_;                                          # Target node, source node, target offset, source offset, length
-
-  For                                                                           # Each key, data, down
-   {my ($i, $check, $next, $end) = @_;
-    my $S = Add $so, $i;
-    my $T = Add $to, $i;
-
-    my $k = Node_keys   ($s, $S);
-    my $d = Node_data   ($s, $S);
-            Node_setKeys($t, $T, $k);
-            Node_setData($t, $T, $d);
-   } $length;
  }
 
 my sub Node_free($)                                                             # Free a node
