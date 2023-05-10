@@ -1975,12 +1975,12 @@ sub Ifx($$$%)                                                                   
    }
  }
 
-sub IfFalse($%)                                                                 # Execute then clause if the specified memory address is zero representing false.
+sub IfFalse($%)                                                                 # Execute then clause if the specified memory address is zero thus representing false.
  {my ($a, %options) = @_;                                                       # Memory address, then block, else block
   Ifx(\&Jne, $a, 0, %options);
  }
 
-sub IfTrue($%)                                                                  # Execute then clause if the specified memory address is not zero representing true.
+sub IfTrue($%)                                                                  # Execute then clause if the specified memory address is not zero thus representing true.
  {my ($a, %options) = @_;                                                       # Memory address, then block, else block
   Ifx(\&Jeq, $a, 0, %options);
  }
