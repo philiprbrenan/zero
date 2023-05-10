@@ -6,7 +6,7 @@
 # Key compression in each node by eliminating any common prefix present in each key in each node especially useful if we were to add attributes like userid, process, string position, rwx etc to front of each key.  Data does does not need this additional information.
 use v5.30;
 package Zero::NWayTree;
-our $VERSION = 20230513;                                                        # Version
+our $VERSION = 20230514;                                                        # Version
 use warnings FATAL => qw(all);
 use strict;
 use Carp qw(cluck confess);
@@ -240,58 +240,6 @@ my sub Node_allocDown($%)                                                       
   my $d = Array "Down";                                                         # Allocate down
   Mov [$node, $Node->address(q(down)), 'Node'], $d;                             # Down area
  }
-
-my sub FindResult_getField($$)                                                  # Get a field from a find result.
- {my ($findResult, $field) = @_;                                                # Find result, name of field
-  Mov [$findResult, $FindResult->address($field), q(FindResult)];               # Fields
- }
-
-sub FindResult_cmp($)                                                           # Get comparison from find result.
- {my ($f) = @_;                                                                 # Find result
-  FindResult_getField($f, q(cmp))                                               # Comparison
- }
-
-my sub FindResult_index($)                                                      # Get index from find result
- {my ($f) = @_;                                                                 # Find result
-  FindResult_getField($f, q(index))                                             # Index
- }
-
-my sub FindResult_indexP1($)                                                    # Get index+1 from find result
- {my ($f) = @_;                                                                 # Find result
-  Add [$f, $FindResult->address(q(index)), q(FindResult)], 1;                   # Fields
- }
-
-my sub FindResult_node($)                                                       # Get node from find result
- {my ($f) = @_;                                                                 # Find result
-  FindResult_getField($f, q(node))                                              # Node
- }
-
-sub FindResult_data($)                                                          # Get data field from find results.
- {my ($f) = @_;                                                                 # Find result
-
-  my $n = FindResult_node ($f);
-  my $i = FindResult_index($f);
-  my $d = Node_data($n, $i);
-  $d
- }
-
-sub FindResult_key($)                                                           # Get key field from find results.
- {my ($f) = @_;                                                                 # Find result
-
-  my $n = FindResult_node ($f);
-  my $i = FindResult_index($f);
-  my $k = Node_keys($n, $i);
-  $k
- }
-
-my sub FindResult($$)                                                           # Convert a symbolic name for a find result comparison to an integer
- {my ($f, $cmp) = @_;                                                           # Find result, comparison result name
-  return 0 if $cmp eq q(lower);
-  return 1 if $cmp eq q(equal);
-  return 2 if $cmp eq q(higher);
-  return 3 if $cmp eq q(notFound);
- }
-
 my sub Node_openLeaf($$$$$)                                                     # Open a gap in a leaf node
  {my ($node, $offset, $length, $K, $D) = @_;                                    # Node
 
@@ -354,6 +302,60 @@ my sub Node_free($)                                                             
    };
   Free $node, "Node";
  }
+
+#D1 Find                                                                        # Find a key in a tree.
+
+my sub FindResult_getField($$)                                                  # Get a field from a find result.
+ {my ($findResult, $field) = @_;                                                # Find result, name of field
+  Mov [$findResult, $FindResult->address($field), q(FindResult)];               # Fields
+ }
+
+sub FindResult_cmp($)                                                           # Get comparison from find result.
+ {my ($f) = @_;                                                                 # Find result
+  FindResult_getField($f, q(cmp))                                               # Comparison
+ }
+
+my sub FindResult_index($)                                                      # Get index from find result
+ {my ($f) = @_;                                                                 # Find result
+  FindResult_getField($f, q(index))                                             # Index
+ }
+
+my sub FindResult_indexP1($)                                                    # Get index+1 from find result
+ {my ($f) = @_;                                                                 # Find result
+  Add [$f, $FindResult->address(q(index)), q(FindResult)], 1;                   # Fields
+ }
+
+my sub FindResult_node($)                                                       # Get node from find result
+ {my ($f) = @_;                                                                 # Find result
+  FindResult_getField($f, q(node))                                              # Node
+ }
+
+sub FindResult_data($)                                                          # Get data field from find results.
+ {my ($f) = @_;                                                                 # Find result
+
+  my $n = FindResult_node ($f);
+  my $i = FindResult_index($f);
+  my $d = Node_data($n, $i);
+  $d
+ }
+
+sub FindResult_key($)                                                           # Get key field from find results.
+ {my ($f) = @_;                                                                 # Find result
+
+  my $n = FindResult_node ($f);
+  my $i = FindResult_index($f);
+  my $k = Node_keys($n, $i);
+  $k
+ }
+
+my sub FindResult($$)                                                           # Convert a symbolic name for a find result comparison to an integer
+ {my ($f, $cmp) = @_;                                                           # Find result, comparison result name
+  return 0 if $cmp eq q(lower);
+  return 1 if $cmp eq q(equal);
+  return 2 if $cmp eq q(higher);
+  return 3 if $cmp eq q(notFound);
+ }
+
 
 my sub FindResult_renew($$$$%)                                                  # Reuse an existing find result
  {my ($find, $node, $cmp, $index, %options) = @_;                               # Find result, node, comparison result, index, options
@@ -527,8 +529,6 @@ my sub Node_SplitIfFull($%)                                                     
    };
   $split
  }
-
-#D1 Find                                                                        # Find a key in a tree.
 
 my sub FindAndSplit($$%)                                                        # Find a key in a tree splitting full nodes along the path to the key.
  {my ($tree, $key, %options) = @_;                                              # Tree to search, key, options
