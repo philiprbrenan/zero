@@ -1,6 +1,6 @@
 # Name
 
-Zero::NWayTree - N-Way-Tree in Zero assembler language.
+Zero::NWayTree - N-Way-Tree written in the Zero assembler programming language.
 
 <div>
 
