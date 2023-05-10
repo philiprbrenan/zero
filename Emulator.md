@@ -91,7 +91,7 @@ Create a new memory area and write its number into the address named by the targ
       "AAAA", "bless([1, 22, 333], \"aaa\")",
     
       "Stack trace",
-      "    1     8 dumpArray",
+      "    1     8 arrayDump",
     
       0,   1,
       1,  22,
@@ -189,6 +189,27 @@ Dump an array.
     1  $target    Array to dump
     2  $title     Title of dump
 
+**Example:**
+
+    if (1)                                                                           
+     {Start 1;
+      my $a = Array "aaa";
+        Mov [$a, 0, "aaa"], 1;
+        Mov [$a, 1, "aaa"], 22;
+        Mov [$a, 2, "aaa"], 333;
+    
+      ArrayDump $a, "AAAA";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      my $e = Execute(suppressOutput=>1);
+    
+      is_deeply $e->out, [
+      "AAAA",
+      "bless([1, 22, 333], \"aaa\")",
+      "Stack trace",
+      "    1     5 arrayDump"];
+     }
+    
+
 ## ArrayIndex()
 
 Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.  The business of returning -1 would have led to the confusion of "try catch" and we certainly do not want that.
@@ -268,7 +289,7 @@ The current size of an array.
       "AAAA", "bless([1, 22, 333], \"aaa\")",
     
       "Stack trace",
-      "    1     8 dumpArray",
+      "    1     8 arrayDump",
     
       0,   1,
       1,  22,
@@ -907,7 +928,7 @@ For loop to process each element of the named area.
       "AAAA", "bless([1, 22, 333], \"aaa\")",
     
       "Stack trace",
-      "    1     8 dumpArray",
+      "    1     8 arrayDump",
     
       0,   1,
       1,  22,
@@ -2122,7 +2143,7 @@ Do nothing (but do it well!).
       "AAAA", "bless([1, 22, 333], \"aaa\")",
     
       "Stack trace",
-      "    1     8 dumpArray",
+      "    1     8 arrayDump",
     
       0,   1,
       1,  22,
