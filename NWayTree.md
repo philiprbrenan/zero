@@ -851,7 +851,7 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
 
 # Insert
 
-Create a new entry ina tree connecting a key to data.
+Create a new entry in a tree to connect a key to data.
 
 ## Insert($tree, $key, $data, %options)
 
