@@ -321,7 +321,6 @@ Get the number of keys in the tree..
       not        => 180};
     
       #say STDERR printTreeKeys($e->memory); x;
-      #say STDERR printTreeData($e->memory); x;
       is_deeply printTreeKeys($e->memory), <<END;
                                                                                                                     38                                                                                                    72
                                                                  21                                                                                                       56                                                                                                 89
@@ -330,6 +329,7 @@ Get the number of keys in the tree..
       1  2     4  5     7     9    11 12    14    16    18    20    22    24 25    27    29 30    32    34 35    37    39    41    43 44    46    48    50 51    53    55    57    59    61    63 64    66    68    70 71    73 74    76 77    79 80    82    84 85    87 88    90    92 93    95    97    99100   102   104   106107
     END
     
+      #say STDERR printTreeData($e->memory); x;
       is_deeply printTreeData($e->memory), <<END;
                                                                                                                     76                                                                                                   144
                                                                  42                                                                                                      112                                                                                                178
@@ -506,7 +506,6 @@ Get data field from find results.
       not        => 180};
     
       #say STDERR printTreeKeys($e->memory); x;
-      #say STDERR printTreeData($e->memory); x;
       is_deeply printTreeKeys($e->memory), <<END;
                                                                                                                     38                                                                                                    72
                                                                  21                                                                                                       56                                                                                                 89
@@ -515,6 +514,7 @@ Get data field from find results.
       1  2     4  5     7     9    11 12    14    16    18    20    22    24 25    27    29 30    32    34 35    37    39    41    43 44    46    48    50 51    53    55    57    59    61    63 64    66    68    70 71    73 74    76 77    79 80    82    84 85    87 88    90    92 93    95    97    99100   102   104   106107
     END
     
+      #say STDERR printTreeData($e->memory); x;
       is_deeply printTreeData($e->memory), <<END;
                                                                                                                     76                                                                                                   144
                                                                  42                                                                                                      112                                                                                                178
@@ -648,7 +648,6 @@ Get key field from find results.
       not        => 180};
     
       #say STDERR printTreeKeys($e->memory); x;
-      #say STDERR printTreeData($e->memory); x;
       is_deeply printTreeKeys($e->memory), <<END;
                                                                                                                     38                                                                                                    72
                                                                  21                                                                                                       56                                                                                                 89
@@ -657,6 +656,7 @@ Get key field from find results.
       1  2     4  5     7     9    11 12    14    16    18    20    22    24 25    27    29 30    32    34 35    37    39    41    43 44    46    48    50 51    53    55    57    59    61    63 64    66    68    70 71    73 74    76 77    79 80    82    84 85    87 88    90    92 93    95    97    99100   102   104   106107
     END
     
+      #say STDERR printTreeData($e->memory); x;
       is_deeply printTreeData($e->memory), <<END;
                                                                                                                     76                                                                                                   144
                                                                  42                                                                                                      112                                                                                                178
@@ -829,7 +829,6 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
       not        => 180};
     
       #say STDERR printTreeKeys($e->memory); x;
-      #say STDERR printTreeData($e->memory); x;
       is_deeply printTreeKeys($e->memory), <<END;
                                                                                                                     38                                                                                                    72
                                                                  21                                                                                                       56                                                                                                 89
@@ -838,6 +837,7 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
       1  2     4  5     7     9    11 12    14    16    18    20    22    24 25    27    29 30    32    34 35    37    39    41    43 44    46    48    50 51    53    55    57    59    61    63 64    66    68    70 71    73 74    76 77    79 80    82    84 85    87 88    90    92 93    95    97    99100   102   104   106107
     END
     
+      #say STDERR printTreeData($e->memory); x;
       is_deeply printTreeData($e->memory), <<END;
                                                                                                                     76                                                                                                   144
                                                                  42                                                                                                      112                                                                                                178
@@ -1156,7 +1156,6 @@ Iterate over a tree.
       not        => 180};
     
       #say STDERR printTreeKeys($e->memory); x;
-      #say STDERR printTreeData($e->memory); x;
       is_deeply printTreeKeys($e->memory), <<END;
                                                                                                                     38                                                                                                    72
                                                                  21                                                                                                       56                                                                                                 89
@@ -1165,6 +1164,7 @@ Iterate over a tree.
       1  2     4  5     7     9    11 12    14    16    18    20    22    24 25    27    29 30    32    34 35    37    39    41    43 44    46    48    50 51    53    55    57    59    61    63 64    66    68    70 71    73 74    76 77    79 80    82    84 85    87 88    90    92 93    95    97    99100   102   104   106107
     END
     
+      #say STDERR printTreeData($e->memory); x;
       is_deeply printTreeData($e->memory), <<END;
                                                                                                                     76                                                                                                   144
                                                                  42                                                                                                      112                                                                                                178
@@ -1302,7 +1302,6 @@ Print the keys held in a tree.
     
       #say STDERR printTreeKeys($e->memory); x;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      #say STDERR printTreeData($e->memory); x;
     
       is_deeply printTreeKeys($e->memory), <<END;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
@@ -1313,6 +1312,7 @@ Print the keys held in a tree.
       1  2     4  5     7     9    11 12    14    16    18    20    22    24 25    27    29 30    32    34 35    37    39    41    43 44    46    48    50 51    53    55    57    59    61    63 64    66    68    70 71    73 74    76 77    79 80    82    84 85    87 88    90    92 93    95    97    99100   102   104   106107
     END
     
+      #say STDERR printTreeData($e->memory); x;
       is_deeply printTreeData($e->memory), <<END;
                                                                                                                     76                                                                                                   144
                                                                  42                                                                                                      112                                                                                                178
@@ -1444,9 +1444,6 @@ Print the data held in a tree.
       not        => 180};
     
       #say STDERR printTreeKeys($e->memory); x;
-    
-      #say STDERR printTreeData($e->memory); x;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
       is_deeply printTreeKeys($e->memory), <<END;
                                                                                                                     38                                                                                                    72
                                                                  21                                                                                                       56                                                                                                 89
@@ -1455,6 +1452,9 @@ Print the data held in a tree.
       1  2     4  5     7     9    11 12    14    16    18    20    22    24 25    27    29 30    32    34 35    37    39    41    43 44    46    48    50 51    53    55    57    59    61    63 64    66    68    70 71    73 74    76 77    79 80    82    84 85    87 88    90    92 93    95    97    99100   102   104   106107
     END
     
+    
+      #say STDERR printTreeData($e->memory); x;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
     
       is_deeply printTreeData($e->memory), <<END;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
