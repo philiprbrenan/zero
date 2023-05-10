@@ -99,10 +99,6 @@ jobs:
       with:
         ref: 'main'
 
-    - name: Cpan
-      run: |
-        sudo cpan install -T Data::Dump Data::Table::Text
-
 XXXX
 
   testWindows:
