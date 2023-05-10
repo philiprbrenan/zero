@@ -274,8 +274,8 @@ my sub Node_copy_leaf($$$$$)                                                    
   my $tk = Node_fieldKeys $t;
   my $td = Node_fieldData $t;
 
-  MoveLong [$tk, \$to, "Keys"],  [$sk, \$so, "Keys"], $length;                                                                             # Each key, data, down
-  MoveLong [$td, \$to, "Data"],  [$sd, \$so, "Data"], $length;                                                                             # Each key, data, down
+  MoveLong [$tk, \$to, "Keys"],  [$sk, \$so, "Keys"], $length;                  # Each key, data, down
+  MoveLong [$td, \$to, "Data"],  [$sd, \$so, "Data"], $length;                  # Each key, data, down
  }
 
 my sub Node_copy($$$$$)                                                         # Copy part of one interior node into another node.
