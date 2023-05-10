@@ -320,6 +320,24 @@ my sub Node_open($$$$$)                                                         
 my sub Node_copy($$$$$)                                                         # Copy part of one interior node into another node.
  {my ($t, $s, $to, $so, $length) = @_;                                          # Target node, source node, target offset, source offset, length
 
+  my $sk = Node_fieldKeys $s;
+  my $sd = Node_fieldData $s;
+  my $sn = Node_fieldDown $s;
+
+  my $tk = Node_fieldKeys $t;
+  my $td = Node_fieldData $t;
+  my $tn = Node_fieldDown $t;
+
+  MoveLong [$tk, \$to, "Keys"],  [$sk, \$so, "Keys"], $length;                                                                             # Each key, data, down
+  MoveLong [$td, \$to, "Data"],  [$sd, \$so, "Data"], $length;                                                                             # Each key, data, down
+
+  my $L = Add $length, 1;
+  MoveLong [$tn, \$to, "Down"],  [$sn, \$so, "Down"], $L;
+ }
+
+my sub Node_copy22($$$$$)                                                         # Copy part of one interior node into another node.
+ {my ($t, $s, $to, $so, $length) = @_;                                          # Target node, source node, target offset, source offset, length
+
   For                                                                           # Each key, data, down
    {my ($i, $check, $next, $end) = @_;
     my $S = Add $so, $i;
@@ -1541,27 +1559,28 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  25522;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  25117;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 16476, 2 => 6294, 3 => 2752};
+  is_deeply $e->tallyTotal, { 1 => 16071, 2 => 6294, 3 => 2752};
 
   #say STDERR dump $e->tallyCounts->{1};
   is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
-  add               => 330,
+  add               => 249,
   array             => 247,
   arrayCountGreater => 2,
   arrayCountLess    => 262,
   arrayIndex        => 293,
   dec               => 30,
-  inc               => 798,
+  inc               => 771,
   jEq               => 894,
-  jGe               => 792,
+  jGe               => 738,
   jLe               => 461,
   jLt               => 565,
-  jmp               => 950,
+  jmp               => 923,
   jNe               => 908,
-  mov               => 8246,
+  mov               => 7949,
+  moveLong          => 81,
   not               => 631,
   resize            => 161,
   shiftUp           => 300,
