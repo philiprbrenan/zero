@@ -1935,7 +1935,7 @@ Else block.
 
 ## IfFalse($a, %options)
 
-Execute then clause if the specified memory address is zero representing false.
+Execute then clause if the specified memory address is zero thus representing false.
 
        Parameter  Description
     1  $a         Memory address
@@ -1961,7 +1961,7 @@ Execute then clause if the specified memory address is zero representing false.
 
 ## IfTrue($a, %options)
 
-Execute then clause if the specified memory address is not zero representing true.
+Execute then clause if the specified memory address is not zero thus representing true.
 
        Parameter  Description
     1  $a         Memory address
@@ -3181,7 +3181,7 @@ Create a variable initialized to the specified value.
 
 32 [IfEq](#ifeq) - Execute then or else clause depending on whether two memory locations are equal.
 
-33 [IfFalse](#iffalse) - Execute then clause if the specified memory address is zero representing false.
+33 [IfFalse](#iffalse) - Execute then clause if the specified memory address is zero thus representing false.
 
 34 [IfGe](#ifge) - Execute then or else clause depending on whether two memory locations are greater than or equal.
 
@@ -3193,7 +3193,7 @@ Create a variable initialized to the specified value.
 
 38 [IfNe](#ifne) - Execute then or else clause depending on whether two memory locations are not equal.
 
-39 [IfTrue](#iftrue) - Execute then clause if the specified memory address is not zero representing true.
+39 [IfTrue](#iftrue) - Execute then clause if the specified memory address is not zero thus representing true.
 
 40 [Ifx](#ifx) - Execute then or else clause depending on whether two memory locations are equal.
 
