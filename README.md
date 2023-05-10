@@ -102,6 +102,26 @@ into an N-Way-Tree?
 
 # The Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) programming language
 
+## Hello World
+
+"Hello World" in the Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) programming language:
+
+```
+  Start 1;
+
+  Out "hello World";
+
+  my $e = Execute(suppressOutput=>1);
+
+  is_deeply $e->out, ["hello World"];
+```
+
+```Start``` starts a [program](https://en.wikipedia.org/wiki/Computer_program) using a specified version of the language.
+
+```Out``` writes a message to the ````out``` channel.
+
+```Execute``` causes the [program](https://en.wikipedia.org/wiki/Computer_program) to be assembled and then executed.  The execution results are stored in the [Perl](http://www.perl.org/) data structure returned by this instruction.
+
 ## Addresses
 
 Each [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) instruction can potentially affect a target [memory](https://en.wikipedia.org/wiki/Computer_memory) location specified by
