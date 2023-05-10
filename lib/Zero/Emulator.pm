@@ -3145,7 +3145,7 @@ if (1)                                                                          
   "AAAA", "bless([1, 22, 333], \"aaa\")",
 
   "Stack trace",
-  "    1     8 dumpArray",
+  "    1     8 arrayDump",
 
   0,   1,
   1,  22,
@@ -3153,7 +3153,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          ##DumpArray ##Mov
+if (1)                                                                          ##ArrayDump ##Mov
  {Start 1;
   my $a = Array "aaa";
     Mov [$a, 0, "aaa"], 1;
