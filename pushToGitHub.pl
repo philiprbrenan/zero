@@ -139,7 +139,7 @@ sub introNWayTree1{<<"END"}
 
 =head1 Name
 
-Zero::NWayTree - N-Way-Tree in Zero assembler language.
+Zero::NWayTree - N-Way-Tree written in the Zero assembler programming language.
 
 =for html
 <p><a href="$repoUrl"><img src="$repoUrl/workflows/Test/badge.svg"></a>
