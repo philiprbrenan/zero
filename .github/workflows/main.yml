@@ -18,10 +18,6 @@ jobs:
       run: |
         sudo cpan install -T Data::Dump Data::Table::Text
 
-    - name: Cpan
-      run: |
-        sudo cpan install -T Data::Dump Data::Table::Text
-
     - name: Zero Emulator
       run: |
         perl lib/Zero/Emulator.pm
