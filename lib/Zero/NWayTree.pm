@@ -317,6 +317,19 @@ my sub Node_open($$$$$)                                                         
   Node_incLength $node;
  }
 
+my sub Node_copy_leaf($$$$$)                                                    # Copy part of one leaf node into another node.
+ {my ($t, $s, $to, $so, $length) = @_;                                          # Target node, source node, target offset, source offset, length
+
+  my $sk = Node_fieldKeys $s;
+  my $sd = Node_fieldData $s;
+
+  my $tk = Node_fieldKeys $t;
+  my $td = Node_fieldData $t;
+
+  MoveLong [$tk, \$to, "Keys"],  [$sk, \$so, "Keys"], $length;                                                                             # Each key, data, down
+  MoveLong [$td, \$to, "Data"],  [$sd, \$so, "Data"], $length;                                                                             # Each key, data, down
+ }
+
 my sub Node_copy($$$$$)                                                         # Copy part of one interior node into another node.
  {my ($t, $s, $to, $so, $length) = @_;                                          # Target node, source node, target offset, source offset, length
 
@@ -358,7 +371,7 @@ my sub Node_copy22($$$$$)                                                       
   Node_setDown($t, $T, $n);
  }
 
-my sub Node_copy_leaf($$$$$)                                                    # Copy part of one leaf node into another node.
+my sub Node_copy_leaf22($$$$$)                                                    # Copy part of one leaf node into another node.
  {my ($t, $s, $to, $so, $length) = @_;                                          # Target node, source node, target offset, source offset, length
 
   For                                                                           # Each key, data, down
@@ -423,7 +436,7 @@ my sub ReUp($)                                                                  
   my $D = Node_fieldDown($node);
   For
    {my ($i, $check, $next, $end) = @_;                                          # Parameters
-    my $d = Mov [$D, \$i, 'Down'];;
+    my $d = Mov [$D, \$i, 'Down'];
             Node_setUp($d, $node);
    } $L;
  }
@@ -609,7 +622,7 @@ my sub FindAndSplit($$%)                                                        
        };
 
       my $n = Node_down($node, $I);
-      IfFalse Node_SplitIfFull($n, %options),                               # Split the node we have stepped to if necessary - if we do we will have to restart the descent from one level up because the key might have moved to the other  node.
+      IfFalse Node_SplitIfFull($n, %options),                                   # Split the node we have stepped to if necessary - if we do we will have to restart the descent from one level up because the key might have moved to the other  node.
       Then
        {Mov $node, $n;
        };
@@ -798,7 +811,7 @@ my sub GoUpAndAround($)                                                         
       my $parent = Node_up($node);                                              # Parent
       IfTrue $parent,
       Then
-       {For                                                                     # Not the only node in the tree
+       {For                                                                     # Go up until we can go right
          {my ($j, $check, $next, $end) = @_;                                    # Parameters
           my $pl = Node_length($parent);                                        # Number of children
           my $i = Node_indexInParent($node, parent=>$parent, children=>$pl);    # Index in parent
@@ -1559,28 +1572,28 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  25117;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  24712;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 16071, 2 => 6294, 3 => 2752};
+  is_deeply $e->tallyTotal, { 1 => 15666, 2 => 6294, 3 => 2752};
 
   #say STDERR dump $e->tallyCounts->{1};
   is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
-  add               => 249,
+  add               => 159,
   array             => 247,
   arrayCountGreater => 2,
   arrayCountLess    => 262,
   arrayIndex        => 293,
   dec               => 30,
-  inc               => 771,
+  inc               => 726,
   jEq               => 894,
-  jGe               => 738,
+  jGe               => 648,
   jLe               => 461,
   jLt               => 565,
-  jmp               => 923,
+  jmp               => 878,
   jNe               => 908,
-  mov               => 7949,
-  moveLong          => 81,
+  mov               => 7724,
+  moveLong          => 171,
   not               => 631,
   resize            => 161,
   shiftUp           => 300,
