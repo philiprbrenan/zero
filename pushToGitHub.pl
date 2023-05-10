@@ -14,10 +14,11 @@ use feature qw(say current_sub);
 
 makeDieConfess;
 
-my $home = q(/home/phil/perl/cpan/ZeroEmulator/);                               # Local files
-my $user = q(philiprbrenan);                                                    # User
-my $repo = q(zero);                                                             # Store code here so it can be referenced from a browser
-my $wf   = q(.github/workflows/main.yml);                                       # Work flow on Ubuntu
+my $home    = q(/home/phil/perl/cpan/ZeroEmulator/);                            # Local files
+my $user    = q(philiprbrenan);                                                 # User
+my $repo    = q(zero);                                                          # Store code here so it can be referenced from a browser
+my $wf      = q(.github/workflows/main.yml);                                    # Work flow on Ubuntu
+my $repoUrl = q(https://github.com/philiprbrenan/zero);
 
 sub pod($$$)                                                                    # Write pod file
  {my ($in, $out, $intro) = @_;                                                  # Input, output file, introduction
@@ -99,18 +100,22 @@ END
 
 lll "Ubuntu work flow for $repo ", writeFileUsingSavedToken($user, $repo, $wf, $y);
 
+sub introEmulator{&introEmulator1.&introEmulator2}
 
-sub introEmulator{<<'END'}
+sub introEmulator1{<<"END"}
 =pod
 
 =encoding utf-8
 
 =head1 Name
 
-Zero::Emulator - Assemble and emulate a program in the Zero assembly programming language
+Zero::Emulator - Assemble and emulate a program written in the L<Zero|$repoUrl> assembly programming language.
 
 =for html
-<p><a href="https://github.com/philiprbrenan/zero"><img src="https://github.com/philiprbrenan/zero/workflows/Test/badge.svg"></a>
+<p><a href="$repoUrl"><img src="$repoUrl/workflows/Test/badge.svg"></a>
+END
+
+sub introEmulator2{<<'END2'}
 
 =head1 Synopsis
 
@@ -123,9 +128,11 @@ Say "hello world":
   my $e = Execute;
 
   is_deeply $e->out, ["hello World"];
-END
+END2
 
-sub introNWayTree{<<'END'}
+sub introNWayTree{&introNWayTree1.&introNWayTree2}
+
+sub introNWayTree1{<<"END"}
 =pod
 
 =encoding utf-8
@@ -135,12 +142,15 @@ sub introNWayTree{<<'END'}
 Zero::NWayTree - N-Way-Tree in Zero assembler language.
 
 =for html
-<p><a href="https://github.com/philiprbrenan/zero"><img src="https://github.com/philiprbrenan/zero/workflows/Test/badge.svg"></a>
+<p><a href="$repoUrl"><img src="$repoUrl/workflows/Test/badge.svg"></a>
 
 =head1 Synopsis
 
 Create a tree, load it from an array of random numbers, then print out the
 results:
+END
+
+sub introNWayTree2{<<'END'}
 
   my $W = 3; my $N = 107; my @r = randomArray $N;
 
