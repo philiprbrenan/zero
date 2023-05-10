@@ -117,7 +117,7 @@ XXXX
 
     - name: Ubuntu
       run: |
-        sudo apt-get -y update                                                  # Configure Ubuntu
+        sudo apt-get -y update
 
     - name: Configure Ubuntu
       run: |
