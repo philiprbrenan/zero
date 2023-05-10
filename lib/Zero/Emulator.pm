@@ -1752,7 +1752,7 @@ sub Mov($;$) {                                                                  
  }
 
 sub MoveLong($$$)                                                               # Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand
- {my ($target, $source, $source2) = @_;                                         # Target of move, source if move, length of move
+ {my ($target, $source, $source2) = @_;                                         # Target of move, source of move, length of move
   $assembly->instruction(action=>"moveLong", xTarget($target),
     xSource($source), xSource2($source2));
  }
@@ -2213,7 +2213,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 @ISA         = qw(Exporter);
 @EXPORT      = qw();
-@EXPORT_OK   = qw(Add AreaStructure Array ArrayIndex ArrayCountLess ArrayCountGreater Assert AssertEq AssertGe AssertGt AssertLe AssertLt AssertNe Bad Block Call Clear Confess Dec Dump DumpArray Else Execute For ForArray Free Good IfEq IfFalse IfGe IfGt IfLe IfLt IfNe IfTrue Ifx Inc Jeq Jge Jgt Jle Jlt Jmp Jne JTrue JFalse Label Mov Nop Not Out ParamsGet ParamsPut Pop Procedure Push Resize Return ReturnGet ReturnPut ShiftDown ShiftLeft ShiftRight ShiftUp Start Subtract Tally Then Trace TracePoints Var Watch);
+@EXPORT_OK   = qw(Add AreaStructure Array ArrayIndex ArrayCountLess ArrayCountGreater Assert AssertEq AssertGe AssertGt AssertLe AssertLt AssertNe Bad Block Call Clear Confess Dec Dump DumpArray Else Execute For ForArray Free Good IfEq IfFalse IfGe IfGt IfLe IfLt IfNe IfTrue Ifx Inc Jeq Jge Jgt Jle Jlt Jmp Jne JTrue JFalse Label Mov MoveLong Nop Not Out ParamsGet ParamsPut Pop Procedure Push Resize Return ReturnGet ReturnPut ShiftDown ShiftLeft ShiftRight ShiftUp Start Subtract Tally Then Trace TracePoints Var Watch);
 #say STDERR '@EXPORT_OK   = qw(', (join ' ', sort @EXPORT_OK), ')'; exit;
 %EXPORT_TAGS = (all=>[@EXPORT, @EXPORT_OK]);
 
@@ -2244,7 +2244,7 @@ if (1)                                                                          
 #D1 Examples
 
 #latest:;
-if (1)                                                                          #TOut #TStart #TExecute
+if (1)                                                                          ##Out ##Start ##Execute
  {Start 1;
   Out "hello World";
   my $e = Execute(suppressOutput=>1);
@@ -2252,14 +2252,14 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TNop
+if (1)                                                                          ##Nop
  {Start 1;
   Nop;
   ok Execute(out=>[]);
  }
 
 #latest:;
-if (1)                                                                          #TMov
+if (1)                                                                          ##Mov
  {Start 1;
   my $a = Mov 2;
   Out $a;
@@ -2270,7 +2270,7 @@ if (1)                                                                          
 
 #latest:;
 if (1)
- {Start 1;                                                                      #TMov
+ {Start 1;                                                                      ##Mov
   my $a = Mov  3;
   my $b = Mov  $$a;
   my $c = Mov  \$b;
@@ -2280,7 +2280,7 @@ if (1)
  }
 
 #latest:;
-if (1)                                                                          #TAdd
+if (1)                                                                          ##Add
  {Start 1;
   my $a = Add 3, 2;
   Out  $a;
@@ -2289,7 +2289,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TAdd #TSubtract
+if (1)                                                                          ##Add ##Subtract
  {Start 1;
   my $a = Subtract 4, 2;
   Out $a;
@@ -2298,7 +2298,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TDec
+if (1)                                                                          ##Dec
  {Start 1;
   my $a = Mov 3;
   Dec $a;
@@ -2308,7 +2308,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TInc
+if (1)                                                                          ##Inc
  {Start 1;
   my $a = Mov 3;
   Inc $a;
@@ -2318,7 +2318,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TNot
+if (1)                                                                          ##Not
  {Start 1;
   my $a = Mov 3;
   my $b = Not $a;
@@ -2331,7 +2331,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TShiftLeft
+if (1)                                                                          ##ShiftLeft
  {Start 1;
   my $a = Mov 1;
   ShiftLeft $a, $a;
@@ -2341,7 +2341,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TShiftRight
+if (1)                                                                          ##ShiftRight
  {Start 1;
   my $a = Mov 4;
   ShiftRight $a, 1;
@@ -2351,7 +2351,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TJmp
+if (1)                                                                          ##Jmp
  {Start 1;
   Jmp (my $a = label);
     Out  1;
@@ -2364,7 +2364,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TJLt #TLabel
+if (1)                                                                          ##JLt ##Label
  {Start 1;
   Mov 0, 1;
   Jlt ((my $a = label), \0, 2);
@@ -2385,7 +2385,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TLabel
+if (1)                                                                          ##Label
  {Start 1;
   Mov 0, 0;
   my $a = setLabel;
@@ -2397,7 +2397,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TMov
+if (1)                                                                          ##Mov
  {Start 1;
   my $a = Array "aaa";
   Mov     [$a,  1, "aaa"],  11;
@@ -2408,7 +2408,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TCall #TReturn
+if (1)                                                                          ##Call ##Return
  {Start 1;
   my $w = Procedure 'write', sub
    {Out 'aaa';
@@ -2420,7 +2420,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TCall
+if (1)                                                                          ##Call
  {Start 1;
   my $w = Procedure 'write', sub
    {my $a = ParamsGet 0;
@@ -2434,7 +2434,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TCall #TReturnPut #TReturnGet
+if (1)                                                                          ##Call ##ReturnPut ##ReturnGet
  {Start 1;
   my $w = Procedure 'write', sub
    {ReturnPut 0, "ccc";
@@ -2448,7 +2448,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TProcedure
+if (1)                                                                          ##Procedure
  {Start 1;
   my $add = Procedure 'add2', sub
    {my $a = ParamsGet 0;
@@ -2465,7 +2465,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TConfess
+if (1)                                                                          ##Confess
  {Start 1;
   my $c = Procedure 'confess', sub
    {Confess;
@@ -2476,7 +2476,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TPush #TPop
+if (1)                                                                          ##Push ##Pop
  {Start 1;
   my $a = Array "aaa";
   Push $a, 1;
@@ -2492,7 +2492,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TAlloc #TMov
+if (1)                                                                          ##Alloc ##Mov
  {Start 1;
   my $a = Array "alloc";
   my $b = Mov 99;
@@ -2503,7 +2503,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TFree
+if (1)                                                                          ##Free
  {Start 1;
   my $a = Array "node";
   Free $a, "aaa";
@@ -2516,7 +2516,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TFree #TDump
+if (1)                                                                          ##Free ##Dump
  {Start 1;
   my $a = Array "node";
   Out $a;
@@ -2553,7 +2553,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TIfEq  #TIfNe  #TIfLt #TIfLe  #TIfGt  #TIfGe
+if (1)                                                                          ##IfEq  ##IfNe  ##IfLt ##IfLe  ##IfGt  ##IfGe
  {Start 1;
   my $a = Mov 1;
   my $b = Mov 2;
@@ -2568,7 +2568,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TIfEq  #TIfNe  #TIfLt #TIfLe  #TIfGt  #TIfGe
+if (1)                                                                          ##IfEq  ##IfNe  ##IfLt ##IfLe  ##IfGt  ##IfGe
  {Start 1;
   my $a = Mov 1;
   my $b = Mov 2;
@@ -2583,7 +2583,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TIfEq  #TIfNe  #TIfLt #TIfLe  #TIfGt  #TIfGe
+if (1)                                                                          ##IfEq  ##IfNe  ##IfLt ##IfLe  ##IfGt  ##IfGe
  {Start 1;
   my $a = Mov 1;
   my $b = Mov 2;
@@ -2598,7 +2598,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TIfTrue
+if (1)                                                                          ##IfTrue
  {Start 1;
   IfTrue 1,
   Then
@@ -2612,7 +2612,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TIfFalse #TTrue #TFalse
+if (1)                                                                          ##IfFalse ##True ##False
  {Start 1;
   IfFalse 1,
   Then
@@ -2626,7 +2626,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TForLoop
+if (1)                                                                          ##ForLoop
  {Start 1;
   For
    {my ($i) = @_;
@@ -2637,7 +2637,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TForLoop
+if (1)                                                                          ##ForLoop
  {Start 1;
   For
    {my ($i) = @_;
@@ -2648,7 +2648,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TForLoop
+if (1)                                                                          ##ForLoop
  {Start 1;
   For
    {my ($i) = @_;
@@ -2659,7 +2659,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TAssert
+if (1)                                                                          ##Assert
  {Start 1;
   Assert;
   my $e = Execute(suppressOutput=>1);
@@ -2667,7 +2667,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TAssertEq
+if (1)                                                                          ##AssertEq
  {Start 1;
   Mov 0, 1;
   AssertEq \0, 2;
@@ -2676,7 +2676,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TAssertNe
+if (1)                                                                          ##AssertNe
  {Start 1;
   Mov 0, 1;
   AssertNe \0, 1;
@@ -2685,7 +2685,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TAssertLt
+if (1)                                                                          ##AssertLt
  {Start 1;
   Mov 0, 1;
   AssertLt \0, 0;
@@ -2694,7 +2694,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TAssertLe
+if (1)                                                                          ##AssertLe
  {Start 1;
   Mov 0, 1;
   AssertLe \0, 0;
@@ -2703,7 +2703,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TAssertGt
+if (1)                                                                          ##AssertGt
  {Start 1;
   Mov 0, 1;
   AssertGt \0, 2;
@@ -2712,7 +2712,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TAssertGe
+if (1)                                                                          ##AssertGe
  {Start 1;
   Mov 0, 1;
   AssertGe \0, 2;
@@ -2721,7 +2721,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TAssertTrue
+if (1)                                                                          ##AssertTrue
  {Start 1;
   AssertFalse 0;
   AssertTrue  0;
@@ -2734,7 +2734,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TAssertFalse
+if (1)                                                                          ##AssertFalse
  {Start 1;
   AssertTrue  1;
   AssertFalse 1;
@@ -2759,7 +2759,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TAlloc #TMov #TCall
+if (1)                                                                          ##Alloc ##Mov ##Call
  {Start 1;
   my $a = Array "aaa";
   Dump "dddd";
@@ -2776,7 +2776,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TAlloc #TMov #TCall #TParamsPut #TParamsGet
+if (1)                                                                          ##Alloc ##Mov ##Call ##ParamsPut ##ParamsGet
  {Start 1;
   my $a = Array "aaa";
   my $i = Mov 1;
@@ -2800,7 +2800,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TAlloc #TClear
+if (1)                                                                          ##Alloc ##Clear
  {Start 1;
   my $a = Array "aaa";
   Clear [$a, 10, 'aaa'];
@@ -2809,7 +2809,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TBlock #TGood #TBad
+if (1)                                                                          ##Block ##Good ##Bad
  {Start 1;
   Block
    {my ($start, $good, $bad, $end) = @_;
@@ -2828,7 +2828,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TBlock
+if (1)                                                                          ##Block
  {Start 1;
   Block
    {my ($start, $good, $bad, $end) = @_;
@@ -2847,7 +2847,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TProcedure
+if (1)                                                                          ##Procedure
  {Start 1;
   for my $i(1..10)
    {Out $i;
@@ -2891,7 +2891,7 @@ if (0)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TAlloc #TMov #TCall
+if (1)                                                                          ##Alloc ##Mov ##Call
  {Start 1;
   my $set = Procedure 'set', sub
    {my $a = ParamsGet 0;
@@ -2914,7 +2914,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TLeArea #TLeAddress
+if (1)                                                                          ##LeArea ##LeAddress
  {Start 1;
   my $a = Array "array";
   my $b = Mov 2;
@@ -2932,7 +2932,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TShiftUp
+if (1)                                                                          ##ShiftUp
  {Start 1;
   my $a = Array "array";
   Mov [$a, 0, 'array'], 0;
@@ -2944,7 +2944,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TShiftDown
+if (1)                                                                          ##ShiftDown
  {Start 1;
   my $a = Array "array";
   Mov [$a, 0, 'array'], 0;
@@ -2958,7 +2958,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TAlloc #TMov #TJeq #TJne #TJle #TJlt #TJge #TJgt
+if (1)                                                                          ##Alloc ##Mov ##Jeq ##Jne ##Jle ##Jlt ##Jge ##Jgt
  {Start 1;
   my $a = Array "aaa";
   my $b = Array "bbb";
@@ -2981,7 +2981,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TJTrue #TJFalse
+if (1)                                                                          ##JTrue ##JFalse
  {Start 1;
   my $a = Mov 1;
   Block
@@ -3010,7 +3010,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TAlloc #TMov
+if (1)                                                                          ##Alloc ##Mov
  {Start 1;
   my $a = Array 'aaa';
   my $b = Mov 2;                                                                # Location to move to in a
@@ -3025,7 +3025,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TResize
+if (1)                                                                          ##Resize
  {Start 1;
   my $a = Array 'aaa';
   Mov [$a, 0, 'aaa'], 1;
@@ -3037,7 +3037,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TTrace #TThen #TElse
+if (1)                                                                          ##Trace ##Then ##Else
  {Start 1;
   Trace 1;
   IfEq 1, 2,
@@ -3063,7 +3063,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TWatch
+if (1)                                                                          ##Watch
  {Start 1;
   my $a = Mov 1;
   my $b = Mov 2;
@@ -3086,7 +3086,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TArraySize #TForArray #TArray
+if (1)                                                                          ##ArraySize ##ForArray ##Array
  {Start 1;
   my $a = Array "aaa";
     Mov [$a, 0, "aaa"], 1;
@@ -3128,7 +3128,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TDumpArray #TMov
+if (1)                                                                          ##DumpArray ##Mov
  {Start 1;
   my $a = Array "aaa";
     Mov [$a, 0, "aaa"], 1;
@@ -3146,7 +3146,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TMoveLong
+if (1)                                                                          ##MoveLong
  {my $N = 10;
   Start 1;
   my $a = Array "aaa";
@@ -3159,6 +3159,7 @@ if (1)                                                                          
    } $N;
 
   MoveLong [$b, \2, 'bbb'], [$a, \4, 'aaa'], 3;
+
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->memory,
@@ -3174,7 +3175,7 @@ if (1)                                                                          
 # 5=0   15=1  25=2  35=3
 
 #latest:;
-if (1)                                                                          #TArrayIndex #TArrayCountLess #TArrayCountGreater
+if (1)                                                                          ##ArrayIndex ##ArrayCountLess ##ArrayCountGreater
  {Start 1;
   my $a = Array "aaa";
   Mov [$a, 0, "aaa"], 10;
@@ -3201,7 +3202,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TTally #TFor
+if (1)                                                                          ##Tally ##For
  {my $N = 5;
   Start 1;
   For
@@ -3218,7 +3219,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          #TTracePoints
+if (1)                                                                          ##TracePoints
  {my $N = 5;
   Start 1;
   TracePoints 1;
