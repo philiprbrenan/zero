@@ -60,7 +60,29 @@ for my $s(@files)                                                               
 
 my $d = dateTimeStamp;
 
-my $y = <<'END';
+my $t = <<END;
+    - name: Cpan
+      run: |
+        sudo cpan install -T Data::Dump Data::Table::Text
+
+    - name: Zero Emulator
+      run: |
+        perl lib/Zero/Emulator.pm
+
+    - name: Zero NWayTree
+      run: |
+        perl lib/Zero/NWayTree.pm
+
+    - name: Zero testEmulator
+      run: |
+        perl testEmulator.pl
+
+    - name: Zero testNWayTree
+      run: |
+        perl testNWayTree.pl
+END
+
+my $y = <<'END' =~ s(XXXX) ($t)gsr;
 # Test $d
 
 name: Test
@@ -81,57 +103,31 @@ jobs:
       run: |
         sudo cpan install -T Data::Dump Data::Table::Text
 
-    - name: Zero Emulator
-      run: |
-        perl lib/Zero/Emulator.pm
-
-    - name: Zero NWayTree
-      run: |
-        perl lib/Zero/NWayTree.pm
-
-    - name: Zero testEmulator
-      run: |
-        perl testEmulator.pl
-
-    - name: Zero testNWayTree
-      run: |
-        perl testNWayTree.pl
+XXXX
 
   testWindows:
     runs-on: windows-latest
 
     defaults:
       run:
-        shell: wsl-bash {0}
+        shell: wsl-bash {0}                                                     # Use Windows Services For Linux as the command line in subsequent steps
 
     steps:
     - uses: actions/checkout@v2
       with:
         ref: 'main'
 
-    - uses: Vampire/setup-wsl@v2
+    - uses: Vampire/setup-wsl@v2                                                # Install Windows Services For Linux - just: wsl --install -D Ubuntu
 
-    - name: Cpan
+    - name: Ubuntu
       run: |
-        sudo apt-get -y update
+        sudo apt-get -y update                                                  # Configure Ubuntu
+
+    - name: Configure Ubuntu
+      run: |
         sudo apt-get -y install build-essential
-        sudo cpan install -T Data::Dump Data::Table::Text
 
-    - name: Zero Emulator
-      run: |
-        perl lib/Zero/Emulator.pm
-
-    - name: Zero NWayTree
-      run: |
-        perl lib/Zero/NWayTree.pm
-
-    - name: Zero testEmulator
-      run: |
-        perl testEmulator.pl
-
-    - name: Zero testNWayTree
-      run: |
-        perl testNWayTree.pl
+XXXX
 END
 
 lll "Ubuntu work flow for $repo ", writeFileUsingSavedToken($user, $repo, $wf, $y);
