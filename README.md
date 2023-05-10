@@ -76,8 +76,8 @@ An implementation of N-Way-Trees in Zero assembler.
 
 [Documentation](https://metacpan.org/dist/Zero-Emulator/view/NWayTree.pod)
 
-Can you reduce the number of instructions required to perform an insert into an
-N-Way-Tree?
+Can you reduce the number of instructions required to perform ```107``` inserts
+into an N-Way-Tree?
 
 ```
   add               => 159,
