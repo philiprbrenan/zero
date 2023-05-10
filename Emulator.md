@@ -125,18 +125,18 @@ Create a new memory area and write its number into the address named by the targ
     
       is_deeply $e->memory, {1=>[1, 22, 333]};
     
-      is_deeply $e->out,
     
-    [ "Array size:", 3,  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      is_deeply $e->out, [ "Array size:", 3,  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      "AAAA",
-      "bless([1, 22, 333], \"aaa\")",
+    
+      "AAAA", "bless([1, 22, 333], \"aaa\")",
+    
       "Stack trace",
       "    1     8 dumpArray",
-      0, 1,
-      1, 22,
-      2, 333,
-    ];
+    
+      0,   1,
+      1,  22,
+      2, 333];
      }
     
 
@@ -179,14 +179,15 @@ Free the memory area named by the target operand after confirming that it has th
     
       is_deeply $e->out, [
       1,
+    
       "dddd",
       "-2=bless([], \"return\")",
       "-1=bless([], \"params\")",
       "0=bless([1, 1], \"stackArea\")",
       "1=bless([undef, 1, 2], \"node\")",
+    
       "Stack trace",
-      "    1     6 dump",
-    ];
+      "    1     6 dump"];
      }
     
 
@@ -223,16 +224,16 @@ The current size of an array.
     
       is_deeply $e->memory, {1=>[1, 22, 333]};
     
-      is_deeply $e->out,
-    [ "Array size:", 3,
-      "AAAA",
-      "bless([1, 22, 333], \"aaa\")",
+      is_deeply $e->out, [ "Array size:", 3,
+    
+      "AAAA", "bless([1, 22, 333], \"aaa\")",
+    
       "Stack trace",
       "    1     8 dumpArray",
-      0, 1,
-      1, 22,
-      2, 333,
-    ];
+    
+      0,   1,
+      1,  22,
+      2, 333];
      }
     
 
@@ -273,7 +274,7 @@ Find the 1 based index of the second source operand in the array referenced by t
       Out ArrayCountGreater $a,  5;
     
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [3,2,1,0,  3,2,1,0, 0,1,2,3];
+      is_deeply $e->out, [3,2,1,0,  3,2,1,0,  0,1,2,3];
      }
     
 
@@ -314,7 +315,7 @@ Count the number of elements in the array specified by the first source operand 
       Out ArrayCountGreater $a,  5;
     
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [3,2,1,0,  3,2,1,0, 0,1,2,3];
+      is_deeply $e->out, [3,2,1,0,  3,2,1,0,  0,1,2,3];
      }
     
 
@@ -355,7 +356,7 @@ Count the number of elements in the array specified by the first source operand 
 
     
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [3,2,1,0,  3,2,1,0, 0,1,2,3];
+      is_deeply $e->out, [3,2,1,0,  3,2,1,0,  0,1,2,3];
      }
     
 
@@ -423,8 +424,7 @@ Call the subroutine at the target address.
       "0=bless([1], \"stackArea\")",
       "1=bless([], \"aaa\")",
       "Stack trace",
-      "    1     2 dump",
-    ];
+      "    1     2 dump"];
      }
     
     if (1)                                                                              
@@ -515,14 +515,15 @@ Dump memory.
     
       is_deeply $e->out, [
       1,
+    
       "dddd",
       "-2=bless([], \"return\")",
       "-1=bless([], \"params\")",
       "0=bless([1, 1], \"stackArea\")",
       "1=bless([undef, 1, 2], \"node\")",
+    
       "Stack trace",
-      "    1     6 dump",
-    ];
+      "    1     6 dump"];
      }
     
 
@@ -547,12 +548,11 @@ Dump an array.
 
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->out,
-     ["AAAA",
+      is_deeply $e->out, [
+      "AAAA",
       "bless([1, 22, 333], \"aaa\")",
       "Stack trace",
-      "    1     5 dumpArray",
-    ];
+      "    1     5 dumpArray"];
      }
     
 
@@ -626,8 +626,7 @@ Enable or disable trace points.  If trace points are enabled a stack trace is pr
       "Trace",
       "    1     6 tracePoint",
       "Trace",
-      "    1     6 tracePoint",
-    ];
+      "    1     6 tracePoint"];
      }
     
 
@@ -716,6 +715,7 @@ Jump to a target label if the first source field is less than or equal to the se
       my $b = Array "bbb";
       Mov [$a, 0, 'aaa'], $b;
       Mov [$b, 0, 'bbb'], 99;
+    
       For
        {my ($i, $check, $next, $end) = @_;
         my $c = Mov [$a, \0, 'aaa'];
@@ -729,7 +729,9 @@ Jump to a target label if the first source field is less than or equal to the se
         Jge $next, $d, $d;
         Jgt $next, $d, $d;
        } 3;
+    
       my $e = Execute(suppressOutput=>1);
+    
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
       is_deeply $e->memory, { 1=>  bless([2], "aaa"), 2=>  bless([99], "bbb") };
      }
@@ -752,6 +754,7 @@ Jump to a target label if the first source field is less than the second source 
       my $b = Array "bbb";
       Mov [$a, 0, 'aaa'], $b;
       Mov [$b, 0, 'bbb'], 99;
+    
       For
        {my ($i, $check, $next, $end) = @_;
         my $c = Mov [$a, \0, 'aaa'];
@@ -765,7 +768,9 @@ Jump to a target label if the first source field is less than the second source 
         Jge $next, $d, $d;
         Jgt $next, $d, $d;
        } 3;
+    
       my $e = Execute(suppressOutput=>1);
+    
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
       is_deeply $e->memory, { 1=>  bless([2], "aaa"), 2=>  bless([99], "bbb") };
      }
@@ -788,6 +793,7 @@ Jump to a target label if the first source field is greater than or equal to the
       my $b = Array "bbb";
       Mov [$a, 0, 'aaa'], $b;
       Mov [$b, 0, 'bbb'], 99;
+    
       For
        {my ($i, $check, $next, $end) = @_;
         my $c = Mov [$a, \0, 'aaa'];
@@ -801,7 +807,9 @@ Jump to a target label if the first source field is greater than or equal to the
 
         Jgt $next, $d, $d;
        } 3;
+    
       my $e = Execute(suppressOutput=>1);
+    
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
       is_deeply $e->memory, { 1=>  bless([2], "aaa"), 2=>  bless([99], "bbb") };
      }
@@ -824,6 +832,7 @@ Jump to a target label if the first source field is greater than the second sour
       my $b = Array "bbb";
       Mov [$a, 0, 'aaa'], $b;
       Mov [$b, 0, 'bbb'], 99;
+    
       For
        {my ($i, $check, $next, $end) = @_;
         my $c = Mov [$a, \0, 'aaa'];
@@ -837,7 +846,9 @@ Jump to a target label if the first source field is greater than the second sour
         Jgt $next, $d, $d;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
        } 3;
+    
       my $e = Execute(suppressOutput=>1);
+    
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
       is_deeply $e->memory, { 1=>  bless([2], "aaa"), 2=>  bless([99], "bbb") };
      }
@@ -860,6 +871,7 @@ Jump to a target label if the first source field is equal to the second source f
       my $b = Array "bbb";
       Mov [$a, 0, 'aaa'], $b;
       Mov [$b, 0, 'bbb'], 99;
+    
       For
        {my ($i, $check, $next, $end) = @_;
         my $c = Mov [$a, \0, 'aaa'];
@@ -873,7 +885,9 @@ Jump to a target label if the first source field is equal to the second source f
         Jge $next, $d, $d;
         Jgt $next, $d, $d;
        } 3;
+    
       my $e = Execute(suppressOutput=>1);
+    
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
       is_deeply $e->memory, { 1=>  bless([2], "aaa"), 2=>  bless([99], "bbb") };
      }
@@ -896,6 +910,7 @@ Jump to a target label if the first source field is not equal to the second sour
       my $b = Array "bbb";
       Mov [$a, 0, 'aaa'], $b;
       Mov [$b, 0, 'bbb'], 99;
+    
       For
        {my ($i, $check, $next, $end) = @_;
         my $c = Mov [$a, \0, 'aaa'];
@@ -909,7 +924,9 @@ Jump to a target label if the first source field is not equal to the second sour
         Jge $next, $d, $d;
         Jgt $next, $d, $d;
        } 3;
+    
       my $e = Execute(suppressOutput=>1);
+    
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
       is_deeply $e->memory, { 1=>  bless([2], "aaa"), 2=>  bless([99], "bbb") };
      }
@@ -1036,12 +1053,16 @@ Load the address component of an address.
       my $d = LeAddress $c;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $f = LeArea    [$a, \0, 'array'];
+    
       Out $d;
       Out $f;
+    
       Mov [$a, \$b, 'array'], 22;
       Mov [$a, \$c, 'array'], 33;
       Mov [$f, \$d, 'array'], 44;
+    
       my $e = Execute(suppressOutput=>1);
+    
       is_deeply $e->out,    [2,1];
       is_deeply $e->memory, {1=>[undef, undef, 44, undef, undef, 33]};
      }
@@ -1062,12 +1083,16 @@ Load the area component of an address.
     
       my $f = LeArea    [$a, \0, 'array'];  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
+    
       Out $d;
       Out $f;
+    
       Mov [$a, \$b, 'array'], 22;
       Mov [$a, \$c, 'array'], 33;
       Mov [$f, \$d, 'array'], 44;
+    
       my $e = Execute(suppressOutput=>1);
+    
       is_deeply $e->out,    [2,1];
       is_deeply $e->memory, {1=>[undef, undef, 44, undef, undef, 33]};
      }
@@ -1136,8 +1161,7 @@ Copy a constant or memory address to the target address.
       "0=bless([1], \"stackArea\")",
       "1=bless([], \"aaa\")",
       "Stack trace",
-      "    1     2 dump",
-    ];
+      "    1     2 dump"];
      }
     
     if (1)                                                                              
@@ -1194,6 +1218,7 @@ Copy a constant or memory address to the target address.
     
       Mov [$b, 0, 'bbb'], 99;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
+    
       For
        {my ($i, $check, $next, $end) = @_;
     
@@ -1209,7 +1234,9 @@ Copy a constant or memory address to the target address.
         Jge $next, $d, $d;
         Jgt $next, $d, $d;
        } 3;
+    
       my $e = Execute(suppressOutput=>1);
+    
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
       is_deeply $e->memory, { 1=>  bless([2], "aaa"), 2=>  bless([99], "bbb") };
      }
@@ -1220,6 +1247,7 @@ Copy a constant or memory address to the target address.
     
       my $b = Mov 2;                                                                # Location to move to in a  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
+    
       For
        {my ($i, $check, $next, $end) = @_;
     
@@ -1227,7 +1255,9 @@ Copy a constant or memory address to the target address.
 
         Jeq $next, [$a, \$b, 'aaa'], 1;
        } 3;
+    
       my $e = Execute(suppressOutput=>1);
+    
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       19 instructions executed";
       is_deeply $e->memory, {1=>  bless([undef, undef, 1], "aaa")};
      }
@@ -1247,12 +1277,11 @@ Copy a constant or memory address to the target address.
       DumpArray $a, "AAAA";
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->out,
-     ["AAAA",
+      is_deeply $e->out, [
+      "AAAA",
       "bless([1, 22, 333], \"aaa\")",
       "Stack trace",
-      "    1     5 dumpArray",
-    ];
+      "    1     5 dumpArray"];
      }
     
 
@@ -1285,11 +1314,9 @@ Copy the number of elements specified by the second source operand from the loca
     
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->memory,
-    {
+      is_deeply $e->memory, {
       1 => bless([0 .. 9], "aaa"),
-      2 => bless([100, 101, 4, 5, 6, 105 .. 109], "bbb"),
-    };
+      2 => bless([100, 101, 4, 5, 6, 105 .. 109], "bbb")};
      }
     
 
@@ -1353,16 +1380,16 @@ Do nothing (but do it well!).
     
       is_deeply $e->memory, {1=>[1, 22, 333]};
     
-      is_deeply $e->out,
-    [ "Array size:", 3,
-      "AAAA",
-      "bless([1, 22, 333], \"aaa\")",
+      is_deeply $e->out, [ "Array size:", 3,
+    
+      "AAAA", "bless([1, 22, 333], \"aaa\")",
+    
       "Stack trace",
       "    1     8 dumpArray",
-      0, 1,
-      1, 22,
-      2, 333,
-    ];
+    
+      0,   1,
+      1,  22,
+      2, 333];
      }
     
 
@@ -1593,7 +1620,9 @@ Resize the target area to the source size.
     
       Resize $a, 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
+    
       my $e = Execute(suppressOutput=>1);
+    
       is_deeply $e->memory, {1=>  [1, 2]};
      }
     
@@ -1710,13 +1739,16 @@ Shift an element up one in an area.
     if (1)                                                                          
      {Start 1;
       my $a = Array "array";
+    
       Mov [$a, 0, 'array'], 0;
       Mov [$a, 1, 'array'], 1;
       Mov [$a, 2, 'array'], 2;
     
       ShiftUp [$a, 1, 'array'], 99;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
+    
       my $e = Execute(suppressOutput=>1);
+    
       is_deeply $e->memory, {1=>[0, 99, 1, 2]};
      }
     
@@ -1737,10 +1769,13 @@ Shift an element down one in an area.
       Mov [$a, 1, 'array'], 99;
       Mov [$a, 2, 'array'], 2;
     
+    
       my $b = ShiftDown [$a, \1, 'array'];  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out $b;
+    
       my $e = Execute(suppressOutput=>1);
+    
       is_deeply $e->memory, {1=>[0, 2]};
       is_deeply $e->out,    [99];
      }
@@ -1767,8 +1802,7 @@ Watches for changes to the specified memory location.
       Mov $b, 5;
       Mov $c, 6;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out,
-    [
+      is_deeply $e->out, [
       "Change at watched area: 0 (stackArea), address: 1
   ",
       "    1     6 mov",
@@ -1776,8 +1810,7 @@ Watches for changes to the specified memory location.
       "New     value: 5",
       "-2=bless([], \"return\")",
       "-1=bless([], \"params\")",
-      "0=bless([4, 2, 3], \"stackArea\")",
-    ];
+      "0=bless([4, 2, 3], \"stackArea\")"];
      }
     
 
@@ -1809,7 +1842,7 @@ Counts instructions when enabled.
       my $e = Execute;
     
       is_deeply $e->tallyCount, 2 * $N;
-      is_deeply $e->tallyCounts,{ 1 => {mov => $N}, 2 => {inc => $N}};
+      is_deeply $e->tallyCounts, { 1 => {mov => $N}, 2 => {inc => $N}};
      }
     
 
@@ -2473,8 +2506,8 @@ Assert true.
       AssertTrue  0;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1, trace=>1);
-      is_deeply $e->out,
-    [ "   1     0     1   assertFalse                      
+      is_deeply $e->out, [
+      "   1     0     1   assertFalse                      
   ",
     
       "AssertTrue 0 failed",  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -2502,8 +2535,8 @@ Assert false.
       AssertFalse 1;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1, trace=>1);
-      is_deeply $e->out,
-    [ "   1     0     1    assertTrue                      
+      is_deeply $e->out, [
+      "   1     0     1    assertTrue                      
   ",
     
       "AssertFalse 1 failed",  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -2541,7 +2574,7 @@ For loop 0..range-1 or in reverse.
       my $e = Execute;
     
       is_deeply $e->tallyCount, 2 * $N;
-      is_deeply $e->tallyCounts,{ 1 => {mov => $N}, 2 => {inc => $N}};
+      is_deeply $e->tallyCounts, { 1 => {mov => $N}, 2 => {inc => $N}};
      }
     
 
@@ -2580,16 +2613,16 @@ For loop to process each element of the named area.
     
       is_deeply $e->memory, {1=>[1, 22, 333]};
     
-      is_deeply $e->out,
-    [ "Array size:", 3,
-      "AAAA",
-      "bless([1, 22, 333], \"aaa\")",
+      is_deeply $e->out, [ "Array size:", 3,
+    
+      "AAAA", "bless([1, 22, 333], \"aaa\")",
+    
       "Stack trace",
       "    1     8 dumpArray",
-      0, 1,
-      1, 22,
-      2, 333,
-    ];
+    
+      0,   1,
+      1,  22,
+      2, 333];
      }
     
 
