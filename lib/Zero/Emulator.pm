@@ -1348,7 +1348,7 @@ sub Zero::Emulator::Code::execute($%)                                           
         push $exec->memory->{$t}->@*, $s;
        }
       else
-       {push $exec->memory->{&stackArea}->@*, right($i->source);
+       {push $exec->memory->{&stackArea}->@*, $exec->right($i->source);
        }
      },
 
