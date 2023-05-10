@@ -474,7 +474,7 @@ Call the subroutine at the target address.
 
 ## Confess()
 
-Confess.
+Confess with a stack trace back.
 
 **Example:**
 
@@ -560,7 +560,7 @@ Dump an array.
 
 ## Trace($source)
 
-Trace.
+Start or stop tracing.  Tracing prints each instruction executed and its effect on memeory.
 
        Parameter  Description
     1  $source    Trace setting
@@ -597,7 +597,7 @@ Trace.
 
 ## TracePoints($source)
 
-Enable trace points.
+Enable or disable trace points.  If trace points are enabled a stack trace is printed for each instructyion executed showing the call stack at the time the instruction was generated as well as the current stack frames.
 
        Parameter  Description
     1  $source    Trace points if true
@@ -1003,47 +1003,6 @@ Jump to a target label if the first source field is not equal to zero.
      }
     
 
-## Label($source)
-
-Create a label.
-
-       Parameter  Description
-    1  $source    Name of label
-
-**Example:**
-
-    if (1)                                                                           
-     {Start 1;
-      Mov 0, 1;
-      Jlt ((my $a = label), \0, 2);
-        Out  1;
-        Jmp (my $b = label);
-      setLabel($a);
-        Out  2;
-      setLabel($b);
-    
-      Jgt ((my $c = label), \0, 3);
-        Out  1;
-        Jmp (my $d = label);
-      setLabel($c);
-        Out  2;
-      setLabel($d);
-      my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [2,1];
-     }
-    
-    if (1)                                                                          
-     {Start 1;
-      Mov 0, 0;
-      my $a = setLabel;
-        Out \0;
-        Inc \0;
-      Jlt $a, \0, 10;
-      my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [0..9];
-     }
-    
-
 ## Clear($target)
 
 Clear the first bytes of an area.  The area is specified by the first element of the address, the number of locations to clear is specified by the second element of the target address.
@@ -1066,7 +1025,7 @@ Clear the first bytes of an area.  The area is specified by the first element of
 
 ## LeAddress()
 
-Load the address component.
+Load the address component of an address.
 
 **Example:**
 
@@ -1092,7 +1051,7 @@ Load the address component.
 
 ## LeArea()
 
-Load the address component.
+Load the area component of an address.
 
 **Example:**
 
@@ -1410,7 +1369,7 @@ Do nothing (but do it well!).
 
 ## Out($source)
 
-Write memory contents to out.
+Write memory location contents to out.
 
        Parameter  Description
     1  $source    Either a scalar constant or memory address to output
@@ -1790,7 +1749,7 @@ Shift an element down one in an area.
 
 ## Watch($target)
 
-Shift an element down one in an area.
+Watches for changes to the specified memory location.
 
        Parameter  Description
     1  $target    Memory address to watch
@@ -2745,6 +2704,13 @@ Block of code that can either be restarted or come to a good or a bad ending.
      }
     
 
+## Var($value)
+
+Create a variable initialized to the specified value.
+
+       Parameter  Description
+    1  $value     Value
+
 ## Execute(%options)
 
 Execute the current assembly.
@@ -3081,6 +3047,47 @@ Trace point - a point in the code where the flow of execution might change.
        Parameter  Description
     1  %options   Parameters
 
+## Label($source)
+
+Create a label.
+
+       Parameter  Description
+    1  $source    Name of label
+
+**Example:**
+
+    if (1)                                                                           
+     {Start 1;
+      Mov 0, 1;
+      Jlt ((my $a = label), \0, 2);
+        Out  1;
+        Jmp (my $b = label);
+      setLabel($a);
+        Out  2;
+      setLabel($b);
+    
+      Jgt ((my $c = label), \0, 3);
+        Out  1;
+        Jmp (my $d = label);
+      setLabel($c);
+        Out  2;
+      setLabel($d);
+      my $e = Execute(suppressOutput=>1);
+      is_deeply $e->out, [2,1];
+     }
+    
+    if (1)                                                                          
+     {Start 1;
+      Mov 0, 0;
+      my $a = setLabel;
+        Out \0;
+        Inc \0;
+      Jlt $a, \0, 10;
+      my $e = Execute(suppressOutput=>1);
+      is_deeply $e->out, [0..9];
+     }
+    
+
 ## Ifx($cmp, $a, $b, %options)
 
 Execute then or else clause depending on whether two memory locations are equal.
@@ -3107,13 +3114,6 @@ Assert operation.
     1  $op        Operation
     2  $a         First memory address
     3  $b         Second memory address
-
-## Var($value)
-
-Create a variable initialized to the specified value.
-
-       Parameter  Description
-    1  $value     Value
 
 # Index
 
@@ -3159,7 +3159,7 @@ Create a variable initialized to the specified value.
 
 21 [Clear](#clear) - Clear the first bytes of an area.
 
-22 [Confess](#confess) - Confess.
+22 [Confess](#confess) - Confess with a stack trace back.
 
 23 [Dec](#dec) - Decrement the target.
 
@@ -3219,9 +3219,9 @@ Create a variable initialized to the specified value.
 
 51 [Label](#label) - Create a label.
 
-52 [LeAddress](#leaddress) - Load the address component.
+52 [LeAddress](#leaddress) - Load the address component of an address.
 
-53 [LeArea](#learea) - Load the address component.
+53 [LeArea](#learea) - Load the area component of an address.
 
 54 [Mov](#mov) - Copy a constant or memory address to the target address.
 
@@ -3231,7 +3231,7 @@ Create a variable initialized to the specified value.
 
 57 [Not](#not) - Move and not.
 
-58 [Out](#out) - Write memory contents to out.
+58 [Out](#out) - Write memory location contents to out.
 
 59 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
 
@@ -3267,15 +3267,15 @@ Create a variable initialized to the specified value.
 
 75 [Then](#then) - Then block.
 
-76 [Trace](#trace) - Trace.
+76 [Trace](#trace) - Start or stop tracing.
 
 77 [TracePoint](#tracepoint) - Trace point - a point in the code where the flow of execution might change.
 
-78 [TracePoints](#tracepoints) - Enable trace points.
+78 [TracePoints](#tracepoints) - Enable or disable trace points.
 
 79 [Var](#var) - Create a variable initialized to the specified value.
 
-80 [Watch](#watch) - Shift an element down one in an area.
+80 [Watch](#watch) - Watches for changes to the specified memory location.
 
 81 [Zero::Emulator::Code::execute](#zero-emulator-code-execute) - Execute a block of code.
 
