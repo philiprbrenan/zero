@@ -194,5 +194,5 @@ to location 3 in the current stack frame.
 
 Every [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) needs a macro preocessor to generate [code](https://en.wikipedia.org/wiki/Computer_program) from macro
 specifications as writing each instruction by hand is hard work. Using a [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) saves programmer time by allowing common instruction sequences to
-be captured as macros which can then be called upon as needed to generate the [code](https://en.wikipedia.org/wiki/Computer_program) for an application. The Zero [assembly](https://en.wikipedia.org/wiki/Assembly_language) programming languages uses [Perl](http://www.perl.org/) as
+be captured as macros which can then be called upon as needed to generate the [code](https://en.wikipedia.org/wiki/Computer_program) for an application. The Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) programming languages uses [Perl](http://www.perl.org/) as
 its macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor). 
