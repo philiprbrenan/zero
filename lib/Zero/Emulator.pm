@@ -23,7 +23,7 @@ my sub maximumInstructionsToExecute {1e6}                                       
 sub execute(%)                                                                  # Execute a block of code.
  {my (%options) = @_;                                                           # Execution options
 
-  my $exec=                 genHash("Zero::Emulator",                # Execution results
+  my $exec=                 genHash("Zero::Emulator",                           # Execution results
     calls=>                 [],                                                 # Call stack
     block=>                 $options{code},                                     # Block of code to be executed
     count=>                 0,                                                  # Executed instructions count
@@ -353,7 +353,7 @@ sub Zero::Emulator::Code::assemble($%)                                          
 
 #D1 Execution
 
-sub Zero::Emulator::areaContent($$)                                  #P Content of an area containing a address in memory in the specified execution.
+sub areaContent($$)                                                             #P Content of an area containing a address in memory in the specified execution.
  {my ($exec, $address) = @_;                                                    # Execution environment, address specification
   @_ == 2 or confess "Two parameters";
   my $e = $exec;
@@ -364,7 +364,7 @@ sub Zero::Emulator::areaContent($$)                                  #P Content 
   @$A
  }
 
-sub Zero::Emulator::dumpMemory($)                                    #P Dump memory.
+sub dumpMemory($)                                                               #P Dump memory.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my $memory = $exec->memory;
@@ -379,7 +379,7 @@ sub Zero::Emulator::dumpMemory($)                                    #P Dump mem
   @m
  }
 
-sub Zero::Emulator::analyzeExecutionResultsLeast($%)                 #P Analyze execution results for least used code.
+sub analyzeExecutionResultsLeast($%)                                            #P Analyze execution results for least used code.
  {my ($exec, %options) = @_;                                                    # Execution results, options
 
   my @c = $exec->block->code->@*;
@@ -402,7 +402,7 @@ sub Zero::Emulator::analyzeExecutionResultsLeast($%)                 #P Analyze 
   map {sprintf "%4d at %s line %4d", $$_[0], $$_[1], $$_[2]} @l;
  }
 
-sub Zero::Emulator::analyzeExecutionResultsMost($%)                  #P Analyze execution results for most used code.
+sub analyzeExecutionResultsMost($%)                                             #P Analyze execution results for most used code.
  {my ($exec, %options) = @_;                                                    # Execution results, options
 
   my @c = $exec->block->code->@*;
@@ -418,7 +418,7 @@ sub Zero::Emulator::analyzeExecutionResultsMost($%)                  #P Analyze 
   map{sprintf "%4d\n%s", $m[$_][1], $m[$_][0]} keys @m;
  }
 
-sub Zero::Emulator::analyzeExecutionNotRead($%)                      #P Analyze execution results for variables never read.
+sub analyzeExecutionNotRead($%)                                                 #P Analyze execution results for variables never read.
  {my ($exec, %options) = @_;                                                    # Execution results, options
 
   my @t;
@@ -434,7 +434,7 @@ sub Zero::Emulator::analyzeExecutionNotRead($%)                      #P Analyze 
   @t;
  }
 
-sub Zero::Emulator::analyzeExecutionResultsDoubleWrite($%)           #P Analyze execution results - double writes.
+sub analyzeExecutionResultsDoubleWrite($%)                                      #P Analyze execution results - double writes.
  {my ($exec, %options) = @_;                                                    # Execution results, options
 
   my @r;
@@ -457,7 +457,7 @@ sub Zero::Emulator::analyzeExecutionResultsDoubleWrite($%)           #P Analyze 
   @r
  }
 
-sub Zero::Emulator::analyzeExecutionResults($%)                      #P Analyze execution results.
+sub analyzeExecutionResults($%)                                                 #P Analyze execution results.
  {my ($exec, %options) = @_;                                                    # Execution results, options
 
   my @r;
@@ -493,7 +493,7 @@ sub Zero::Emulator::analyzeExecutionResults($%)                      #P Analyze 
   join "\n", @r;
  }
 
-sub Zero::Emulator::check($$$)                                       #P Check that a user area access is valid.
+sub check($$$)                                                                  #P Check that a user area access is valid.
  {my ($exec, $area, $name) = @_;                                                # Execution environment, area, expected area name
   @_ == 3 or confess "Three parameters";
   if ($area and $area =~ m(\A\d+\Z))
@@ -508,7 +508,7 @@ sub Zero::Emulator::check($$$)                                       #P Check th
    }
  }
 
-sub Zero::Emulator::getMemory($$$;$%)                                #P Get from memory.
+sub getMemory($$$;$%)                                                           #P Get from memory.
  {my ($exec, $area, $address, $name, %options) = @_;                            # Execution environment, area, address, expected name of area, options
   @_ < 3 and confess "At least three parameters";
   $exec->check($area, $name);
@@ -520,14 +520,14 @@ sub Zero::Emulator::getMemory($$$;$%)                                #P Get from
   $g
  }
 
-sub Zero::Emulator::get($$$)                                         #P Get from memory.
+sub get($$$)                                                                    #P Get from memory.
  {my ($exec, $area, $address) = @_;                                             # Execution environment, area, address
   @_ == 3 or confess "Three parameters";
   $exec->memory->{$area}[$address];
  }
 
 
-sub Zero::Emulator::set($$$)                                         #P Set the value of an address at the specified address in memory in the current execution environment.
+sub set($$$)                                                                    #P Set the value of an address at the specified address in memory in the current execution environment.
  {my ($exec, $address, $value) = @_;                                            # Execution environment, address specification, value
   @_ == 3 or confess "Three parameters";
   my $e = $exec;
@@ -542,12 +542,12 @@ sub Zero::Emulator::set($$$)                                         #P Set the 
   $$m{$a}[$l] = $value;
  }
 
-sub Zero::Emulator::stackArea($)                                     #P Current stack frame.
+sub stackArea($)                                                                #P Current stack frame.
  {my ($exec) = @_;                                                              # Execution environment
   $exec->calls->[-1]->stackArea;                                                # Stack area
  }
 
-sub Zero::Emulator::address($$$$)                                    #P Record a reference to memory.
+sub address($$$$)                                                               #P Record a reference to memory.
  {my ($exec, $area, $address, $name) = @_;                                      # Execution environment, area, address in area, memory
   @_ == 4 or confess "Four parameters";
   genHash("Zero::Emulator::Address",                                            # Address memory
@@ -557,7 +557,7 @@ sub Zero::Emulator::address($$$$)                                    #P Record a
    );
  }
 
-sub Zero::Emulator::stackTrace($;$)                                  #P Create a stack trace.
+sub stackTrace($;$)                                                             #P Create a stack trace.
  {my ($exec, $title) = @_;                                                      # Execution environment, title
   my $i = $exec->currentInstruction;
   my $s = $exec->suppressOutput;                                                # Suppress file and line numbers in dump to facilitate automated testing
@@ -575,7 +575,7 @@ sub Zero::Emulator::stackTrace($;$)                                  #P Create a
   @t
  }
 
-sub Zero::Emulator::stackTraceAndExit($$%)                           #P Create a stack trace and exit from the emulated program.
+sub stackTraceAndExit($$%)                                                      #P Create a stack trace and exit from the emulated program.
  {my ($exec, $title, %options) = @_;                                            # Execution environment, title, options
   @_ >= 2 or confess "At least two parameters";
 
@@ -594,7 +594,7 @@ sub Zero::Emulator::stackTraceAndExit($$%)                           #P Create a
 
 my $allocs = 0; my $allocsStacked = 0;                                          # Normal arrays allocated by the user, stacked allocations are made to support subroutine calling, parameter passing, result returning.
 
-sub Zero::Emulator::allocMemory($$;$)                                #P Create the name of a new memory area.
+sub allocMemory($$;$)                                                           #P Create the name of a new memory area.
  {my ($exec, $name, $stacked) = @_;                                             # Execution environment, name of allocation, stacked if true
   if ($stacked)
    {my $a = $allocsStacked--;
@@ -608,14 +608,14 @@ sub Zero::Emulator::allocMemory($$;$)                                #P Create t
   $a
  }
 
-sub Zero::Emulator::setMemoryType($$$)                               #P Set the type of a memory area - a name that can be used to confirm the validity of reads and writes to that array represented by that area.
+sub setMemoryType($$$)                                                          #P Set the type of a memory area - a name that can be used to confirm the validity of reads and writes to that array represented by that area.
  {my ($exec, $area, $name) = @_;                                                # Execution environment, area name, name of allocation
   @_ == 3 or confess "Three parameters";
   $exec->memoryType->{$area} = $name;
   $exec
  }
 
-sub Zero::Emulator::notRead()                                        #P Record the unused memory locations in the current stack frame.
+sub notRead()                                                                   #P Record the unused memory locations in the current stack frame.
  {my ($exec) = @_;                                                              # Parameters
   my $area = $exec->stackArea;
 #    my @area = $memory{$area}->@*;                                             # Memory in area
@@ -634,7 +634,7 @@ sub Zero::Emulator::notRead()                                        #P Record t
      {}
    }
 
-sub Zero::Emulator::rwWrite($$$)                                     #P Observe write to memory.
+sub rwWrite($$$)                                                                #P Observe write to memory.
  {my ($exec, $area, $address) = @_;                                             # Area in memory, address within area
   my $P = $exec->rw->{$area}{$address};
   if (defined($P))
@@ -649,13 +649,13 @@ sub Zero::Emulator::rwWrite($$$)                                     #P Observe 
   $exec->rw->{$area}{$address} = $exec->currentInstruction;
  }
 
-sub Zero::Emulator::markAsRead($$$)                                  #P Mark a memory address as having been read from.
+sub markAsRead($$$)                                                             #P Mark a memory address as having been read from.
  {my ($exec, $area, $address) = @_;                                             # Area in memory, address within area
   @_ == 3 or confess "Three parameters";
   delete $exec->rw->{$area}{$address};                                          # Clear last write operation
  }
 
-sub Zero::Emulator::rwRead($$$)                                      #P Observe read from memory.
+sub rwRead($$$)                                                                 #P Observe read from memory.
  {my ($exec, $area, $address) = @_;                                             # Area in memory, address within area
   @_ == 3 or confess "Three parameters";
   if (defined(my $a = $exec->rw->{$area}{$address}))                            # Can only read from locations that actually have something in them
@@ -664,7 +664,7 @@ sub Zero::Emulator::rwRead($$$)                                      #P Observe 
    }
  }
 
-sub Zero::Emulator::left($$;$)                                       #P Address a memory address.
+sub left($$;$)                                                                  #P Address a memory address.
  {my ($exec, $ref, $extra) = @_;                                                # Reference, an optional extra offset to add or subtract to the final memory address
   @_ == 2 or @_ == 3 or confess "Two or three parameters";
   ref($ref) =~ m((RefLeft|RefRight)\Z)
@@ -722,7 +722,7 @@ sub Zero::Emulator::left($$;$)                                       #P Address 
   invalid;
  }
 
-sub Zero::Emulator::leftSuppress($$)                                 #P Indicate that a memory address has been read.
+sub leftSuppress($$)                                                            #P Indicate that a memory address has been read.
  {my ($exec, $ref) = @_;                                                        #  Execution environment, Reference
   @_ == 2 or confess "Two parameters";
   ref($ref) =~ m((RefLeft|RefRight)\Z) or confess "RefLeft or RefRight required";
@@ -757,7 +757,7 @@ sub Zero::Emulator::leftSuppress($$)                                 #P Indicate
    }
  }
 
-sub Zero::Emulator::right($$)                                        #P Get a constant or a memory address.
+sub right($$)                                                                   #P Get a constant or a memory address.
  {my ($exec, $ref) = @_;                                                        # Location, optional area
   @_ == 2 or confess "Two parameters";
   ref($ref) =~ m((RefLeft|RefRight)\Z) or confess "RefLeft or RefRight required";
@@ -825,13 +825,13 @@ sub Zero::Emulator::right($$)                                        #P Get a co
   $r
  }
 
-sub Zero::Emulator::jumpOp($$$)                                      #P Jump to the target address if the tested memory area if the condition is matched.
+sub jumpOp($$$)                                                                 #P Jump to the target address if the tested memory area if the condition is matched.
  {my ($exec, $i, $check) = @_;                                                  # Execution environment, Instruction, check
   @_ == 3 or confess "Three parameters";
   $exec->instructionPointer = $i->number + $exec->right($i->target) if &$check; # Check if condition is met
  }
 
-sub Zero::Emulator::assert1($$$)                                     #P Assert true or false.
+sub assert1($$$)                                                                #P Assert true or false.
  {my ($exec, $test, $sub) = @_;                                                 # Execution environment, Text of test, subroutine of test
   @_ == 3 or confess "Three parameters";
   my $i = $exec->currentInstruction;
@@ -841,7 +841,7 @@ sub Zero::Emulator::assert1($$$)                                     #P Assert t
    }
  }
 
-sub Zero::Emulator::assert($$$)                                      #P Assert generically.
+sub assert($$$)                                                                 #P Assert generically.
  {my ($exec, $test, $sub) = @_;                                                 # Execution environment, Text of test, subroutine of test
   @_ == 3 or confess "Three parameters";
   my $i = $exec->currentInstruction;
@@ -851,7 +851,7 @@ sub Zero::Emulator::assert($$$)                                      #P Assert g
    }
  }
 
-sub Zero::Emulator::assign($$$)                                      #P Assign - check for pointless assignments.
+sub assign($$$)                                                                 #P Assign - check for pointless assignments.
  {my ($exec, $target, $value) = @_;                                             # Execution environment, Target of assign, value to assign
   @_ == 3 or confess "Three parameters";
   ref($target) =~ m(Address)i or confess "Not an address: ".dump($target);
@@ -896,7 +896,7 @@ sub Zero::Emulator::assign($$$)                                      #P Assign -
   $exec->set($target, $value);                                                  # Actually do the assign
  }
 
-sub Zero::Emulator::allocateSystemAreas($)                           #P Allocate system areas for a new stack frame.
+sub allocateSystemAreas($)                                                      #P Allocate system areas for a new stack frame.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   (stackArea=>   $exec->allocMemory("stackArea", 1),
@@ -904,7 +904,7 @@ sub Zero::Emulator::allocateSystemAreas($)                           #P Allocate
    return=>      $exec->allocMemory("return",    1));
  }
 
-sub Zero::Emulator::freeSystemAreas($$)                              #P Free system areas for the specified stack frame.
+sub freeSystemAreas($$)                                                         #P Free system areas for the specified stack frame.
  {my ($exec, $c) = @_;                                                          # Execution environment, stack frame
   @_ == 2 or confess "Two parameters";
   $exec->notRead;                                                               # Record unread memory locations in the current stack frame
@@ -912,13 +912,13 @@ sub Zero::Emulator::freeSystemAreas($$)                              #P Free sys
   $allocsStacked -= 3;
  }
 
-sub Zero::Emulator::currentInstruction($)                            #P Locate current instruction.
+sub currentInstruction($)                                                       #P Locate current instruction.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   $exec->calls->[-1]->instruction;
  }
 
-sub Zero::Emulator::createInitialStackEntry($)                       #P Create the initial stack frame.
+sub createInitialStackEntry($)                                                  #P Create the initial stack frame.
  {my ($exec) = @_;                                                              # Execution environment
 
   push $exec->calls->@*,                                                        # Variables in initial stack frame
@@ -928,7 +928,7 @@ sub Zero::Emulator::createInitialStackEntry($)                       #P Create t
   $exec
  }
 
-sub Zero::Emulator::checkArrayName($$$)                              #P Check the name of an array.
+sub checkArrayName($$$)                                                         #P Check the name of an array.
  {my ($exec, $area, $name) = @_;                                                # Execution environment, array, array name
   @_ == 3 or confess "Three parameters";
 
@@ -951,7 +951,7 @@ sub Zero::Emulator::checkArrayName($$$)                              #P Check th
   1
  }
 
-sub Zero::Emulator::locateAreaElement($$$)                           #P Locate an element in an array.
+sub locateAreaElement($$$)                                                      #P Locate an element in an array.
  {my ($exec, $area, $op) = @_;                                                  # Execution environment, array, operation
   my @a = $exec->memory->{$area}->@*;
   for my $a(keys @a)                                                            # Check each element of the array
@@ -962,7 +962,7 @@ sub Zero::Emulator::locateAreaElement($$$)                           #P Locate a
   0
  }
 
-sub Zero::Emulator::countAreaElement($$$)                            #P Count the number of elements in array that meet some specification.
+sub countAreaElement($$$)                                                       #P Count the number of elements in array that meet some specification.
  {my ($exec, $area, $op) = @_;                                                  # Execution environment, array, operation
   my @a = $exec->memory->{$area}->@*;
   my $n = 0;
@@ -1464,7 +1464,7 @@ sub Zero::Emulator::Code::execute($%)                                           
   $exec
  }                                                                              # Execution results
 
-sub Zero::Emulator::formatTrace($)                                   #P Describe last memory assignment.
+sub formatTrace($)                                                              #P Describe last memory assignment.
  {my ($exec) = @_;                                                              # Execution
   return "" unless defined(my $area  = $exec->lastAssignArea);
   return "" unless defined(my $addr  = $exec->lastAssignAddress);
@@ -1936,7 +1936,7 @@ sub LoadAddress($;$) {                                                          
    }
  }
 
-sub LoadArea($;$) {                                                              #i Load the area component of an address.
+sub LoadArea($;$) {                                                             #i Load the area component of an address.
   if (@_ == 1)
    {my ($source) = @_;                                                          # Target address, source address
     my $t = &Var();
@@ -3263,3 +3263,5 @@ if (1)                                                                          
   "Trace",
   "    1     6 tracePoint"];
  }
+
+# (\A.{80})\s+(#.*\Z) \1\2
