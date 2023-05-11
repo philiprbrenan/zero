@@ -2209,16 +2209,18 @@ sub Watch($)                                                                    
 #D0
 
 sub instructionList()
- {my @i = sort grep {m(#i)} readFile $0;
+ {my @i = grep {m(\s+#i)} readFile $0;
   my @j;
   for my $i(@i)
    {my @parse     = split /[ (){}]+/, $i, 5;
     my $name = $parse[1];
     my $sig  = $parse[2];
     my $comment = $i =~ s(\A.*?#i\s*) ()r;
-    say STDERR sprintf("%10s  %8s   %s", $name, $sig, $comment);
-    #say STDERR "AAAA", dump(\@parse);
+    push @j, [$name, $sig, $comment];
+#   say STDERR sprintf("%10s  %8s   %s", $name, $sig, $comment);
+#   say STDERR "AAAA", dump(\@parse);
    }
+  say STDERR '@EXPORT_OK   = qw(', (join ' ', map {$$_[0]} @j), ');'
  }
 #instructionList(); exit;
 
@@ -2229,8 +2231,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 @ISA         = qw(Exporter);
 @EXPORT      = qw();
-@EXPORT_OK   = qw(Add AreaStructure Array ArrayIndex ArrayCountLess ArrayCountGreater Assert AssertEq AssertGe AssertGt AssertLe AssertLt AssertNe Bad Block Call Clear Confess Dec Dump DumpArray Else Execute For ForArray Free Good IfEq IfFalse IfGe IfGt IfLe IfLt IfNe IfTrue Ifx Inc Jeq Jge Jgt Jle Jlt Jmp Jne JTrue JFalse Label Mov MoveLong Nop Not Out ParamsGet ParamsPut Pop Procedure Push Resize Return ReturnGet ReturnPut ShiftDown ShiftLeft ShiftRight ShiftUp Start Subtract Tally Then Trace TracePoints Var Watch);
-#say STDERR '@EXPORT_OK   = qw(', (join ' ', sort @EXPORT_OK), ')'; exit;
+@EXPORT_OK   = qw(Add Array ArrayCountLess ArrayCountGreater ArrayDump ArrayIndex ArraySize Assert AssertEq AssertFalse AssertGe AssertGt AssertLe AssertLt AssertNe AssertTrue Bad Block Call Clear Confess Dec Dump Else Execute For ForArray Free Good IfEq IfFalse IfGe IfGt IfNe IfLe IfLt IfTrue Inc Jeq JFalse Jge Jgt Jle Jlt Jmp Jne JTrue LoadAddress LoadArea Mov MoveLong Not Nop Out ParamsGet ParamsPut Pop Procedure Push Resize Return ReturnGet ReturnPut ShiftDown ShiftLeft ShiftRight ShiftUp Start Subtract Tally Then Trace TracePoints Watch);
 %EXPORT_TAGS = (all=>[@EXPORT, @EXPORT_OK]);
 
 return 1 if caller;
