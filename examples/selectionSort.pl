@@ -1,6 +1,6 @@
 #!/usr/bin/perl  -Ilib -I../lib
 #-------------------------------------------------------------------------------
-# Zero assembler language implemention of selection sort.
+# Zero assembler programming language of in situ selection sort
 # Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 #-------------------------------------------------------------------------------
 use v5.30;
@@ -12,13 +12,13 @@ use Test::More tests=>5;
 sub selectionSort($$)                                                           # As described at: https://en.wikipedia.org/wiki/Selection_sort
  {my ($array, $name) = @_;                                                      # Array, name of array memory
 
-  my $N = ArraySize($array, $name);                                             # Size of array
+  my $N = ArraySize $array, $name;                                              # Size of array
 
   For                                                                           # Outer loop
    {my ($i) = @_;
     For                                                                         # Inner loop
      {my ($j) = @_;
-      my $a = Mov [$array, \$i, $name];
+      my $a = Mov [$array, \$i, $name];                                         # Index into array
       my $b = Mov [$array, \$j, $name];
 
       IfGt $a, $b,
@@ -47,15 +47,15 @@ if (1)                                                                          
   is_deeply $e->out, [1..8];                                                    # Check output
   is_deeply $e->count,  341;                                                    # Instructions executed
   is_deeply $e->counts, {                                                       # Counts of each instruction type executed
-  array     => 1,
-  arraySize => 2,
-  inc       => 52,
-  jGe       => 62,
-  jLe       => 36,
-  jmp       => 52,
+  array     =>   1,
+  arraySize =>   2,
+  inc       =>  52,
+  jGe       =>  62,
+  jLe       =>  36,
+  jmp       =>  52,
   mov       => 120,
-  out       => 8,
-  push      => 8};
+  out       =>   8,
+  push      =>   8};
  }
 
 if (1)                                                                          # Reversed array 4 times larger
