@@ -2730,6 +2730,19 @@ Create a variable initialized to the specified value.
        Parameter  Description
     1  $value     Value
 
+**Example:**
+
+    if (1)                                                                          
+     {Start 1;
+    
+      my $a = Var 1;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      AssertEq $a, 1;
+      my $e = Execute(suppressOutput=>1);
+      is_deeply $e->out, [];
+     }
+    
+
 ## Watch($target)
 
 Watches for changes to the specified memory location.
