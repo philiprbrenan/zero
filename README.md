@@ -4,7 +4,7 @@
 
 A minimal [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) and [emulator](https://en.wikipedia.org/wiki/Emulator) for the Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) programming language.
 
-An implementation of N-Way [trees](https://en.wikipedia.org/wiki/Tree_(data_structure)) in [code](https://en.wikipedia.org/wiki/Computer_program) written in the Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) programming language: assiduously optimized through exhaustive testing, ready
+Includes an implementation of N-Way [trees](https://en.wikipedia.org/wiki/Tree_(data_structure)) in [code](https://en.wikipedia.org/wiki/Computer_program) written in the Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) programming language: assiduously optimized through exhaustive testing, ready
 for realization in [Silicon](https://en.wikipedia.org/wiki/Silicon) as an [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) rather than as software on a conventional [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) so that large, extremely fast, associative memories can be manufactured on
 an industrial scale.
 
@@ -27,7 +27,7 @@ a second such [string](https://en.wikipedia.org/wiki/String_(computer_science)) 
 been represented by a unique number it can be located in one descent through
 the [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)); although a single traversal of the [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)) will no longer yield such [strings](https://en.wikipedia.org/wiki/String_(computer_science)) in alphabetic order.
 
-All communications with the chip will be done via [USB](https://en.wikipedia.org/wiki/USB) .  Incoming read requests
+All communications with the chip will be done via tcp .  Incoming read requests
 can be done in parallel as long as there are processors left to assign work to.
 An update will have to wait for all existing finds to finish while stalling all
 trailing actions until the update is complete.
