@@ -2723,6 +2723,13 @@ Enable or disable trace points.  If trace points are enabled a stack trace is pr
      }
     
 
+## Var($value)
+
+Create a variable initialized to the specified value.
+
+       Parameter  Description
+    1  $value     Value
+
 ## Watch($target)
 
 Watches for changes to the specified memory location.
@@ -2831,13 +2838,6 @@ Trace point - a point in the code where the flow of execution might change.
 
        Parameter  Description
     1  %options   Parameters
-
-## Var($value)
-
-Create a variable initialized to the specified value.
-
-       Parameter  Description
-    1  $value     Value
 
 # Index
 
