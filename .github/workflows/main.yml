@@ -34,6 +34,10 @@ jobs:
       run: |
         perl examples/testNWayTree.pl
 
+    - name: Zero selectionSort
+      run: |
+        perl examples/selectionSort.pl
+
 
   testWindows:
     runs-on: windows-latest
@@ -76,4 +80,8 @@ jobs:
     - name: Zero testNWayTree
       run: |
         perl examples/testNWayTree.pl
+
+    - name: Zero selectionSort
+      run: |
+        perl examples/selectionSort.pl
 
