@@ -75,11 +75,11 @@ my $t = <<END;
 
     - name: Zero testEmulator
       run: |
-        perl testEmulator.pl
+        perl examples/testEmulator.pl
 
     - name: Zero testNWayTree
       run: |
-        perl testNWayTree.pl
+        perl examples/testNWayTree.pl
 END
 
 my $y = <<'END' =~ s(XXXX) ($t)gsr;
