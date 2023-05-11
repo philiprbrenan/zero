@@ -3184,13 +3184,13 @@ Create a variable initialized to the specified value.
 
 16 [ArraySize](#arraysize) - The current size of an array.
 
-17 [assert](#assert) - Assert generically.
+17 [Assert](#assert) - Assert regardless.
 
-18 [Assert](#assert) - Assert regardless.
+18 [assert](#assert) - Assert generically.
 
-19 [assert1](#assert1) - Assert true or false.
+19 [Assert1](#assert1) - Assert operation.
 
-20 [Assert1](#assert1) - Assert operation.
+20 [assert1](#assert1) - Assert true or false.
 
 21 [Assert2](#assert2) - Assert operation.
 
