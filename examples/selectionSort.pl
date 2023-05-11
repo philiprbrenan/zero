@@ -6,8 +6,6 @@
 use v5.30;
 use warnings FATAL => qw(all);
 use strict;
-use Data::Dump qw(dump);
-use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
 use Test::More tests=>5;
 
@@ -28,7 +26,7 @@ sub selectionSort($$)                                                           
        {Mov [$array, \$i, $name], $b;
         Mov [$array, \$j, $name], $a;
        };
-     } [$i, $N];
+     } [$i, $N];                                                                # Move up through array
    } $N;
  }
 
