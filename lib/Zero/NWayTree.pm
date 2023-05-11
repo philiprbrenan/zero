@@ -245,8 +245,8 @@ my sub Node_allocDown($%)                                                       
   my $d = Array "Down";                                                         # Allocate down
   Mov [$node, $Node->address(q(down)), 'Node'], $d;                             # Down area
  }
-my sub Node_openLeaf($$$$$)                                                     # Open a gap in a leaf node
- {my ($node, $offset, $length, $K, $D) = @_;                                    # Node
+my sub Node_openLeaf($$$$)                                                      # Open a gap in a leaf node
+ {my ($node, $offset, $K, $D) = @_;                                             # Node
 
   my $k = Node_fieldKeys $node;
   my $d = Node_fieldData $node;
@@ -690,8 +690,7 @@ sub Insert($$$%)                                                                
            };
 
           my $i = ArrayCountLess $K, $key;                                      # Insert position
-          my $nli = Subtract $nl, $i;
-          Node_openLeaf($n, $i, $nli, $key, $data);                             # insert into the root leaf node
+          Node_openLeaf($n, $i, $key, $data);                                   # Insert into the root leaf node
           incKeys($tree);
           Jmp $Finish;
          };
@@ -709,16 +708,13 @@ sub Insert($$$%)                                                                
       Jmp $Finish;
      };
 
-    my $Nl  = Node_length($N);
     IfEq $c, FindResult_higher,                                                 # Found a key that is greater than the one being inserted
     Then
      {my $i1 = Add $i, 1;
-      my $l = Subtract $Nl, $i1;
-      Node_openLeaf($N, $i1, $l, $key, $data);
+      Node_openLeaf($N, $i1, $key, $data);
      },
     Else
-     {my $l = Subtract $Nl, $i;
-      Node_openLeaf($N, $i, $l, $key, $data);
+     {Node_openLeaf($N, $i, $key, $data);
      };
 
     incKeys($tree);
@@ -1526,10 +1522,10 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  24711;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 15665, 2 => 6294, 3 => 2752};
+  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
 
   #say STDERR dump $e->tallyCounts->{1};
   is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -1546,12 +1542,12 @@ if (1)                                                                          
   jLt               => 565,
   jmp               => 878,
   jNe               => 908,
-  mov               => 7723,
+  mov               => 7619,
   moveLong          => 171,
   not               => 631,
   resize            => 161,
   shiftUp           => 300,
-  subtract          => 606,
+  subtract          => 501,
 };
 
   #say STDERR dump $e->tallyCounts->{2};
