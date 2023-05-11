@@ -80,6 +80,10 @@ my $t = <<END;
     - name: Zero testNWayTree
       run: |
         perl examples/testNWayTree.pl
+
+    - name: Zero selectionSort
+      run: |
+        perl examples/selectionSort.pl
 END
 
 my $y = <<'END' =~ s(XXXX) ($t)gsr;
