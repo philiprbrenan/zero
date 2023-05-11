@@ -85,6 +85,10 @@ my $t = <<END;
     - name: Zero selectionSort
       run: |
         perl examples/selectionSort.pl
+
+    - name: Zero bubbleSort
+      run: |
+        perl examples/bubbleSort.pl
 END
 
 my $y = <<'END' =~ s(XXXX) ($t)gsr;
