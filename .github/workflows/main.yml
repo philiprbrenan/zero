@@ -28,11 +28,11 @@ jobs:
 
     - name: Zero testEmulator
       run: |
-        perl testEmulator.pl
+        perl examples/testEmulator.pl
 
     - name: Zero testNWayTree
       run: |
-        perl testNWayTree.pl
+        perl examples/testNWayTree.pl
 
 
   testWindows:
@@ -71,9 +71,9 @@ jobs:
 
     - name: Zero testEmulator
       run: |
-        perl testEmulator.pl
+        perl examples/testEmulator.pl
 
     - name: Zero testNWayTree
       run: |
-        perl testNWayTree.pl
+        perl examples/testNWayTree.pl
 
