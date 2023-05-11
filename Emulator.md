@@ -21,7 +21,7 @@ Say "hello world":
 
 # Description
 
-Version 20230514.
+Version 20230515.
 
 The following sections describe the methods in each functional area of this
 module.  For an alphabetic listing of all methods by name see [Index](#index).
@@ -722,7 +722,7 @@ Clear the first bytes of an area.  The area is specified by the first element of
 
 ## Confess()
 
-Confess with a stack trace showing the location bioth in the emulated code and in the code that produced the emulated code.
+Confess with a stack trace showing the location both in the emulated code and in the code that produced the emulated code.
 
 **Example:**
 
@@ -2651,7 +2651,7 @@ Then block.
 
 ## Trace($source)
 
-Start or stop tracing.  Tracing prints each instruction executed and its effect on memeory.
+Start or stop tracing.  Tracing prints each instruction executed and its effect on memory.
 
        Parameter  Description
     1  $source    Trace setting
@@ -2688,7 +2688,7 @@ Start or stop tracing.  Tracing prints each instruction executed and its effect 
 
 ## TracePoints($source)
 
-Enable or disable trace points.  If trace points are enabled a stack trace is printed for each instructyion executed showing the call stack at the time the instruction was generated as well as the current stack frames.
+Enable or disable trace points.  If trace points are enabled a stack trace is printed for each instruction executed showing the call stack at the time the instruction was generated as well as the current stack frames.
 
        Parameter  Description
     1  $source    Trace points if true
@@ -2898,7 +2898,7 @@ Trace point - a point in the code where the flow of execution might change.
 
 22 [Clear](#clear) - Clear the first bytes of an area.
 
-23 [Confess](#confess) - Confess with a stack trace showing the location bioth in the emulated code and in the code that produced the emulated code.
+23 [Confess](#confess) - Confess with a stack trace showing the location both in the emulated code and in the code that produced the emulated code.
 
 24 [Dec](#dec) - Decrement the target.
 
