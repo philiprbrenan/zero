@@ -4,9 +4,10 @@
 
 A minimal [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) and [emulator](https://en.wikipedia.org/wiki/Emulator) for the Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) programming language.
 
-Includes an implementation of N-Way [trees](https://en.wikipedia.org/wiki/Tree_(data_structure)) in [code](https://en.wikipedia.org/wiki/Computer_program) written in the Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) programming language: assiduously optimized through exhaustive testing, ready
-for realization in [Silicon](https://en.wikipedia.org/wiki/Silicon) as an [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) rather than as software on a conventional [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) so that large, extremely fast, associative memories can be manufactured on
-an industrial scale.
+Includes an implementation of N-Way [trees](https://en.wikipedia.org/wiki/Tree_(data_structure)) using [code](https://en.wikipedia.org/wiki/Computer_program) written in the Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) programming language: assiduously optimized through exhaustive
+testing, ready for realization in [Silicon](https://en.wikipedia.org/wiki/Silicon) as an [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) rather than as software on a
+conventional [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) so that large, extremely fast, associative memories can be
+manufactured on an industrial scale.
 
 Open the __Actions__ [tab](https://en.wikipedia.org/wiki/Tab_key) to see the [code](https://en.wikipedia.org/wiki/Computer_program) in action on [Ubuntu](https://ubuntu.com/download/desktop) and [Windows Services for Linux](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux) for [Ubuntu](https://ubuntu.com/download/desktop) on windows.
 
