@@ -34,12 +34,12 @@ if (1)                                                                          
  {Start 1;
   my $a = Array "array";
   my @a = qw(6 8 4 2 1 3 5 7);
-  Push $a, $_ for @a;
+  Push $a, $_ for @a;                                                           # Load array
 
-  selectionSort($a, "array");
+  selectionSort($a, "array");                                                   # Sort
 
-  ForArray
-   {my ($i, $e, $Check, $Next, $End) = @_;
+  ForArray                                                                      # Print array
+   {my ($i, $e) = @_;
     Out $e;
    } $a, "array";
 
