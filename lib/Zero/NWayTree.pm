@@ -123,9 +123,14 @@ my sub Node_lengthM1($)                                                         
   Subtract [$node, $Node->address(q(length)), 'Node'], 1;                       # Get attribute from node descriptor
  }
 
-my sub Node_setLength($$)                                                       # Set the length of a node
- {my ($node, $length) = @_;                                                     # Node, length
-  Mov [$node, $Node->address(q(length)), 'Node'], $length;                      # Set length attribute
+my sub Node_setLength($$%)                                                      # Set the length of a node
+ {my ($node, $length, %options) = @_;                                           # Node, length, options
+  if (my $d = $options{add})
+   {Add [$node, $Node->address(q(length)), 'Node'], $length, $d;                # Set length attribute
+   }
+  else
+   {Mov [$node, $Node->address(q(length)), 'Node'], $length;                    # Set length attribute
+   }
  }
 
 my sub Node_incLength($)                                                        # Increment the length of a node
@@ -679,8 +684,7 @@ sub Insert($$$%)                                                                
           Then
            {Node_setKeys($n, $nl, $key);                                        # Append the key at the end of the leaf root node because it is greater than all the other keys in the block and there is room for it
             Node_setData($n, $nl, $data);
-            my $nl1 = Add $nl, 1;
-            Node_setLength($n, $nl1);
+            Node_setLength($n, $nl, add=>1);
             incKeys($tree);
             Jmp $Finish;
            };
@@ -1522,10 +1526,10 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];                                                   # Expected sequence
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  24712;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  24711;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 15666, 2 => 6294, 3 => 2752};
+  is_deeply $e->tallyTotal, { 1 => 15665, 2 => 6294, 3 => 2752};
 
   #say STDERR dump $e->tallyCounts->{1};
   is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -1542,7 +1546,7 @@ if (1)                                                                          
   jLt               => 565,
   jmp               => 878,
   jNe               => 908,
-  mov               => 7724,
+  mov               => 7723,
   moveLong          => 171,
   not               => 631,
   resize            => 161,
