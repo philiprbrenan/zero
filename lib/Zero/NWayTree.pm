@@ -1362,16 +1362,16 @@ if (1)                                                                          
 
   is_deeply $e->memory, {
   1  => bless([4, 3, 3, 3], "Tree"),
-  3  => bless([1, 1, 0, 1, 4, 5, 15], "Node"),
+  3  => bless([1, 1, 0, 1, 4, 5, 12], "Node"),
   4  => bless([2], "Keys"),
   5  => bless([22], "Data"),
-  9  => bless([1, 2, 3, 1, 10, 11, 0], "Node"),
-  10 => bless([1], "Keys"),
-  11 => bless([11], "Data"),
-  12 => bless([2, 3, 3, 1, 13, 14, 0], "Node"),
-  13 => bless([3, 4], "Keys"),
-  14 => bless([33, 44], "Data"),
-  15 => bless([9, 12], "Down")};
+  6  => bless([1, 2, 3, 1, 7, 8, 0], "Node"),
+  7  => bless([1], "Keys"),
+  8  => bless([11], "Data"),
+  9  => bless([2, 3, 3, 1, 10, 11, 0], "Node"),
+  10 => bless([3, 4], "Keys"),
+  11 => bless([33, 44], "Data"),
+  12 => bless([6, 9], "Down")};
  }
 
 #latest:;
@@ -1381,21 +1381,22 @@ if (1)                                                                          
   Insert($t, $_, "$_$_") for 1..5;
 
   my $e = Execute(suppressOutput=>1);
+
   is_deeply $e->memory, {
   1  => bless([5, 4, 3, 3], "Tree"),
-  3  => bless([2, 1, 0, 1, 4, 5, 15], "Node"),
+  3  => bless([2, 1, 0, 1, 4, 5, 12], "Node"),
   4  => bless([2, 4], "Keys"),
   5  => bless([22, 44], "Data"),
-  9  => bless([1, 2, 3, 1, 10, 11, 0], "Node"),
-  10 => bless([1], "Keys"),
-  11 => bless([11], "Data"),
-  12 => bless([1, 3, 3, 1, 13, 14, 0], "Node"),
-  13 => bless([3], "Keys"),
-  14 => bless([33], "Data"),
-  15 => bless([9, 12, 17], "Down"),
-  17 => bless([1, 4, 3, 1, 18, 19, 0], "Node"),
-  18 => bless([5], "Keys"),
-  19 => bless([55], "Data")};
+  6  => bless([1, 2, 3, 1, 7, 8, 0], "Node"),
+  7  => bless([1], "Keys"),
+  8  => bless([11], "Data"),
+  9  => bless([1, 3, 3, 1, 10, 11, 0], "Node"),
+  10 => bless([3], "Keys"),
+  11 => bless([33], "Data"),
+  12 => bless([6, 9, 13], "Down"),
+  13 => bless([1, 4, 3, 1, 14, 15, 0], "Node"),
+  14 => bless([5], "Keys"),
+  15 => bless([55], "Data")}
  }
 
 #latest:;
@@ -1407,19 +1408,19 @@ if (1)                                                                          
 
   is_deeply $e->memory, {
   1  => bless([6, 4, 3, 3], "Tree"),
-  3  => bless([2, 1, 0, 1, 4, 5, 15], "Node"),
+  3  => bless([2, 1, 0, 1, 4, 5, 12], "Node"),
   4  => bless([2, 4], "Keys"),
   5  => bless([22, 44], "Data"),
-  9  => bless([1, 2, 3, 1, 10, 11, 0], "Node"),
-  10 => bless([1], "Keys"),
-  11 => bless([11], "Data"),
-  12 => bless([1, 3, 3, 1, 13, 14, 0], "Node"),
-  13 => bless([3], "Keys"),
-  14 => bless([33], "Data"),
-  15 => bless([9, 12, 17], "Down"),
-  17 => bless([2, 4, 3, 1, 18, 19, 0], "Node"),
-  18 => bless([5, 6], "Keys"),
-  19 => bless([55, 66], "Data")};
+  6  => bless([1, 2, 3, 1, 7, 8, 0], "Node"),
+  7  => bless([1], "Keys"),
+  8  => bless([11], "Data"),
+  9  => bless([1, 3, 3, 1, 10, 11, 0], "Node"),
+  10 => bless([3], "Keys"),
+  11 => bless([33], "Data"),
+  12 => bless([6, 9, 13], "Down"),
+  13 => bless([2, 4, 3, 1, 14, 15, 0], "Node"),
+  14 => bless([5, 6], "Keys"),
+  15 => bless([55, 66], "Data")};
  }
 
 #latest:;
