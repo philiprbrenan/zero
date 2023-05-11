@@ -1,6 +1,6 @@
 # Name
 
-Zero::Emulator - Assemble and emulate a program written in the [Zero](https://github.com/philiprbrenan/zero) assembly programming language.
+Zero::Emulator - Assemble and emulate a program written in the [Zero](https://github.com/philiprbrenan/zero) assembler programming language.
 
 <div>
 
