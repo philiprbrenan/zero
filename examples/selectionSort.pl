@@ -1,4 +1,4 @@
-#!/usr/bin/perl  -Ilib -I../lib
+#!/usr/bin/perl -Ilib -I../lib
 #-------------------------------------------------------------------------------
 # Zero assembler programming language of in situ selection sort
 # Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
@@ -16,15 +16,17 @@ sub selectionSort($$)                                                           
 
   For                                                                           # Outer loop
    {my ($i) = @_;
+    my  $a  = Mov [$array, \$i, $name];                                         # Index into array
+
     For                                                                         # Inner loop
      {my ($j) = @_;
-      my $a = Mov [$array, \$i, $name];                                         # Index into array
-      my $b = Mov [$array, \$j, $name];
+      my  $b  = Mov [$array, \$j, $name];
 
       IfGt $a, $b,
       Then                                                                      # Swap elements to place smaller element lower in array
        {Mov [$array, \$i, $name], $b;
         Mov [$array, \$j, $name], $a;
+        Mov $a, $b;
        };
      } [$i, $N];                                                                # Move up through array
    } $N;
@@ -45,7 +47,7 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
   is_deeply $e->out, [1..8];                                                    # Check output
-  is_deeply $e->count,  341;                                                    # Instructions executed
+  is_deeply $e->count,  328;                                                    # Instructions executed
   is_deeply $e->counts, {                                                       # Counts of each instruction type executed
   array     =>   1,
   arraySize =>   2,
@@ -53,7 +55,7 @@ if (1)                                                                          
   jGe       =>  62,
   jLe       =>  36,
   jmp       =>  52,
-  mov       => 120,
+  mov       => 107,
   out       =>   8,
   push      =>   8};
  }
