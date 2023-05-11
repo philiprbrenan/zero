@@ -1420,7 +1420,7 @@ sub Zero::Emulator::Code::execute($%)                                           
             $exec->calls->[-1]->instruction = $i;
     last unless $i;
     if (my $a = $i->action)                                                     # Action
-     {$exec->stackTraceAndExit(qq(Invalid instruction: "$a"\n))
+     {$exec->stackTraceAndExit(qq(Invalid instruction: "$a"))
         unless my $c = $instructions{$a};
 
       if ($a !~ m(\A(assert.*|label|tally|trace(Points?)?)\Z))                  # Omit instructions that are not tally-able
@@ -1448,7 +1448,6 @@ sub Zero::Emulator::Code::execute($%)                                           
         my $n = $i->number;
         my $m =  sprintf "%4d  %4d  %4d  %12s  %20s", $j, $n, $e, $a, $f;
            $m .= sprintf "  at %s line %d", $i->file, $i->line unless $s;
-           $m .= "\n";
         say STDERR $m unless $s;
         push $exec->out->@*, $m;
        }
@@ -2156,7 +2155,7 @@ sub ShiftUp($;$)                                                                
 
 sub Start($)                                                                    #i Start the current assembly using the specified version of the Zero language.  At  the moment only version 1 works.
  {my ($version) = @_;                                                           # Version desired - at the moment only 1
-  $version == 1 or confess "Version 1 is currently the only version available\n";
+  $version == 1 or confess "Version 1 is currently the only version available";
   $allocs = $allocsStacked = 0;
   $assembly = Code;                                                             # The current assembly
  }
@@ -2745,10 +2744,10 @@ if (1)                                                                          
   AssertTrue  0;
   my $e = Execute(suppressOutput=>1, trace=>1);
   is_deeply $e->out, [
-  "   1     0     1   assertFalse                      \n",
+  "   1     0     1   assertFalse                      ",
   "AssertTrue 0 failed",
   "    1     2 assertTrue",
-  "   2     1     1    assertTrue                      \n"];
+  "   2     1     1    assertTrue                      "];
  }
 
 #latest:;
@@ -2758,10 +2757,10 @@ if (1)                                                                          
   AssertFalse 1;
   my $e = Execute(suppressOutput=>1, trace=>1);
   is_deeply $e->out, [
-  "   1     0     1    assertTrue                      \n",
+  "   1     0     1    assertTrue                      ",
   "AssertFalse 1 failed",
   "    1     2 assertFalse",
-  "   2     1     1   assertFalse                      \n"];
+  "   2     1     1   assertFalse                      "];
 
  }
 
