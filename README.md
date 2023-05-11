@@ -77,7 +77,8 @@ An implementation of N-Way-Trees in Zero assembler.
 [Documentation](https://metacpan.org/dist/Zero-Emulator/view/NWayTree.pod)
 
 Can you reduce the number of instructions required to perform ```107``` inserts
-into an N-Way-Tree?
+into an N-Way-Tree? Please raise an issue if you can stating your terms for
+your enhancememt.
 
 ```
   add               => 159,
@@ -93,12 +94,12 @@ into an N-Way-Tree?
   jLt               => 565,
   jmp               => 878,
   jNe               => 908,
-  mov               => 7724,
+  mov               => 7619,
   moveLong          => 171,
   not               => 631,
   resize            => 161,
   shiftUp           => 300,
-  subtract          => 606,
+  subtract          => 501,
 ```
 
 # The Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) programming language
