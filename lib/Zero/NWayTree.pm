@@ -270,8 +270,8 @@ my sub Node_open($$$$$)                                                         
   Node_incLength $node;
  }
 
-my sub Node_copy_leaf($$$$$)                                                    # Copy part of one leaf node into another node.
- {my ($t, $s, $to, $so, $length) = @_;                                          # Target node, source node, target offset, source offset, length
+my sub Node_copy_leaf($$$$)                                                     # Copy part of one leaf node into another node.
+ {my ($t, $s, $so, $length) = @_;                                               # Target node, source node, source offset, length
 
   my $sk = Node_fieldKeys $s;
   my $sd = Node_fieldData $s;
@@ -279,19 +279,19 @@ my sub Node_copy_leaf($$$$$)                                                    
   my $tk = Node_fieldKeys $t;
   my $td = Node_fieldData $t;
 
-  MoveLong [$tk, \$to, "Keys"], [$sk, \$so, "Keys"], $length;                   # Each key, data, down
-  MoveLong [$td, \$to, "Data"], [$sd, \$so, "Data"], $length;                   # Each key, data, down
+  MoveLong [$tk, \0, "Keys"], [$sk, \$so, "Keys"], $length;                     # Each key, data, down
+  MoveLong [$td, \0, "Data"], [$sd, \$so, "Data"], $length;                     # Each key, data, down
  }
 
-my sub Node_copy($$$$$)                                                         # Copy part of one interior node into another node.
- {my ($t, $s, $to, $so, $length) = @_;                                          # Target node, source node, target offset, source offset, length
+my sub Node_copy($$$$)                                                          # Copy part of one interior node into another node.
+ {my ($t, $s, $so, $length) = @_;                                               # Target node, source node, source offset, length
 
   &Node_copy_leaf(@_);                                                          # Keys and data
 
   my $sn = Node_fieldDown $s;                                                   # Child nodes
   my $tn = Node_fieldDown $t;
   my $L  = Add $length, 1;
-  MoveLong [$tn, \$to, "Down"], [$sn, \$so, "Down"], $L;
+  MoveLong [$tn, \0, "Down"], [$sn, \$so, "Down"], $L;
  }
 
 my sub Node_free($)                                                             # Free a node
@@ -451,12 +451,12 @@ my sub Node_SplitIfFull($%)                                                     
       IfFalse Node_isLeaf($node),                                               # Not a leaf
       Then
        {Node_allocDown $r;                                                      # Add down area on right
-        Node_copy($r, $node, 0, $R, $n);                                        # New right node
+        Node_copy($r, $node, $R, $n);                                        # New right node
         ReUp($r) unless $options{test};                                         # Simplify test set up
         my $N = Node_fieldDown $node; Resize $N, $R;
        },
       Else
-       {Node_copy_leaf($r, $node, 0, $R, $n);                                   # New right leaf
+       {Node_copy_leaf($r, $node, $R, $n);                                   # New right leaf
        };
       Node_setLength($node, $n);
 
@@ -492,15 +492,15 @@ my sub Node_SplitIfFull($%)                                                     
     Then
      {Node_allocDown $l;                                                        # Add down area on left
       Node_allocDown $r;                                                        # Add down area on right
-      Node_copy($l, $node, 0, 0,  $n);                                          # New left  node
-      Node_copy($r, $node, 0, $R, $n);                                          # New right node
+      Node_copy($l, $node, 0,  $n);                                          # New left  node
+      Node_copy($r, $node, $R, $n);                                          # New right node
       ReUp($l) unless $options{test};                                           # Simplify testing
       ReUp($r) unless $options{test};
      },
     Else
      {Node_allocDown $node;                                                     # Add down area
-      Node_copy_leaf($l, $node, 0, 0,  $n);                                     # New left  leaf
-      Node_copy_leaf($r, $node, 0, $R, $n);                                     # New right leaf
+      Node_copy_leaf($l, $node, 0,  $n);                                     # New left  leaf
+      Node_copy_leaf($r, $node, $R, $n);                                     # New right leaf
      };
 
     Node_setUp($l, $node);                                                      # Root node with single key after split
@@ -1283,7 +1283,7 @@ if (1)                                                                          
   Node_setDown($p, 7, 97);
   Node_setDown($q, 7, 99);
 
-  Node_copy(   $q, $p, 1, 3, 2);
+  Node_copy($q, $p, 3, 2);
 
   my $e = Execute(suppressOutput=>1);
 
@@ -1294,9 +1294,9 @@ if (1)                                                                          
   4 => bless([21 .. 27], "Data"),
   5 => bless([31 .. 37, 97], "Down"),
   6 => bless([0, 2, 0, 1, 7, 8, 9], "Node"),
-  7 => bless([41, 14, 15, 44 .. 47], "Keys"),
-  8 => bless([51, 24, 25, 54 .. 57], "Data"),
-  9 => bless([61, 34, 35, 36, 65, 66, 67, 99], "Down")}
+  7 => bless([14, 15, 43 .. 47], "Keys"),
+  8 => bless([24, 25, 53 .. 57], "Data"),
+  9 => bless([34, 35, 36, 64..67, 99], "Down")}
  }
 
 #latest:;
@@ -1470,7 +1470,7 @@ if (1)                                                                          
   is_deeply $e->out, [1..$N];
  }
 
-latest:;
+#latest:;
 if (1)                                                                          ##Iterate ##Keys ##FindResult_key ##FindResult_data ##Find ##printTreeKeys ##printTreeData
  {my $W = 3; my $N = 107; my @r = randomArray $N;
 
