@@ -1546,8 +1546,7 @@ if (1)                                                                          
   not               => 631,
   resize            => 161,
   shiftUp           => 300,
-  subtract          => 501,
-};
+  subtract          => 501};
 
   #say STDERR dump $e->tallyCounts->{2};
   is_deeply $e->tallyCounts->{2}, {                                             # Find tally
