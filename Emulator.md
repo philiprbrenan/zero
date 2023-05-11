@@ -3184,9 +3184,9 @@ Create a variable initialized to the specified value.
 
 16 [ArraySize](#arraysize) - The current size of an array.
 
-17 [Assert](#assert) - Assert regardless.
+17 [assert](#assert) - Assert generically.
 
-18 [assert](#assert) - Assert generically.
+18 [Assert](#assert) - Assert regardless.
 
 19 [Assert1](#assert1) - Assert operation.
 
