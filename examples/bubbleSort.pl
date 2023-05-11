@@ -9,7 +9,7 @@ use strict;
 use Zero::Emulator qw(:all);
 use Test::More tests=>5;
 
-sub bubbleSort($$)                                                              # As described at: https://en.wikipedia.org/wiki/Selection_sort
+sub bubbleSort($$)                                                              # As described at: https://en.wikipedia.org/wiki/Bubble_sort
  {my ($array, $name) = @_;                                                      # Array, name of array memory
 
   my $N = ArraySize $array, $name;                                              # Size of array
