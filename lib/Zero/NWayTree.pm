@@ -279,8 +279,8 @@ my sub Node_copy_leaf($$$$$)                                                    
   my $tk = Node_fieldKeys $t;
   my $td = Node_fieldData $t;
 
-  MoveLong [$tk, \$to, "Keys"],  [$sk, \$so, "Keys"], $length;                  # Each key, data, down
-  MoveLong [$td, \$to, "Data"],  [$sd, \$so, "Data"], $length;                  # Each key, data, down
+  MoveLong [$tk, \$to, "Keys"], [$sk, \$so, "Keys"], $length;                   # Each key, data, down
+  MoveLong [$td, \$to, "Data"], [$sd, \$so, "Data"], $length;                   # Each key, data, down
  }
 
 my sub Node_copy($$$$$)                                                         # Copy part of one interior node into another node.
@@ -290,21 +290,21 @@ my sub Node_copy($$$$$)                                                         
 
   my $sn = Node_fieldDown $s;                                                   # Child nodes
   my $tn = Node_fieldDown $t;
-  my $L = Add $length, 1;
-  MoveLong [$tn, \$to, "Down"],  [$sn, \$so, "Down"], $L;
+  my $L  = Add $length, 1;
+  MoveLong [$tn, \$to, "Down"], [$sn, \$so, "Down"], $L;
  }
 
 my sub Node_free($)                                                             # Free a node
  {my ($node) = @_;                                                              # Node to free
+
+  my $K = Node_fieldKeys $node; Free $K, "Keys";
+  my $D = Node_fieldData $node; Free $D, "Data";
+
   IfFalse Node_isLeaf($node),
   Then
-   {my $K = Node_fieldKeys $node;
-    my $D = Node_fieldData $node;
-    my $N = Node_fieldDown $node;
-    Free $K, "Keys";
-    Free $D, "Data";
-    Free $N, "Down";
+   {my $N = Node_fieldDown $node; Free $N, "Down";
    };
+
   Free $node, "Node";
  }
 
@@ -363,21 +363,20 @@ my sub FindResult($$)                                                           
 
 my sub FindResult_renew($$$$%)                                                  # Reuse an existing find result
  {my ($find, $node, $cmp, $index, %options) = @_;                               # Find result, node, comparison result, index, options
-  my $f = $find;
 
-  Mov [$f, $FindResult->address(q(node)) , 'FindResult'], $node;
-  Mov [$f, $FindResult->address(q(cmp))  , 'FindResult'], $cmp;
+  Mov        [$find, $FindResult->address(q(node)) , 'FindResult'], $node;
+  Mov        [$find, $FindResult->address(q(cmp))  , 'FindResult'], $cmp;
 
   if (my $d = $options{subtract})                                               # Adjust index if necessary
-   {Subtract [$f, $FindResult->address(q(index)), 'FindResult'], $index, $d;
+   {Subtract [$find, $FindResult->address(q(index)), 'FindResult'], $index, $d;
    }
   elsif (my $D = $options{add})                                                 # Adjust index if necessary
-   {Add      [$f, $FindResult->address(q(index)), 'FindResult'], $index, $D;
+   {Add      [$find, $FindResult->address(q(index)), 'FindResult'], $index, $D;
    }
   else
-   {Mov      [$f, $FindResult->address(q(index)), 'FindResult'], $index;
+   {Mov      [$find, $FindResult->address(q(index)), 'FindResult'], $index;
    }
-  $f
+  $find
  }
 
 my sub FindResult_new()                                                         # Create an empty find result ready for use
@@ -466,8 +465,8 @@ my sub Node_SplitIfFull($%)                                                     
 
       IfEq Node_down($p, $pl), $node,                                           # Splitting the last child - just add it on the end
       Then
-       {my $pk = Node_keys($node, $n); Node_setKeys  ($p, $pl, $pk);
-        my $nd = Node_data($node, $n); Node_setData  ($p, $pl, $nd);
+       {my $pk = Node_keys($node, $n); Node_setKeys($p, $pl, $pk);
+        my $nd = Node_data($node, $n); Node_setData($p, $pl, $nd);
         my $pl1 = Add $pl, 1;
         Node_setLength($p, $pl1);
         Node_setDown  ($p, $pl1, $r);
