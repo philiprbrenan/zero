@@ -285,8 +285,7 @@ Get the number of keys in the tree..
       not               => 631,
       resize            => 161,
       shiftUp           => 300,
-      subtract          => 501,
-    };
+      subtract          => 501};
     
       #say STDERR dump $e->tallyCounts->{2};
       is_deeply $e->tallyCounts->{2}, {                                             # Find tally
@@ -470,8 +469,7 @@ Get data field from find results.
       not               => 631,
       resize            => 161,
       shiftUp           => 300,
-      subtract          => 501,
-    };
+      subtract          => 501};
     
       #say STDERR dump $e->tallyCounts->{2};
       is_deeply $e->tallyCounts->{2}, {                                             # Find tally
@@ -612,8 +610,7 @@ Get key field from find results.
       not               => 631,
       resize            => 161,
       shiftUp           => 300,
-      subtract          => 501,
-    };
+      subtract          => 501};
     
       #say STDERR dump $e->tallyCounts->{2};
       is_deeply $e->tallyCounts->{2}, {                                             # Find tally
@@ -791,8 +788,7 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
       not               => 631,
       resize            => 161,
       shiftUp           => 300,
-      subtract          => 501,
-    };
+      subtract          => 501};
     
       #say STDERR dump $e->tallyCounts->{2};
     
@@ -1118,8 +1114,7 @@ Iterate over a tree.
       not               => 631,
       resize            => 161,
       shiftUp           => 300,
-      subtract          => 501,
-    };
+      subtract          => 501};
     
       #say STDERR dump $e->tallyCounts->{2};
       is_deeply $e->tallyCounts->{2}, {                                             # Find tally
@@ -1264,8 +1259,7 @@ Print the keys held in a tree.
       not               => 631,
       resize            => 161,
       shiftUp           => 300,
-      subtract          => 501,
-    };
+      subtract          => 501};
     
       #say STDERR dump $e->tallyCounts->{2};
       is_deeply $e->tallyCounts->{2}, {                                             # Find tally
@@ -1408,8 +1402,7 @@ Print the data held in a tree.
       not               => 631,
       resize            => 161,
       shiftUp           => 300,
-      subtract          => 501,
-    };
+      subtract          => 501};
     
       #say STDERR dump $e->tallyCounts->{2};
       is_deeply $e->tallyCounts->{2}, {                                             # Find tally
