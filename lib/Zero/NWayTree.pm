@@ -6,7 +6,7 @@
 # Key compression in each node by eliminating any common prefix present in each key in each node especially useful if we were to add attributes like userid, process, string position, rwx etc to front of each key.  Data does does not need this additional information.
 use v5.30;
 package Zero::NWayTree;
-our $VERSION = 20230514;                                                        # Version
+our $VERSION = 20230515;                                                        # Version
 use warnings FATAL => qw(all);
 use strict;
 use Carp qw(confess);
@@ -451,12 +451,12 @@ my sub Node_SplitIfFull($%)                                                     
       IfFalse Node_isLeaf($node),                                               # Not a leaf
       Then
        {Node_allocDown $r;                                                      # Add down area on right
-        Node_copy($r, $node, $R, $n);                                        # New right node
+        Node_copy($r, $node, $R, $n);                                           # New right node
         ReUp($r) unless $options{test};                                         # Simplify test set up
         my $N = Node_fieldDown $node; Resize $N, $R;
        },
       Else
-       {Node_copy_leaf($r, $node, $R, $n);                                   # New right leaf
+       {Node_copy_leaf($r, $node, $R, $n);                                      # New right leaf
        };
       Node_setLength($node, $n);
 
@@ -492,15 +492,15 @@ my sub Node_SplitIfFull($%)                                                     
     Then
      {Node_allocDown $l;                                                        # Add down area on left
       Node_allocDown $r;                                                        # Add down area on right
-      Node_copy($l, $node, 0,  $n);                                          # New left  node
-      Node_copy($r, $node, $R, $n);                                          # New right node
+      Node_copy($l, $node, 0,  $n);                                             # New left  node
+      Node_copy($r, $node, $R, $n);                                             # New right node
       ReUp($l) unless $options{test};                                           # Simplify testing
       ReUp($r) unless $options{test};
      },
     Else
      {Node_allocDown $node;                                                     # Add down area
-      Node_copy_leaf($l, $node, 0,  $n);                                     # New left  leaf
-      Node_copy_leaf($r, $node, $R, $n);                                     # New right leaf
+      Node_copy_leaf($l, $node, 0,  $n);                                        # New left  leaf
+      Node_copy_leaf($r, $node, $R, $n);                                        # New right leaf
      };
 
     Node_setUp($l, $node);                                                      # Root node with single key after split
