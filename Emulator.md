@@ -26,7 +26,9 @@ Version 20230514.
 The following sections describe the methods in each functional area of this
 module.  For an alphabetic listing of all methods by name see [Index](#index).
 
-# Execution
+# Instruction Set
+
+The instruction set used by the Zero assembler programming language.
 
 ## Add($target, $s1, $s2)
 
@@ -2747,8 +2749,7 @@ Watches for changes to the specified memory location.
       Mov $c, 6;
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, [
-      "Change at watched area: 0 (stackArea), address: 1
-  ",
+      "Change at watched area: 0 (stackArea), address: 1",
       "    1     6 mov",
       "Current value: 2",
       "New     value: 5",
@@ -2759,314 +2760,6 @@ Watches for changes to the specified memory location.
     
 
 # Private Methods
-
-## areaContent($exec, $address)
-
-Content of an area containing a address in memory in the specified execution.
-
-       Parameter  Description
-    1  $exec      Execution environment
-    2  $address   Address specification
-
-## dumpMemory($exec)
-
-Dump memory.
-
-       Parameter  Description
-    1  $exec      Execution environment
-
-## analyzeExecutionResultsLeast($exec, %options)
-
-Analyze execution results for least used code.
-
-       Parameter  Description
-    1  $exec      Execution results
-    2  %options   Options
-
-## analyzeExecutionResultsMost($exec, %options)
-
-Analyze execution results for most used code.
-
-       Parameter  Description
-    1  $exec      Execution results
-    2  %options   Options
-
-## analyzeExecutionNotRead($exec, %options)
-
-Analyze execution results for variables never read.
-
-       Parameter  Description
-    1  $exec      Execution results
-    2  %options   Options
-
-## analyzeExecutionResultsDoubleWrite($exec, %options)
-
-Analyze execution results - double writes.
-
-       Parameter  Description
-    1  $exec      Execution results
-    2  %options   Options
-
-## analyzeExecutionResults($exec, %options)
-
-Analyze execution results.
-
-       Parameter  Description
-    1  $exec      Execution results
-    2  %options   Options
-
-## check($exec, $area, $name)
-
-Check that a user area access is valid.
-
-       Parameter  Description
-    1  $exec      Execution environment
-    2  $area      Area
-    3  $name      Expected area name
-
-## getMemory($exec, $area, $address, $name, %options)
-
-Get from memory.
-
-       Parameter  Description
-    1  $exec      Execution environment
-    2  $area      Area
-    3  $address   Address
-    4  $name      Expected name of area
-    5  %options   Options
-
-## get($exec, $area, $address)
-
-Get from memory.
-
-       Parameter  Description
-    1  $exec      Execution environment
-    2  $area      Area
-    3  $address   Address
-
-## set($exec, $address, $value)
-
-Set the value of an address at the specified address in memory in the current execution environment.
-
-       Parameter  Description
-    1  $exec      Execution environment
-    2  $address   Address specification
-    3  $value     Value
-
-## stackArea($exec)
-
-Current stack frame.
-
-       Parameter  Description
-    1  $exec      Execution environment
-
-## address($exec, $area, $address, $name)
-
-Record a reference to memory.
-
-       Parameter  Description
-    1  $exec      Execution environment
-    2  $area      Area
-    3  $address   Address in area
-    4  $name      Memory
-
-## stackTrace($exec, $title)
-
-Create a stack trace.
-
-       Parameter  Description
-    1  $exec      Execution environment
-    2  $title     Title
-
-## stackTraceAndExit($exec, $title, %options)
-
-Create a stack trace and exit from the emulated program.
-
-       Parameter  Description
-    1  $exec      Execution environment
-    2  $title     Title
-    3  %options   Options
-
-## allocMemory($exec, $name, $stacked)
-
-Create the name of a new memory area.
-
-       Parameter  Description
-    1  $exec      Execution environment
-    2  $name      Name of allocation
-    3  $stacked   Stacked if true
-
-## setMemoryType($exec, $area, $name)
-
-Set the type of a memory area - a name that can be used to confirm the validity of reads and writes to that array represented by that area.
-
-       Parameter  Description
-    1  $exec      Execution environment
-    2  $area      Area name
-    3  $name      Name of allocation
-
-## notRead()
-
-Record the unused memory locations in the current stack frame.
-
-## rwWrite($exec, $area, $address)
-
-Observe write to memory.
-
-       Parameter  Description
-    1  $exec      Area in memory
-    2  $area      Address within area
-    3  $address
-
-## markAsRead($exec, $area, $address)
-
-Mark a memory address as having been read from.
-
-       Parameter  Description
-    1  $exec      Area in memory
-    2  $area      Address within area
-    3  $address
-
-## rwRead($exec, $area, $address)
-
-Observe read from memory.
-
-       Parameter  Description
-    1  $exec      Area in memory
-    2  $area      Address within area
-    3  $address
-
-## left($exec, $ref, $extra)
-
-Address a memory address.
-
-       Parameter  Description
-    1  $exec      Reference
-    2  $ref       An optional extra offset to add or subtract to the final memory address
-    3  $extra
-
-## leftSuppress($exec, $ref)
-
-Indicate that a memory address has been read.
-
-       Parameter  Description
-    1  $exec      Execution environment
-    2  $ref       Reference
-
-## right($exec, $ref)
-
-Get a constant or a memory address.
-
-       Parameter  Description
-    1  $exec      Location
-    2  $ref       Optional area
-
-## jumpOp($exec, $i, $check)
-
-Jump to the target address if the tested memory area if the condition is matched.
-
-       Parameter  Description
-    1  $exec      Execution environment
-    2  $i         Instruction
-    3  $check     Check
-
-## assert1($exec, $test, $sub)
-
-Assert true or false.
-
-       Parameter  Description
-    1  $exec      Execution environment
-    2  $test      Text of test
-    3  $sub       Subroutine of test
-
-## assert($exec, $test, $sub)
-
-Assert generically.
-
-       Parameter  Description
-    1  $exec      Execution environment
-    2  $test      Text of test
-    3  $sub       Subroutine of test
-
-## assign($exec, $target, $value)
-
-Assign - check for pointless assignments.
-
-       Parameter  Description
-    1  $exec      Execution environment
-    2  $target    Target of assign
-    3  $value     Value to assign
-
-## allocateSystemAreas($exec)
-
-Allocate system areas for a new stack frame.
-
-       Parameter  Description
-    1  $exec      Execution environment
-
-## freeSystemAreas($exec, $c)
-
-Free system areas for the specified stack frame.
-
-       Parameter  Description
-    1  $exec      Execution environment
-    2  $c         Stack frame
-
-## currentInstruction($exec)
-
-Locate current instruction.
-
-       Parameter  Description
-    1  $exec      Execution environment
-
-## createInitialStackEntry($exec)
-
-Create the initial stack frame.
-
-       Parameter  Description
-    1  $exec      Execution environment
-
-## checkArrayName($exec, $area, $name)
-
-Check the name of an array.
-
-       Parameter  Description
-    1  $exec      Execution environment
-    2  $area      Array
-    3  $name      Array name
-
-## locateAreaElement($exec, $area, $op)
-
-Locate an element in an array.
-
-       Parameter  Description
-    1  $exec      Execution environment
-    2  $area      Array
-    3  $op        Operation
-
-## countAreaElement($exec, $area, $op)
-
-Count the number of elements in array that meet some specification.
-
-       Parameter  Description
-    1  $exec      Execution environment
-    2  $area      Array
-    3  $op        Operation
-
-## Zero::Emulator::Code::execute($block, %options)
-
-Execute a block of code.
-
-       Parameter  Description
-    1  $block     Block of code
-    2  %options   Execution options
-
-## formatTrace($exec)
-
-Describe last memory assignment.
-
-       Parameter  Description
-    1  $exec      Execution
 
 ## Assert1($op, $a)
 
@@ -3154,237 +2847,163 @@ Create a variable initialized to the specified value.
 
 1 [Add](#add) - Add the source locations together and store the result in the target area.
 
-2 [address](#address) - Record a reference to memory.
+2 [Array](#array) - Create a new memory area and write its number into the address named by the target operand.
 
-3 [allocateSystemAreas](#allocatesystemareas) - Allocate system areas for a new stack frame.
+3 [ArrayCountGreater](#arraycountgreater) - Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result in the target location.
 
-4 [allocMemory](#allocmemory) - Create the name of a new memory area.
+4 [ArrayCountLess](#arraycountless) - Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result in the target location.
 
-5 [analyzeExecutionNotRead](#analyzeexecutionnotread) - Analyze execution results for variables never read.
+5 [ArrayDump](#arraydump) - Dump an array.
 
-6 [analyzeExecutionResults](#analyzeexecutionresults) - Analyze execution results.
+6 [ArrayIndex](#arrayindex) - Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.
 
-7 [analyzeExecutionResultsDoubleWrite](#analyzeexecutionresultsdoublewrite) - Analyze execution results - double writes.
+7 [ArraySize](#arraysize) - The current size of an array.
 
-8 [analyzeExecutionResultsLeast](#analyzeexecutionresultsleast) - Analyze execution results for least used code.
+8 [Assert](#assert) - Assert regardless.
 
-9 [analyzeExecutionResultsMost](#analyzeexecutionresultsmost) - Analyze execution results for most used code.
+9 [Assert1](#assert1) - Assert operation.
 
-10 [areaContent](#areacontent) - Content of an area containing a address in memory in the specified execution.
+10 [Assert2](#assert2) - Assert operation.
 
-11 [Array](#array) - Create a new memory area and write its number into the address named by the target operand.
+11 [AssertEq](#asserteq) - Assert two memory locations are equal.
 
-12 [ArrayCountGreater](#arraycountgreater) - Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result in the target location.
+12 [AssertFalse](#assertfalse) - Assert false.
 
-13 [ArrayCountLess](#arraycountless) - Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result in the target location.
+13 [AssertGe](#assertge) - Assert are greater than or equal.
 
-14 [ArrayDump](#arraydump) - Dump an array.
+14 [AssertGt](#assertgt) - Assert two memory locations are greater than.
 
-15 [ArrayIndex](#arrayindex) - Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.
+15 [AssertLe](#assertle) - Assert two memory locations are less than or equal.
 
-16 [ArraySize](#arraysize) - The current size of an array.
+16 [AssertLt](#assertlt) - Assert two memory locations are less than.
 
-17 [assert](#assert) - Assert generically.
+17 [AssertNe](#assertne) - Assert two memory locations are not equal.
 
-18 [Assert](#assert) - Assert regardless.
+18 [AssertTrue](#asserttrue) - Assert true.
 
-19 [Assert1](#assert1) - Assert operation.
+19 [Bad](#bad) - A bad ending.
 
-20 [assert1](#assert1) - Assert true or false.
+20 [Block](#block) - Block of code that can either be restarted or come to a good or a bad ending.
 
-21 [Assert2](#assert2) - Assert operation.
+21 [Call](#call) - Call the subroutine at the target address.
 
-22 [AssertEq](#asserteq) - Assert two memory locations are equal.
+22 [Clear](#clear) - Clear the first bytes of an area.
 
-23 [AssertFalse](#assertfalse) - Assert false.
+23 [Confess](#confess) - Confess with a stack trace showing the location bioth in the emulated code and in the code that produced the emulated code.
 
-24 [AssertGe](#assertge) - Assert are greater than or equal.
+24 [Dec](#dec) - Decrement the target.
 
-25 [AssertGt](#assertgt) - Assert two memory locations are greater than.
+25 [Dump](#dump) - Dump all the arrays currently in memory.
 
-26 [AssertLe](#assertle) - Assert two memory locations are less than or equal.
+26 [Else](#else) - Else block.
 
-27 [AssertLt](#assertlt) - Assert two memory locations are less than.
+27 [Execute](#execute) - Execute the current assembly.
 
-28 [AssertNe](#assertne) - Assert two memory locations are not equal.
+28 [For](#for) - For loop 0.
 
-29 [AssertTrue](#asserttrue) - Assert true.
+29 [ForArray](#forarray) - For loop to process each element of the named area.
 
-30 [assign](#assign) - Assign - check for pointless assignments.
+30 [Free](#free) - Free the memory area named by the target operand after confirming that it has the name specified on the source operand.
 
-31 [Bad](#bad) - A bad ending.
+31 [Good](#good) - A good ending.
 
-32 [Block](#block) - Block of code that can either be restarted or come to a good or a bad ending.
+32 [IfEq](#ifeq) - Execute then or else clause depending on whether two memory locations are equal.
 
-33 [Call](#call) - Call the subroutine at the target address.
+33 [IfFalse](#iffalse) - Execute then clause if the specified memory address is zero thus representing false.
 
-34 [check](#check) - Check that a user area access is valid.
+34 [IfGe](#ifge) - Execute then or else clause depending on whether two memory locations are greater than or equal.
 
-35 [checkArrayName](#checkarrayname) - Check the name of an array.
+35 [IfGt](#ifgt) - Execute then or else clause depending on whether two memory locations are greater than.
 
-36 [Clear](#clear) - Clear the first bytes of an area.
+36 [IfLe](#ifle) - Execute then or else clause depending on whether two memory locations are less than or equal.
 
-37 [Confess](#confess) - Confess with a stack trace showing the location bioth in the emulated code and in the code that produced the emulated code.
+37 [IfLt](#iflt) - Execute then or else clause depending on whether two memory locations are less than.
 
-38 [countAreaElement](#countareaelement) - Count the number of elements in array that meet some specification.
+38 [IfNe](#ifne) - Execute then or else clause depending on whether two memory locations are not equal.
 
-39 [createInitialStackEntry](#createinitialstackentry) - Create the initial stack frame.
+39 [IfTrue](#iftrue) - Execute then clause if the specified memory address is not zero thus representing true.
 
-40 [currentInstruction](#currentinstruction) - Locate current instruction.
+40 [Ifx](#ifx) - Execute then or else clause depending on whether two memory locations are equal.
 
-41 [Dec](#dec) - Decrement the target.
+41 [Inc](#inc) - Increment the target.
 
-42 [Dump](#dump) - Dump all the arrays currently in memory.
+42 [Jeq](#jeq) - Jump to a target label if the first source field is equal to the second source field.
 
-43 [dumpMemory](#dumpmemory) - Dump memory.
+43 [JFalse](#jfalse) - Jump to a target label if the first source field is equal to zero.
 
-44 [Else](#else) - Else block.
+44 [Jge](#jge) - Jump to a target label if the first source field is greater than or equal to the second source field.
 
-45 [Execute](#execute) - Execute the current assembly.
+45 [Jgt](#jgt) - Jump to a target label if the first source field is greater than the second source field.
 
-46 [For](#for) - For loop 0.
+46 [Jle](#jle) - Jump to a target label if the first source field is less than or equal to the second source field.
 
-47 [ForArray](#forarray) - For loop to process each element of the named area.
+47 [Jlt](#jlt) - Jump to a target label if the first source field is less than the second source field.
 
-48 [formatTrace](#formattrace) - Describe last memory assignment.
+48 [Jmp](#jmp) - Jump to a label.
 
-49 [Free](#free) - Free the memory area named by the target operand after confirming that it has the name specified on the source operand.
+49 [Jne](#jne) - Jump to a target label if the first source field is not equal to the second source field.
 
-50 [freeSystemAreas](#freesystemareas) - Free system areas for the specified stack frame.
+50 [JTrue](#jtrue) - Jump to a target label if the first source field is not equal to zero.
 
-51 [get](#get) - Get from memory.
+51 [Label](#label) - Create a label.
 
-52 [getMemory](#getmemory) - Get from memory.
+52 [LoadAddress](#loadaddress) - Load the address component of an address.
 
-53 [Good](#good) - A good ending.
+53 [LoadArea](#loadarea) - Load the area component of an address.
 
-54 [IfEq](#ifeq) - Execute then or else clause depending on whether two memory locations are equal.
+54 [Mov](#mov) - Copy a constant or memory address to the target address.
 
-55 [IfFalse](#iffalse) - Execute then clause if the specified memory address is zero thus representing false.
+55 [MoveLong](#movelong) - Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand.
 
-56 [IfGe](#ifge) - Execute then or else clause depending on whether two memory locations are greater than or equal.
+56 [Nop](#nop) - Do nothing (but do it well!).
 
-57 [IfGt](#ifgt) - Execute then or else clause depending on whether two memory locations are greater than.
+57 [Not](#not) - Move and not.
 
-58 [IfLe](#ifle) - Execute then or else clause depending on whether two memory locations are less than or equal.
+58 [Out](#out) - Write memory location contents to out.
 
-59 [IfLt](#iflt) - Execute then or else clause depending on whether two memory locations are less than.
+59 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
 
-60 [IfNe](#ifne) - Execute then or else clause depending on whether two memory locations are not equal.
+60 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
 
-61 [IfTrue](#iftrue) - Execute then clause if the specified memory address is not zero thus representing true.
+61 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
 
-62 [Ifx](#ifx) - Execute then or else clause depending on whether two memory locations are equal.
+62 [Procedure](#procedure) - Define a procedure.
 
-63 [Inc](#inc) - Increment the target.
+63 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
 
-64 [Jeq](#jeq) - Jump to a target label if the first source field is equal to the second source field.
+64 [Resize](#resize) - Resize the target area to the source size.
 
-65 [JFalse](#jfalse) - Jump to a target label if the first source field is equal to zero.
+65 [Return](#return) - Return from a procedure via the call stack.
 
-66 [Jge](#jge) - Jump to a target label if the first source field is greater than or equal to the second source field.
+66 [ReturnGet](#returnget) - Get a word from the return area and save it.
 
-67 [Jgt](#jgt) - Jump to a target label if the first source field is greater than the second source field.
+67 [ReturnPut](#returnput) - Put a word into the return area.
 
-68 [Jle](#jle) - Jump to a target label if the first source field is less than or equal to the second source field.
+68 [ShiftDown](#shiftdown) - Shift an element down one in an area.
 
-69 [Jlt](#jlt) - Jump to a target label if the first source field is less than the second source field.
+69 [ShiftLeft](#shiftleft) - Shift left within an element.
 
-70 [Jmp](#jmp) - Jump to a label.
+70 [ShiftRight](#shiftright) - Shift right with an element.
 
-71 [Jne](#jne) - Jump to a target label if the first source field is not equal to the second source field.
+71 [ShiftUp](#shiftup) - Shift an element up one in an area.
 
-72 [JTrue](#jtrue) - Jump to a target label if the first source field is not equal to zero.
+72 [Start](#start) - Start the current assembly using the specified version of the Zero language.
 
-73 [jumpOp](#jumpop) - Jump to the target address if the tested memory area if the condition is matched.
+73 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
 
-74 [Label](#label) - Create a label.
+74 [Tally](#tally) - Counts instructions when enabled.
 
-75 [left](#left) - Address a memory address.
+75 [Then](#then) - Then block.
 
-76 [leftSuppress](#leftsuppress) - Indicate that a memory address has been read.
+76 [Trace](#trace) - Start or stop tracing.
 
-77 [LoadAddress](#loadaddress) - Load the address component of an address.
+77 [TracePoint](#tracepoint) - Trace point - a point in the code where the flow of execution might change.
 
-78 [LoadArea](#loadarea) - Load the area component of an address.
+78 [TracePoints](#tracepoints) - Enable or disable trace points.
 
-79 [locateAreaElement](#locateareaelement) - Locate an element in an array.
+79 [Var](#var) - Create a variable initialized to the specified value.
 
-80 [markAsRead](#markasread) - Mark a memory address as having been read from.
-
-81 [Mov](#mov) - Copy a constant or memory address to the target address.
-
-82 [MoveLong](#movelong) - Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand.
-
-83 [Nop](#nop) - Do nothing (but do it well!).
-
-84 [Not](#not) - Move and not.
-
-85 [notRead](#notread) - Record the unused memory locations in the current stack frame.
-
-86 [Out](#out) - Write memory location contents to out.
-
-87 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
-
-88 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
-
-89 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
-
-90 [Procedure](#procedure) - Define a procedure.
-
-91 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
-
-92 [Resize](#resize) - Resize the target area to the source size.
-
-93 [Return](#return) - Return from a procedure via the call stack.
-
-94 [ReturnGet](#returnget) - Get a word from the return area and save it.
-
-95 [ReturnPut](#returnput) - Put a word into the return area.
-
-96 [right](#right) - Get a constant or a memory address.
-
-97 [rwRead](#rwread) - Observe read from memory.
-
-98 [rwWrite](#rwwrite) - Observe write to memory.
-
-99 [set](#set) - Set the value of an address at the specified address in memory in the current execution environment.
-
-100 [setMemoryType](#setmemorytype) - Set the type of a memory area - a name that can be used to confirm the validity of reads and writes to that array represented by that area.
-
-101 [ShiftDown](#shiftdown) - Shift an element down one in an area.
-
-102 [ShiftLeft](#shiftleft) - Shift left within an element.
-
-103 [ShiftRight](#shiftright) - Shift right with an element.
-
-104 [ShiftUp](#shiftup) - Shift an element up one in an area.
-
-105 [stackArea](#stackarea) - Current stack frame.
-
-106 [stackTrace](#stacktrace) - Create a stack trace.
-
-107 [stackTraceAndExit](#stacktraceandexit) - Create a stack trace and exit from the emulated program.
-
-108 [Start](#start) - Start the current assembly using the specified version of the Zero language.
-
-109 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
-
-110 [Tally](#tally) - Counts instructions when enabled.
-
-111 [Then](#then) - Then block.
-
-112 [Trace](#trace) - Start or stop tracing.
-
-113 [TracePoint](#tracepoint) - Trace point - a point in the code where the flow of execution might change.
-
-114 [TracePoints](#tracepoints) - Enable or disable trace points.
-
-115 [Var](#var) - Create a variable initialized to the specified value.
-
-116 [Watch](#watch) - Watches for changes to the specified memory location.
-
-117 [Zero::Emulator::Code::execute](#zero-emulator-code-execute) - Execute a block of code.
+80 [Watch](#watch) - Watches for changes to the specified memory location.
 
 # Installation
 
