@@ -351,8 +351,6 @@ sub Zero::Emulator::Code::assemble($%)                                          
   $Block
  }
 
-#D1 Execution
-
 sub areaContent($$)                                                             #P Content of an area containing a address in memory in the specified execution.
  {my ($exec, $address) = @_;                                                    # Execution environment, address specification
   @_ == 2 or confess "Two parameters";
@@ -885,7 +883,7 @@ sub assign($$$)                                                                 
    }
 
   if (defined $exec->watch->{$a}{$l})                                           # Watch for specified changes
-   {my @s = $exec->stackTrace("Change at watched area: $a ($n), address: $l\n");
+   {my @s = $exec->stackTrace("Change at watched area: $a ($n), address: $l");
     push @s, join ' ', "Current value:", $exec->memory->{$a}[$l];
     push @s, join ' ', "New     value:", $value;
     push @s, $exec->dumpMemory;
@@ -1502,6 +1500,8 @@ my sub xTarget($)                                                               
  {my ($t) = @_;                                                                 # Target expression
   (q(target), RefLeft $t)
  }
+
+#D1 Instruction Set                                                             # The instruction set used by the Zero assembler programming language.
 
 sub Inc($);
 sub Jge($$$);
@@ -3109,7 +3109,7 @@ if (1)                                                                          
   Mov $c, 6;
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, [
-  "Change at watched area: 0 (stackArea), address: 1\n",
+  "Change at watched area: 0 (stackArea), address: 1",
   "    1     6 mov",
   "Current value: 2",
   "New     value: 5",
