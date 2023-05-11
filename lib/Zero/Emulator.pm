@@ -8,13 +8,13 @@
 # Count number of ways an if statement actually goes.
 use v5.30;
 package Zero::Emulator;
-our $VERSION = 20230514;                                                        # Version
+our $VERSION = 20230515;                                                        # Version
 use warnings FATAL=>qw(all);
 use strict;
 use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>80" unless caller;
+eval "use Test::More tests=>82" unless caller;
 
 makeDieConfess;
 
@@ -54,6 +54,7 @@ sub execute(%)                                                                  
     lastAssignAddress=>     undef,                                              # Last assignment performed - address
     lastAssignValue=>       undef,                                              # Last assignment performed - value
     lastAssignBefore=>      undef,                                              # Prior value of memory area before assignment
+    freedArrays=>           [],                                                 # Arrays that have been recently freed and can thus be reused
    );
  }
 
@@ -594,13 +595,20 @@ my $allocs = 0; my $allocsStacked = 0;                                          
 
 sub allocMemory($$;$)                                                           #P Create the name of a new memory area.
  {my ($exec, $name, $stacked) = @_;                                             # Execution environment, name of allocation, stacked if true
-  if ($stacked)
+  if ($stacked)                                                                 # Stack frame allocation
    {my $a = $allocsStacked--;
     $exec->memory->{$a} = bless [], $name;
     $exec->memoryType->{$a} = $name;
     return $a
    }
-  my $a = ++$allocs;
+  if ((my $f = $exec->freedArrays)->@*)                                         # Reuse recently freed array
+   {my $a = pop @$f;
+    $exec->memory->{$a} = bless [], $name;
+    $exec->memoryType->{$a} = $name;
+    return $a;
+   }
+
+  my $a = ++$allocs;                                                            # Create brand new array
   $exec->memory    ->{$a} = bless [], $name;
   $exec->memoryType->{$a} = $name;
   $a
@@ -1058,6 +1066,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
       $exec->checkArrayName($area, $name);                                      # Check that the supplied array name matches what is actually in memory
 
+      push $exec->freedArrays->@*, $area;                                       # Save array for reuse
       delete $exec->memory->{$area}                                             # Free correctly identified area
      },
 
@@ -1682,7 +1691,7 @@ sub Clear($)                                                                    
   $assembly->instruction(action=>"clear", xTarget($target));
  }
 
-sub Confess()                                                                   #i Confess with a stack trace showing the location bioth in the emulated code and in the code that produced the emulated code.
+sub Confess()                                                                   #i Confess with a stack trace showing the location both in the emulated code and in the code that produced the emulated code.
  {$assembly->instruction(action=>"confess");
  }
 
@@ -2178,12 +2187,12 @@ sub Then(&)                                                                     
   (then=>  $t)
  }
 
-sub Trace($)                                                                    #i Start or stop tracing.  Tracing prints each instruction executed and its effect on memeory.
+sub Trace($)                                                                    #i Start or stop tracing.  Tracing prints each instruction executed and its effect on memory.
  {my ($source) = @_;                                                            # Trace setting
   $assembly->instruction(action=>"trace", xSource($source));
  }
 
-sub TracePoints($)                                                              #i Enable or disable trace points.  If trace points are enabled a stack trace is printed for each instructyion executed showing the call stack at the time the instruction was generated as well as the current stack frames.
+sub TracePoints($)                                                              #i Enable or disable trace points.  If trace points are enabled a stack trace is printed for each instruction executed showing the call stack at the time the instruction was generated as well as the current stack frames.
  {my ($source) = @_;                                                            # Trace points if true
   $assembly->instruction(action=>"tracePoints", xSource($source));
  }
@@ -2238,9 +2247,11 @@ return 1 if caller;
 
 Test::More->builder->output("/dev/null");                                       # Reduce number of confirmation messages during testing
 
-eval {goto latest};
+my $debug = -e q(/home/phil/);                                                  # Assume debugging if testing locally
+eval {goto latest if $debug};
 sub is_deeply;
 sub ok($;$);
+sub x {exit if $debug}                                                          # Stop if debugging.
 
 # Tests
 
@@ -3063,6 +3074,43 @@ if (1)                                                                          
 
   is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       19 instructions executed";
   is_deeply $e->memory, {1=>  bless([undef, undef, 1], "aaa")};
+ }
+
+#latest:;
+if (1)                                                                          ##Alloc
+ {Start 1;
+
+  For                                                                           # Allocate and free several times to demonstrate area reuse
+   {my ($i) = @_;
+    my $a = Array 'aaaa';
+    Mov [$a, 0, 'aaaa'], $i;
+    Free $a, 'aaaa';
+    Dump "mmmm";
+   } 3;
+
+  my $e = Execute(suppressOutput=>1);
+
+  is_deeply $e->counts,                                                         # Several allocations and frees
+   {array=>3, dump=>3, free=>3, inc=>3, jGe=>4, jmp=>3, mov=>4};
+  is_deeply $e->out, [                                                          # But only ever one user area in memory
+  "mmmm",
+  "-2=bless([], \"return\")",
+  "-1=bless([], \"params\")",
+  "0=bless([0, 1], \"stackArea\")",
+  "Stack trace",
+  "    1     9 dump",
+  "mmmm",
+  "-2=bless([], \"return\")",
+  "-1=bless([], \"params\")",
+  "0=bless([1, 1], \"stackArea\")",
+  "Stack trace",
+  "    1     9 dump",
+  "mmmm",
+  "-2=bless([], \"return\")",
+  "-1=bless([], \"params\")",
+  "0=bless([2, 1], \"stackArea\")",
+  "Stack trace",
+  "    1     9 dump"];
  }
 
 #latest:;
