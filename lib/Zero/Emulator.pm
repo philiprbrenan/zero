@@ -14,7 +14,7 @@ use strict;
 use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>79" unless caller;
+eval "use Test::More tests=>80" unless caller;
 
 makeDieConfess;
 
@@ -2244,6 +2244,7 @@ sub ok($;$);
 
 # Tests
 
+#latest:;
 if (1)                                                                          # Address dereferencing
  {my $e = execute->createInitialStackEntry->setMemoryType(1, 'aaa');
   my $s = $e->stackArea;
@@ -2258,14 +2259,21 @@ if (1)                                                                          
   is_deeply $e->left (RefLeft  [1, \\2,  'aaa']), {address=>1, area=>1, name=>"aaa"};
  }
 
-# Examples
-
 #latest:;
 if (1)                                                                          ##Out ##Start ##Execute
  {Start 1;
   Out "hello World";
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, ["hello World"];
+ }
+
+#latest:;
+if (1)                                                                          ##Var
+ {Start 1;
+  my $a = Var 1;
+  AssertEq $a, 1;
+  my $e = Execute(suppressOutput=>1);
+  is_deeply $e->out, [];
  }
 
 #latest:;
