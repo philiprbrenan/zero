@@ -48,6 +48,7 @@ expandWellKnownWordsInMarkDownFile                                              
 push my @files,
   grep {!/backups/}
   grep {!/_build/}
+  grep {!/Build.PL/}
   grep {!/blib/}
   searchDirectoryTreesForMatchingFiles($home, qw(.pm .pl .md));                 # Files
 
