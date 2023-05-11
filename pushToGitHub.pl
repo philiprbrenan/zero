@@ -137,7 +137,7 @@ sub introEmulator1{<<"END"}
 
 =head1 Name
 
-Zero::Emulator - Assemble and emulate a program written in the L<Zero|$repoUrl> assembly programming language.
+Zero::Emulator - Assemble and emulate a program written in the L<Zero|$repoUrl> assembler programming language.
 
 =for html
 <p><a href="$repoUrl"><img src="$repoUrl/workflows/Test/badge.svg"></a>
