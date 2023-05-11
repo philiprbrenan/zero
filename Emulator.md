@@ -360,14 +360,12 @@ Assert false.
 
       my $e = Execute(suppressOutput=>1, trace=>1);
       is_deeply $e->out, [
-      "   1     0     1    assertTrue                      
-  ",
+      "   1     0     1    assertTrue                      ",
     
       "AssertFalse 1 failed",  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       "    1     2 assertFalse",
-      "   2     1     1   assertFalse                      
-  "];
+      "   2     1     1   assertFalse                      "];
     
      }
     
@@ -500,14 +498,12 @@ Assert true.
 
       my $e = Execute(suppressOutput=>1, trace=>1);
       is_deeply $e->out, [
-      "   1     0     1   assertFalse                      
-  ",
+      "   1     0     1   assertFalse                      ",
     
       "AssertTrue 0 failed",  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       "    1     2 assertTrue",
-      "   2     1     1    assertTrue                      
-  "];
+      "   2     1     1    assertTrue                      "];
      }
     
 
