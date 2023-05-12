@@ -198,9 +198,9 @@ Every [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) nee
 
 ## Example sort [programs](https://en.wikipedia.org/wiki/Computer_program) 
 [The examples folder](https://github.com/philiprbrenan/zero/tree/main/examples)
-contains some sort [programs](https://en.wikipedia.org/wiki/Computer_program) written in [Zero assembler programming language](https://github.com/philiprbrenan/zero) . The total number of instructions
-executed for each sort [program](https://en.wikipedia.org/wiki/Computer_program) on each of two sample sets of data are shown
-below. Various prototype solutions were developed for each sort [program](https://en.wikipedia.org/wiki/Computer_program): the
+contains some **sort** [programs](https://en.wikipedia.org/wiki/Computer_program) written in [Zero assembler programming language](https://github.com/philiprbrenan/zero) . The total number of instructions
+executed for each **sort** [program](https://en.wikipedia.org/wiki/Computer_program) on each of two sample sets of data are shown
+below. Various prototype solutions were developed for each **sort** [program](https://en.wikipedia.org/wiki/Computer_program): the
 one with the lowest emulated instruction count was retained as the optimal
 solution.
 
