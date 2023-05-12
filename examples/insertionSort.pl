@@ -24,15 +24,14 @@ sub insertionSort($$)                                                           
       For                                                                       # Inner loop
        {my ($j) = @_;
         my  $b  = Mov [$array, \$j, $name];
+        my $J = Add $j, 1;
 
         IfLt $a, $b,
         Then                                                                    # Move up
-         {my $J = Add $j, 1;
-          Mov [$array, \$J, $name], $b;
+         {Mov [$array, \$J, $name], $b;
          },
         Else                                                                    # Insert
-         {my $J = Add $j, 1;
-          Mov [$array, \$J, $name], $a;
+         {Mov [$array, \$J, $name], $a;
           Jmp $End;
          };
        } $i, reverse=>1;
