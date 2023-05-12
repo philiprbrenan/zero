@@ -6,6 +6,7 @@
 use v5.30;
 use warnings FATAL => qw(all);
 use strict;
+use Data::Dump qw(dump);
 use Zero::Emulator qw(:all);
 use Test::More tests=>5;
 
@@ -15,22 +16,32 @@ sub insertionSort($$)                                                           
   my $N = ArraySize $array, $name;                                              # Size of array
 
   For                                                                           # Outer loop
-   {my ($i, $start, $check, $end) = @_;                                         # Loop labels
+   {my ($i) = @_;                                                               # Loop labels
+    my $a = Mov [$array, \$i, $name];
 
-    For                                                                         # Inner loop
-     {my ($j) = @_;
-      my $J = Add $j, 1;
-      my  $a  = Mov [$array, \$j, $name];
-      my  $b  = Mov [$array, \$J, $name];
+    Block                                                                         #
+     {my ($Start, $Good, $Bad, $End) = @_;
+      For                                                                         # Inner loop
+       {my ($j) = @_;
+        my  $b  = Mov [$array, \$j, $name];
 
-      IfGt $a, $b,
-      Then                                                                      # Swap elements to place smaller element lower in array
-       {Mov [$array, \$J, $name], $a;
-        Mov [$array, \$j, $name], $b;
-        Inc $c;
-       };
-     } $i, reverse=>1;
-   } $N;
+        IfLt $a, $b,
+        Then                                                                      # Swap elements to place smaller element lower in array
+         {my $J = Add $j, 1;
+          Mov [$array, \$J, $name], $b;
+         },
+        Else                                                                      # Next element is lower that the onebeing inserted  so we have found the right position
+         {my $J = Add $j, 1;
+          Mov [$array, \$J, $name], $a;
+          Jmp $End;
+         };
+       } $i, reverse=>1;
+       Jmp $Bad;
+     }                                                                          # NB: a comma here would be dangerous as the first block is a standalone sub
+    Bad
+     {Mov [$array, \0, $name], $a;
+     };
+   } [1, $N];
  }
 
 if (1)                                                                          # Small array
@@ -47,23 +58,24 @@ if (1)                                                                          
    } $a, "array";
 
   my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
+
   is_deeply $e->out, [1..8];                                                    # Check output
 
-  is_deeply $e->count,  382;                                                    # Instructions executed
+  is_deeply $e->count, 250;                                                     # Instructions executed
 
   is_deeply $e->counts, {                                                       # Counts of each instruction type executed
-  add       => 35,
+  add       => 19,
   array     => 1,
   arraySize => 2,
-  inc       => 62,
-  jFalse    => 5,
-  jGe       => 54,
-  jLe       => 35,
-  jmp       => 47,
-  mov       => 120,
+  dec       => 15,
+  inc       => 15,
+  jGe       => 36,
+  jLt       => 22,
+  jmp       => 52,
+  mov       => 58,
   out       => 8,
   push      => 8,
-  subtract  => 5};
+  subtract  => 14};
  }
 
 if (1)                                                                          # Reversed array 4 times larger
@@ -82,5 +94,5 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
 
   is_deeply $e->out, [1..32];                                                   # Check output
-  is_deeply $e->count, 8884;                                                    # Approximately 4*4== 16 times bigger
+  is_deeply $e->count, 4446;                                                    # Approximately 4*4== 16 times bigger
  }
