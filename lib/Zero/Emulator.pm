@@ -216,7 +216,6 @@ my sub RefRight($)                                                              
 
   if (ref($r) =~ m(array)i)
    {my ($area, $address, $name, $delta) = @$r;
-    $delta // 0;
      defined($area) and !defined($name) and confess "Name required for address specification: in [Area, address, name]";
     !defined($area) and  defined($name) and confess "Area required for address specification: in [Area, address, name]";
     isScalar($address) and defined($area) || defined($name) and confess "Constants cannot have an associated area";
@@ -225,7 +224,7 @@ my sub RefRight($)                                                              
       area=>      $area,
       address=>   $address,
       name=>      $name,
-      delta=>     $delta,
+      delta=>     $delta//0,
       variable=>  1,
      );
    }
@@ -248,7 +247,6 @@ my sub RefLeft($)                                                               
 
   if (ref($r) =~ m(array)i)
    {my ($area, $address, $name, $delta) = @$r;
-    $delta // 0;
      defined($area) and !defined($name) and confess "Name required for area: in {area, address, name]";
     !defined($area) and  defined($name) and confess "Area required for name: in {area, address, name]";
 
@@ -256,7 +254,7 @@ my sub RefLeft($)                                                               
       area=>      $area,
       address=>   $address,
       name=>      $name,
-      delta=>     $delta,
+      delta=>     $delta//0,
      );
    }
   else
@@ -686,31 +684,34 @@ sub left($$)                                                                    
      $a     = \$r if isScalar $a;                                               # Interpret constants as direct memory locations
   my $area  = $ref->area;
   my $delta = $ref->delta;
+
   my $x     = $extra // 0;                                                      # Default is to use the address as supplied without locating a nearby address
   my $S     = $exec->stackArea;                                                 # Current stack frame
 
-  my sub invalid()
-   {my ($p) = @_;                                                               # Parameters
+  my sub invalid($)
+   {my ($e) = @_;                                                               # Parameters
     my $i   = $exec->currentInstruction;
     my $l   = $i->line;
     my $f   = $i->file;
     $exec->stackTraceAndExit(
-     "Invalid left area: ".dump($area)
+     "Invalid left address, area: ".dump($area)
      ." address: ".dump($a)
-     .(defined($extra) ? " + extra: ".dump($extra) : ''))
+     ." e: ".dump($e)
+     .(defined($extra) ? " + extra: ".dump($extra) : ''), confess=>1)
    };
 
   my $M;                                                                        # Memory address
   if (isScalar $$a)
-   {$M = $$a+$x
+   {$M = $$a + $x + $delta;
    }
   elsif (isScalar $$$a)
-   {$exec->rwRead($S, $$$a);
-    $M = $exec->getMemory($S, $$$a, $ref->name)+$x
+   {$exec->rwRead($S, $$$a + $x + $delta);
+    $M = $exec->getMemory($S, $$$a, $ref->name) + $x + $delta;
    }
   else
-   {invalid
+   {invalid(1)
    }
+
 
   if ($M < 0)                                                                   # Disallow negative addresses because they mean something special to Perl
    {$exec->stackTraceAndExit("Negative address for area: "
@@ -727,12 +728,12 @@ sub left($$)                                                                    
     return  $exec->address($area, $M, $ref->name)                               # Specified constant area
    }
   elsif (isScalar($$area))
-   {$exec->rwRead (        $S, $$area);
+   {$exec->rwRead           ($S, $$area);
     my $A = $exec->getMemory($S, $$area, $ref->name);
     $exec->rwWrite(        $A, $M);
     return  $exec->address($A, $M, $ref->name)                                  # Indirect area
    }
-  invalid;
+  invalid(2);
  }
 
 sub leftSuppress($$)                                                            #P Indicate that a memory address has been read.
@@ -741,7 +742,7 @@ sub leftSuppress($$)                                                            
   ref($ref) =~ m((RefLeft|RefRight)\Z) or confess "RefLeft or RefRight required";
   my $A     = $ref->address;
   my $area  = $ref->area;
-  my $delta = $ref->delta // 0;
+  my $delta = $ref->delta;
   my $a = $A;
      $a = \$A if isScalar $a;                                                   # Interpret constants as direct memory locations
 
@@ -778,7 +779,7 @@ sub right($$)                                                                   
   my $a         = $ref->address;
   my $area      = $ref->area;
   my $stackArea = $exec->stackArea;
-  my $delta     = $ref->delta // 0;
+  my $delta     = $ref->delta;
   my $r; my $e = 0; my $tAddress = $a; my $tArea = $area; my $tDelta = $delta;
 
   my sub invalid()
@@ -809,7 +810,7 @@ sub right($$)                                                                   
    }
   elsif (isScalar($$$a))                                                        # Indirect
    {$exec->rwRead        ($stackArea, $$$a + $delta);
-    $m = $exec->getMemory($stackArea, $$$a + $delta);
+    $m = $exec->getMemory($stackArea, $$$a) + $delta;
    }
   else
    {$exec->stackTraceAndExit("Invalid right address: ".dump($a));
