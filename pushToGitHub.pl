@@ -82,13 +82,17 @@ my $t = <<END;
       run: |
         perl examples/testNWayTree.pl
 
-    - name: Zero selectionSort
-      run: |
-        perl examples/selectionSort.pl
-
     - name: Zero bubbleSort
       run: |
         perl examples/bubbleSort.pl
+
+    - name: Zero insertionSort
+      run: |
+        perl examples/insertionSort.pl
+
+    - name: Zero selectionSort
+      run: |
+        perl examples/selectionSort.pl
 END
 
 my $y = <<'END' =~ s(XXXX) ($t)gsr;
