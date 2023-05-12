@@ -1677,6 +1677,8 @@ sub Block(&%)                                                                   
     TracePoint level=>2;
     &$b;
    }
+  setLabel($Good) unless $g;                                                    # Default positions for Good and Bad if not specified
+  setLabel($Bad)  unless $b;
   setLabel($End);                                                               # End
  }
 
@@ -1753,7 +1755,7 @@ sub For(&$%)                                                                    
    }
   else
    {my $s = $range; my $e = 0;                                                  # Start, end
-    ($e, $s) = @$range if ref($e) =~ m(ARRAY);                                  # End, start as a reference
+    ($e, $s) = @$range if ref($s) =~ m(ARRAY);                                  # End, start as a reference
 
     my ($Start, $Check, $Next, $End) = (label, label, label, label);
 
