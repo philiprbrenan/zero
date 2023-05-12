@@ -68,12 +68,14 @@ The [emulator](https://en.wikipedia.org/wiki/Emulator) converts a Perl represent
 executable instructions and then executes these instructions.
 
 [Documentation](https://metacpan.org/dist/Zero-Emulator/view/Emulator.pod)
+[Code](https://github.com/philiprbrenan/zero/blob/main/lib/Zero/Emulator.pm)
 
 ## N-Way-Tree
 
 An implementation of N-Way-Trees in [Zero assembler programming language](https://github.com/philiprbrenan/zero) .
 
 [Documentation](https://metacpan.org/dist/Zero-Emulator/view/NWayTree.pod)
+[Code](https://github.com/philiprbrenan/zero/blob/main/lib/Zero/NWayTree.pm)
 
 Can you reduce the number of instructions required to perform ```107``` inserts
 into an N-Way-Tree? Please raise an issue if you can stating your terms for
