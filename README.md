@@ -205,6 +205,10 @@ one with the lowest emulated instruction count was retained as the optimal
 solution.
 
 ```               Short    Long```
+
 [bubble](https://github.com/philiprbrenan/zero/blob/main/examples/bubbleSort.pl)```           382    8884```
+
 [selection](https://github.com/philiprbrenan/zero/blob/main/examples/selectionSort.pl)```        328    4519```
-[insertion](https://github.com/philiprbrenan/zero/blob/main/examples/insertionSort.pl)```        251    4446```
+
+[insertion](https://github.com/philiprbrenan/zero/blob/main/examples/insertionSort.pl)```        251
+4446```
