@@ -24,14 +24,13 @@ sub insertionSort($$)                                                           
       For                                                                       # Inner loop
        {my ($j) = @_;
         my  $b  = Mov [$array, \$j, $name];
-        my  $J  = Add $j, 1;
 
         IfLt $a, $b,
         Then                                                                    # Move up
-         {Mov [$array, \$J, $name], $b;
+         {Mov [$array, \$j, $name, 1], $b;
          },
         Else                                                                    # Insert
-         {Mov [$array, \$J, $name], $a;
+         {Mov [$array, \$j, $name, 1], $a;
           Jmp $End;
          };
        } $i, reverse=>1;
@@ -60,10 +59,9 @@ if (1)                                                                          
 
   is_deeply $e->out, [1..8];                                                    # Check output
 
-  is_deeply $e->count, 250;                                                     # Instructions executed
+  is_deeply $e->count, 231;                                                     # Instructions executed
 
   is_deeply $e->counts, {                                                       # Counts of each instruction type executed
-  add       => 19,
   array     => 1,
   arraySize => 2,
   dec       => 15,
@@ -93,5 +91,5 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
 
   is_deeply $e->out, [1..32];                                                   # Check output
-  is_deeply $e->count, 4446;                                                    # Approximately 4*4== 16 times bigger
+  is_deeply $e->count, 3950;                                                    # Approximately 4*4== 16 times bigger
  }
