@@ -24,7 +24,7 @@ sub insertionSort($$)                                                           
       For                                                                       # Inner loop
        {my ($j) = @_;
         my  $b  = Mov [$array, \$j, $name];
-        my $J = Add $j, 1;
+        my  $J  = Add $j, 1;
 
         IfLt $a, $b,
         Then                                                                    # Move up
