@@ -1,13 +1,10 @@
-# Zero
-
+# [Zero assembler programming language](https://github.com/philiprbrenan/zero) 
 ![Test](https://github.com/philiprbrenan/zero/workflows/Test/badge.svg)
 
-A minimal [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) and [emulator](https://en.wikipedia.org/wiki/Emulator) for the Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) programming language.
-
-Includes an implementation of N-Way [trees](https://en.wikipedia.org/wiki/Tree_(data_structure)) using [code](https://en.wikipedia.org/wiki/Computer_program) written in the Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) programming language: assiduously optimized through exhaustive
-testing, ready for realization in [Silicon](https://en.wikipedia.org/wiki/Silicon) as an [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) rather than as software on a
-conventional [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) so that large, extremely fast, associative memories can be
-manufactured on an industrial scale.
+A minimal [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) and [emulator](https://en.wikipedia.org/wiki/Emulator) for the [Zero assembler programming language](https://github.com/philiprbrenan/zero). 
+Includes an implementation of N-Way [trees](https://en.wikipedia.org/wiki/Tree_(data_structure)) using [code](https://en.wikipedia.org/wiki/Computer_program) written in the [Zero assembler programming language](https://github.com/philiprbrenan/zero): assiduously optimized through exhaustive testing, ready for realization in [Silicon](https://en.wikipedia.org/wiki/Silicon) as an [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) rather than as software on a conventional [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) so that large,
+extremely fast, associative memories can be manufactured on an industrial
+scale.
 
 Open the __Actions__ [tab](https://en.wikipedia.org/wiki/Tab_key) to see the [code](https://en.wikipedia.org/wiki/Computer_program) in action on [Ubuntu](https://ubuntu.com/download/desktop) and [Windows Services for Linux](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux) for [Ubuntu](https://ubuntu.com/download/desktop) on windows.
 
@@ -72,7 +69,7 @@ executable instructions and then executes these instructions.
 
 ## N-Way-Tree
 
-An implementation of N-Way-Trees in Zero assembler.
+An implementation of N-Way-Trees in [Zero assembler programming language](https://github.com/philiprbrenan/zero) .
 
 [Documentation](https://metacpan.org/dist/Zero-Emulator/view/NWayTree.pod)
 
@@ -102,12 +99,10 @@ your enhancememt.
   subtract          => 501,
 ```
 
-# The Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) programming language
-
+# The [Zero assembler programming language](https://github.com/philiprbrenan/zero) 
 ## Hello World
 
-"Hello World" in the Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) programming language:
-
+"Hello World" in the [Zero assembler programming language](https://github.com/philiprbrenan/zero) 
 ```
   Start 1;
 
@@ -194,7 +189,11 @@ to location 3 in the current stack frame.
 
 ## Macro Preprocessor
 
-Every [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) needs a macro preocessor to generate [code](https://en.wikipedia.org/wiki/Computer_program) from macro specifications as writing each instruction by hand is hard work. Using a [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) saves programmer time by allowing common instruction sequences to be captured as macros which can then be called upon as needed to generate the [code](https://en.wikipedia.org/wiki/Computer_program) for an application. The Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) programming languages uses [Perl](http://www.perl.org/) as its macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor). Using Perl as the macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) for [Zero assembler programming language](https://github.com/philiprbrenan/zero) enables macro libraries to be published and distributed on [CPAN](https://metacpan.org/author/PRBRENAN) as [Perl](http://www.perl.org/) modules.
+Every [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) needs a macro preocessor to generate [code](https://en.wikipedia.org/wiki/Computer_program) from macro
+specifications as writing each instruction by hand is hard work. Using a [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) saves programmer time by allowing common instruction sequences to
+be captured as macros which can then be called upon as needed to generate the [code](https://en.wikipedia.org/wiki/Computer_program) for an application. The [Zero assembler programming language](https://github.com/philiprbrenan/zero) uses [Perl](http://www.perl.org/) as its macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor). Using
+Perl as the macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) for [Zero assembler programming language](https://github.com/philiprbrenan/zero) enables macro libraries to be
+published and distributed on [CPAN](https://metacpan.org/author/PRBRENAN) as [Perl](http://www.perl.org/) modules.
 
 ## Example [sort](https://en.wikipedia.org/wiki/Sorting) [programs](https://en.wikipedia.org/wiki/Computer_program) 
 [The examples folder](https://github.com/philiprbrenan/zero/tree/main/examples)
