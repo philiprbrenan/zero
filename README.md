@@ -64,7 +64,7 @@ lucrative project, please raise an issue saying so!
 
 ## Emulator:
 
-The [emulator](https://en.wikipedia.org/wiki/Emulator) converts a Perl representation of the [assembly](https://en.wikipedia.org/wiki/Assembly_language) source [code](https://en.wikipedia.org/wiki/Computer_program) to
+The [emulator](https://en.wikipedia.org/wiki/Emulator) converts a [Perl](http://www.perl.org/) representation of the [assembly](https://en.wikipedia.org/wiki/Assembly_language) source [code](https://en.wikipedia.org/wiki/Computer_program) to
 executable instructions and then executes these instructions.
 
 [Documentation](https://metacpan.org/dist/Zero-Emulator/view/Emulator.pod)
@@ -121,7 +121,9 @@ your enhancememt.
 
 ```Out``` writes a message to the ```out``` channel.
 
-```Execute``` causes the [program](https://en.wikipedia.org/wiki/Computer_program) to be assembled and then executed.  The execution results are stored in the [Perl](http://www.perl.org/) data structure returned by this instruction.
+```Execute``` causes the [program](https://en.wikipedia.org/wiki/Computer_program) to be assembled and then executed.  The
+execution results are stored in the [Perl](http://www.perl.org/) data structure returned by this
+instruction.
 
 ## Addresses
 
@@ -195,8 +197,7 @@ to location 3 in the current stack frame.
 
 Every [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) needs a macro preocessor to generate [code](https://en.wikipedia.org/wiki/Computer_program) from macro
 specifications as writing each instruction by hand is hard work. Using a [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) saves programmer time by allowing common instruction sequences to
-be captured as macros which can then be called upon as needed to generate the [code](https://en.wikipedia.org/wiki/Computer_program) for an application. The [Zero assembler programming language](https://github.com/philiprbrenan/zero) uses [Perl](http://www.perl.org/) as its macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor). Using
-Perl as the macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) for [Zero assembler programming language](https://github.com/philiprbrenan/zero) enables macro libraries to be
+be captured as macros which can then be called upon as needed to generate the [code](https://en.wikipedia.org/wiki/Computer_program) for an application. The [Zero assembler programming language](https://github.com/philiprbrenan/zero) uses [Perl](http://www.perl.org/) as its macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor). Using [Perl](http://www.perl.org/) as the macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) for [Zero assembler programming language](https://github.com/philiprbrenan/zero) enables macro libraries to be
 published and distributed on [CPAN](https://metacpan.org/author/PRBRENAN) as [Perl](http://www.perl.org/) modules.
 
 ## Example [sort](https://en.wikipedia.org/wiki/Sorting) [programs](https://en.wikipedia.org/wiki/Computer_program) 
