@@ -16,21 +16,21 @@ sub insertionSort($$)                                                           
   my $N = ArraySize $array, $name;                                              # Size of array
 
   For                                                                           # Outer loop
-   {my ($i) = @_;                                                               # Loop labels
+   {my ($i) = @_;
     my $a = Mov [$array, \$i, $name];
 
-    Block                                                                         #
+    Block
      {my ($Start, $Good, $Bad, $End) = @_;
-      For                                                                         # Inner loop
+      For                                                                       # Inner loop
        {my ($j) = @_;
         my  $b  = Mov [$array, \$j, $name];
 
         IfLt $a, $b,
-        Then                                                                      # Swap elements to place smaller element lower in array
+        Then                                                                    # Move up
          {my $J = Add $j, 1;
           Mov [$array, \$J, $name], $b;
          },
-        Else                                                                      # Next element is lower that the onebeing inserted  so we have found the right position
+        Else                                                                    # Insert
          {my $J = Add $j, 1;
           Mov [$array, \$J, $name], $a;
           Jmp $End;
@@ -38,7 +38,7 @@ sub insertionSort($$)                                                           
        } $i, reverse=>1;
        Jmp $Bad;
      }                                                                          # NB: a comma here would be dangerous as the first block is a standalone sub
-    Bad
+    Bad                                                                         # Insert at start
      {Mov [$array, \0, $name], $a;
      };
    } [1, $N];
