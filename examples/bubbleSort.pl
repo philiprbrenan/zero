@@ -18,17 +18,15 @@ sub bubbleSort($$)                                                              
    {my ($i, $start, $check, $end) = @_;                                         # Loop labels
     my  $L  = Subtract $N, 1;                                                   # An array of one element is already sorted
     my  $c  = Mov 0;                                                            # Count number of swaps
-
     For                                                                         # Inner loop
      {my ($j) = @_;
-      my $J = Add $j, 1;
-      my  $a  = Mov [$array, \$j, $name];
-      my  $b  = Mov [$array, \$J, $name];
+      my $a = Mov [$array, \$j, $name];
+      my $b = Mov [$array, \$j, $name, 1];
 
       IfGt $a, $b,
       Then                                                                      # Swap elements to place smaller element lower in array
-       {Mov [$array, \$J, $name], $a;
-        Mov [$array, \$j, $name], $b;
+       {Mov [$array, \$j, $name, 1], $a;
+        Mov [$array, \$j, $name],    $b;
         Inc $c;
        };
      } $L;
@@ -52,10 +50,9 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
   is_deeply $e->out, [1..8];                                                    # Check output
 
-  is_deeply $e->count,  382;                                                    # Instructions executed
+  is_deeply $e->count,  347;                                                    # Instructions executed
 
   is_deeply $e->counts, {                                                       # Counts of each instruction type executed
-  add       => 35,
   array     => 1,
   arraySize => 2,
   inc       => 62,
@@ -85,5 +82,5 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
 
   is_deeply $e->out, [1..32];                                                   # Check output
-  is_deeply $e->count, 8884;                                                    # Approximately 4*4== 16 times bigger
+  is_deeply $e->count, 7892;                                                    # Approximately 4*4== 16 times bigger
  }
