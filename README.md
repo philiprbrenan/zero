@@ -206,7 +206,7 @@ solution.
 
 ```
                Short    Long
-bubble           382    8884
-selection        328    4519
-insertion        251    4446
+[bubble](https://github.com/philiprbrenan/zero/blob/main/examples/bubbleSort.pl)           382    8884
+[selection](https://github.com/philiprbrenan/zero/blob/main/examples/selectionSort.pl)        328    4519
+[insertion](https://github.com/philiprbrenan/zero/blob/main/examples/insertionSort.pl)        251    4446
 ```
