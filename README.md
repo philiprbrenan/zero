@@ -198,3 +198,17 @@ Every [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) nee
 specifications as writing each instruction by hand is hard work. Using a [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) saves programmer time by allowing common instruction sequences to
 be captured as macros which can then be called upon as needed to generate the [code](https://en.wikipedia.org/wiki/Computer_program) for an application. The Zero [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) programming languages uses [Perl](http://www.perl.org/) as
 its macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor). 
+## Example sort [programs](https://en.wikipedia.org/wiki/Computer_program) 
+[The examples folder](https://github.com/philiprbrenan/zero/tree/main/examples)
+contains some sort [programs](https://en.wikipedia.org/wiki/Computer_program) written in [Zero assembler programming language](https://github.com/philiprbrenan/zero) . The total number of instructions
+executed for each sort [program](https://en.wikipedia.org/wiki/Computer_program) on each of two sample sets of data are shown
+below. Various prototype solutions were developed for each sort [program](https://en.wikipedia.org/wiki/Computer_program): the
+one with the lowest emulated instruction count was retained as the optimal
+solution.
+
+```
+               Short    Long
+bubble           382    8884
+selection        328    4519
+insertion        251    4446
+```
