@@ -2357,13 +2357,18 @@ Resize the target area to the source size.
       Mov [$a, 0, 'aaa'], 1;
       Mov [$a, 1, 'aaa'], 2;
       Mov [$a, 2, 'aaa'], 3;
+      my $n = Mov [$a, \1, 'aaa', -1];
+      my $N = Mov [$a, \1, 'aaa', +1];
     
       Resize $a, 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
+      Out $N; Out $n;
+    
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->memory, {1=>  [1, 2]};
+      is_deeply $e->out,    [3, 1];
      }
     
 
