@@ -1,4 +1,4 @@
-#!/usr/bin/perl -I../lib/ -Ilib
+#!/usr/bin/perl -I../lib/ -Ilib -I/home/phil/perl/cpan/ZeroEmulator/lib/
 #-------------------------------------------------------------------------------
 # Zero assembler language implemention of a generic N-Way tree.
 # Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
@@ -13,7 +13,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
-eval "use Test::More tests=>31" unless caller;
+eval "use Test::More tests=>26" unless caller;
 
 makeDieConfess;
 
@@ -245,6 +245,7 @@ my sub Node_allocDown($%)                                                       
   my $d = Array "Down";                                                         # Allocate down
   Mov [$node, $Node->address(q(down)), 'Node'], $d;                             # Down area
  }
+
 my sub Node_openLeaf($$$$)                                                      # Open a gap in a leaf node
  {my ($node, $offset, $K, $D) = @_;                                             # Node
 
@@ -848,7 +849,7 @@ my sub printNode($$$$$)                                                         
 
 my sub printTree($$)                                                            # Print a tree
  {my ($m, $keyNotData) = @_;                                                    # Memory, key or data
-  my $t = $$m{1};
+  my $t = $$m{4};
   my $r = $$m{$$t[$Tree->offset(q(root))]};
   my $o = printNode($m, $r, 0, [], $keyNotData);
 
@@ -928,8 +929,8 @@ if (1)                                                                          
  {Start 1;
   Out New(3);
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [1];
-  is_deeply $e->memory, { 1 => bless([0, 0, 3, 0], "Tree") };
+  is_deeply $e->out, [4];
+  is_deeply $e->memory, { 4 => [0, 0, 3, 0]};
  }
 
 #latest:;
@@ -951,7 +952,7 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->out,    [3, 5];
-  is_deeply $e->memory, { 1 => bless([3, 5, 3, 1], "Tree") };
+  is_deeply $e->memory, {4 => [3, 5, 3, 1]};
  }
 
 #latest:;
@@ -960,11 +961,12 @@ if (1)                                                                          
   my $t = New(7);                                                               # Create tree
   my $n = Node_new($t);                                                         # Create node
   my $e = Execute(suppressOutput=>1);
+
   is_deeply $e->memory, {
-  1 => bless([0, 1, 7, 0], "Tree"),
-  2 => bless([0, 1, 0, 1, 3, 4, 0], "Node"),
-  3 => bless([], "Keys"),
-  4 => bless([], "Data")};
+  4 => [0, 1, 7, 0],
+  5 => [0, 1, 0, 4, 6, 7, 0],
+  6 => [],
+  7 => []};
  }
 
 #latest:;
@@ -989,11 +991,11 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->memory, {
-  1 => bless([0, 1, 7, 0], "Tree"),
-  2 => bless([7, 1, 0, 1, 3, 4, 5], "Node"),
-  3 => bless([  10,   20,   30,   40,   50,   60,   70],       "Keys"),
-  4 => bless([ 100,  200,  300,  400,  500,  600,  700],       "Data"),
-  5 => bless([1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000], "Down")};
+  4 => bless([0, 1, 7, 0], "Tree"),
+  5 => bless([7, 1, 0, 4, 6, 7, 8], "Node"),
+  6 => bless([10, 20, 30, 40, 50, 60, 70], "Keys"),
+  7 => bless([100, 200, 300, 400, 500, 600, 700], "Data"),
+  8 => bless([1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000], "Down")};
  }
 
 #latest:;
@@ -1019,11 +1021,11 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->memory, {
-  1 => bless([0, 1, 7, 0], "Tree"),
-  2 => bless([8, 1, 0, 1, 3, 4, 5], "Node"),
-  3 => bless([  10, 20, 26, 30, 40, 50, 60, 70],   "Keys"),
-  4 => bless([  10, 20, 26, 30, 40, 50, 60, 70],   "Data"),
-  5 => bless([ 5, 15, 25, 26, 35, 45, 55, 65, 75], "Down")};
+  4 => bless([0, 1, 7, 0], "Tree"),
+  5 => bless([8, 1, 0, 4, 6, 7, 8], "Node"),
+  6 => bless([10, 20, 26, 30, 40, 50, 60, 70], "Keys"),
+  7 => bless([10, 20, 26, 30, 40, 50, 60, 70], "Data"),
+  8 => bless([5, 15, 25, 26, 35, 45, 55, 65, 75], "Down")};
  }
 
 #latest:;
@@ -1052,216 +1054,15 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->memory, {
-  1 => bless([0, 2, 7, 0], "Tree"),
-  2 => bless([7, 1, 0, 1, 3, 4, 5], "Node"),
-  3 => bless([1000, 2000, 3000, 4000, 5000, 6000, 7000], "Keys"),
-  4 => bless([1000, 2000, 3000, 4000, 5000, 6000, 7000], "Data"),
-  5 => bless([6, 1050, 2050, 3050, 4050, 5050, 6050, 7500], "Down"),
-  6 => bless([7, 2, 2, 1, 7, 8, 9], "Node"),
-  7 => bless([2010, 2020, 2030, 2040, 2050, 2060, 2070], "Keys"),
-  8 => bless([2010, 2020, 2030, 2040, 2050, 2060, 2070], "Data"),
-  9 => bless([2005, 2015, 2025, 2035, 2045, 2055, 2065, 2075], "Down")};
- }
-
-
-#latest:;
-if (1)                                                                          ##Node_SplitIfFull split at start non root
- {Start 1;
-  my $N = 7;
-  my $t = New($N);                                                              # Create tree
-  my $n = Node_new($t);                                                         # Create node
-          Node_allocDown $n;
-  my $o = Node_new($t);                                                         # Create node
-          Node_allocDown $o;
-
-  Node_setLength $_, $N for $n, $o;
-
-  for my $i(0..$N-1)
-   {my $I = $i + 1;
-    Node_setKeys($n, $i, 1000*$I);     Node_setKeys($o, $i, 2000+10*$I);
-    Node_setData($n, $i, 1000*$I);     Node_setData($o, $i, 2000+10*$I);
-    Node_setDown($n, $i, 1000*$i+50);  Node_setDown($o, $i, 2000+10*$i+5);
-   }
-
-
-  Node_setUp  ($o, $n);
-  Node_setDown($n, $N, 7500); Node_setDown($n, 0, 6);
-  Node_setDown($o, $N, 2075);
-
-  Node_SplitIfFull($o, test=>1);
-
-  my $e = Execute(suppressOutput=>1);
-
-  is_deeply $e->memory, {
-  1  => bless([0, 3, 7, 0], "Tree"),
-  2  => bless([8, 1, 0, 1, 3, 4, 5], "Node"),
-  3  => bless([2040, 1000, 2000, 3000, 4000, 5000, 6000, 7000], "Keys"),
-  4  => bless([2040, 1000, 2000, 3000, 4000, 5000, 6000, 7000], "Data"),
-  5  => bless([6, 10, 1050, 2050, 3050, 4050, 5050, 6050, 7500], "Down"),
-  6  => bless([3, 2, 2, 1, 7, 8, 9], "Node"),
-  7  => bless([2010, 2020, 2030], "Keys"),
-  8  => bless([2010, 2020, 2030], "Data"),
-  9  => bless([2005, 2015, 2025, 2035], "Down"),
-  10 => bless([3, 3, 2, 1, 11, 12, 13], "Node"),
-  11 => bless([2050, 2060, 2070], "Keys"),
-  12 => bless([2050, 2060, 2070], "Data"),
-  13 => bless([2045, 2055, 2065, 2075], "Down")};
- }
-
-#latest:;
-if (1)                                                                          # Set up for Node_SplitIfFull in middle non root
- {Start 1;
-  my $N = 7;
-  my $t = New($N);                                                              # Create tree
-  my $n = Node_new($t);                                                         # Create node
-          Node_allocDown $n;
-  my $o = Node_new($t);                                                         # Create node
-          Node_allocDown $o;
-
-  Node_setLength $_, $N for $n, $o;
-
-  for my $i(0..$N-1)
-   {my $I = $i + 1;
-    Node_setKeys($n, $i, 1000*$I);     Node_setKeys($o, $i, 2000+10*$I);
-    Node_setData($n, $i, 1000*$I);     Node_setData($o, $i, 2000+10*$I);
-    Node_setDown($n, $i, 1000*$i+50);  Node_setDown($o, $i, 2000+10*$i+5);
-   }
-
-  Node_setUp  ($o, $n);
-  Node_setDown($n, $N, 7500); Node_setDown($n, 2, 6);
-  Node_setDown($o, $N, 2075);
-
-  my $e = Execute(suppressOutput=>1);
-
-  is_deeply $e->memory, {
-  1 => bless([0, 2, 7, 0], "Tree"),
-  2 => bless([7, 1, 0, 1, 3, 4, 5], "Node"),
-  3 => bless([1000, 2000, 3000, 4000, 5000, 6000, 7000], "Keys"),
-  4 => bless([1000, 2000, 3000, 4000, 5000, 6000, 7000], "Data"),
-  5 => bless([50, 1050, 6, 3050, 4050, 5050, 6050, 7500], "Down"),
-  6 => bless([7, 2, 2, 1, 7, 8, 9], "Node"),
-  7 => bless([2010, 2020, 2030, 2040, 2050, 2060, 2070], "Keys"),
-  8 => bless([2010, 2020, 2030, 2040, 2050, 2060, 2070], "Data"),
-  9 => bless([2005, 2015, 2025, 2035, 2045, 2055, 2065, 2075], "Down")};
- }
-
-#latest:;
-if (1)                                                                          ##Node_SplitIfFull split in middle non root
- {Start 1;
-  my $N = 7;
-  my $t = New($N);                                                              # Create tree
-  my $n = Node_new($t);                                                         # Create node
-          Node_allocDown $n;
-  my $o = Node_new($t);                                                         # Create node
-          Node_allocDown $o;
-
-  Node_setLength $_, $N for $n, $o;
-
-  for my $i(0..$N-1)
-   {my $I = $i + 1;
-    Node_setKeys($n, $i, 1000*$I);     Node_setKeys($o, $i, 2000+10*$I);
-    Node_setData($n, $i, 1000*$I);     Node_setData($o, $i, 2000+10*$I);
-    Node_setDown($n, $i, 1000*$i+50);  Node_setDown($o, $i, 2000+10*$i+5);
-   }
-
-  Node_setUp  ($o, $n);
-  Node_setDown($n, $N, 7500); Node_setDown($n, 2, 6);
-  Node_setDown($o, $N, 2075);
-
-  Node_SplitIfFull($o, test=>1);
-
-  my $e = Execute(suppressOutput=>0);
-  is_deeply $e->memory, {
-  1  => bless([0, 3, 7, 0], "Tree"),
-  2  => bless([8, 1, 0, 1, 3, 4, 5], "Node"),
-  3  => bless([1000, 2000, 2040, 3000, 4000, 5000, 6000, 7000], "Keys"),
-  4  => bless([1000, 2000, 2040, 3000, 4000, 5000, 6000, 7000], "Data"),
-  5  => bless([50, 1050, 6, 10, 3050, 4050, 5050, 6050, 7500], "Down"),
-  6  => bless([3, 2, 2, 1, 7, 8, 9], "Node"),
-  7  => bless([2010, 2020, 2030], "Keys"),
-  8  => bless([2010, 2020, 2030], "Data"),
-  9  => bless([2005, 2015, 2025, 2035], "Down"),
-  10 => bless([3, 3, 2, 1, 11, 12, 13], "Node"),
-  11 => bless([2050, 2060, 2070], "Keys"),
-  12 => bless([2050, 2060, 2070], "Data"),
-  13 => bless([2045, 2055, 2065, 2075], "Down")};
- }
-
-#latest:;
-if (1)                                                                          # Set up for Node_SplitIfFull at end non root
- {Start 1;
-  my $N = 7;
-  my $t = New($N);                                                              # Create tree
-  my $n = Node_new($t);                                                         # Create node
-          Node_allocDown $n;
-  my $o = Node_new($t);                                                         # Create node
-          Node_allocDown $o;
-
-  Node_setLength $_, $N for $n, $o;
-
-  for my $i(0..$N-1)
-   {my $I = $i + 1;
-    Node_setKeys($n, $i, 1000*$I);     Node_setKeys($o, $i, 2000+10*$I);
-    Node_setData($n, $i, 1000*$I);     Node_setData($o, $i, 2000+10*$I);
-    Node_setDown($n, $i, 1000*$i+50);  Node_setDown($o, $i, 2000+10*$i+5);
-   }
-
-  Node_setUp  ($o, $n);
-  Node_setDown($n, $N, 7500); Node_setDown($n, 7, 6);
-  Node_setDown($o, $N, 2075);
-
-  my $e = Execute(suppressOutput=>1);
-
-  is_deeply $e->memory, {
-  1 => bless([0, 2, 7, 0], "Tree"),
-  2 => bless([7, 1, 0, 1, 3, 4, 5], "Node"),
-  3 => bless([1000, 2000, 3000, 4000, 5000, 6000, 7000], "Keys"),
-  4 => bless([1000, 2000, 3000, 4000, 5000, 6000, 7000], "Data"),
-  5 => bless([50, 1050, 2050, 3050, 4050, 5050, 6050, 6], "Down"),
-  6 => bless([7, 2, 2, 1, 7, 8, 9], "Node"),
-  7 => bless([2010, 2020, 2030, 2040, 2050, 2060, 2070], "Keys"),
-  8 => bless([2010, 2020, 2030, 2040, 2050, 2060, 2070], "Data"),
-  9 => bless([2005, 2015, 2025, 2035, 2045, 2055, 2065, 2075], "Down")};
- }
-
-#latest:;
-if (1)                                                                          ##Node_SplitIfFull at end non root
- {Start 1;
-  my $N = 7;
-  my $t = New($N);                                                              # Create tree
-  my $n = Node_new($t); Node_allocDown $n;                                      # Create node
-  my $o = Node_new($t); Node_allocDown $o;                                      # Create node
-
-  Node_setLength $_, $N for $n, $o;
-
-  for my $i(0..$N-1)
-   {my $I = $i + 1;
-    Node_setKeys($n, $i, 1000*$I);     Node_setKeys($o, $i, 2000+10*$I);
-    Node_setData($n, $i, 1000*$I);     Node_setData($o, $i, 2000+10*$I);
-    Node_setDown($n, $i, 1000*$i+50);  Node_setDown($o, $i, 2000+10*$i+5);
-   }
-
-  Node_setUp  ($o, $n);
-  Node_setDown($n, $N, 7500); Node_setDown($n, 7, 6);
-  Node_setDown($o, $N, 2075);
-
-  Node_SplitIfFull($o, test=>1);
-  my $e = Execute(suppressOutput=>1);
-
-  is_deeply $e->memory, {
-  1  => bless([0, 3, 7, 0], "Tree"),
-  2  => bless([8, 1, 0, 1, 3, 4, 5], "Node"),
-  3  => bless([1000, 2000, 3000, 4000, 5000, 6000, 7000, 2040], "Keys"),
-  4  => bless([1000, 2000, 3000, 4000, 5000, 6000, 7000, 2040], "Data"),
-  5  => bless([50, 1050, 2050, 3050, 4050, 5050, 6050, 6, 10], "Down"),
-  6  => bless([3, 2, 2, 1, 7, 8, 9], "Node"),
-  7  => bless([2010, 2020, 2030], "Keys"),
-  8  => bless([2010, 2020, 2030], "Data"),
-  9  => bless([2005, 2015, 2025, 2035], "Down"),
-  10 => bless([3, 3, 2, 1, 11, 12, 13], "Node"),
-  11 => bless([2050, 2060, 2070], "Keys"),
-  12 => bless([2050, 2060, 2070], "Data"),
-  13 => bless([2045, 2055, 2065, 2075], "Down")};
+  4  => bless([0, 2, 7, 0], "Tree"),
+  5  => bless([7, 1, 0, 4, 6, 7, 8], "Node"),
+  6  => bless([1000, 2000, 3000, 4000, 5000, 6000, 7000], "Keys"),
+  7  => bless([1000, 2000, 3000, 4000, 5000, 6000, 7000], "Data"),
+  8  => bless([6, 1050, 2050, 3050, 4050, 5050, 6050, 7500], "Down"),
+  9  => bless([7, 2, 5, 4, 10, 11, 12], "Node"),
+  10 => bless([2010, 2020, 2030, 2040, 2050, 2060, 2070], "Keys"),
+  11 => bless([2010, 2020, 2030, 2040, 2050, 2060, 2070], "Data"),
+  12 => bless([2005, 2015, 2025, 2035, 2045, 2055, 2065, 2075], "Down")};
  }
 
 #latest:;
@@ -1288,15 +1089,15 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->memory, {
-  1 => bless([0, 2, 7, 0], "Tree"),
-  2 => bless([0, 1, 0, 1, 3, 4, 5], "Node"),
-  3 => bless([11 .. 17], "Keys"),
-  4 => bless([21 .. 27], "Data"),
-  5 => bless([31 .. 37, 97], "Down"),
-  6 => bless([0, 2, 0, 1, 7, 8, 9], "Node"),
-  7 => bless([14, 15, 43 .. 47], "Keys"),
-  8 => bless([24, 25, 53 .. 57], "Data"),
-  9 => bless([34, 35, 36, 64..67, 99], "Down")}
+  4  => bless([0, 2, 7, 0], "Tree"),
+  5  => bless([0, 1, 0, 4, 6, 7, 8], "Node"),
+  6  => bless([11 .. 17], "Keys"),
+  7  => bless([21 .. 27], "Data"),
+  8  => bless([31 .. 37, 97], "Down"),
+  9  => bless([0, 2, 0, 4, 10, 11, 12], "Node"),
+  10 => bless([14, 15, 43 .. 47], "Keys"),
+  11 => bless([24, 25, 53 .. 57], "Data"),
+  12 => bless([34, 35, 36, 64 .. 67, 99], "Down")};
  }
 
 #latest:;
@@ -1318,10 +1119,10 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->memory, {
-  1 => bless([1, 1, 3, 3], "Tree"),
-  3 => bless([1, 1, 0, 1, 4, 5, 0], "Node"),
-  4 => bless([1], "Keys"),
-  5 => bless([11], "Data")};
+  4 => bless([1, 1, 3, 6], "Tree"),
+  6 => bless([1, 1, 0, 4, 7, 8, 0], "Node"),
+  7 => bless([1], "Keys"),
+  8 => bless([11], "Data")};
  }
 
 #latest:;
@@ -1333,10 +1134,10 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->memory, {
-  1 => bless([2, 1, 3, 3], "Tree"),
-  3 => bless([2, 1, 0, 1, 4, 5, 0], "Node"),
-  4 => bless([1, 2], "Keys"),
-  5 => bless([11, 22], "Data")};
+  4 => bless([2, 1, 3, 6], "Tree"),
+  6 => bless([2, 1, 0, 4, 7, 8, 0], "Node"),
+  7 => bless([1, 2], "Keys"),
+  8 => bless([11, 22], "Data")};
  }
 
 #latest:;
@@ -1347,10 +1148,10 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->memory, {
-  1 => bless([3, 1, 3, 3], "Tree"),
-  3 => bless([3, 1, 0, 1, 4, 5, 0], "Node"),
-  4 => bless([1, 2, 3], "Keys"),
-  5 => bless([11, 22, 33], "Data")};
+  4 => bless([3, 1, 3, 6], "Tree"),
+  6 => bless([3, 1, 0, 4, 7, 8, 0], "Node"),
+  7 => bless([1, 2, 3], "Keys"),
+  8 => bless([11, 22, 33], "Data")};
  }
 
 #latest:;
@@ -1361,17 +1162,17 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->memory, {
-  1  => bless([4, 3, 3, 3], "Tree"),
-  3  => bless([1, 1, 0, 1, 4, 5, 12], "Node"),
-  4  => bless([2], "Keys"),
-  5  => bless([22], "Data"),
-  6  => bless([1, 2, 3, 1, 7, 8, 0], "Node"),
-  7  => bless([1], "Keys"),
-  8  => bless([11], "Data"),
-  9  => bless([2, 3, 3, 1, 10, 11, 0], "Node"),
-  10 => bless([3, 4], "Keys"),
-  11 => bless([33, 44], "Data"),
-  12 => bless([6, 9], "Down")};
+  4  => bless([4, 3, 3, 6], "Tree"),
+  6  => bless([1, 1, 0, 4, 7, 8, 15], "Node"),
+  7  => bless([2], "Keys"),
+  8  => bless([22], "Data"),
+  9  => bless([1, 2, 6, 4, 10, 11, 0], "Node"),
+  10 => bless([1], "Keys"),
+  11 => bless([11], "Data"),
+  12 => bless([2, 3, 6, 4, 13, 14, 0], "Node"),
+  13 => bless([3, 4], "Keys"),
+  14 => bless([33, 44], "Data"),
+  15 => bless([9, 12], "Down")};
  }
 
 #latest:;
@@ -1383,20 +1184,20 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->memory, {
-  1  => bless([5, 4, 3, 3], "Tree"),
-  3  => bless([2, 1, 0, 1, 4, 5, 12], "Node"),
-  4  => bless([2, 4], "Keys"),
-  5  => bless([22, 44], "Data"),
-  6  => bless([1, 2, 3, 1, 7, 8, 0], "Node"),
-  7  => bless([1], "Keys"),
-  8  => bless([11], "Data"),
-  9  => bless([1, 3, 3, 1, 10, 11, 0], "Node"),
-  10 => bless([3], "Keys"),
-  11 => bless([33], "Data"),
-  12 => bless([6, 9, 13], "Down"),
-  13 => bless([1, 4, 3, 1, 14, 15, 0], "Node"),
-  14 => bless([5], "Keys"),
-  15 => bless([55], "Data")}
+  4  => bless([5, 4, 3, 6], "Tree"),
+  6  => bless([2, 1, 0, 4, 7, 8, 15], "Node"),
+  7  => bless([2, 4], "Keys"),
+  8  => bless([22, 44], "Data"),
+  9  => bless([1, 2, 6, 4, 10, 11, 0], "Node"),
+  10 => bless([1], "Keys"),
+  11 => bless([11], "Data"),
+  12 => bless([1, 3, 6, 4, 13, 14, 0], "Node"),
+  13 => bless([3], "Keys"),
+  14 => bless([33], "Data"),
+  15 => bless([9, 12, 16], "Down"),
+  16 => bless([1, 4, 6, 4, 17, 18, 0], "Node"),
+  17 => bless([5], "Keys"),
+  18 => bless([55], "Data")};
  }
 
 #latest:;
@@ -1407,20 +1208,20 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->memory, {
-  1  => bless([6, 4, 3, 3], "Tree"),
-  3  => bless([2, 1, 0, 1, 4, 5, 12], "Node"),
-  4  => bless([2, 4], "Keys"),
-  5  => bless([22, 44], "Data"),
-  6  => bless([1, 2, 3, 1, 7, 8, 0], "Node"),
-  7  => bless([1], "Keys"),
-  8  => bless([11], "Data"),
-  9  => bless([1, 3, 3, 1, 10, 11, 0], "Node"),
-  10 => bless([3], "Keys"),
-  11 => bless([33], "Data"),
-  12 => bless([6, 9, 13], "Down"),
-  13 => bless([2, 4, 3, 1, 14, 15, 0], "Node"),
-  14 => bless([5, 6], "Keys"),
-  15 => bless([55, 66], "Data")};
+  4  => bless([6, 4, 3, 6], "Tree"),
+  6  => bless([2, 1, 0, 4, 7, 8, 15], "Node"),
+  7  => bless([2, 4], "Keys"),
+  8  => bless([22, 44], "Data"),
+  9  => bless([1, 2, 6, 4, 10, 11, 0], "Node"),
+  10 => bless([1], "Keys"),
+  11 => bless([11], "Data"),
+  12 => bless([1, 3, 6, 4, 13, 14, 0], "Node"),
+  13 => bless([3], "Keys"),
+  14 => bless([33], "Data"),
+  15 => bless([9, 12, 16], "Down"),
+  16 => bless([2, 4, 6, 4, 17, 18, 0], "Node"),
+  17 => bless([5, 6], "Keys"),
+  18 => bless([55, 66], "Data")};
  }
 
 #latest:;
@@ -1452,7 +1253,7 @@ if (1)                                                                          
 
 #latest:;
 if (1)                                                                          ##randomArray
- {my $W = 3; my $N = 76; my @r = randomArray $N;
+ {my $W = 5; my $N = 76; my @r = randomArray $N;
 
   Start 1;
   my $t = New($W);
