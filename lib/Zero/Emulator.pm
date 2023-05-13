@@ -702,7 +702,7 @@ sub rwWrite($$$)                                                                
  {my ($exec, $area, $address) = @_;                                             # Area in memory, address within area
   my $P = $exec->rw->{$area}{$address};
   if (defined($P))
-   {my $M = $exec->memory->{$area}[$address];                                   # If the memory address is zero we will assume that it has been cleared rather than set.
+   {my $M = $exec->get($area, $address);                                        # If the memory address is zero we will assume that it has been cleared rather than set.
     if ($M)
      {my $Q = $exec->currentInstruction;
       my $p = $P->contextString($exec, "Previous write");
@@ -931,15 +931,7 @@ sub assign($$$)                                                                 
   my $l = $target->address;
   my $n = $target->name//'unknown';
 
-  my $N = $exec->memoryType->{$a};
-  if (!defined $N)                                                              # Check that the area has a name
-   {$exec->stackTraceAndExit("No name for area $a\n".dump($exec->memory)." address:".dump($target), confess=>1);
-   }
-
-  if ($n ne $N)                                                                 # Check that the area name matches the one supplied in the address
-   {$exec->stackTraceAndExit
-     ("Area name provided: '$n' does not match actual area name '$N' for area: $a");
-   }
+  $exec->checkArrayName($a, $n);
 
   if (!defined($value))                                                         # Check that the assign is not pointless
    {$exec->stackTraceAndExit
