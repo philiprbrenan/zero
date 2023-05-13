@@ -536,12 +536,12 @@ sub getMemory($$$$%)                                                            
  {my ($exec, $area, $address, $name, %options) = @_;                            # Execution environment, area, address, expected name of area, options
   @_ < 4 and confess "At least four parameters";
   $exec->checkMemoryType($area, $name);
-  my $g = $exec->get($area, $address);
+  my $v = $exec->memory->{$area}[$address];
   my $n = $name // 'unknown';
-  if (!defined($g) and !defined($options{undefinedOk}))
+  if (!defined($v) and !defined($options{undefinedOk}))
    {$exec->stackTraceAndExit("Undefined memory accessed at area: $area ($n), address: $address\n");
    }
-  $g
+  $v
  }
 
 sub getMemoryAtAddress($$%)                                                     #P Get a value from memory at a specified address
@@ -568,7 +568,7 @@ sub set($$$)                                                                    
   $exec->lastAssignArea    = $a;
   $exec->lastAssignAddress = $l;
   $exec->lastAssignValue   = $value;
-  $exec->lastAssignBefore  = $exec->get($a, $l);
+  $exec->lastAssignBefore  = $exec->getMemoryAtAddress($address, undefinedOk=>1);
 
   $$m{$a}[$l] = $value;
  }
