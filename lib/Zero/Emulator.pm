@@ -289,7 +289,7 @@ sub Zero::Emulator::Address::print($$)                                          
      $s .= "address: $l";
  }
 
-sub Zero::Emulator::Address::get($$)                                            #P Get the value of the specified address in memory in the specified execution environment.
+sub Zero::Emulator::Address::get2($$)                                            #P Get the value of the specified address in memory in the specified execution environment.
  {my ($address, $exec) = @_;                                                    # Address specification
   @_ == 2 or confess "Two parameters";
   my $a = $address->area;
@@ -1347,7 +1347,8 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $t = $exec->left ($i->target);
       $exec->leftSuppress ($p);                                                 # The source will be read from
       my $s = $exec->left ($p);                                                 # The source has to be a left hand side because we want to address a memory area not get a constant
-      $exec->assign($t, $s->get($exec));
+      my $v = $exec->getMemory($s->area, $s->address, $s->name);                                                 # The source has to be a left hand side because we want to address a memory area not get a constant
+      $exec->assign($t, $v);
      },
 
     paramsPut=> sub                                                             # Place a parameter in the current parameter block
