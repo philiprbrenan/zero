@@ -141,6 +141,8 @@ my $z = <<'END' =~ s(XXXX) ($t)gsr;
 XXXX
 END
 
+$y .= $z if 1;
+
 lll "Ubuntu work flow for $repo ", writeFileUsingSavedToken($user, $repo, $wf, $y);
 
 sub introEmulator{&introEmulator1.&introEmulator2}
