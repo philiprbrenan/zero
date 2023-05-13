@@ -292,11 +292,9 @@ sub Zero::Emulator::Address::print($$)                                          
 sub Zero::Emulator::Address::get($$)                                            #P Get the value of the specified address in memory in the specified execution environment.
  {my ($address, $exec) = @_;                                                    # Address specification
   @_ == 2 or confess "Two parameters";
-  my $e = $exec;
-  my $m = $e->memory;
   my $a = $address->area;
   my $l = $address->address;
-  $$m{$a}[$l];
+  $exec->memory->{$a}[$l];
  }
 
 sub Zero::Emulator::Procedure::call($)                                          #P Call a procedure.  Arguments are supplied by the L<ParamsPut> and L<ParamsGet> commands, return values are supplied by the L<ReturnPut> and L<ReturnGet> commands.
@@ -930,7 +928,8 @@ sub assign($$$)                                                                 
 
   my $a = $target->area;
   my $l = $target->address;
-  my $n = $target->name//'unknown';
+  my $n = $target->name;
+  confess "Missing area name" unless $n;
 
   $exec->checkArrayName($a, $n);
 
@@ -939,18 +938,20 @@ sub assign($$$)                                                                 
      ("Cannot assign an undefined value to area: $a ($n), address: $l");
    }
   else
-   {my $currently = $target->get($exec);
-    if (defined($currently) and $currently == $value)
-     {$exec->pointlessAssign->{$exec->currentInstruction->number}++;
-      if ($exec->stopOnError)
-       {$exec->stackTraceAndExit("Pointless assign of: $currently to area: $a, at: $l");
+   {my $currently = $exec->getMemory($a, $l, $n, undefinedOk=>1);
+    if (defined $currently)
+     {if ($currently == $value)
+       {$exec->pointlessAssign->{$exec->currentInstruction->number}++;
+        if ($exec->stopOnError)
+         {$exec->stackTraceAndExit("Pointless assign of: $currently to area: $a, at: $l");
+         }
        }
      }
    }
 
   if (defined $exec->watch->{$a}{$l})                                           # Watch for specified changes
    {my @s = $exec->stackTrace("Change at watched area: $a ($n), address: $l");
-    push @s, join ' ', "Current value:", $exec->getMemory($a, $l, $exec->getMemoryType($a));
+    push @s, join ' ', "Current value:", $exec->getMemory($a, $l, $n);
     push @s, join ' ', "New     value:", $value;
     push @s, $exec->dumpMemory;
     say STDERR join "\n", @s unless $exec->suppressOutput;
@@ -1120,10 +1121,7 @@ sub Zero::Emulator::Code::execute($%)                                           
         return;
        }
 
-      $exec->checkArrayName($area, $name);                                      # Check that the supplied array name matches what is actually in memory
-
-      push $exec->freedArrays->@*, $area;                                       # Save array for reuse
-      delete $exec->memory->{$area}                                             # Free correctly identified area
+      $exec->freeArea($area, $name);                                            # Free the area
      },
 
     arraySize=> sub                                                             # Get the size of the specified area
@@ -2249,10 +2247,8 @@ sub TracePoint(%)                                                               
 
 sub Var(;$)                                                                     # Create a variable initialized to the specified value.
  {my ($value) = @_;                                                             # Value
-  my $i = $assembly->registers;
-
-  Mov $i, $value if defined $value;
-  $i
+  return Mov $value if @_;
+  $assembly->registers;
  }
 
 sub Watch($)                                                                    #i Watches for changes to the specified memory location.
@@ -2313,7 +2309,7 @@ if (1)                                                                          
  {Start 1;
   my $a = Var 1;
   AssertEq $a, 1;
-  my $e = Execute(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>0);
   is_deeply $e->out, [];
  }
 
