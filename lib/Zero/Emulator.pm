@@ -289,14 +289,6 @@ sub Zero::Emulator::Address::print($$)                                          
      $s .= "address: $l";
  }
 
-sub Zero::Emulator::Address::get($$)                                            #P Get the value of the specified address in memory in the specified execution environment.
- {my ($address, $exec) = @_;                                                    # Address specification
-  @_ == 2 or confess "Two parameters";
-  my $a = $address->area;
-  my $l = $address->address;
-  $exec->memory->{$a}[$l];
- }
-
 sub Zero::Emulator::Procedure::call($)                                          #P Call a procedure.  Arguments are supplied by the L<ParamsPut> and L<ParamsGet> commands, return values are supplied by the L<ReturnPut> and L<ReturnGet> commands.
  {my ($procedure) = @_;                                                         # Procedure description
   @_ == 1 or confess "One parameter";
@@ -550,6 +542,13 @@ sub getMemory($$$$%)                                                            
    {$exec->stackTraceAndExit("Undefined memory accessed at area: $area ($n), address: $address\n");
    }
   $g
+ }
+
+sub getMemoryAtAddress($$%)                                                     #P Get a value from memory at a specified address
+ {my ($exec, $left, %options) = @_;                                             # Execution environment, left address, options
+  @_ < 2 and confess "At least two parameters";
+  ref($left) =~ m(Address) or confess "Address needed for second parameter, not: ".ref($left);
+  $exec->getMemory($left->area, $left->address, $left->name, %options);
  }
 
 sub get($$$)                                                                    #P Get from memory.
@@ -938,7 +937,7 @@ sub assign($$$)                                                                 
      ("Cannot assign an undefined value to area: $a ($n), address: $l");
    }
   else
-   {my $currently = $exec->getMemory($a, $l, $n, undefinedOk=>1);
+   {my $currently = $exec->getMemoryAtAddress($target, undefinedOk=>1);
     if (defined $currently)
      {if ($currently == $value)
        {$exec->pointlessAssign->{$exec->currentInstruction->number}++;
