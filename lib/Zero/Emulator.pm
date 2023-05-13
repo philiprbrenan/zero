@@ -267,7 +267,7 @@ my sub RefLeft($)                                                               
    }
  }
 
-sub Zero::Emulator::Reference::print($)                                         #P Print the value of an address.
+sub Zero::Emulator::Reference::print2($)                                         #P Print the value of an address.
  {my ($ref) = @_;                                                               # Reference specification
   @_ == 1 or confess "One parameter";
   my $a  = dump($ref->area);
