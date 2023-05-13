@@ -521,7 +521,7 @@ sub getMemoryAtAddress($$%)                                                     
   $exec->getMemory($left->area, $left->address, $left->name, %options);
  }
 
-sub set($$$)                                                                    #P Set the value of an address at the specified address in memory in the current execution environment.
+sub setMemory($$$)                                                              #P Set the value of an address at the specified address in memory in the current execution environment.
  {my ($exec, $address, $value) = @_;                                            # Execution environment, address specification, value
   @_ == 3 or confess "Three parameters";
   my $a = $address->area;
@@ -912,7 +912,7 @@ sub assign($$$)                                                                 
     push $exec->out->@*, @s;
    }
 
-  $exec->set($target, $value);                                                  # Actually do the assign
+  $exec->setMemory($target, $value);                                            # Actually do the assign
  }
 
 sub allocateSystemAreas($)                                                      #P Allocate system areas for a new stack frame.
@@ -1215,14 +1215,14 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = $exec->currentInstruction;
       my $T = $exec->right($i->target);
       my $t = $exec->left($i->target);
-      $exec->set($t, defined($t) ? $T-1 : -1);
+      $exec->setMemory($t, defined($t) ? $T-1 : -1);
      },
 
     inc=> sub                                                                   # Increment locations in memory. The first address is incremented by 1, the next by two, etc.
      {my $i = $exec->currentInstruction;
       my $T = $exec->right($i->target);
       my $t = $exec->left($i->target);
-      $exec->set($t, defined($t) ? $T+1 : 1);
+      $exec->setMemory($t, defined($t) ? $T+1 : 1);
      },
 
     jmp=> sub                                                                   # Jump to the target address
@@ -1250,7 +1250,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $n =  $exec->left($i->target);
       for my $a(0..$n->address-1)
        {my $A =  $exec->left(RefLeft([$i->target->area, $a, q(aaa)]));
-        $exec->set($A, 0);
+        $exec->setMemory($A, 0);
        }
      },
 
