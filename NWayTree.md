@@ -167,8 +167,8 @@ Create a variable referring to a new tree descriptor.
       Out New(3);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [1];
-      is_deeply $e->memory, { 1 => bless([0, 0, 3, 0], "Tree") };
+      is_deeply $e->out, [4];
+      is_deeply $e->memory, { 4 => [0, 0, 3, 0]};
      }
     
     if (1)                                                                             
@@ -880,10 +880,10 @@ Insert a key and its associated data into a tree.
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->memory, {
-      1 => bless([1, 1, 3, 3], "Tree"),
-      3 => bless([1, 1, 0, 1, 4, 5, 0], "Node"),
-      4 => bless([1], "Keys"),
-      5 => bless([11], "Data")};
+      4 => bless([1, 1, 3, 6], "Tree"),
+      6 => bless([1, 1, 0, 4, 7, 8, 0], "Node"),
+      7 => bless([1], "Keys"),
+      8 => bless([11], "Data")};
      }
     
     if (1)                                                                          
@@ -898,10 +898,10 @@ Insert a key and its associated data into a tree.
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->memory, {
-      1 => bless([2, 1, 3, 3], "Tree"),
-      3 => bless([2, 1, 0, 1, 4, 5, 0], "Node"),
-      4 => bless([1, 2], "Keys"),
-      5 => bless([11, 22], "Data")};
+      4 => bless([2, 1, 3, 6], "Tree"),
+      6 => bless([2, 1, 0, 4, 7, 8, 0], "Node"),
+      7 => bless([1, 2], "Keys"),
+      8 => bless([11, 22], "Data")};
      }
     
     if (1)                                                                          
@@ -913,10 +913,10 @@ Insert a key and its associated data into a tree.
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->memory, {
-      1 => bless([3, 1, 3, 3], "Tree"),
-      3 => bless([3, 1, 0, 1, 4, 5, 0], "Node"),
-      4 => bless([1, 2, 3], "Keys"),
-      5 => bless([11, 22, 33], "Data")};
+      4 => bless([3, 1, 3, 6], "Tree"),
+      6 => bless([3, 1, 0, 4, 7, 8, 0], "Node"),
+      7 => bless([1, 2, 3], "Keys"),
+      8 => bless([11, 22, 33], "Data")};
      }
     
     if (1)                                                                          
@@ -928,17 +928,17 @@ Insert a key and its associated data into a tree.
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->memory, {
-      1  => bless([4, 3, 3, 3], "Tree"),
-      3  => bless([1, 1, 0, 1, 4, 5, 12], "Node"),
-      4  => bless([2], "Keys"),
-      5  => bless([22], "Data"),
-      6  => bless([1, 2, 3, 1, 7, 8, 0], "Node"),
-      7  => bless([1], "Keys"),
-      8  => bless([11], "Data"),
-      9  => bless([2, 3, 3, 1, 10, 11, 0], "Node"),
-      10 => bless([3, 4], "Keys"),
-      11 => bless([33, 44], "Data"),
-      12 => bless([6, 9], "Down")};
+      4  => bless([4, 3, 3, 6], "Tree"),
+      6  => bless([1, 1, 0, 4, 7, 8, 15], "Node"),
+      7  => bless([2], "Keys"),
+      8  => bless([22], "Data"),
+      9  => bless([1, 2, 6, 4, 10, 11, 0], "Node"),
+      10 => bless([1], "Keys"),
+      11 => bless([11], "Data"),
+      12 => bless([2, 3, 6, 4, 13, 14, 0], "Node"),
+      13 => bless([3, 4], "Keys"),
+      14 => bless([33, 44], "Data"),
+      15 => bless([9, 12], "Down")};
      }
     
     if (1)                                                                          
@@ -951,20 +951,20 @@ Insert a key and its associated data into a tree.
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->memory, {
-      1  => bless([5, 4, 3, 3], "Tree"),
-      3  => bless([2, 1, 0, 1, 4, 5, 12], "Node"),
-      4  => bless([2, 4], "Keys"),
-      5  => bless([22, 44], "Data"),
-      6  => bless([1, 2, 3, 1, 7, 8, 0], "Node"),
-      7  => bless([1], "Keys"),
-      8  => bless([11], "Data"),
-      9  => bless([1, 3, 3, 1, 10, 11, 0], "Node"),
-      10 => bless([3], "Keys"),
-      11 => bless([33], "Data"),
-      12 => bless([6, 9, 13], "Down"),
-      13 => bless([1, 4, 3, 1, 14, 15, 0], "Node"),
-      14 => bless([5], "Keys"),
-      15 => bless([55], "Data")}
+      4  => bless([5, 4, 3, 6], "Tree"),
+      6  => bless([2, 1, 0, 4, 7, 8, 15], "Node"),
+      7  => bless([2, 4], "Keys"),
+      8  => bless([22, 44], "Data"),
+      9  => bless([1, 2, 6, 4, 10, 11, 0], "Node"),
+      10 => bless([1], "Keys"),
+      11 => bless([11], "Data"),
+      12 => bless([1, 3, 6, 4, 13, 14, 0], "Node"),
+      13 => bless([3], "Keys"),
+      14 => bless([33], "Data"),
+      15 => bless([9, 12, 16], "Down"),
+      16 => bless([1, 4, 6, 4, 17, 18, 0], "Node"),
+      17 => bless([5], "Keys"),
+      18 => bless([55], "Data")};
      }
     
     if (1)                                                                          
@@ -976,20 +976,20 @@ Insert a key and its associated data into a tree.
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->memory, {
-      1  => bless([6, 4, 3, 3], "Tree"),
-      3  => bless([2, 1, 0, 1, 4, 5, 12], "Node"),
-      4  => bless([2, 4], "Keys"),
-      5  => bless([22, 44], "Data"),
-      6  => bless([1, 2, 3, 1, 7, 8, 0], "Node"),
-      7  => bless([1], "Keys"),
-      8  => bless([11], "Data"),
-      9  => bless([1, 3, 3, 1, 10, 11, 0], "Node"),
-      10 => bless([3], "Keys"),
-      11 => bless([33], "Data"),
-      12 => bless([6, 9, 13], "Down"),
-      13 => bless([2, 4, 3, 1, 14, 15, 0], "Node"),
-      14 => bless([5, 6], "Keys"),
-      15 => bless([55, 66], "Data")};
+      4  => bless([6, 4, 3, 6], "Tree"),
+      6  => bless([2, 1, 0, 4, 7, 8, 15], "Node"),
+      7  => bless([2, 4], "Keys"),
+      8  => bless([22, 44], "Data"),
+      9  => bless([1, 2, 6, 4, 10, 11, 0], "Node"),
+      10 => bless([1], "Keys"),
+      11 => bless([11], "Data"),
+      12 => bless([1, 3, 6, 4, 13, 14, 0], "Node"),
+      13 => bless([3], "Keys"),
+      14 => bless([33], "Data"),
+      15 => bless([9, 12, 16], "Down"),
+      16 => bless([2, 4, 6, 4, 17, 18, 0], "Node"),
+      17 => bless([5, 6], "Keys"),
+      18 => bless([55, 66], "Data")};
      }
     
     if (1)                                                                             
@@ -1477,7 +1477,7 @@ Create a random array.
 
     if (1)                                                                          
     
-     {my $W = 3; my $N = 76; my @r = randomArray $N;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+     {my $W = 5; my $N = 76; my @r = randomArray $N;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
       Start 1;
