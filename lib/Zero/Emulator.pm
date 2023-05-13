@@ -209,71 +209,48 @@ sub Zero::Emulator::Procedure::registers($)                                     
   $procedure->variables->registers();
  }
 
-my sub RefRight($)                                                              # Record a reference to a right address
- {my ($r) = @_;                                                                 # Reference
-  @_ == 1 or confess "One parameter required formatted as either a address or an [area, address, name, delta]";
+my sub Reference($$)                                                            # Record a reference to a left or right address
+ {my ($r, $right) = @_;                                                         # Reference, right reference if true
   ref($r) and ref($r) !~ m(\A(array|scalar|ref)\Z)i and confess "Scalar or reference required, not: ".dump($r);
+
+  my $type = "Zero::Emulator::". ($right ? "RefRight" : "RefLeft");
 
   if (ref($r) =~ m(array)i)
    {my ($area, $address, $name, $delta) = @$r;
      defined($area) and !defined($name) and confess "Name required for address specification: in [Area, address, name]";
     !defined($area) and  defined($name) and confess "Area required for address specification: in [Area, address, name]";
-    isScalar($address) and defined($area) || defined($name) and confess "Constants cannot have an associated area";
 
-    return genHash("Zero::Emulator::RefRight",
+    if($right)
+     {isScalar($address) and defined($area) || defined($name) and confess "Right hand constants cannot have an associated area";
+     }
+
+    return genHash($type,
       area=>      $area,
       address=>   $address,
       name=>      $name,
       delta=>     $delta//0,
-      variable=>  1,
      );
    }
   else
-   {return genHash("Zero::Emulator::RefRight",
+   {return genHash($type,
       area=>      undef,
       address=>   $r,
       name=>      'stackArea',
       delta=>     0,
-      variable=>  1,
      );
    }
  }
 
-my sub RefLeft($)                                                               # Record a reference to a left address
+my sub RefRight($)                                                              # Record a reference to a right address
  {my ($r) = @_;                                                                 # Reference
   @_ == 1 or confess "One parameter required formatted as either a address or an [area, address, name, delta]";
-
-  ref($r) and ref($r) !~ m(\A(array|scalar|ref)\Z)i and confess "Scalar or reference required";
-
-  if (ref($r) =~ m(array)i)
-   {my ($area, $address, $name, $delta) = @$r;
-     defined($area) and !defined($name) and confess "Name required for area: in {area, address, name]";
-    !defined($area) and  defined($name) and confess "Area required for name: in {area, address, name]";
-
-    return genHash("Zero::Emulator::RefLeft",
-      area=>      $area,
-      address=>   $address,
-      name=>      $name,
-      delta=>     $delta//0,
-     );
-   }
-  else
-   {return genHash("Zero::Emulator::RefLeft",
-      area=>      undef,
-      address=>   $r,
-      name=>      'stackArea',
-      delta=>     0,
-     );
-   }
+  Reference($r, 1);
  }
 
-sub Zero::Emulator::Reference::print2($)                                         #P Print the value of an address.
- {my ($ref) = @_;                                                               # Reference specification
-  @_ == 1 or confess "One parameter";
-  my $a  = dump($ref->area);
-  my $l  = dump($ref->address);
-  my $s  = "Reference area: $a, address: $l";
-  say STDERR $s;
+my sub RefLeft($)                                                              # Record a reference to a right address
+ {my ($r) = @_;                                                                 # Reference
+  @_ == 1 or confess "One parameter required formatted as either a address or an [area, address, name, delta]";
+  Reference($r, 0);
  }
 
 sub Zero::Emulator::Address::print($$)                                          #P Print the value of an address in the current execution.
