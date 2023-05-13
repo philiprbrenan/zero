@@ -949,7 +949,7 @@ sub assign($$$)                                                                 
 
   if (defined $exec->watch->{$a}{$l})                                           # Watch for specified changes
    {my @s = $exec->stackTrace("Change at watched area: $a ($n), address: $l");
-    push @s, join ' ', "Current value:", $exec->memory->{$a}[$l];
+    push @s, join ' ', "Current value:", $exec->getMemory($a, $l, $exec->getMemoryType($a));
     push @s, join ' ', "New     value:", $value;
     push @s, $exec->dumpMemory;
     say STDERR join "\n", @s unless $exec->suppressOutput;
