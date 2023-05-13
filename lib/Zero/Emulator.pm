@@ -1442,7 +1442,8 @@ sub Zero::Emulator::Code::execute($%)                                           
       for my $j(reverse 1..$L-$l)
        {my $s = $exec->left($i->target, $j-1);
         my $t = $exec->left($i->target, $j);
-        $exec->assign($t, $s->get($exec));
+        my $v = $exec->getMemory($s->area, $s->address, $s->name);
+        $exec->assign($t, $v);
        }
       $exec->assign($t, $s);
      },
@@ -1453,11 +1454,11 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $t = $exec->left($i->target);
       my $L = $exec->areaContent($s->area);                                     # Length of area
       my $l = $s->address;
-      my $v = $s->get($exec);
+      my $v = $exec->getMemory($s->area, $s->address, $s->name);
       for my $j($l..$L-2)                                                       # Each element in specified range
        {my $S = $exec->left(RefLeft([$s->area, $j+1, $s->name]));
         my $T = $exec->left(RefLeft([$s->area, $j,   $s->name]));
-        $exec->assign($T, $S->get($exec));
+        $exec->assign($T, $exec->getMemory($S->area, $S->address, $S->name));
        }
       $exec->popArea($s->area, $s->name);
       my $T = $exec->left($i->target);
