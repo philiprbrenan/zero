@@ -50,7 +50,7 @@ push my @files,
   grep {!/_build/}
   grep {!/Build.PL/}
   grep {!/blib/}
-  grep {!/sort/}                                                                # No changes expected
+  grep {!/Sort/}                                                                # No changes expected
   searchDirectoryTreesForMatchingFiles($home, qw(.pm .pl .md));                 # Files
 
 for my $s(@files)                                                               # Upload each selected file
