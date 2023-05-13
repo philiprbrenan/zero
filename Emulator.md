@@ -2780,7 +2780,7 @@ Create a variable initialized to the specified value.
       my $a = Var 1;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       AssertEq $a, 1;
-      my $e = Execute(suppressOutput=>1);
+      my $e = Execute(suppressOutput=>0);
       is_deeply $e->out, [];
      }
     
