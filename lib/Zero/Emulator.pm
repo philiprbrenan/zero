@@ -1368,7 +1368,8 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $r = RefLeft([$p, \$i->source->address, 'return']);                    # The source will be read from
       $exec->leftSuppress($r);                                                  # The source will be read from
       my $s = $exec->left($r);                                                  # The source has to be a left hand side because we want to address a memory area not get a constant
-      $exec->assign($t, $s->get($exec));
+      my $v = $exec->getMemory($s->area, $s->address, $s->name);                                                 # The source has to be a left hand side because we want to address a memory area not get a constant
+      $exec->assign($t, $v);
      },
 
     returnPut=> sub                                                             # Put a word into the return area
