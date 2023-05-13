@@ -700,7 +700,7 @@ sub rwWrite($$$)                                                                
  {my ($exec, $area, $address) = @_;                                             # Area in memory, address within area
   my $P = $exec->rw->{$area}{$address};
   if (defined($P))
-   {my $M = $exec->get($area, $address);                                        # If the memory address is zero we will assume that it has been cleared rather than set.
+   {my $M = $exec->getMemory($area, $address, $exec->memoryType->{$area}, undefinedOk=>1);
     if ($M)
      {my $Q = $exec->currentInstruction;
       my $p = $P->contextString($exec, "Previous write");
