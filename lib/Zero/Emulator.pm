@@ -289,7 +289,7 @@ sub Zero::Emulator::Address::print($$)                                          
      $s .= "address: $l";
  }
 
-sub Zero::Emulator::Address::get2($$)                                            #P Get the value of the specified address in memory in the specified execution environment.
+sub Zero::Emulator::Address::get($$)                                            #P Get the value of the specified address in memory in the specified execution environment.
  {my ($address, $exec) = @_;                                                    # Address specification
   @_ == 2 or confess "Two parameters";
   my $a = $address->area;
