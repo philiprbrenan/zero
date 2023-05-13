@@ -234,7 +234,7 @@ my sub RefRight($)                                                              
       address=>   $r,
       name=>      'stackArea',
       delta=>     0,
-      variable=>  0,
+      variable=>  1,
      );
    }
  }
@@ -279,14 +279,10 @@ sub Zero::Emulator::Reference::print($)                                         
 sub Zero::Emulator::Address::print($$)                                          #P Print the value of an address in the current execution.
  {my ($address, $exec) = @_;                                                    # Address specification
   @_ == 2 or confess "Two parameters";
-  my $e  = $exec;
-  my $m  = $e->memory;
-  my $t  = $e->memoryType;
   my $a  = $address->area;
+  my $t  = $exec->getMemoryType($a) // 'unknown';
   my $l  = $address->address;
-  my $s  = "Address area: $a";
-     $s .= "(".($$t{$a} // "unknown")."), ";
-     $s .= "address: $l";
+  my $s  = "Address area: $a($t), address: $l";
  }
 
 sub Zero::Emulator::Procedure::call($)                                          #P Call a procedure.  Arguments are supplied by the L<ParamsPut> and L<ParamsGet> commands, return values are supplied by the L<ReturnPut> and L<ReturnGet> commands.
@@ -337,14 +333,19 @@ sub Zero::Emulator::Code::assemble($%)                                          
  }
 
 sub areaContent($$)                                                             #P Content of an area containing a specified address in memory in the specified execution.
- {my ($exec, $address) = @_;                                                    # Execution environment, address specification
+ {my ($exec, $area) = @_;                                                       # Execution environment, address specification
   @_ == 2 or confess "Two parameters";
-  my $e = $exec;
-  my $m = $e->memory;
-  my $a = isScalar($address) ? $address : $$m{$exec->stackArea}[$$address];     # Dereference area
-  my $A = $$m{$a};
-  $exec->stackTraceAndExit("Invalid area: ".dump($a)."\n".dump($e->memory)) unless defined $A;
-  @$A
+  my $a = $exec->memory->{$area};
+  $exec->stackTraceAndExit("Invalid area: ".dump($area)) unless defined $a;
+  @$a
+ }
+
+sub areaLength($$)                                                              #P Content of an area containing a specified address in memory in the specified execution.
+ {my ($exec, $area) = @_;                                                       # Execution environment, area
+  @_ == 2 or confess "Two parameters";
+  my $a = $exec->memory->{$area};
+  $exec->stackTraceAndExit("Invalid area: ".dump($area)) unless defined $a;
+  scalar @$a
  }
 
 sub currentStackFrame($)                                                        #P Address of current stack frame
@@ -384,7 +385,7 @@ sub currentReturnPut($)                                                         
   @_ == 1 or confess "One parameter";
   my $calls = $exec->calls;
   @$calls > 1 or confess "No current return to put";
-  $$calls[-2]->params;
+  $$calls[-2]->return;
  }
 
 sub dumpMemory($)                                                               #P Dump memory.
@@ -537,9 +538,10 @@ sub getMemory($$$$%)                                                            
   @_ < 4 and confess "At least four parameters";
   $exec->checkMemoryType($area, $name);
   my $v = $exec->memory->{$area}[$address];
-  my $n = $name // 'unknown';
   if (!defined($v) and !defined($options{undefinedOk}))
-   {$exec->stackTraceAndExit("Undefined memory accessed at area: $area ($n), address: $address\n");
+   {my $n = $name // 'unknown';
+    $exec->stackTraceAndExit
+     ("Undefined memory accessed at area: $area ($n), address: $address\n");
    }
   $v
  }
@@ -554,8 +556,6 @@ sub getMemoryAtAddress($$%)                                                     
 sub set($$$)                                                                    #P Set the value of an address at the specified address in memory in the current execution environment.
  {my ($exec, $address, $value) = @_;                                            # Execution environment, address specification, value
   @_ == 3 or confess "Three parameters";
-  my $e = $exec;
-  my $m = $e->memory;
   my $a = $address->area;
   my $l = $address->address;
   $exec->lastAssignArea    = $a;
@@ -563,7 +563,7 @@ sub set($$$)                                                                    
   $exec->lastAssignValue   = $value;
   $exec->lastAssignBefore  = $exec->getMemoryAtAddress($address, undefinedOk=>1);
 
-  $$m{$a}[$l] = $value;
+  $exec->memory->{$a}[$l] = $value;
  }
 
 sub stackArea($)                                                                #P Current stack frame.
@@ -617,16 +617,10 @@ my $allocs = 0;                                                                 
 
 sub allocMemory($$;$)                                                           #P Create the name of a new memory area.
  {my ($exec, $name, $stacked) = @_;                                             # Execution environment, name of allocation, stacked if true
-  if ((my $f = $exec->freedArrays)->@*)                                         # Reuse recently freed array
-   {my $a = pop @$f;
-    $exec->memory->{$a} = bless [], $name;
-    $exec->memoryType->{$a} = $name;
-    return $a;
-   }
-
-  my $a = ++$allocs;                                                            # Create brand new array
+  my $f = $exec->freedArrays;                                                   # Reuse recently freed array
+  my $a = @$f ? pop @$f : ++$allocs;
   $exec->memory    ->{$a} = bless [], $name;
-  $exec->memoryType->{$a} = $name;
+  $exec->setMemoryType($a, $name);
   $a
  }
 
@@ -693,7 +687,7 @@ sub rwWrite($$$)                                                                
  {my ($exec, $area, $address) = @_;                                             # Area in memory, address within area
   my $P = $exec->rw->{$area}{$address};
   if (defined($P))
-   {my $M = $exec->getMemory($area, $address, $exec->memoryType->{$area}, undefinedOk=>1);
+   {my $M = $exec->getMemory($area, $address, $exec->getMemoryType($area), undefinedOk=>1);
     if ($M)
      {my $Q = $exec->currentInstruction;
       my $p = $P->contextString($exec, "Previous write");
@@ -775,8 +769,8 @@ sub left($$)                                                                    
   elsif (isScalar($$area))
    {$exec->rwRead           ($S, $$area);
     my $A = $exec->getMemory($S, $$area, "stackArea");
-    $exec->rwWrite(        $A, $M);
-    return  $exec->address($A, $M, $ref->name)                                  # Indirect area
+    $exec->rwWrite(          $A, $M);
+    return  $exec->address  ($A, $M, $ref->name)                                # Indirect area
    }
   invalid(2);
  }
@@ -995,7 +989,7 @@ sub checkArrayName($$$)                                                         
     return 0;
    }
 
-  my $Name = $exec->memoryType->{$area};                                        # Area has a name
+  my $Name = $exec->getMemoryType($area);                                       # Area has a name
   if (!defined($Name))
    {$exec->stackTraceAndExit("No name associated with array: $area");
     return 0;
@@ -1124,7 +1118,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
       $exec->checkArrayName($area, $name);                                      # Check that the supplied array name matches what is actually in memory
 
-      $exec->assign($size, scalar $exec->memory->{$area}->@*)                   # Size of area
+      $exec->assign($size, $exec->areaLength($area))                            # Size of area
      },
 
     arrayIndex=> sub                                                            # Place the 1 based index of the second source operand in the array referenced by the first source operand in the target location
@@ -1334,7 +1328,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     paramsGet=> sub                                                             # Get a parameter from the previous parameter block - this means that we must always have two entries on the call stack - one representing the caller of the program, the second representing the current context of the program
      {my $i = $exec->currentInstruction;
-      my $p = RefLeft([$exec->calls->[-2]->params, $i->source->address,
+      my $p = RefLeft([$exec->currentParamsGet, $i->source->address,
        'params']);
       my $t = $exec->left ($i->target);
       $exec->leftSuppress ($p);                                                 # The source will be read from
@@ -1345,7 +1339,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     paramsPut=> sub                                                             # Place a parameter in the current parameter block
      {my $i = $exec->currentInstruction;
-      my $p = $i->target->area // $exec->calls->[-1]->params;
+      my $p = $i->target->area // $exec->currentParamsPut;
       my $r = RefLeft [$p, $i->target->address, 'params'];
       $exec->leftSuppress ($r);
       my $t = $exec->left ($r);
@@ -1355,18 +1349,18 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     returnGet=> sub                                                             # Get a word from the return area
      {my $i = $exec->currentInstruction;
-      my $p = $exec->calls->[-1]->return;                                       # Memory area
+      my $p = $exec->currentReturnGet;                                          # Memory area
       my $t = $exec->left ($i->target);
       my $r = RefLeft([$p, \$i->source->address, 'return']);                    # The source will be read from
       $exec->leftSuppress($r);                                                  # The source will be read from
       my $s = $exec->left($r);                                                  # The source has to be a left hand side because we want to address a memory area not get a constant
-      my $v = $exec->getMemory($s->area, $s->address, $s->name);                                                 # The source has to be a left hand side because we want to address a memory area not get a constant
+      my $v = $exec->getMemory($s->area, $s->address, $s->name);                # The source has to be a left hand side because we want to address a memory area not get a constant
       $exec->assign($t, $v);
      },
 
     returnPut=> sub                                                             # Put a word into the return area
      {my $i = $exec->currentInstruction;
-      my $p = $exec->calls->[-2]->return;
+      my $p = $exec->currentReturnPut;
       my $t = $exec->left (RefLeft([$p, $i->target->address, q(return)]));
       my $s = $exec->right($i->source);
       $exec->assign($t, $s);
@@ -1429,7 +1423,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = $exec->currentInstruction;
       my $s = $exec->right($i->source);
       my $t = $exec->left($i->target);
-      my $L = $exec->areaContent($t->area);                                     # Length of area
+      my $L = $exec->areaLength($t->area);                                      # Length of target array
       my $l = $t->address;
       for my $j(reverse 1..$L-$l)
        {my $s = $exec->left($i->target, $j-1);
@@ -1444,7 +1438,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = $exec->currentInstruction;
       my $s = $exec->left($i->source);
       my $t = $exec->left($i->target);
-      my $L = $exec->areaContent($s->area);                                     # Length of area
+      my $L = $exec->areaLength($s->area);                                      # Length of source array
       my $l = $s->address;
       my $v = $exec->getMemory($s->area, $s->address, $s->name);
       for my $j($l..$L-2)                                                       # Each element in specified range
@@ -1525,7 +1519,7 @@ sub formatTrace($)                                                              
  {my ($exec) = @_;                                                              # Execution
   return "" unless defined(my $area  = $exec->lastAssignArea);
   return "" unless defined(my $addr  = $exec->lastAssignAddress);
-  return "" unless defined(my $type  = $exec->memoryType->{$area});
+  return "" unless defined(my $type  = $exec->getMemoryType($area));
   return "" unless defined(my $value = $exec->lastAssignValue);
   my $B = $exec->lastAssignBefore;
   my $b = $B ? " was $B" : "";
