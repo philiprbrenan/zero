@@ -1017,7 +1017,7 @@ sub checkArrayName($$$)                                                         
 
 sub locateAreaElement($$$)                                                      #P Locate an element in an array.
  {my ($exec, $area, $op) = @_;                                                  # Execution environment, array, operation
-  my @a = $exec->memory->{$area}->@*;
+  my @a = $exec->areaContent($area);
   for my $a(keys @a)                                                            # Check each element of the array
    {if ($op->($a[$a]))
      {return $a + 1;
@@ -1028,7 +1028,7 @@ sub locateAreaElement($$$)                                                      
 
 sub countAreaElement($$$)                                                       #P Count the number of elements in array that meet some specification.
  {my ($exec, $area, $op) = @_;                                                  # Execution environment, array, operation
-  my @a = $exec->memory->{$area}->@*;
+  my @a = $exec->areaContent($area);
   my $n = 0;
 
   for my $a(keys @a)                                                            # Check each element of the array
