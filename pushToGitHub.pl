@@ -113,7 +113,9 @@ jobs:
         ref: 'main'
 
 XXXX
+END
 
+my $z = <<'END' =~ s(XXXX) ($t)gsr;
   testWindows:
     runs-on: windows-latest
 
