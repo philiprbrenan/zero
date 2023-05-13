@@ -1,4 +1,4 @@
-#!/usr/bin/perl  -Ilib -I../lib
+#!/usr/bin/perl  -Ilib -I../lib -I/home/phil/perl/cpan/ZeroEmulator/lib/
 #-------------------------------------------------------------------------------
 # Zero assembler language implemention of a generic N-Way tree.
 # Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
