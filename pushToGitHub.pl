@@ -141,7 +141,7 @@ my $z = <<'END' =~ s(XXXX) ($t)gsr;
 XXXX
 END
 
-$y .= $z if 1;
+$y .= $z if rand() < 0.1;                                                         # Testing on windows is slow so only do it now and then: it is the same as doing it on linux because we use Ubuntu on both occasions
 
 lll "Ubuntu work flow for $repo ", writeFileUsingSavedToken($user, $repo, $wf, $y);
 
