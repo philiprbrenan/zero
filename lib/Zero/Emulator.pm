@@ -1418,7 +1418,8 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->leftSuppress ($i->target);                                         # Make sure there something to shift
       my $t = $exec->left ($i->target);
       my $s = $exec->right($i->source);
-      $exec->assign($t, $t->get($exec) << $s);
+      my $v = $exec->getMemory($t->area, $t->address, $t->name) << $s;
+      $exec->assign($t, $v);
      },
 
     shiftRight=> sub                                                            # Shift right within an element
@@ -1426,7 +1427,8 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->leftSuppress ($i->target);                                         # Make sure there something to shift
       my $t = $exec->left ($i->target);
       my $s = $exec->right($i->source);
-      $exec->assign($t, $t->get($exec) >> $s);
+      my $v = $exec->getMemory($t->area, $t->address, $t->name) >> $s;
+      $exec->assign($t, $v);
      },
 
     shiftUp=> sub                                                               # Shift an element up in a memory area
