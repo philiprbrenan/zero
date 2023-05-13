@@ -551,13 +551,6 @@ sub getMemoryAtAddress($$%)                                                     
   $exec->getMemory($left->area, $left->address, $left->name, %options);
  }
 
-sub get($$$)                                                                    #P Get from memory.
- {my ($exec, $area, $address) = @_;                                             # Execution environment, area, address
-  @_ == 3 or confess "Three parameters";
-  $exec->memory->{$area}[$address];
- }
-
-
 sub set($$$)                                                                    #P Set the value of an address at the specified address in memory in the current execution environment.
  {my ($exec, $address, $value) = @_;                                            # Execution environment, address specification, value
   @_ == 3 or confess "Three parameters";
