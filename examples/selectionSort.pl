@@ -1,4 +1,4 @@
-#!/usr/bin/perl -Ilib -I../lib
+#!/usr/bin/perl -Ilib -I../lib -I/home/phil/perl/cpan/ZeroEmulator/lib/
 #-------------------------------------------------------------------------------
 # Zero assembler programming language of in situ selection sort
 # Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
@@ -36,7 +36,7 @@ if (1)                                                                          
  {Start 1;
   my $a = Array "array";
   my @a = qw(6 8 4 2 1 3 5 7);
-  Push $a, $_ for @a;                                                           # Load array
+  Push $a, $_, "array" for @a;                                                  # Load array
 
   selectionSort($a, "array");                                                   # Sort
 
@@ -64,7 +64,7 @@ if (1)                                                                          
  {Start 1;
   my $a = Array "array";
   my @a = reverse 1..32;
-  Push $a, $_ for @a;
+  Push $a, $_, "array" for @a;
 
   selectionSort($a, "array");
 
