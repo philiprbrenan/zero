@@ -642,6 +642,7 @@ sub allocMemory($$;$)                                                           
 
 sub freeArea($$$)                                                               #P Free a memory area
  {my ($exec, $area, $name) = @_;                                                # Execution environment, array, name of allocation
+  @_ == 3 or confess "Three parameters";
   $exec->checkArrayName($area, $name);
 
   delete $exec->memory->{$area};                                                # Mark area as freed
@@ -1456,7 +1457,7 @@ sub Zero::Emulator::Code::execute($%)                                           
         my $T = $exec->left(RefLeft([$s->area, $j,   $s->name]));
         $exec->assign($T, $S->get($exec));
        }
-      pop $exec->memory->{$s->area}->@*;
+      $exec->popArea($s->area, $s->name);
       my $T = $exec->left($i->target);
       $exec->assign($T, $v);
      },
