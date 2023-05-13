@@ -247,19 +247,10 @@ my sub RefRight($)                                                              
   Reference($r, 1);
  }
 
-my sub RefLeft($)                                                              # Record a reference to a right address
+my sub RefLeft($)                                                               # Record a reference to a right address
  {my ($r) = @_;                                                                 # Reference
   @_ == 1 or confess "One parameter required formatted as either a address or an [area, address, name, delta]";
   Reference($r, 0);
- }
-
-sub Zero::Emulator::Address::print($$)                                          #P Print the value of an address in the current execution.
- {my ($address, $exec) = @_;                                                    # Address specification
-  @_ == 2 or confess "Two parameters";
-  my $a  = $address->area;
-  my $t  = $exec->getMemoryType($a) // 'unknown';
-  my $l  = $address->address;
-  my $s  = "Address area: $a($t), address: $l";
  }
 
 sub Zero::Emulator::Procedure::call($)                                          #P Call a procedure.  Arguments are supplied by the L<ParamsPut> and L<ParamsGet> commands, return values are supplied by the L<ReturnPut> and L<ReturnGet> commands.
