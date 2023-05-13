@@ -1,4 +1,4 @@
-#!/usr/bin/perl -Ilib -I../lib
+#!/usr/bin/perl -Ilib -I../lib -I/home/phil/perl/cpan/ZeroEmulator/lib/
 #-------------------------------------------------------------------------------
 # Test Zero Emulator
 # Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
@@ -22,7 +22,7 @@ if (1)
   my $e = Execute;
 
   is_deeply $e->out, ["hello World"];
-  is_deeply $e->memory, { 1 => bless([1], "aaa") };
+  is_deeply $e->memory, { 4 => bless([1], "aaa") };
  }
 
 done_testing;
