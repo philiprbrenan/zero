@@ -7,21 +7,19 @@ use v5.30;
 use warnings FATAL => qw(all);
 use strict;
 use Zero::Emulator qw(:all);
-use Test::More qw(no_plan);
+use Test::More tests=>2;
 use Data::Dump qw(dump);
-
-Test::More->builder->output("/dev/null");
 
 if (1)
  {Start 1;
 
   my $a = Array "aaa";
   Mov [$a, 0, "aaa"], 1;
-  Out "hello World";
+  Out "Hello", "World";
 
-  my $e = Execute;
+  my $e = Execute(suppressOutput=>1);
 
-  is_deeply $e->out, ["hello World"];
+  is_deeply $e->out, "Hello World\n";
   is_deeply $e->memory, { 4 => bless([1], "aaa") };
  }
 
