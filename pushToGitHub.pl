@@ -91,6 +91,10 @@ my $t = <<END;
       run: |
         perl examples/insertionSort.pl
 
+    - name: Zero quickSort
+      run: |
+        perl examples/quickSort.pl
+
     - name: Zero selectionSort
       run: |
         perl examples/selectionSort.pl
