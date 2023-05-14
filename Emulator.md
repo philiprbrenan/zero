@@ -647,8 +647,6 @@ Call the subroutine at the target address.
       is_deeply $e->w, <<END;
     ccc
     END
-     say STDERR '  is_deeply $e->w, <<END;', "
-  ", $e->w, "END"; exit;
      }
     
     if (1)                                                                            
@@ -749,9 +747,13 @@ Confess with a stack trace showing the location both in the emulated code and in
        };
       Call $c;
       my $e = Execute(suppressOutput=>1);
+      is_deeply $e->w, <<END;
     
-      is_deeply $e->out, ["Confess at:", "    2     3 confess", "    1     6 call"];  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+    Confess at:  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
+        2     3 confess
+        1     6 call
+    END
      }
     
 
@@ -801,14 +803,17 @@ Dump all the arrays currently in memory.
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->w, <<END;
     4
-     dddd
-     1=bless([4, 1], "stackArea")
-     2=bless([], "params")
-     3=bless([], "return")
-     4=bless([undef, 1, 2], "node")
-     Stack trace
-         1     7 dump
+    dddd
+    1=bless([4, 1], "stackArea")
+    2=bless([], "params")
+    3=bless([], "return")
+    4=bless([undef, 1, 2], "node")
+    Stack trace
+        1     7 dump
     END
+      say STDERR dump($e->w); exit;
+      say STDERR '  is_deeply $e->w, <<END;', "
+  ", $e->w, "END"; exit;
      }
     
 
@@ -1004,11 +1009,10 @@ Free the memory area named by the target operand after confirming that it has th
       Free $a, "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-    
-      is_deeply $e->out, [
-      "Wrong name: aaa for array with name: node",
-      "    1     2 free",
-    ];
+      is_deeply $e->w, <<END;
+    Wrong name: aaa for array with name: node
+        1     2 free
+    END
      }
     
     if (1)                                                                           
@@ -1025,14 +1029,17 @@ Free the memory area named by the target operand after confirming that it has th
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->w, <<END;
     4
-     dddd
-     1=bless([4, 1], "stackArea")
-     2=bless([], "params")
-     3=bless([], "return")
-     4=bless([undef, 1, 2], "node")
-     Stack trace
-         1     7 dump
+    dddd
+    1=bless([4, 1], "stackArea")
+    2=bless([], "params")
+    3=bless([], "return")
+    4=bless([undef, 1, 2], "node")
+    Stack trace
+        1     7 dump
     END
+      say STDERR dump($e->w); exit;
+      say STDERR '  is_deeply $e->w, <<END;', "
+  ", $e->w, "END"; exit;
      }
     
 
@@ -1093,6 +1100,8 @@ Execute then or else clause depending on whether two memory locations are equal.
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, [map {($_, "
   ")} "Eq", "Le", "Ge"];
+      say STDERR '  is_deeply $e->w, <<END;', "
+  ", $e->w, "END"; exit;
      }
     
     if (1)                                                                                   
@@ -1183,6 +1192,8 @@ Execute then or else clause depending on whether two memory locations are greate
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, [map {($_, "
   ")} "Eq", "Le", "Ge"];
+      say STDERR '  is_deeply $e->w, <<END;', "
+  ", $e->w, "END"; exit;
      }
     
     if (1)                                                                                   
@@ -1246,6 +1257,8 @@ Execute then or else clause depending on whether two memory locations are greate
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, [map {($_, "
   ")} "Eq", "Le", "Ge"];
+      say STDERR '  is_deeply $e->w, <<END;', "
+  ", $e->w, "END"; exit;
      }
     
     if (1)                                                                                   
@@ -1309,6 +1322,8 @@ Execute then or else clause depending on whether two memory locations are not eq
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, [map {($_, "
   ")} "Eq", "Le", "Ge"];
+      say STDERR '  is_deeply $e->w, <<END;', "
+  ", $e->w, "END"; exit;
      }
     
     if (1)                                                                                   
@@ -1372,6 +1387,8 @@ Execute then or else clause depending on whether two memory locations are less t
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, [map {($_, "
   ")} "Eq", "Le", "Ge"];
+      say STDERR '  is_deeply $e->w, <<END;', "
+  ", $e->w, "END"; exit;
      }
     
     if (1)                                                                                   
@@ -1435,6 +1452,8 @@ Execute then or else clause depending on whether two memory locations are less t
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, [map {($_, "
   ")} "Eq", "Le", "Ge"];
+      say STDERR '  is_deeply $e->w, <<END;', "
+  ", $e->w, "END"; exit;
      }
     
     if (1)                                                                                   
@@ -2356,8 +2375,9 @@ Pop the memory area specified by the source operand into the memory address spec
     
       Out $c, $d;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out,    [2, 1, "
-  "];
+      is_deeply $e->w, <<END;
+    2 1
+    END
       is_deeply $e->memory, {4 => []};
      }
     
@@ -2387,8 +2407,9 @@ Define a procedure.
       my $c = ReturnGet 0;
       Out $c;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [4, "
-  "];
+      is_deeply $e->w, <<END;
+    4
+    END
      }
     
     if (1)                                                                          
@@ -2431,8 +2452,9 @@ Push the value in the current stack frame specified by the source operand onto t
     
       Out $c, $d;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out,    [2, 1, "
-  "];
+      is_deeply $e->w, <<END;
+    2 1
+    END
       is_deeply $e->memory, {4 => []};
      }
     
@@ -2557,8 +2579,6 @@ Get a word from the return area and save it.
       is_deeply $e->w, <<END;
     ccc
     END
-     say STDERR '  is_deeply $e->w, <<END;', "
-  ", $e->w, "END"; exit;
      }
     
 
@@ -2587,8 +2607,6 @@ Put a word into the return area.
       is_deeply $e->w, <<END;
     ccc
     END
-     say STDERR '  is_deeply $e->w, <<END;', "
-  ", $e->w, "END"; exit;
      }
     
 
