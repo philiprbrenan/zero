@@ -1499,6 +1499,8 @@ sub formatTrace($)                                                              
   sprintf "[%d, %d, %s] = %d$b", $area, $addr, $type, $value;
  }
 
+#D1 Instruction Set                                                             # The instruction set used by the Zero assembler programming language.
+
 my $assembly;                                                                   # The current assembly
 
 my sub label()                                                                  # Next unique label
@@ -1527,8 +1529,6 @@ my sub xTarget($)                                                               
   (q(target), RefLeft $t)
  }
 
-#D1 Instruction Set                                                             # The instruction set used by the Zero assembler programming language.
-
 sub Inc($);
 sub Jge($$$);
 sub Jlt($$$);
@@ -1556,13 +1556,13 @@ sub ArrayCountLess($$;$) {                                                      
    {my ($area, $element) = @_;                                                  # Area, element to find
     my $t = &Var();
     $assembly->instruction(action=>"arrayCountLess",
-    target=>RefLeft($t), xSource($area), xSource2($element));
+      target=>RefLeft($t), xSource($area), xSource2($element));
     $t
    }
   else
    {my ($target, $area, $element) = @_;                                         # Target, area, element to find
     $assembly->instruction(action=>"arrayCountLess",
-    xTarget($target), xSource($area), xSource2($element));
+      xTarget($target), xSource($area), xSource2($element));
    }
  }
 
@@ -1571,13 +1571,13 @@ sub ArrayCountGreater($$;$) {                                                   
    {my ($area, $element) = @_;                                                  # Area, element to find
     my $t = &Var();
     $assembly->instruction(action=>"arrayCountGreater",
-    target=>RefLeft($t), xSource($area), xSource2($element));
+      target=>RefLeft($t), xSource($area), xSource2($element));
     $t
    }
   else
    {my ($target, $area, $element) = @_;                                         # Target, area, element to find
     $assembly->instruction(action=>"arrayCountGreater",
-    xTarget($target), xSource($area), xSource2($element));
+      xTarget($target), xSource($area), xSource2($element));
    }
  }
 
@@ -1591,13 +1591,13 @@ sub ArrayIndex($$;$) {                                                          
    {my ($area, $element) = @_;                                                  # Area, element to find
     my $t = &Var();
     $assembly->instruction(action=>"arrayIndex",
-    target=>RefLeft($t), xSource($area), xSource2($element));
+      target=>RefLeft($t), xSource($area), xSource2($element));
     $t
    }
   else
    {my ($target, $area, $element) = @_;                                         # Target, area, element to find
     $assembly->instruction(action=>"arrayIndex",
-    xTarget($target), xSource($area), xSource2($element));
+      xTarget($target), xSource($area), xSource2($element));
    }
  }
 
@@ -2054,14 +2054,14 @@ sub ParamsPut($$)                                                               
  }
 
 sub Pop(;$$) {                                                                  #i Pop the memory area specified by the source operand into the memory address specified by the target operand.
-  if (@_ == 2)                                                               # Pop indicated area into a local variable
-   {my ($source, $source2) = @_;                                                          # Memory address to place return value in, return value to get
+  if (@_ == 2)                                                                  # Pop indicated area into a local variable
+   {my ($source, $source2) = @_;                                                # Memory address to place return value in, return value to get
     my $p = &Var();
     $assembly->instruction(action=>"pop", target=>RefLeft($p),xSource($source), source2=>$source2);
     return $p;
    }
   elsif (@_ == 3)
-   {my ($target, $source, $source2) = @_;                                                 # Pop indicated area into target address
+   {my ($target, $source, $source2) = @_;                                       # Pop indicated area into target address
     $assembly->instruction(action=>"pop", xTarget($target), xSource($source), source2=>$source2);
    }
   else
