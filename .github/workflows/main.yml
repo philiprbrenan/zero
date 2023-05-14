@@ -18,35 +18,35 @@ jobs:
       run: |
         sudo cpan install -T Data::Dump Data::Table::Text
 
-    - name: Zero Emulator
+    - name: Emulator
       run: |
         perl lib/Zero/Emulator.pm
 
-    - name: Zero NWayTree
+    - name: NWayTree
       run: |
         perl lib/Zero/NWayTree.pm
 
-    - name: Zero testEmulator
+    - name: TestEmulator
       run: |
         perl examples/testEmulator.pl
 
-    - name: Zero testNWayTree
+    - name: TestNWayTree
       run: |
         perl examples/testNWayTree.pl
 
-    - name: Zero bubbleSort
+    - name: BubbleSort
       run: |
         perl examples/bubbleSort.pl
 
-    - name: Zero insertionSort
+    - name: InsertionSort
       run: |
         perl examples/insertionSort.pl
 
-    - name: Zero quickSort
+    - name: QuickSort
       run: |
         perl examples/quickSort.pl
 
-    - name: Zero selectionSort
+    - name: SelectionSort
       run: |
         perl examples/selectionSort.pl
 
