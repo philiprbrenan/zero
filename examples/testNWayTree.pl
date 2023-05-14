@@ -33,8 +33,6 @@ or whether it is being updated with the same value again.
 
 =cut
 
-Test::More->builder->output("/dev/null");
-
 if (1)                                                                          # Dimensions of the tree
  {my $W = 3; my $N = 15;
 
@@ -57,7 +55,7 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
 
-  is_deeply $e->out, [0..$N-1];                                                 # Check output
+  is_deeply $e->outLines, [0..$N-1];                                            # Check output
 
   is_deeply printTreeKeys($e->memory), <<END;                                   # Check keys in memory
            3           7
@@ -104,7 +102,7 @@ if (1)                                                                          
    } $t;
 
   my $e = Execute(suppressOutput=>1);                                           # Assemble and execute the program
-  is_deeply $e->out, [1..$N];                                                   # Check output
+  is_deeply $e->outLines, [1..$N];                                                   # Check output
 }
 
 done_testing;
