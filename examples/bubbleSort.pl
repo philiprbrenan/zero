@@ -6,6 +6,7 @@
 use v5.30;
 use warnings FATAL => qw(all);
 use strict;
+use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
 use Test::More tests=>5;
 
@@ -39,32 +40,33 @@ if (1)                                                                          
  {Start 1;
   my $a = Array "array";
   my @a = qw(6 8 4 2 1 3 5 7);
-  Push $a, $_, "array" for @a;                                                           # Load array
+  Push $a, $_, "array" for @a;                                                  # Load array
 
   bubbleSort($a, "array");                                                      # Sort
 
-  ForArray                                                                      # Print array
-   {my ($i, $e) = @_;
-    Out $e;
-   } $a, "array";
+  ArrayDump $a, "array";
 
   my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
-  is_deeply $e->out, [1..8];                                                    # Check output
+  is_deeply $e->out, <<END;
+array
+bless([1 .. 8], "array")
+END
 
-  is_deeply $e->count,  347;                                                    # Instructions executed
+  is_deeply $e->count,  305;                                                    # Instructions executed
 
-  is_deeply $e->counts, {                                                       # Counts of each instruction type executed
-  array     => 1,
-  arraySize => 2,
-  inc       => 62,
-  jFalse    => 5,
-  jGe       => 54,
-  jLe       => 35,
-  jmp       => 47,
-  mov       => 120,
-  out       => 8,
-  push      => 8,
-  subtract  => 5};
+  is_deeply formatTable($e->counts), <<END;
+array        1
+arrayDump    1
+arraySize    1
+inc         54
+jFalse       5
+jGe         45
+jLe         35
+jmp         39
+mov        111
+push         8
+subtract     5
+END
  }
 
 if (1)                                                                          # Reversed array 4 times larger
@@ -75,13 +77,13 @@ if (1)                                                                          
 
   bubbleSort($a, "array");
 
-  ForArray
-   {my ($i, $e, $Check, $Next, $End) = @_;
-    Out $e;
-   } $a, "array";
+  ArrayDump $a, "array";
 
   my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
 
-  is_deeply $e->out, [1..32];                                                   # Check output
-  is_deeply $e->count, 7892;                                                    # Approximately 4*4== 16 times bigger
+  is_deeply $e->out, <<END;
+array
+bless([1 .. 32], "array")
+END
+  is_deeply $e->count, 7730;                                                    # Approximately 4*4== 16 times bigger
  }
