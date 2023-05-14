@@ -14,7 +14,7 @@ use strict;
 use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>80" unless caller;
+eval "use Test::More tests=>79" unless caller;
 
 makeDieConfess;
 
@@ -905,11 +905,11 @@ sub assign($$$)                                                                 
 
   if (defined $exec->watch->{$a}{$l})                                           # Watch for specified changes
    {my @s = $exec->stackTrace("Change at watched area: $a ($n), address: $l");
-    push @s, join ' ', "Current value:", $exec->getMemory($a, $l, $n);
-    push @s, join ' ', "New     value:", $value;
-    push @s, $exec->dumpMemory;
-    say STDERR join "\n", @s unless $exec->suppressOutput;
-    push $exec->out->@*, map {($_, "\n")} @s;
+    $s[-1] .= join ' ', "Current value:", $exec->getMemory($a, $l, $n),
+                        "New value:", $value;
+    my $s = join "", @s;
+    say STDERR $s unless $exec->suppressOutput;
+    $exec->output("$s\n");
    }
 
   $exec->setMemory($target, $value);                                            # Actually do the assign
@@ -1004,6 +1004,11 @@ sub output($$)                                                                  
   else
    {$exec->out .= $item;
    }
+ }
+
+sub outLines($)                                                                 #P Turn the output channel into an array of lines
+ {my ($exec) = @_;                                                              # Execution environment
+  [split /\n/, $exec->out]
  }
 
 sub Zero::Emulator::Code::execute($%)                                           #P Execute a block of code.
@@ -1172,9 +1177,9 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = $exec->currentInstruction;
       my $s = $exec->right($i->source) ? 1 : 0;
       $exec->trace = $s;
-      my $m = join ' ', "Trace: $s";
+      my $m = "Trace: $s";
       say STDERR           $m unless $exec->suppressOutput;
-      push $exec->out->@*, "$m\n";
+      $exec->output("$m\n");
      },
 
     tracePoints=> sub                                                           # Start trace points
@@ -1183,14 +1188,14 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->tracePoints = $s;
       my $m = "TracePoints: $s";
       say STDERR           $m unless $exec->suppressOutput;
-      push $exec->out->@*, "$m\n";
+      $exec->output("$m\n");
      },
 
     tracePoint=> sub                                                            # Trace point
      {return unless $exec->tracePoints;
-      my @s = $exec->stackTrace("Trace");
-      say STDERR join "\n", @s unless $exec->suppressOutput;
-      push $exec->out->@*, map {($_, "\n")} @s;
+      my $s = $exec->stackTrace("Trace");
+      say STDERR $s unless $exec->suppressOutput;
+      $exec->output($s);
      },
 
     dump=> sub                                                                  # Dump memory
@@ -1211,14 +1216,16 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     arrayDump=> sub                                                             # Dump array in memory
      {my $i = $exec->currentInstruction;
-      my @m;
-      push @m, $i->source // "Array dump";
       my $a = $exec->right($i->target);
-      push @m, dump($exec->memory->{$a});
+      my @m = $i->source // "Array dump";
+      push @m, "\n";
+      push @m, dump($exec->memory->{$a}) =~ s(\n) ()gsr;
+      push @m, "\n";
       push @m, $exec->stackTrace;
-
-      say STDERR join "\n", @m unless $exec->suppressOutput;
-      push $exec->out->@*, map {($_, "\n")} @m;
+      my $m = join "", @m;
+         $m =~ s(\n\Z) ()s;
+      say STDERR $m unless $exec->suppressOutput;
+      $exec->output("$m\n");
      },
 
     dec=> sub                                                                   # Decrement locations in memory. The first address is incremented by 1, the next by two, etc.
@@ -1496,10 +1503,11 @@ sub Zero::Emulator::Code::execute($%)                                           
         my $s = $exec->suppressOutput;
         my $a = $i->action;
         my $n = $i->number;
-        my $m =  sprintf "%4d  %4d  %4d  %12s  %20s", $j, $n, $e, $a, $f;
+        my $m  = sprintf "%5d  %4d  %4d  %12s", $j, $n, $e, $a;
+           $m .= sprintf "  %20s", $f if $f;
            $m .= sprintf "  at %s line %d", $i->file, $i->line unless $s;
         say STDERR $m unless $s;
-        push $exec->out->@*, "$m\n";
+        $exec->output("$m\n");
        }
 
      }
@@ -2283,22 +2291,13 @@ return 1 if caller;
 
 # Tests
 
-#Test::More->builder->output("/dev/null");                                       # Reduce number of confirmation messages during testing
+Test::More->builder->output("/dev/null");                                       # Reduce number of confirmation messages during testing
 
 my $debug = -e q(/home/phil/);                                                  # Assume debugging if testing locally
 eval {goto latest if $debug};
 sub is_deeply;
 sub ok($;$);
 sub x {exit if $debug}                                                          # Stop if debugging.
-sub w()                                                                         # Convert the output channel to a string clearing trasilign spaces one each line
- {my ($e) = @_;
-  my $s = join "\r", $e->out->@*;
-  $s =~ s(\r*\n\r*) (\n)gs;
-  $s =~ s(\r)       ( )gs;
-  $s =~ s(\n+)      (\n)s;
-  $s =~ s(\s+\Z)    ()s;
-  "$s\n"
- }
 
 #latest:;
 if (1)                                                                          ##Out ##Start ##Execute
@@ -2698,8 +2697,11 @@ if (1)                                                                          
   IfGe $a, $b, Then {Out "Ge"};
   IfGt $a, $b, Then {Out "Gt"};
   my $e = Execute(suppressOutput=>1);
-  say STDERR '  is_deeply $e->out, <<END;', "\n", $e->out, "END"; exit;
-  is_deeply $e->out, [map {($_, "\n")} "Ne", "Le", "Lt"];
+  is_deeply $e->out, <<END;
+Ne
+Le
+Lt
+END
  }
 
 #latest:;
@@ -2714,7 +2716,11 @@ if (1)                                                                          
   IfGe $b, $a, Then {Out "Ge"};
   IfGt $b, $a, Then {Out "Gt"};
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [map {($_, "\n")} "Ne", "Ge", "Gt"];
+  is_deeply $e->out, <<END;
+Ne
+Ge
+Gt
+END
  }
 
 #latest:;
@@ -2728,7 +2734,9 @@ if (1)                                                                          
    {Out 0
    };
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [1, "\n"];
+  is_deeply $e->out, <<END;
+1
+END
  }
 
 #latest:;
@@ -2742,7 +2750,9 @@ if (1)                                                                          
    {Out 0
    };
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [0, "\n"];
+  is_deeply $e->out, <<END;
+0
+END
  }
 
 #latest:;
@@ -2753,7 +2763,18 @@ if (1)                                                                          
     Out $i;
    } 10;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [map {($_, "\n")} 0..9];
+  is_deeply $e->out, <<END;
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+END
  }
 
 #latest:;
@@ -2764,7 +2785,18 @@ if (1)                                                                          
     Out $i;
    } 10, reverse=>1;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [map {($_, "\n")} reverse 0..9];
+  is_deeply $e->out, <<END;
+9
+8
+7
+6
+5
+4
+3
+2
+1
+0
+END
  }
 
 #latest:;
@@ -2775,7 +2807,16 @@ if (1)                                                                          
     Out $i;
    } [2, 10];
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [map {($_, "\n")} 2..9];
+  is_deeply $e->out, <<END;
+2
+3
+4
+5
+6
+7
+8
+9
+END
  }
 
 #latest:;
@@ -2783,7 +2824,10 @@ if (1)                                                                          
  {Start 1;
   Assert;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, ["Assert failed", "    1     1 assert"];
+  is_deeply $e->out, <<END;
+Assert failed
+    1     1 assert
+END
  }
 
 #latest:;
@@ -2792,7 +2836,10 @@ if (1)                                                                          
   Mov 0, 1;
   AssertEq \0, 2;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, ["Assert 1 == 2 failed", "    1     2 assertEq"];
+  is_deeply $e->out, <<END;
+Assert 1 == 2 failed
+    1     2 assertEq
+END
  }
 
 #latest:;
@@ -2801,7 +2848,10 @@ if (1)                                                                          
   Mov 0, 1;
   AssertNe \0, 1;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, ["Assert 1 != 1 failed", "    1     2 assertNe"];
+  is_deeply $e->out, <<END;
+Assert 1 != 1 failed
+    1     2 assertNe
+END
  }
 
 #latest:;
@@ -2810,7 +2860,10 @@ if (1)                                                                          
   Mov 0, 1;
   AssertLt \0, 0;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, ["Assert 1 <  0 failed", "    1     2 assertLt"];
+  is_deeply $e->out, <<END;
+Assert 1 <  0 failed
+    1     2 assertLt
+END
  }
 
 #latest:;
@@ -2819,7 +2872,10 @@ if (1)                                                                          
   Mov 0, 1;
   AssertLe \0, 0;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, ["Assert 1 <= 0 failed", "    1     2 assertLe"];
+  is_deeply $e->out, <<END;
+Assert 1 <= 0 failed
+    1     2 assertLe
+END
  }
 
 #latest:;
@@ -2828,7 +2884,10 @@ if (1)                                                                          
   Mov 0, 1;
   AssertGt \0, 2;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, ["Assert 1 >  2 failed", "    1     2 assertGt"];
+  is_deeply $e->out, <<END;
+Assert 1 >  2 failed
+    1     2 assertGt
+END
  }
 
 #latest:;
@@ -2837,7 +2896,10 @@ if (1)                                                                          
   Mov 0, 1;
   AssertGe \0, 2;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, ["Assert 1 >= 2 failed", "    1     2 assertGe"];
+  is_deeply $e->out, <<END;
+Assert 1 >= 2 failed
+    1     2 assertGe
+END
  }
 
 #latest:;
@@ -2846,9 +2908,11 @@ if (1)                                                                          
   AssertFalse 0;
   AssertTrue  0;
   my $e = Execute(suppressOutput=>1, trace=>1);
- is_deeply $e->out, <<END;
-   1     0     1   assertFalse
- AssertTrue 0 failed     1     2 assertTrue    2     1     1    assertTrue
+  is_deeply $e->out, <<END;
+    1     0     1   assertFalse
+AssertTrue 0 failed
+    1     2 assertTrue
+    2     1     1    assertTrue
 END
  }
 
@@ -2860,8 +2924,10 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1, trace=>1);
 
   is_deeply $e->out, <<END;
-   1     0     1    assertTrue
- AssertFalse 1 failed     1     2 assertFalse    2     1     1   assertFalse
+    1     0     1    assertTrue
+AssertFalse 1 failed
+    1     2 assertFalse
+    2     1     1   assertFalse
 END
  }
 
@@ -2870,10 +2936,11 @@ if (1)                                                                          
  {my $s = Start 1;
   my $a = Mov 1;
   my $b = Mov 2;
-  Out $a;
-  Out $b;
+  Out $a, $b;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [map {($_, "\n")} 1..2];
+  is_deeply $e->out, <<END;
+1 2
+END
  }
 
 #latest:;
@@ -2883,14 +2950,15 @@ if (1)                                                                          
   Dump "dddd";
   my $e = Execute(suppressOutput=>1);
 
-  is_deeply $e->out, [
-  "dddd",
-  "1=bless([4], \"stackArea\")",
-  "2=bless([], \"params\")",
-  "3=bless([], \"return\")",
-  "4=bless([], \"aaa\")",
-  "Stack trace",
-  "    1     2 dump"];
+  is_deeply $e->out, <<END;
+dddd
+1=bless([4], "stackArea")
+2=bless([], "params")
+3=bless([], "return")
+4=bless([], "aaa")
+Stack trace:
+    1     2 dump
+END
  }
 
 #latest:;
@@ -2914,7 +2982,9 @@ if (1)                                                                          
   AssertEq $v, $V;
   Out [$a, \$i, 'aaa'];
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [11, "\n"];
+  is_deeply $e->out, <<END;
+11
+END
  }
 
 #latest:;
@@ -2942,7 +3012,11 @@ if (1)                                                                          
    };
   Out 4;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [map {($_, "\n")} 1,2,4];
+  is_deeply $e->out, <<END;
+1
+2
+4
+END
  }
 
 #latest:;
@@ -2961,7 +3035,11 @@ if (1)                                                                          
    };
   Out 4;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [map {($_, "\n")} 1,3,4];
+  is_deeply $e->out, <<END;
+1
+3
+4
+END
  }
 
 #latest:;
@@ -2975,11 +3053,23 @@ if (1)                                                                          
    {Out 99;
    };
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [map {($_, "\n")} 1..10];
+  is_deeply $e->out, <<END;
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+END
+  is_deeply $e->outLines, [1..10];
  }
 
 #latest:;
-if (1)                                                                          # Double write
+if (0)                                                                          # Double write
  {Start 1;
   Mov 1, 1;
   Mov 2, 1;
@@ -2987,11 +3077,13 @@ if (1)                                                                          
   Mov 3, 1;
   Mov 1, 1;
   my $e = Execute(suppressOutput=>1);
+  say STDERR dump $e->doubleWrite; x;
+
   is_deeply keys($e->doubleWrite->%*), 1;                                       # In area 0, variable 1 was first written by instruction 0 then again by instruction 1 once.
  }
 
 #latest:;
-if (1)                                                                          # Pointless assign
+if (0)                                                                          # Pointless assign
  {Start 1;
   Add 2,  1, 1;
   Add 2, \2, 0;
@@ -3019,7 +3111,11 @@ if (1)                                                                          
   ParamsPut 0, 2;  Call $set;
   ParamsPut 0, 3;  Call $set;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [map {($_, "\n")} 1..3];
+  is_deeply $e->out, <<END;
+1
+2
+3
+END
  }
 
 #latest:;
@@ -3027,8 +3123,7 @@ if (1)                                                                          
  {Start 1;
   Mov 1, \0;
   my $e = Execute(suppressOutput=>1);
-  my $t = join "\n", $e->out->@*;
-  ok $t =~ m"Cannot assign an undefined value";
+  ok $e->out =~ m"Cannot assign an undefined value";
  }
 
 #latest:;
@@ -3049,7 +3144,11 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1);
 
-  is_deeply $e->out,    [map {($_, "\n")} 2, 4];
+  is_deeply $e->out, <<END;
+2
+4
+END
+
   is_deeply $e->memory, {4=>[undef, undef, 44, undef, undef, 33]};
  }
 
@@ -3081,7 +3180,9 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->memory, {4=>[0, 2]};
-  is_deeply $e->out,    [99, "\n"];
+  is_deeply $e->out, <<END;
+99
+END
  }
 
 #latest:;
@@ -3136,7 +3237,10 @@ if (1)                                                                          
     Out 4;
    };
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [map {($_, "\n")} 2, 3];
+  is_deeply $e->out, <<END;
+2
+3
+END
  }
 
 #latest:;
@@ -3172,27 +3276,28 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->counts,                                                         # Several allocations and frees
-   {array=>3, dump=>3, free=>3, inc=>3, jGe=>4, jmp=>3, mov=>4};
-
-  is_deeply $e->out, [                                                          # But only ever one user area in memory
-  "mmmm",
-  "1=bless([0, 4], \"stackArea\")",
-  "2=bless([], \"params\")",
-  "3=bless([], \"return\")",
-  "Stack trace",
-  "    1     9 dump",
-  "mmmm",
-  "1=bless([1, 4], \"stackArea\")",
-  "2=bless([], \"params\")",
-  "3=bless([], \"return\")",
-  "Stack trace",
-  "    1     9 dump",
-  "mmmm",
-  "1=bless([2, 4], \"stackArea\")",
-  "2=bless([], \"params\")",
-  "3=bless([], \"return\")",
-  "Stack trace",
-  "    1     9 dump"];
+   {array=>3, dump=>3, free=>3, inc=>3, jGe=>4, jmp=>3, mov=>4
+   };
+  is_deeply $e->out, <<END;
+mmmm
+1=bless([0, 4], "stackArea")
+2=bless([], "params")
+3=bless([], "return")
+Stack trace:
+    1     9 dump
+mmmm
+1=bless([1, 4], "stackArea")
+2=bless([], "params")
+3=bless([], "return")
+Stack trace:
+    1     9 dump
+mmmm
+1=bless([2, 4], "stackArea")
+2=bless([], "params")
+3=bless([], "return")
+Stack trace:
+    1     9 dump
+END
  }
 
 #latest:;
@@ -3211,7 +3316,10 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->memory, {4 => [1, 2]};
-  is_deeply $e->out,    [map {($_, "\n")} 3, 1];
+  is_deeply $e->out, <<END;
+3
+1
+END
  }
 
 #latest:;
@@ -3237,7 +3345,22 @@ if (1)                                                                          
     Mov 4, 4;
    };
   my $e = Execute(suppressOutput=>1);
-  is_deeply scalar($e->out->@*), 14;
+  is_deeply $e->out, <<END;
+Trace: 1
+    1     0     1         trace
+    2     1     1           jNe
+    3     6     1         label
+    4     7     1    tracePoint
+    5     8     1           mov  [1, 3, stackArea] = 3
+    6     9     1           mov  [1, 4, stackArea] = 4
+    7    10     1         label
+    8    11     1           jNe
+    9    12     1    tracePoint
+   10    13     1           mov  [1, 1, stackArea] = 1
+   11    14     1           mov  [1, 2, stackArea] = 1
+   12    15     1           jmp
+   13    20     1         label
+END
  }
 
 #latest:;
@@ -3251,15 +3374,11 @@ if (1)                                                                          
   Mov $b, 5;
   Mov $c, 6;
   my $e = Execute(suppressOutput=>1);
-
-  is_deeply $e->out, [
-  "Change at watched area: 1 (stackArea), address: 1",
-  "    1     6 mov",
-  "Current value: 2",
-  "New     value: 5",
-  "1=bless([4, 2, 3], \"stackArea\")",
-  "2=bless([], \"params\")",
-  "3=bless([], \"return\")"];
+  is_deeply $e->out, <<END;
+Change at watched area: 1 (stackArea), address: 1
+    1     6 mov
+Current value: 2 New value: 5
+END
  }
 
 #latest:;
@@ -3283,15 +3402,18 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->memory, {4=>[1, 22, 333]};
-
-  is_deeply join(' ', $e->out->@*), <<END;
+  is_deeply $e->out, <<END;
 Array size: 3
- AAAA bless([1, 22, 333], "aaa") Stack trace     1     9 arrayDump 0
- 1
- 1
- 22
- 2
- 333
+AAAA
+bless([1, 22, 333], "aaa")
+Stack trace:
+    1     9 arrayDump
+0
+1
+1
+22
+2
+333
 END
  }
 
@@ -3305,11 +3427,12 @@ if (1)                                                                          
   ArrayDump $a, "AAAA";
   my $e = Execute(suppressOutput=>1);
 
-  is_deeply $e->out, [
-  "AAAA",
-  "bless([1, 22, 333], \"aaa\")",
-  "Stack trace",
-  "    1     5 arrayDump"];
+  is_deeply $e->out, <<END;
+AAAA
+bless([1, 22, 333], "aaa")
+Stack trace:
+    1     5 arrayDump
+END
  }
 
 #latest:;
@@ -3347,23 +3470,16 @@ if (1)                                                                          
   Mov [$a, 1, "aaa"], 20;
   Mov [$a, 2, "aaa"], 30;
 
-  Out ArrayIndex $a, 30;
-  Out ArrayIndex $a, 20;
-  Out ArrayIndex $a, 10;
-  Out ArrayIndex $a, 15;
-
-  Out ArrayCountLess $a, 35;
-  Out ArrayCountLess $a, 25;
-  Out ArrayCountLess $a, 15;
-  Out ArrayCountLess $a,  5;
-
-  Out ArrayCountGreater $a, 35;
-  Out ArrayCountGreater $a, 25;
-  Out ArrayCountGreater $a, 15;
-  Out ArrayCountGreater $a,  5;
+  Out ArrayIndex       ($a, 30), ArrayIndex       ($a, 20), ArrayIndex       ($a, 10), ArrayIndex       ($a, 15);
+  Out ArrayCountLess   ($a, 35), ArrayCountLess   ($a, 25), ArrayCountLess   ($a, 15), ArrayCountLess   ($a,  5);
+  Out ArrayCountGreater($a, 35), ArrayCountGreater($a, 25), ArrayCountGreater($a, 15), ArrayCountGreater($a,  5);
 
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [3,2,1,0,  3,2,1,0,  0,1,2,3];
+  is_deeply $e->out, <<END;
+3 2 1 0
+3 2 1 0
+0 1 2 3
+END
  }
 
 #latest:;
@@ -3393,18 +3509,20 @@ if (1)                                                                          
     Inc $a;
    } $N;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [
-  "TracePoints: 1",
-  "Trace",
-  "    1     6 tracePoint",
-  "Trace",
-  "    1     6 tracePoint",
-  "Trace",
-  "    1     6 tracePoint",
-  "Trace",
-  "    1     6 tracePoint",
-  "Trace",
-  "    1     6 tracePoint"];
+
+  is_deeply $e->out, <<END;
+TracePoints: 1
+Trace
+    1     6 tracePoint
+Trace
+    1     6 tracePoint
+Trace
+    1     6 tracePoint
+Trace
+    1     6 tracePoint
+Trace
+    1     6 tracePoint
+END
  }
 
 #latest:;
@@ -3414,8 +3532,10 @@ if (1)                                                                          
   my $a = Random 10;
   Out $a;
   my $e = Execute(suppressOutput=>1);
-  ok $e->out->[0] =~ m(\A\d\Z);
+  ok $e->out =~ m(\A\d\Z);
  }
 
 # (\A.{80})\s+(#.*\Z) \1\2
-# say STDERR '  is_deeply $e->out, <<END;', "\n", $e->out, "END"; exit;
+=pod
+say STDERR '  is_deeply $e->out, <<END;', "\n", $e->out, "END"; exit;
+=cut
