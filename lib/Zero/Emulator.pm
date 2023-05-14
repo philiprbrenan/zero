@@ -2275,7 +2275,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 @ISA         = qw(Exporter);
 @EXPORT      = qw();
-@EXPORT_OK   = qw(Add Array ArrayCountLess ArrayCountGreater ArrayDump ArrayIndex ArraySize Assert AssertEq AssertFalse AssertGe AssertGt AssertLe AssertLt AssertNe AssertTrue Bad Block Call Clear Confess Dec Dump Else Execute For ForArray Free Good IfEq IfFalse IfGe IfGt IfNe IfLe IfLt IfTrue Inc Jeq JFalse Jge Jgt Jle Jlt Jmp Jne JTrue LoadAddress LoadArea Mov MoveLong Not Nop Out ParamsGet ParamsPut Pop Procedure Push Resize Random RandomSeed Return ReturnGet ReturnPut ShiftDown ShiftLeft ShiftRight ShiftUp Start Subtract Tally Then Trace TracePoints Watch);
+@EXPORT_OK   = qw(Add Array ArrayCountLess ArrayCountGreater ArrayDump ArrayIndex ArraySize Assert AssertEq AssertFalse AssertGe AssertGt AssertLe AssertLt AssertNe AssertTrue Bad Block Call Clear Confess Dec Dump Else Execute For ForArray Free Good IfEq IfFalse IfGe IfGt IfNe IfLe IfLt IfTrue Inc Jeq JFalse Jge Jgt Jle Jlt Jmp Jne JTrue LoadAddress LoadArea Mov MoveLong Not Nop Out ParamsGet ParamsPut Pop Procedure Push Resize Random RandomSeed Return ReturnGet ReturnPut ShiftDown ShiftLeft ShiftRight ShiftUp Start Subtract Tally Then Trace TracePoints Watch Var);
 %EXPORT_TAGS = (all=>[@EXPORT, @EXPORT_OK]);
 
 return 1 if caller;
