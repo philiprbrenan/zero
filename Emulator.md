@@ -625,8 +625,6 @@ Call the subroutine at the target address.
       Call $w;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, ["bbb", "
-  "];
       is_deeply $e->out, <<END;
     bbb
     END
@@ -808,12 +806,9 @@ Dump all the arrays currently in memory.
     2=bless([], "params")
     3=bless([], "return")
     4=bless([undef, 1, 2], "node")
-    Stack trace
+    Stack trace:
         1     7 dump
     END
-      say STDERR dump($e->out); exit;
-      say STDERR '  is_deeply $e->out, <<END;', "
-  ", $e->out, "END"; exit;
      }
     
 
@@ -1035,12 +1030,9 @@ Free the memory area named by the target operand after confirming that it has th
     2=bless([], "params")
     3=bless([], "return")
     4=bless([undef, 1, 2], "node")
-    Stack trace
+    Stack trace:
         1     7 dump
     END
-      say STDERR dump($e->out); exit;
-      say STDERR '  is_deeply $e->out, <<END;', "
-  ", $e->out, "END"; exit;
      }
     
 
@@ -1099,10 +1091,11 @@ Execute then or else clause depending on whether two memory locations are equal.
       IfGe $a, $a, Then {Out "Ge"};
       IfGt $a, $a, Then {Out "Gt"};
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} "Eq", "Le", "Ge"];
-      say STDERR '  is_deeply $e->out, <<END;', "
-  ", $e->out, "END"; exit;
+      is_deeply $e->out, <<END;
+    Eq
+    Le
+    Ge
+    END
      }
     
     if (1)                                                                                   
@@ -1118,6 +1111,8 @@ Execute then or else clause depending on whether two memory locations are equal.
       IfGe $a, $b, Then {Out "Ge"};
       IfGt $a, $b, Then {Out "Gt"};
       my $e = Execute(suppressOutput=>1);
+      say STDERR '  is_deeply $e->out, <<END;', "
+  ", $e->out, "END"; exit;
       is_deeply $e->out, [map {($_, "
   ")} "Ne", "Le", "Lt"];
      }
@@ -1191,10 +1186,11 @@ Execute then or else clause depending on whether two memory locations are greate
 
       IfGt $a, $a, Then {Out "Gt"};
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} "Eq", "Le", "Ge"];
-      say STDERR '  is_deeply $e->out, <<END;', "
-  ", $e->out, "END"; exit;
+      is_deeply $e->out, <<END;
+    Eq
+    Le
+    Ge
+    END
      }
     
     if (1)                                                                                   
@@ -1210,6 +1206,8 @@ Execute then or else clause depending on whether two memory locations are greate
 
       IfGt $a, $b, Then {Out "Gt"};
       my $e = Execute(suppressOutput=>1);
+      say STDERR '  is_deeply $e->out, <<END;', "
+  ", $e->out, "END"; exit;
       is_deeply $e->out, [map {($_, "
   ")} "Ne", "Le", "Lt"];
      }
@@ -1256,10 +1254,11 @@ Execute then or else clause depending on whether two memory locations are greate
       IfGt $a, $a, Then {Out "Gt"};  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} "Eq", "Le", "Ge"];
-      say STDERR '  is_deeply $e->out, <<END;', "
-  ", $e->out, "END"; exit;
+      is_deeply $e->out, <<END;
+    Eq
+    Le
+    Ge
+    END
      }
     
     if (1)                                                                                   
@@ -1275,6 +1274,8 @@ Execute then or else clause depending on whether two memory locations are greate
       IfGt $a, $b, Then {Out "Gt"};  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
+      say STDERR '  is_deeply $e->out, <<END;', "
+  ", $e->out, "END"; exit;
       is_deeply $e->out, [map {($_, "
   ")} "Ne", "Le", "Lt"];
      }
@@ -1321,10 +1322,11 @@ Execute then or else clause depending on whether two memory locations are not eq
       IfGe $a, $a, Then {Out "Ge"};
       IfGt $a, $a, Then {Out "Gt"};
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} "Eq", "Le", "Ge"];
-      say STDERR '  is_deeply $e->out, <<END;', "
-  ", $e->out, "END"; exit;
+      is_deeply $e->out, <<END;
+    Eq
+    Le
+    Ge
+    END
      }
     
     if (1)                                                                                   
@@ -1340,6 +1342,8 @@ Execute then or else clause depending on whether two memory locations are not eq
       IfGe $a, $b, Then {Out "Ge"};
       IfGt $a, $b, Then {Out "Gt"};
       my $e = Execute(suppressOutput=>1);
+      say STDERR '  is_deeply $e->out, <<END;', "
+  ", $e->out, "END"; exit;
       is_deeply $e->out, [map {($_, "
   ")} "Ne", "Le", "Lt"];
      }
@@ -1386,10 +1390,11 @@ Execute then or else clause depending on whether two memory locations are less t
       IfGe $a, $a, Then {Out "Ge"};
       IfGt $a, $a, Then {Out "Gt"};
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} "Eq", "Le", "Ge"];
-      say STDERR '  is_deeply $e->out, <<END;', "
-  ", $e->out, "END"; exit;
+      is_deeply $e->out, <<END;
+    Eq
+    Le
+    Ge
+    END
      }
     
     if (1)                                                                                   
@@ -1405,6 +1410,8 @@ Execute then or else clause depending on whether two memory locations are less t
       IfGe $a, $b, Then {Out "Ge"};
       IfGt $a, $b, Then {Out "Gt"};
       my $e = Execute(suppressOutput=>1);
+      say STDERR '  is_deeply $e->out, <<END;', "
+  ", $e->out, "END"; exit;
       is_deeply $e->out, [map {($_, "
   ")} "Ne", "Le", "Lt"];
      }
@@ -1451,10 +1458,11 @@ Execute then or else clause depending on whether two memory locations are less t
       IfGe $a, $a, Then {Out "Ge"};
       IfGt $a, $a, Then {Out "Gt"};
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} "Eq", "Le", "Ge"];
-      say STDERR '  is_deeply $e->out, <<END;', "
-  ", $e->out, "END"; exit;
+      is_deeply $e->out, <<END;
+    Eq
+    Le
+    Ge
+    END
      }
     
     if (1)                                                                                   
@@ -1470,6 +1478,8 @@ Execute then or else clause depending on whether two memory locations are less t
       IfGe $a, $b, Then {Out "Ge"};
       IfGt $a, $b, Then {Out "Gt"};
       my $e = Execute(suppressOutput=>1);
+      say STDERR '  is_deeply $e->out, <<END;', "
+  ", $e->out, "END"; exit;
       is_deeply $e->out, [map {($_, "
   ")} "Ne", "Le", "Lt"];
      }
@@ -3009,15 +3019,15 @@ Create a label.
       setLabel($b);
     
       Jgt ((my $c = label), \0, 3);
-        Out  1;
+        Out  3;
         Jmp (my $d = label);
       setLabel($c);
-        Out  2;
+        Out  4;
       setLabel($d);
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
     2
-    1
+    3
     END
      }
     
