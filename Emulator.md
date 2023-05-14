@@ -48,7 +48,7 @@ Add the source locations together and store the result in the target area.
 
       Out  $a;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     5
     END
      }
@@ -360,7 +360,7 @@ Assert false.
 
       my $e = Execute(suppressOutput=>1, trace=>1);
     
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
        1     0     1    assertTrue
     
      AssertFalse 1 failed     1     2 assertFalse    2     1     1   assertFalse  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -496,7 +496,7 @@ Assert true.
       AssertTrue  0;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1, trace=>1);
-     is_deeply $e->w, <<END;
+     is_deeply $e->out, <<END;
        1     0     1   assertFalse
     
      AssertTrue 0 failed     1     2 assertTrue    2     1     1    assertTrue  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -608,7 +608,7 @@ Call the subroutine at the target address.
       Call $w;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     aaa
     END
      }
@@ -627,7 +627,7 @@ Call the subroutine at the target address.
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, ["bbb", "
   "];
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     bbb
     END
      }
@@ -644,7 +644,7 @@ Call the subroutine at the target address.
       ReturnGet \0, 0;
       Out \0;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     ccc
     END
      }
@@ -747,7 +747,7 @@ Confess with a stack trace showing the location both in the emulated code and in
        };
       Call $c;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     
     Confess at:  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
@@ -774,7 +774,7 @@ Decrement the target.
 
       Out $a;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     2
     END
      }
@@ -801,7 +801,7 @@ Dump all the arrays currently in memory.
 
       Free $a, "node";
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     4
     dddd
     1=bless([4, 1], "stackArea")
@@ -811,9 +811,9 @@ Dump all the arrays currently in memory.
     Stack trace
         1     7 dump
     END
-      say STDERR dump($e->w); exit;
-      say STDERR '  is_deeply $e->w, <<END;', "
-  ", $e->w, "END"; exit;
+      say STDERR dump($e->out); exit;
+      say STDERR '  is_deeply $e->out, <<END;', "
+  ", $e->out, "END"; exit;
      }
     
 
@@ -867,12 +867,13 @@ Execute the current assembly.
 
     if (1)                                                                            
      {Start 1;
-      Out "hello World";
+      Out "Hello", "World";
     
       my $e = Execute(suppressOutput=>1);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      is_deeply $e->out, ["hello World", "
-  "];
+      is_deeply $e->out, <<END;
+    Hello World
+    END
      }
     
 
@@ -1009,7 +1010,7 @@ Free the memory area named by the target operand after confirming that it has th
       Free $a, "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     Wrong name: aaa for array with name: node
         1     2 free
     END
@@ -1027,7 +1028,7 @@ Free the memory area named by the target operand after confirming that it has th
       Free $a, "node";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     4
     dddd
     1=bless([4, 1], "stackArea")
@@ -1037,9 +1038,9 @@ Free the memory area named by the target operand after confirming that it has th
     Stack trace
         1     7 dump
     END
-      say STDERR dump($e->w); exit;
-      say STDERR '  is_deeply $e->w, <<END;', "
-  ", $e->w, "END"; exit;
+      say STDERR dump($e->out); exit;
+      say STDERR '  is_deeply $e->out, <<END;', "
+  ", $e->out, "END"; exit;
      }
     
 
@@ -1100,8 +1101,8 @@ Execute then or else clause depending on whether two memory locations are equal.
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, [map {($_, "
   ")} "Eq", "Le", "Ge"];
-      say STDERR '  is_deeply $e->w, <<END;', "
-  ", $e->w, "END"; exit;
+      say STDERR '  is_deeply $e->out, <<END;', "
+  ", $e->out, "END"; exit;
      }
     
     if (1)                                                                                   
@@ -1192,8 +1193,8 @@ Execute then or else clause depending on whether two memory locations are greate
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, [map {($_, "
   ")} "Eq", "Le", "Ge"];
-      say STDERR '  is_deeply $e->w, <<END;', "
-  ", $e->w, "END"; exit;
+      say STDERR '  is_deeply $e->out, <<END;', "
+  ", $e->out, "END"; exit;
      }
     
     if (1)                                                                                   
@@ -1257,8 +1258,8 @@ Execute then or else clause depending on whether two memory locations are greate
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, [map {($_, "
   ")} "Eq", "Le", "Ge"];
-      say STDERR '  is_deeply $e->w, <<END;', "
-  ", $e->w, "END"; exit;
+      say STDERR '  is_deeply $e->out, <<END;', "
+  ", $e->out, "END"; exit;
      }
     
     if (1)                                                                                   
@@ -1322,8 +1323,8 @@ Execute then or else clause depending on whether two memory locations are not eq
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, [map {($_, "
   ")} "Eq", "Le", "Ge"];
-      say STDERR '  is_deeply $e->w, <<END;', "
-  ", $e->w, "END"; exit;
+      say STDERR '  is_deeply $e->out, <<END;', "
+  ", $e->out, "END"; exit;
      }
     
     if (1)                                                                                   
@@ -1387,8 +1388,8 @@ Execute then or else clause depending on whether two memory locations are less t
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, [map {($_, "
   ")} "Eq", "Le", "Ge"];
-      say STDERR '  is_deeply $e->w, <<END;', "
-  ", $e->w, "END"; exit;
+      say STDERR '  is_deeply $e->out, <<END;', "
+  ", $e->out, "END"; exit;
      }
     
     if (1)                                                                                   
@@ -1452,8 +1453,8 @@ Execute then or else clause depending on whether two memory locations are less t
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, [map {($_, "
   ")} "Eq", "Le", "Ge"];
-      say STDERR '  is_deeply $e->w, <<END;', "
-  ", $e->w, "END"; exit;
+      say STDERR '  is_deeply $e->out, <<END;', "
+  ", $e->out, "END"; exit;
      }
     
     if (1)                                                                                   
@@ -1535,7 +1536,7 @@ Increment the target.
 
       Out $a;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     4
     END
      }
@@ -1802,7 +1803,7 @@ Jump to a label.
         Out  2;
       setLabel($b);
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     2
     END
      }
@@ -1966,7 +1967,7 @@ Copy a constant or memory address to the target address.
 
       Out $a;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     2
     END
      }
@@ -1984,7 +1985,7 @@ Copy a constant or memory address to the target address.
 
       Out \1;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     11
     END
      }
@@ -2199,7 +2200,7 @@ Move and not.
 
       Out $a, $b, $c;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     3  1
     END
      }
@@ -2216,7 +2217,9 @@ Do nothing (but do it well!).
     
       Nop;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      ok Execute(out=>[]);
+      my $e = Execute;
+      is_deeply $e->out, "";
+    
      }
     
     if (1)                                                                             
@@ -2266,11 +2269,12 @@ Write memory location contents to out.
     if (1)                                                                            
      {Start 1;
     
-      Out "hello World";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      Out "Hello", "World";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, ["hello World", "
-  "];
+      is_deeply $e->out, <<END;
+    Hello World
+    END
      }
     
 
@@ -2375,7 +2379,7 @@ Pop the memory area specified by the source operand into the memory address spec
     
       Out $c, $d;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     2 1
     END
       is_deeply $e->memory, {4 => []};
@@ -2407,7 +2411,7 @@ Define a procedure.
       my $c = ReturnGet 0;
       Out $c;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     4
     END
      }
@@ -2452,7 +2456,7 @@ Push the value in the current stack frame specified by the source operand onto t
     
       Out $c, $d;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     2 1
     END
       is_deeply $e->memory, {4 => []};
@@ -2549,7 +2553,7 @@ Return from a procedure via the call stack.
        };
       Call $w;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     aaa
     END
      }
@@ -2576,7 +2580,7 @@ Get a word from the return area and save it.
 
       Out \0;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     ccc
     END
      }
@@ -2604,7 +2608,7 @@ Put a word into the return area.
       ReturnGet \0, 0;
       Out \0;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     ccc
     END
      }
@@ -2656,7 +2660,7 @@ Shift left within an element.
 
       Out $a;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     2
     END
      }
@@ -2680,7 +2684,7 @@ Shift right with an element.
 
       Out $a;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     2
     END
      }
@@ -2726,10 +2730,11 @@ Start the current assembly using the specified version of the Zero language.  At
     
      {Start 1;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      Out "hello World";
+      Out "Hello", "World";
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, ["hello World", "
-  "];
+      is_deeply $e->out, <<END;
+    Hello World
+    END
      }
     
 
@@ -2751,7 +2756,7 @@ Subtract the second source operand value from the first source operand value and
 
       Out $a;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     2
     END
      }
@@ -2918,7 +2923,7 @@ Create a variable initialized to the specified value.
 
       AssertEq $a, 1;
       my $e = Execute(suppressOutput=>0);
-      is_deeply $e->out, [];
+      is_deeply $e->out, "";
      }
     
 
@@ -3010,7 +3015,7 @@ Create a label.
         Out  2;
       setLabel($d);
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     2
     1
     END
@@ -3024,7 +3029,7 @@ Create a label.
         Inc \0;
       Jlt $a, \0, 10;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->w, <<END;
+      is_deeply $e->out, <<END;
     0
     1
     2
