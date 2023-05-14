@@ -830,9 +830,7 @@ sub right($$)                                                                   
   else
    {$exec->stackTraceAndExit("Invalid right address: ".dump($a));
    }
-  if (!defined($m))
-   {invalid;
-   }
+  invalid if !defined $m;
 
   if (!defined($area))                                                          # Stack frame
    {$exec->rwRead($stackArea, $m);
@@ -872,7 +870,7 @@ sub assert1($$$)                                                                
    }
  }
 
-sub assert($$$)                                                                 #P Assert generically.
+sub assert2($$$)                                                                #P Assert generically.
  {my ($exec, $test, $sub) = @_;                                                 # Execution environment, Text of test, subroutine of test
   @_ == 3 or confess "Three parameters";
   my $i = $exec->currentInstruction;
@@ -1033,27 +1031,27 @@ sub Zero::Emulator::Code::execute($%)                                           
      },
 
     assertEq=> sub                                                              # Assert equals
-     {$exec->assert("==", sub {my ($a, $b) = @_; $a == $b})
+     {$exec->assert2("==", sub {my ($a, $b) = @_; $a == $b})
      },
 
     assertNe=> sub                                                              # Assert not equals
-     {$exec->assert("!=", sub {my ($a, $b) = @_; $a != $b})
+     {$exec->assert2("!=", sub {my ($a, $b) = @_; $a != $b})
      },
 
     assertLt=> sub                                                              # Assert less than
-     {$exec->assert("< ", sub {my ($a, $b) = @_; $a <  $b})
+     {$exec->assert2("< ", sub {my ($a, $b) = @_; $a <  $b})
      },
 
     assertLe=> sub                                                              # Assert less than or equal
-     {$exec->assert("<=", sub {my ($a, $b) = @_; $a <= $b})
+     {$exec->assert2("<=", sub {my ($a, $b) = @_; $a <= $b})
      },
 
     assertGt=> sub                                                              # Assert greater than
-     {$exec->assert("> ", sub {my ($a, $b) = @_; $a >  $b})
+     {$exec->assert2("> ", sub {my ($a, $b) = @_; $a >  $b})
      },
 
     assertGe=> sub                                                              # Assert greater
-     {$exec->assert(">=", sub {my ($a, $b) = @_; $a >= $b})
+     {$exec->assert2(">=", sub {my ($a, $b) = @_; $a >= $b})
      },
 
     assertFalse=> sub                                                           # Assert false
