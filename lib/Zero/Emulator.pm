@@ -14,7 +14,7 @@ use strict;
 use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>79" unless caller;
+eval "use Test::More tests=>80" unless caller;
 
 makeDieConfess;
 
@@ -38,7 +38,7 @@ sub execute(%)                                                                  
     rw=>                    {},                                                 # Read / write access to memory
     read=>                  {},                                                 # Records whether a memory address was ever read allowing us to find all the unused locations
     notReadAddresses=>      {},                                                 # Memory addresses never read
-    out=>                   [],                                                 # The out channel
+    out=>                   '',                                                 # The out channel. L<Out> writes an array of items to this followed by a new line.  L<out> does the same but without the new line.
     doubleWrite=>           {},                                                 # Source of double writes {instruction number} to count - an existing value was overwritten before it was used
     pointlessAssign=>       {},                                                 # Location already has the specified value
     suppressOutput=>        $options{suppressOutput},                           # If true the Out instruction will only write to the execution out array but not to stdout as well.
@@ -123,14 +123,13 @@ sub Zero::Emulator::Code::instruction($%)                                       
 sub Zero::Emulator::Code::Instruction::contextString($$$)                       #P Stack trace back for this instruction.
  {my ($i, $exec, $title) = @_;                                                  # Instruction, execution environment, title
   @_ == 3 or confess "Three parameters";
-  my @s;
-  push @s, $title;
+  my @s = $title;
   if (! $exec->suppressOutput)
    {for my $c($i->context->@*)
      {push @s, sprintf "    at %s line %d", $$c[0], $$c[1];
      }
    }
-  @s
+  join "\n", @s
  }
 
 sub AreaStructure($@)                                                           # Describe a data structure mapping a memory area.
@@ -361,15 +360,15 @@ sub dumpMemory($)                                                               
   @_ == 1 or confess "One parameter";
   my $memory = $exec->memory;
   my @m;
-  for my $area(sort {$a <=> $b} keys %$memory)
-   {next if $area =~ m(\Astack\Z)i;
+  for my $area(sort {$a <=> $b} keys %$memory)                                  # Each memory area
+   {next if $area =~ m(\Astack\Z)i;                                             # Ignore stack areas as they get big quickly and are difficult to decode
     my $l = dump($$memory{$area});
     $l = substr($l, 0, 100) if length($l) > 100;
     $l =~ s(\n) ( )gs;
     push @m, "$area=$l";
    }
 
-  @m
+  join "\n", @m, '';
  }
 
 sub analyzeExecutionResultsLeast($%)                                            #P Analyze execution results for least used code.
@@ -553,8 +552,7 @@ sub stackTrace($;$)                                                             
  {my ($exec, $title) = @_;                                                      # Execution environment, title
   my $i = $exec->currentInstruction;
   my $s = $exec->suppressOutput;                                                # Suppress file and line numbers in dump to facilitate automated testing
-  my @t;
-  push @t, $i->contextString($exec, $title//"Stack trace");
+  my @t = $i->contextString($exec, $title//"Stack trace:");
 
   for my $j(reverse keys $exec->calls->@*)
    {my $c = $exec->calls->[$j];
@@ -563,19 +561,16 @@ sub stackTrace($;$)                                                             
     push @t, sprintf "%5d  %4d %-16s at %s line %d",
       $j+1, $i->number+1, $i->action, $i->file, $i->line       unless $s;
    }
-
-  @t
+  join "\n", @t, '';
  }
 
 sub stackTraceAndExit($$%)                                                      #P Create a stack trace and exit from the emulated program.
  {my ($exec, $title, %options) = @_;                                            # Execution environment, title, options
   @_ >= 2 or confess "At least two parameters";
 
-  my @t = $exec->stackTrace($title);
-  push $exec->out->@*, @t;
-  my $t = join "\n", @t;
-
-  confess $t unless $exec->suppressOutput;
+  my $t = $exec->stackTrace($title);
+  $exec->output($t);
+  confess $t unless $exec->suppressOutput;                                      # confess if requested - presumably becuase this indicates an error in programming and thus nothing can be done about it within the program
 
   $exec->instructionPointer = undef;                                            # Execution terminates as soon as undefined instruction is encountered
   $t
@@ -914,7 +909,7 @@ sub assign($$$)                                                                 
     push @s, join ' ', "New     value:", $value;
     push @s, $exec->dumpMemory;
     say STDERR join "\n", @s unless $exec->suppressOutput;
-    push $exec->out->@*, @s;
+    push $exec->out->@*, map {($_, "\n")} @s;
    }
 
   $exec->setMemory($target, $value);                                            # Actually do the assign
@@ -999,6 +994,16 @@ sub countAreaElement($$$)                                                       
    }
 
   $n
+ }
+
+sub output($$)                                                                  #P Write an item to the output channel. Items are separated with one blank each unless the caller has provided formatting with new lines.
+ {my ($exec, $item) = @_;                                                       # Execution environment, item to write
+  if ($exec->out and $exec->out !~ m(\n\Z) and $item !~ m(\A\n)s)
+   {$exec->out .= " $item";
+   }
+  else
+   {$exec->out .= $item;
+   }
  }
 
 sub Zero::Emulator::Code::execute($%)                                           #P Execute a block of code.
@@ -1169,7 +1174,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->trace = $s;
       my $m = join ' ', "Trace: $s";
       say STDERR           $m unless $exec->suppressOutput;
-      push $exec->out->@*, $m;
+      push $exec->out->@*, "$m\n";
      },
 
     tracePoints=> sub                                                           # Start trace points
@@ -1178,30 +1183,30 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->tracePoints = $s;
       my $m = "TracePoints: $s";
       say STDERR           $m unless $exec->suppressOutput;
-      push $exec->out->@*, $m;
+      push $exec->out->@*, "$m\n";
      },
 
     tracePoint=> sub                                                            # Trace point
      {return unless $exec->tracePoints;
       my @s = $exec->stackTrace("Trace");
       say STDERR join "\n", @s unless $exec->suppressOutput;
-      push $exec->out->@*, @s;
+      push $exec->out->@*, map {($_, "\n")} @s;
      },
 
     dump=> sub                                                                  # Dump memory
      {my $i = $exec->currentInstruction;
-      my @m;
       if (ref($i->source) =~ m(Code)i)
        {$i->source->($exec);
         return;
        }
 
-      push @m, $i->source // "Memory dump";
+      my   @m= $i->source // "Memory dump";
+      push @m, "\n";
       push @m, $exec->dumpMemory;
       push @m, $exec->stackTrace;
-
-      say STDERR join "\n", @m unless $exec->suppressOutput;
-      push $exec->out->@*, @m;
+      my $m = join '', @m;
+      say STDERR $m unless $exec->suppressOutput;
+      $exec->output($m);
      },
 
     arrayDump=> sub                                                             # Dump array in memory
@@ -1213,7 +1218,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       push @m, $exec->stackTrace;
 
       say STDERR join "\n", @m unless $exec->suppressOutput;
-      push $exec->out->@*, @m;
+      push $exec->out->@*, map {($_, "\n")} @m;
      },
 
     dec=> sub                                                                   # Decrement locations in memory. The first address is incremented by 1, the next by two, etc.
@@ -1320,6 +1325,19 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->assign($t, $s);
      },
 
+    random=> sub                                                                # Random number in the specified range
+     {my $i = $exec->currentInstruction;
+      my $s = $exec->right($i->source);
+      my $t = $exec->left ($i->target);
+      $exec->assign($t, int rand($s));
+     },
+
+    randomSeed=> sub                                                            # Random number seed
+     {my $i = $exec->currentInstruction;
+      my $s = $exec->right($i->source);
+      srand $s;
+     },
+
     returnGet=> sub                                                             # Get a word from the return area
      {my $i = $exec->currentInstruction;
       my $p = $exec->currentReturnGet;                                          # Memory area
@@ -1346,8 +1364,13 @@ sub Zero::Emulator::Code::execute($%)                                           
     out=> sub                                                                   # Write source as output to an array of words
      {my $i = $exec->currentInstruction;
       my $t = $exec->right($i->source);
-      lll $t unless $exec->suppressOutput;
-      push $exec->out->@*, $t;
+      print $t unless $exec->suppressOutput;
+      if ($exec->out and $exec->out !~ m(\n\Z) and $t !~ m(\A\n)s)
+       {$exec->out .= " $t";
+       }
+      else
+       {$exec->out .= $t;
+       }
      },
 
     pop=> sub                                                                   # Pop a value from the specified memory area if possible else confess
@@ -1476,7 +1499,7 @@ sub Zero::Emulator::Code::execute($%)                                           
         my $m =  sprintf "%4d  %4d  %4d  %12s  %20s", $j, $n, $e, $a, $f;
            $m .= sprintf "  at %s line %d", $i->file, $i->line unless $s;
         say STDERR $m unless $s;
-        push $exec->out->@*, $m;
+        push $exec->out->@*, "$m\n";
        }
 
      }
@@ -1686,14 +1709,14 @@ sub Block(&%)                                                                   
    {Jmp $End;
     setLabel($Good);
     TracePoint level=>2;
-    &$g;
+    &$g($Start, $Good, $Bad, $End);
    }
 
   if ($b)                                                                       # Bad
    {Jmp $End;
     setLabel($Bad);
     TracePoint level=>2;
-    &$b;
+    &$b($Start, $Good, $Bad, $End);
    }
   setLabel($Good) unless $g;                                                    # Default positions for Good and Bad if not specified
   setLabel($Bad)  unless $b;
@@ -1733,23 +1756,7 @@ sub Else(&)                                                                     
 
 sub Execute(%)                                                                  #i Execute the current assembly.
  {my (%options) = @_;                                                           # Options
-  my $r = $assembly->execute(%options);                                         # Execute the code in the current assembly
-  if (my $out = $options{out})
-   {my $c = compareArraysAndExplain $r->out, $out;
-    lll $c if $c;
-    say STDERR dump($r->out) if $c;
-    return 0 if $c;
-   }
-  if (my $memory = $options{memory})
-   {my $E = dump $memory;
-    my $G = dump $r->memory;
-    my $e = [split "\n", $E];
-    my $g = [split "\n", $G];
-    my $c = compareArraysAndExplain $g, $e;
-    lll "$c\n$G\n" if $c;
-    return 0 if $c;
-   }
-  return $r;
+  $assembly->execute(%options);                                                 # Execute the code in the current assembly
  }
 
 sub For(&$%)                                                                    #i For loop 0..range-1 or in reverse.
@@ -2024,9 +2031,12 @@ sub Nop()                                                                       
  {$assembly->instruction(action=>"nop");
  }
 
-sub Out($)                                                                      #i Write memory location contents to out.
- {my ($source) = @_;                                                            # Either a scalar constant or memory address to output
-  $assembly->instruction(action=>"out", xSource($source))
+sub Out(@)                                                                      #i Write memory location contents to out.
+ {my (@source) = @_;                                                            # Either a scalar constant or memory address to output
+  for my $source(@source)
+   {$assembly->instruction(action=>"out", xSource($source))
+   }
+  $assembly->instruction(action=>"out",   xSource("\n"));
  }
 
 sub ParamsGet($;$) {                                                            #i Get a word from the parameters in the previous frame and store it in the current frame.
@@ -2098,6 +2108,29 @@ sub Push($$$)                                                                   
 sub Resize($$)                                                                  #i Resize the target area to the source size.
  {my ($target, $source) = @_;                                                   # Target address, source address
   $assembly->instruction(action=>"resize", xTarget($target), xSource($source));
+ }
+
+sub Random($;$) {                                                               #i Create a random number in a specified range
+  if (@_ == 1)                                                                  # Create a variable
+   {my ($source) = @_;                                                          # Memory address to place return value in, return value to get
+    my $p = &Var();
+    $assembly->instruction(action=>"random",
+      target=>RefLeft($p), xSource($source));
+    return $p;
+   }
+  elsif (@_ == 2)
+   {my ($target, $source) = @_;                                                 # Memory address to place return value in, return value to get
+    $assembly->instruction(action=>"random",
+      xTarget($target), xSource($source));
+   }
+  else
+   {confess "One or two parameters required";
+   }
+ }
+
+sub RandomSeed($)                                                               #i Seed the random number generator
+ {my ($seed) = @_;                                                              # Parameters
+  $assembly->instruction(action=>"randomSeed", xSource($seed));
  }
 
 sub Return()                                                                    #i Return from a procedure via the call stack.
@@ -2250,20 +2283,31 @@ return 1 if caller;
 
 # Tests
 
-Test::More->builder->output("/dev/null");                                       # Reduce number of confirmation messages during testing
+#Test::More->builder->output("/dev/null");                                       # Reduce number of confirmation messages during testing
 
 my $debug = -e q(/home/phil/);                                                  # Assume debugging if testing locally
 eval {goto latest if $debug};
 sub is_deeply;
 sub ok($;$);
 sub x {exit if $debug}                                                          # Stop if debugging.
+sub w()                                                                         # Convert the output channel to a string clearing trasilign spaces one each line
+ {my ($e) = @_;
+  my $s = join "\r", $e->out->@*;
+  $s =~ s(\r*\n\r*) (\n)gs;
+  $s =~ s(\r)       ( )gs;
+  $s =~ s(\n+)      (\n)s;
+  $s =~ s(\s+\Z)    ()s;
+  "$s\n"
+ }
 
 #latest:;
 if (1)                                                                          ##Out ##Start ##Execute
  {Start 1;
-  Out "hello World";
+  Out "Hello", "World";
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, ["hello World"];
+  is_deeply $e->out, <<END;
+Hello World
+END
  }
 
 #latest:;
@@ -2272,14 +2316,16 @@ if (1)                                                                          
   my $a = Var 1;
   AssertEq $a, 1;
   my $e = Execute(suppressOutput=>0);
-  is_deeply $e->out, [];
+  is_deeply $e->out, "";
  }
 
 #latest:;
 if (1)                                                                          ##Nop
  {Start 1;
   Nop;
-  ok Execute(out=>[]);
+  my $e = Execute;
+  is_deeply $e->out, "";
+
  }
 
 #latest:;
@@ -2287,9 +2333,10 @@ if (1)                                                                          
  {Start 1;
   my $a = Mov 2;
   Out $a;
-
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [2];
+  is_deeply $e->out, <<END;
+2
+END
  }
 
 #latest:;
@@ -2300,7 +2347,9 @@ if (1)
   my $c = Mov  \$b;
   Out $c;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [3];
+  is_deeply $e->out, <<END;
+3
+END
  }
 
 #latest:;
@@ -2309,7 +2358,9 @@ if (1)                                                                          
   my $a = Add 3, 2;
   Out  $a;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [5];
+  is_deeply $e->out, <<END;
+5
+END
  }
 
 #latest:;
@@ -2318,7 +2369,9 @@ if (1)                                                                          
   my $a = Subtract 4, 2;
   Out $a;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [2];
+  is_deeply $e->out, <<END;
+2
+END
  }
 
 #latest:;
@@ -2328,7 +2381,9 @@ if (1)                                                                          
   Dec $a;
   Out $a;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [2];
+  is_deeply $e->out, <<END;
+2
+END
  }
 
 #latest:;
@@ -2338,7 +2393,9 @@ if (1)                                                                          
   Inc $a;
   Out $a;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [4];
+  is_deeply $e->out, <<END;
+4
+END
  }
 
 #latest:;
@@ -2347,11 +2404,11 @@ if (1)                                                                          
   my $a = Mov 3;
   my $b = Not $a;
   my $c = Not $b;
-  Out $a;
-  Out $b;
-  Out $c;
+  Out $a, $b, $c;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [3, "", 1];
+  is_deeply $e->out, <<END;
+3  1
+END
  }
 
 #latest:;
@@ -2361,7 +2418,9 @@ if (1)                                                                          
   ShiftLeft $a, $a;
   Out $a;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [2];
+  is_deeply $e->out, <<END;
+2
+END
  }
 
 #latest:;
@@ -2371,7 +2430,9 @@ if (1)                                                                          
   ShiftRight $a, 1;
   Out $a;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [2];
+  is_deeply $e->out, <<END;
+2
+END
  }
 
 #latest:;
@@ -2384,7 +2445,9 @@ if (1)                                                                          
     Out  2;
   setLabel($b);
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [2];
+  is_deeply $e->out, <<END;
+2
+END
  }
 
 #latest:;
@@ -2399,13 +2462,16 @@ if (1)                                                                          
   setLabel($b);
 
   Jgt ((my $c = label), \0, 3);
-    Out  1;
+    Out  3;
     Jmp (my $d = label);
   setLabel($c);
-    Out  2;
+    Out  4;
   setLabel($d);
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [2,1];
+  is_deeply $e->out, <<END;
+2
+3
+END
  }
 
 #latest:;
@@ -2417,7 +2483,18 @@ if (1)                                                                          
     Inc \0;
   Jlt $a, \0, 10;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [0..9];
+  is_deeply $e->out, <<END;
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+END
  }
 
 #latest:;
@@ -2428,7 +2505,9 @@ if (1)                                                                          
   Mov  1, [$a, \1, "aaa"];
   Out \1;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [11];
+  is_deeply $e->out, <<END;
+11
+END
  }
 
 #latest:;
@@ -2440,7 +2519,9 @@ if (1)                                                                          
    };
   Call $w;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, ["aaa"];
+  is_deeply $e->out, <<END;
+aaa
+END
  }
 
 #latest:;
@@ -2454,7 +2535,9 @@ if (1)                                                                          
   ParamsPut 0, 'bbb';
   Call $w;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, ["bbb"];
+  is_deeply $e->out, <<END;
+bbb
+END
  }
 
 #latest:;
@@ -2468,7 +2551,9 @@ if (1)                                                                          
   ReturnGet \0, 0;
   Out \0;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, ["ccc"];
+  is_deeply $e->out, <<END;
+ccc
+END
  }
 
 #latest:;
@@ -2485,7 +2570,9 @@ if (1)                                                                          
   my $c = ReturnGet 0;
   Out $c;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [4];
+  is_deeply $e->out, <<END;
+4
+END
  }
 
 #latest:;
@@ -2496,7 +2583,11 @@ if (1)                                                                          
    };
   Call $c;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, ["Confess at:", "    2     3 confess", "    1     6 call"];
+  is_deeply $e->out, <<END;
+Confess at:
+    2     3 confess
+    1     6 call
+END
  }
 
 #latest:;
@@ -2508,10 +2599,11 @@ if (1)                                                                          
   my $c = Pop $a, "aaa";
   my $d = Pop $a, "aaa";
 
-  Out $c;
-  Out $d;
+  Out $c, $d;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out,    [2, 1];
+  is_deeply $e->out, <<END;
+2 1
+END
   is_deeply $e->memory, {4 => []};
  }
 
@@ -2533,11 +2625,10 @@ if (1)                                                                          
   my $a = Array "node";
   Free $a, "aaa";
   my $e = Execute(suppressOutput=>1);
-
-  is_deeply $e->out, [
-  "Wrong name: aaa for array with name: node",
-  "    1     2 free",
-];
+  is_deeply $e->out, <<END;
+Wrong name: aaa for array with name: node
+    1     2 free
+END
  }
 
 #latest:;
@@ -2551,15 +2642,16 @@ if (1)                                                                          
   Dump "dddd";
   Free $a, "node";
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [
-  4,
-  "dddd",
-  "1=bless([4, 1], \"stackArea\")",
-  "2=bless([], \"params\")",
-  "3=bless([], \"return\")",
-  "4=bless([undef, 1, 2], \"node\")",
-  "Stack trace",
-  "    1     6 dump"];
+  is_deeply $e->out, <<END;
+4
+dddd
+1=bless([4, 1], "stackArea")
+2=bless([], "params")
+3=bless([], "return")
+4=bless([undef, 1, 2], "node")
+Stack trace:
+    1     7 dump
+END
  }
 
 #latest:;
@@ -2568,11 +2660,11 @@ if (1)                                                                          
   my $a = Mov 'A';
   my $b = Mov 'B';
   my $c = Mov 'C';
-  Out $c;
-  Out $b;
-  Out $a;
+  Out $c, $b, $a;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [qw(C B A)];
+ is_deeply $e->out, <<END;
+C B A
+END
  }
 
 #latest:;
@@ -2587,7 +2679,11 @@ if (1)                                                                          
   IfGe $a, $a, Then {Out "Ge"};
   IfGt $a, $a, Then {Out "Gt"};
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, ["Eq", "Le", "Ge"];
+  is_deeply $e->out, <<END;
+Eq
+Le
+Ge
+END
  }
 
 #latest:;
@@ -2602,7 +2698,8 @@ if (1)                                                                          
   IfGe $a, $b, Then {Out "Ge"};
   IfGt $a, $b, Then {Out "Gt"};
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, ["Ne", "Le", "Lt"];
+  say STDERR '  is_deeply $e->out, <<END;', "\n", $e->out, "END"; exit;
+  is_deeply $e->out, [map {($_, "\n")} "Ne", "Le", "Lt"];
  }
 
 #latest:;
@@ -2617,7 +2714,7 @@ if (1)                                                                          
   IfGe $b, $a, Then {Out "Ge"};
   IfGt $b, $a, Then {Out "Gt"};
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, ["Ne", "Ge", "Gt"];
+  is_deeply $e->out, [map {($_, "\n")} "Ne", "Ge", "Gt"];
  }
 
 #latest:;
@@ -2631,7 +2728,7 @@ if (1)                                                                          
    {Out 0
    };
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [1];
+  is_deeply $e->out, [1, "\n"];
  }
 
 #latest:;
@@ -2645,7 +2742,7 @@ if (1)                                                                          
    {Out 0
    };
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [0];
+  is_deeply $e->out, [0, "\n"];
  }
 
 #latest:;
@@ -2656,7 +2753,7 @@ if (1)                                                                          
     Out $i;
    } 10;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [0..9];
+  is_deeply $e->out, [map {($_, "\n")} 0..9];
  }
 
 #latest:;
@@ -2667,7 +2764,7 @@ if (1)                                                                          
     Out $i;
    } 10, reverse=>1;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [reverse 0..9];
+  is_deeply $e->out, [map {($_, "\n")} reverse 0..9];
  }
 
 #latest:;
@@ -2678,7 +2775,7 @@ if (1)                                                                          
     Out $i;
    } [2, 10];
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [2..9];
+  is_deeply $e->out, [map {($_, "\n")} 2..9];
  }
 
 #latest:;
@@ -2749,11 +2846,10 @@ if (1)                                                                          
   AssertFalse 0;
   AssertTrue  0;
   my $e = Execute(suppressOutput=>1, trace=>1);
-  is_deeply $e->out, [
-  "   1     0     1   assertFalse                      ",
-  "AssertTrue 0 failed",
-  "    1     2 assertTrue",
-  "   2     1     1    assertTrue                      "];
+ is_deeply $e->out, <<END;
+   1     0     1   assertFalse
+ AssertTrue 0 failed     1     2 assertTrue    2     1     1    assertTrue
+END
  }
 
 #latest:;
@@ -2762,12 +2858,11 @@ if (1)                                                                          
   AssertTrue  1;
   AssertFalse 1;
   my $e = Execute(suppressOutput=>1, trace=>1);
-  is_deeply $e->out, [
-  "   1     0     1    assertTrue                      ",
-  "AssertFalse 1 failed",
-  "    1     2 assertFalse",
-  "   2     1     1   assertFalse                      "];
 
+  is_deeply $e->out, <<END;
+   1     0     1    assertTrue
+ AssertFalse 1 failed     1     2 assertFalse    2     1     1   assertFalse
+END
  }
 
 #latest:;
@@ -2778,7 +2873,7 @@ if (1)                                                                          
   Out $a;
   Out $b;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [1..2];
+  is_deeply $e->out, [map {($_, "\n")} 1..2];
  }
 
 #latest:;
@@ -2819,7 +2914,7 @@ if (1)                                                                          
   AssertEq $v, $V;
   Out [$a, \$i, 'aaa'];
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [11];
+  is_deeply $e->out, [11, "\n"];
  }
 
 #latest:;
@@ -2847,7 +2942,7 @@ if (1)                                                                          
    };
   Out 4;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [1,2,4];
+  is_deeply $e->out, [map {($_, "\n")} 1,2,4];
  }
 
 #latest:;
@@ -2866,7 +2961,7 @@ if (1)                                                                          
    };
   Out 4;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [1,3,4];
+  is_deeply $e->out, [map {($_, "\n")} 1,3,4];
  }
 
 #latest:;
@@ -2880,7 +2975,7 @@ if (1)                                                                          
    {Out 99;
    };
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [1..10];
+  is_deeply $e->out, [map {($_, "\n")} 1..10];
  }
 
 #latest:;
@@ -2924,7 +3019,7 @@ if (1)                                                                          
   ParamsPut 0, 2;  Call $set;
   ParamsPut 0, 3;  Call $set;
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [1..3];
+  is_deeply $e->out, [map {($_, "\n")} 1..3];
  }
 
 #latest:;
@@ -2954,7 +3049,7 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1);
 
-  is_deeply $e->out,    [2,4];
+  is_deeply $e->out,    [map {($_, "\n")} 2, 4];
   is_deeply $e->memory, {4=>[undef, undef, 44, undef, undef, 33]};
  }
 
@@ -2986,7 +3081,7 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->memory, {4=>[0, 2]};
-  is_deeply $e->out,    [99];
+  is_deeply $e->out,    [99, "\n"];
  }
 
 #latest:;
@@ -3041,7 +3136,7 @@ if (1)                                                                          
     Out 4;
    };
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [2, 3];
+  is_deeply $e->out, [map {($_, "\n")} 2, 3];
  }
 
 #latest:;
@@ -3115,8 +3210,8 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1);
 
-  is_deeply $e->memory, {4=>  [1, 2]};
-  is_deeply $e->out,    [3, 1];
+  is_deeply $e->memory, {4 => [1, 2]};
+  is_deeply $e->out,    [map {($_, "\n")} 3, 1];
  }
 
 #latest:;
@@ -3176,7 +3271,7 @@ if (1)                                                                          
     Mov [$a, 2, "aaa"], 333;
 
   my $n = ArraySize $a, "aaa";
-  Out "Array size:"; Out $n;
+  Out "Array size:", $n;
   ArrayDump $a, "AAAA";
 
   ForArray
@@ -3189,25 +3284,24 @@ if (1)                                                                          
 
   is_deeply $e->memory, {4=>[1, 22, 333]};
 
-  is_deeply $e->out, [ "Array size:", 3,
-
-  "AAAA", "bless([1, 22, 333], \"aaa\")",
-
-  "Stack trace",
-  "    1     8 arrayDump",
-
-  0,   1,
-  1,  22,
-  2, 333];
+  is_deeply join(' ', $e->out->@*), <<END;
+Array size: 3
+ AAAA bless([1, 22, 333], "aaa") Stack trace     1     9 arrayDump 0
+ 1
+ 1
+ 22
+ 2
+ 333
+END
  }
 
 #latest:;
 if (1)                                                                          ##ArrayDump ##Mov
  {Start 1;
   my $a = Array "aaa";
-    Mov [$a, 0, "aaa"], 1;
-    Mov [$a, 1, "aaa"], 22;
-    Mov [$a, 2, "aaa"], 333;
+  Mov [$a, 0, "aaa"], 1;
+  Mov [$a, 1, "aaa"], 22;
+  Mov [$a, 2, "aaa"], 333;
   ArrayDump $a, "AAAA";
   my $e = Execute(suppressOutput=>1);
 
@@ -3313,4 +3407,15 @@ if (1)                                                                          
   "    1     6 tracePoint"];
  }
 
+#latest:;
+if (1)                                                                          ##Random ##RandomSeed
+ {Start 1;
+  RandomSeed 1;
+  my $a = Random 10;
+  Out $a;
+  my $e = Execute(suppressOutput=>1);
+  ok $e->out->[0] =~ m(\A\d\Z);
+ }
+
 # (\A.{80})\s+(#.*\Z) \1\2
+# say STDERR '  is_deeply $e->out, <<END;', "\n", $e->out, "END"; exit;
