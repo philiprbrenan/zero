@@ -808,7 +808,7 @@ Dump all the arrays currently in memory.
     3=bless([], "return")
     4=bless([undef, 1, 2], "node")
     Stack trace:
-        1     7 dump
+        1     6 dump
     END
      }
     
@@ -1076,7 +1076,7 @@ Free the memory area named by the target operand after confirming that it has th
     3=bless([], "return")
     4=bless([undef, 1, 2], "node")
     Stack trace:
-        1     7 dump
+        1     6 dump
     END
      }
     
