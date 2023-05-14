@@ -20,7 +20,7 @@ makeDieConfess;
 
 my sub maximumInstructionsToExecute {1e6}                                       # Maximum number of subroutines to execute
 
-sub execute(%)                                                                  # Execute a block of code.
+sub execute(%)                                                                  # Execution environment for a block of code
  {my (%options) = @_;                                                           # Execution options
 
   my $exec=                 genHash("Zero::Emulator",                           # Execution results
@@ -587,7 +587,7 @@ sub allocMemory($$;$)                                                           
  {my ($exec, $name, $stacked) = @_;                                             # Execution environment, name of allocation, stacked if true
   my $f = $exec->freedArrays;                                                   # Reuse recently freed array
   my $a = @$f ? pop @$f : ++$allocs;
-  $exec->memory    ->{$a} = bless [], $name;
+  $exec->memory     ->{$a} = bless [], $name;
   $exec->setMemoryType($a, $name);
   $a
  }
@@ -751,10 +751,9 @@ sub leftSuppress($$)                                                            
   my $area  = $ref->area;
   my $delta = $ref->delta;
   my $a = $A;
-     $a = \$A if isScalar $a;                                                   # Interpret constants as direct memory locations
+     $a = \$A if isScalar $a;                                                   # Interpret constants as direct memory locations in left hand side
 
   my $m;
-  my $memory = $exec->memory;
   my $stackArea = $exec->stackArea;
 
   if (isScalar $$a)                                                             # Direct
@@ -764,17 +763,25 @@ sub leftSuppress($$)                                                            
    {$exec->rwRead  ($stackArea, $$$a+$delta);
     $m = $exec->get($stackArea, $$$a+$delta, $ref->name);
    }
+  else
+   {$exec->stackTraceAndExit('Only two levels of address indirection allowed',
+      confess=>1);
+   }
 
   if (defined($m))
    {if (!defined($area))                                                        # Current stack frame
      {$exec->rwRead($stackArea, $m);
      }
-   elsif (isScalar($area))                                                      # Direct area
+    elsif (isScalar($area))                                                     # Direct area
      {$exec->rwRead($area, $m);
      }
-   elsif (isScalar($$area))                                                     # Indirect area
+    elsif (isScalar($$area))                                                    # Indirect area
      {$exec->rwRead(           $stackArea,  $area);
       $exec->rwRead($exec->get($stackArea, $$area), $m);
+     }
+    else
+     {$exec->stackTraceAndExit('Only two levels of area indirection allowed',
+        confess=>1);
      }
    }
  }
@@ -2233,8 +2240,6 @@ sub instructionList()
  }
 #instructionList(); exit;
 
-sub extractDocumentationFlags($$) {1}
-
 use Exporter qw(import);
 use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
@@ -2245,6 +2250,8 @@ use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 return 1 if caller;
 
+# Tests
+
 Test::More->builder->output("/dev/null");                                       # Reduce number of confirmation messages during testing
 
 my $debug = -e q(/home/phil/);                                                  # Assume debugging if testing locally
@@ -2252,8 +2259,6 @@ eval {goto latest if $debug};
 sub is_deeply;
 sub ok($;$);
 sub x {exit if $debug}                                                          # Stop if debugging.
-
-# Tests
 
 #latest:;
 if (1)                                                                          ##Out ##Start ##Execute
