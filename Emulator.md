@@ -87,17 +87,20 @@ Create a new memory area and write its number into the address named by the targ
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->memory, {4=>[1, 22, 333]};
-    
-      is_deeply join(' ', $e->out->@*), <<END;
+      is_deeply $e->out, <<END;
     
     Array size: 3  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-     AAAA bless([1, 22, 333], "aaa") Stack trace     1     9 arrayDump 0
-     1
-     1
-     22
-     2
-     333
+    AAAA
+    bless([1, 22, 333], "aaa")
+    Stack trace:
+        1     9 arrayDump
+    0
+    1
+    1
+    22
+    2
+    333
     END
      }
     
@@ -115,31 +118,18 @@ Count the number of elements in the array specified by the first source operand 
       Mov [$a, 1, "aaa"], 20;
       Mov [$a, 2, "aaa"], 30;
     
-      Out ArrayIndex $a, 30;
-      Out ArrayIndex $a, 20;
-      Out ArrayIndex $a, 10;
-      Out ArrayIndex $a, 15;
+      Out ArrayIndex       ($a, 30), ArrayIndex       ($a, 20), ArrayIndex       ($a, 10), ArrayIndex       ($a, 15);
     
-    
-      Out ArrayCountLess $a, 35;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      Out ArrayCountLess   ($a, 35), ArrayCountLess   ($a, 25), ArrayCountLess   ($a, 15), ArrayCountLess   ($a,  5);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-    
-      Out ArrayCountLess $a, 25;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-    
-      Out ArrayCountLess $a, 15;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-    
-      Out ArrayCountLess $a,  5;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-    
-      Out ArrayCountGreater $a, 35;
-      Out ArrayCountGreater $a, 25;
-      Out ArrayCountGreater $a, 15;
-      Out ArrayCountGreater $a,  5;
+      Out ArrayCountGreater($a, 35), ArrayCountGreater($a, 25), ArrayCountGreater($a, 15), ArrayCountGreater($a,  5);
     
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [3,2,1,0,  3,2,1,0,  0,1,2,3];
+      is_deeply $e->out, <<END;
+    3 2 1 0
+    3 2 1 0
+    0 1 2 3
+    END
      }
     
 
@@ -156,31 +146,18 @@ Count the number of elements in the array specified by the first source operand 
       Mov [$a, 1, "aaa"], 20;
       Mov [$a, 2, "aaa"], 30;
     
-      Out ArrayIndex $a, 30;
-      Out ArrayIndex $a, 20;
-      Out ArrayIndex $a, 10;
-      Out ArrayIndex $a, 15;
+      Out ArrayIndex       ($a, 30), ArrayIndex       ($a, 20), ArrayIndex       ($a, 10), ArrayIndex       ($a, 15);
+      Out ArrayCountLess   ($a, 35), ArrayCountLess   ($a, 25), ArrayCountLess   ($a, 15), ArrayCountLess   ($a,  5);
     
-      Out ArrayCountLess $a, 35;
-      Out ArrayCountLess $a, 25;
-      Out ArrayCountLess $a, 15;
-      Out ArrayCountLess $a,  5;
-    
-    
-      Out ArrayCountGreater $a, 35;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-    
-      Out ArrayCountGreater $a, 25;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-    
-      Out ArrayCountGreater $a, 15;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-    
-      Out ArrayCountGreater $a,  5;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      Out ArrayCountGreater($a, 35), ArrayCountGreater($a, 25), ArrayCountGreater($a, 15), ArrayCountGreater($a,  5);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [3,2,1,0,  3,2,1,0,  0,1,2,3];
+      is_deeply $e->out, <<END;
+    3 2 1 0
+    3 2 1 0
+    0 1 2 3
+    END
      }
     
 
@@ -205,11 +182,12 @@ Dump an array.
 
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->out, [
-      "AAAA",
-      "bless([1, 22, 333], \"aaa\")",
-      "Stack trace",
-      "    1     5 arrayDump"];
+      is_deeply $e->out, <<END;
+    AAAA
+    bless([1, 22, 333], "aaa")
+    Stack trace:
+        1     5 arrayDump
+    END
      }
     
 
@@ -227,30 +205,17 @@ Find the 1 based index of the second source operand in the array referenced by t
       Mov [$a, 2, "aaa"], 30;
     
     
-      Out ArrayIndex $a, 30;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      Out ArrayIndex       ($a, 30), ArrayIndex       ($a, 20), ArrayIndex       ($a, 10), ArrayIndex       ($a, 15);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-    
-      Out ArrayIndex $a, 20;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-    
-      Out ArrayIndex $a, 10;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-    
-      Out ArrayIndex $a, 15;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-    
-      Out ArrayCountLess $a, 35;
-      Out ArrayCountLess $a, 25;
-      Out ArrayCountLess $a, 15;
-      Out ArrayCountLess $a,  5;
-    
-      Out ArrayCountGreater $a, 35;
-      Out ArrayCountGreater $a, 25;
-      Out ArrayCountGreater $a, 15;
-      Out ArrayCountGreater $a,  5;
+      Out ArrayCountLess   ($a, 35), ArrayCountLess   ($a, 25), ArrayCountLess   ($a, 15), ArrayCountLess   ($a,  5);
+      Out ArrayCountGreater($a, 35), ArrayCountGreater($a, 25), ArrayCountGreater($a, 15), ArrayCountGreater($a,  5);
     
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [3,2,1,0,  3,2,1,0,  0,1,2,3];
+      is_deeply $e->out, <<END;
+    3 2 1 0
+    3 2 1 0
+    0 1 2 3
+    END
      }
     
 
@@ -286,15 +251,18 @@ The current size of an array.
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->memory, {4=>[1, 22, 333]};
-    
-      is_deeply join(' ', $e->out->@*), <<END;
+      is_deeply $e->out, <<END;
     Array size: 3
-     AAAA bless([1, 22, 333], "aaa") Stack trace     1     9 arrayDump 0
-     1
-     1
-     22
-     2
-     333
+    AAAA
+    bless([1, 22, 333], "aaa")
+    Stack trace:
+        1     9 arrayDump
+    0
+    1
+    1
+    22
+    2
+    333
     END
      }
     
@@ -886,7 +854,22 @@ Else block.
         Mov 4, 4;
        };
       my $e = Execute(suppressOutput=>1);
-      is_deeply scalar($e->out->@*), 14;
+      is_deeply $e->out, <<END;
+    Trace: 1
+        1     0     1         trace
+        2     1     1           jNe
+        3     6     1         label
+        4     7     1    tracePoint
+        5     8     1           mov  [1, 3, stackArea] = 3
+        6     9     1           mov  [1, 4, stackArea] = 4
+        7    10     1         label
+        8    11     1           jNe
+        9    12     1    tracePoint
+       10    13     1           mov  [1, 1, stackArea] = 1
+       11    14     1           mov  [1, 2, stackArea] = 1
+       12    15     1           jmp
+       13    20     1         label
+    END
      }
     
 
@@ -1042,15 +1025,18 @@ For loop to process each element of the named area.
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->memory, {4=>[1, 22, 333]};
-    
-      is_deeply join(' ', $e->out->@*), <<END;
+      is_deeply $e->out, <<END;
     Array size: 3
-     AAAA bless([1, 22, 333], "aaa") Stack trace     1     9 arrayDump 0
-     1
-     1
-     22
-     2
-     333
+    AAAA
+    bless([1, 22, 333], "aaa")
+    Stack trace:
+        1     9 arrayDump
+    0
+    1
+    1
+    22
+    2
+    333
     END
      }
     
@@ -2261,11 +2247,12 @@ Copy a constant or memory address to the target address.
       ArrayDump $a, "AAAA";
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->out, [
-      "AAAA",
-      "bless([1, 22, 333], \"aaa\")",
-      "Stack trace",
-      "    1     5 arrayDump"];
+      is_deeply $e->out, <<END;
+    AAAA
+    bless([1, 22, 333], "aaa")
+    Stack trace:
+        1     5 arrayDump
+    END
      }
     
 
@@ -2365,15 +2352,18 @@ Do nothing (but do it well!).
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->memory, {4=>[1, 22, 333]};
-    
-      is_deeply join(' ', $e->out->@*), <<END;
+      is_deeply $e->out, <<END;
     Array size: 3
-     AAAA bless([1, 22, 333], "aaa") Stack trace     1     9 arrayDump 0
-     1
-     1
-     22
-     2
-     333
+    AAAA
+    bless([1, 22, 333], "aaa")
+    Stack trace:
+        1     9 arrayDump
+    0
+    1
+    1
+    22
+    2
+    333
     END
      }
     
@@ -2561,6 +2551,7 @@ Define a procedure.
     9
     10
     END
+      is_deeply $e->outLines, [1..10];
      }
     
 
@@ -2623,8 +2614,10 @@ Resize the target area to the source size.
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->memory, {4 => [1, 2]};
-      is_deeply $e->out,    [map {($_, "
-  ")} 3, 1];
+      is_deeply $e->out, <<END;
+    3
+    1
+    END
      }
     
 
@@ -2645,7 +2638,7 @@ Create a random number in a specified range
 
       Out $a;
       my $e = Execute(suppressOutput=>1);
-      ok $e->out->[0] =~ m(\A\d\Z);
+      ok $e->out =~ m(\A\d\Z);
      }
     
 
@@ -2666,7 +2659,7 @@ Seed the random number generator
       my $a = Random 10;
       Out $a;
       my $e = Execute(suppressOutput=>1);
-      ok $e->out->[0] =~ m(\A\d\Z);
+      ok $e->out =~ m(\A\d\Z);
      }
     
 
@@ -2963,7 +2956,22 @@ Then block.
         Mov 4, 4;
        };
       my $e = Execute(suppressOutput=>1);
-      is_deeply scalar($e->out->@*), 14;
+      is_deeply $e->out, <<END;
+    Trace: 1
+        1     0     1         trace
+        2     1     1           jNe
+        3     6     1         label
+        4     7     1    tracePoint
+        5     8     1           mov  [1, 3, stackArea] = 3
+        6     9     1           mov  [1, 4, stackArea] = 4
+        7    10     1         label
+        8    11     1           jNe
+        9    12     1    tracePoint
+       10    13     1           mov  [1, 1, stackArea] = 1
+       11    14     1           mov  [1, 2, stackArea] = 1
+       12    15     1           jmp
+       13    20     1         label
+    END
      }
     
 
@@ -3000,7 +3008,24 @@ Start or stop tracing.  Tracing prints each instruction executed and its effect 
         Mov 4, 4;
        };
       my $e = Execute(suppressOutput=>1);
-      is_deeply scalar($e->out->@*), 14;
+      is_deeply $e->out, <<END;
+    
+    Trace: 1  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+        1     0     1         trace
+        2     1     1           jNe
+        3     6     1         label
+        4     7     1    tracePoint
+        5     8     1           mov  [1, 3, stackArea] = 3
+        6     9     1           mov  [1, 4, stackArea] = 4
+        7    10     1         label
+        8    11     1           jNe
+        9    12     1    tracePoint
+       10    13     1           mov  [1, 1, stackArea] = 1
+       11    14     1           mov  [1, 2, stackArea] = 1
+       12    15     1           jmp
+       13    20     1         label
+    END
      }
     
 
@@ -3024,20 +3049,22 @@ Enable or disable trace points.  If trace points are enabled a stack trace is pr
         Inc $a;
        } $N;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [
     
-      "TracePoints: 1",  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      is_deeply $e->out, <<END;
+    
+    TracePoints: 1  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      "Trace",
-      "    1     6 tracePoint",
-      "Trace",
-      "    1     6 tracePoint",
-      "Trace",
-      "    1     6 tracePoint",
-      "Trace",
-      "    1     6 tracePoint",
-      "Trace",
-      "    1     6 tracePoint"];
+    Trace
+        1     6 tracePoint
+    Trace
+        1     6 tracePoint
+    Trace
+        1     6 tracePoint
+    Trace
+        1     6 tracePoint
+    Trace
+        1     6 tracePoint
+    END
      }
     
 
@@ -3082,15 +3109,11 @@ Watches for changes to the specified memory location.
       Mov $b, 5;
       Mov $c, 6;
       my $e = Execute(suppressOutput=>1);
-    
-      is_deeply $e->out, [
-      "Change at watched area: 1 (stackArea), address: 1",
-      "    1     6 mov",
-      "Current value: 2",
-      "New     value: 5",
-      "1=bless([4, 2, 3], \"stackArea\")",
-      "2=bless([], \"params\")",
-      "3=bless([], \"return\")"];
+      is_deeply $e->out, <<END;
+    Change at watched area: 1 (stackArea), address: 1
+        1     6 mov
+    Current value: 2 New value: 5
+    END
      }
     
 
