@@ -93,8 +93,6 @@ Create a new memory area and write its number into the address named by the targ
 
     AAAA
     bless([1, 22, 333], "aaa")
-    Stack trace:
-        1     9 arrayDump
     0
     1
     1
@@ -185,8 +183,6 @@ Dump an array.
       is_deeply $e->out, <<END;
     AAAA
     bless([1, 22, 333], "aaa")
-    Stack trace:
-        1     5 arrayDump
     END
      }
     
@@ -255,8 +251,6 @@ The current size of an array.
     Array size: 3
     AAAA
     bless([1, 22, 333], "aaa")
-    Stack trace:
-        1     9 arrayDump
     0
     1
     1
@@ -1029,8 +1023,6 @@ For loop to process each element of the named area.
     Array size: 3
     AAAA
     bless([1, 22, 333], "aaa")
-    Stack trace:
-        1     9 arrayDump
     0
     1
     1
@@ -2250,8 +2242,6 @@ Copy a constant or memory address to the target address.
       is_deeply $e->out, <<END;
     AAAA
     bless([1, 22, 333], "aaa")
-    Stack trace:
-        1     5 arrayDump
     END
      }
     
@@ -2356,8 +2346,6 @@ Do nothing (but do it well!).
     Array size: 3
     AAAA
     bless([1, 22, 333], "aaa")
-    Stack trace:
-        1     9 arrayDump
     0
     1
     1
