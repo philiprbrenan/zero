@@ -120,8 +120,8 @@ sub Zero::Emulator::Code::instruction($%)                                       
    }
  }
 
-sub Zero::Emulator::Code::Instruction::contextString($$$)                       #P Stack trace back for this instruction.
- {my ($i, $exec, $title) = @_;                                                  # Instruction, execution environment, title
+sub contextString($$$)                                                          #P Stack trace back for this instruction.
+ {my ($exec, $i, $title) = @_;                                                  # Execution environment, Instruction, title
   @_ == 3 or confess "Three parameters";
   my @s = $title;
   if (! $exec->suppressOutput)
@@ -419,8 +419,8 @@ sub analyzeExecutionNotRead($%)                                                 
    {my $area = $$n{$areaK};
     for my $addressK(sort keys %$area)
      {my $address = $$area{$addressK};
-      push @t, $exec->block->code->[$addressK]->contextString
-       ($exec, "Not read from area: $areaK, address: $addressK in context:");
+      push @t, $exec->contextString(block->code->[$addressK],
+       "Not read from area: $areaK, address: $addressK in context:");
      }
    }
   @t;
@@ -552,7 +552,7 @@ sub stackTrace($;$)                                                             
  {my ($exec, $title) = @_;                                                      # Execution environment, title
   my $i = $exec->currentInstruction;
   my $s = $exec->suppressOutput;                                                # Suppress file and line numbers in dump to facilitate automated testing
-  my @t = $i->contextString($exec, $title//"Stack trace:");
+  my @t = $exec->contextString($i, $title//"Stack trace:");
 
   for my $j(reverse keys $exec->calls->@*)
    {my $c = $exec->calls->[$j];
@@ -653,8 +653,8 @@ sub rwWrite($$$)                                                                
    {my $M = $exec->getMemory($area, $address, $exec->getMemoryType($area), undefinedOk=>1);
     if ($M)
      {my $Q = $exec->currentInstruction;
-      my $p = $P->contextString($exec, "Previous write");
-      my $q = $Q->contextString($exec, "Current  write");
+      my $p = $exec->contextString($P, "Previous write");
+      my $q = $exec->contextString($Q, "Current  write");
       $exec->doubleWrite->{$p}{$q}++;
      }
    }
@@ -1217,13 +1217,9 @@ sub Zero::Emulator::Code::execute($%)                                           
     arrayDump=> sub                                                             # Dump array in memory
      {my $i = $exec->currentInstruction;
       my $a = $exec->right($i->target);
-      my @m = $i->source // "Array dump";
-      push @m, "\n";
-      push @m, dump($exec->memory->{$a}) =~ s(\n) ()gsr;
-      push @m, "\n";
-      push @m, $exec->stackTrace;
-      my $m = join "", @m;
-         $m =~ s(\n\Z) ()s;
+      my $t = $i->source // "Array dump";
+      my $d = dump($exec->memory->{$a}) =~ s(\n) ()gsr;
+      my $m = "$t\n$d";
       say STDERR $m unless $exec->suppressOutput;
       $exec->output("$m\n");
      },
@@ -1614,7 +1610,8 @@ sub ArrayCountGreater($$;$) {                                                   
 
 sub ArrayDump($;$)                                                              #i Dump an array.
  {my ($target, $title) = @_;                                                    # Array to dump, title of dump
-  $assembly->instruction(action=>"arrayDump", target=>RefRight($target), source=>$title);
+  my $i = $assembly->instruction(action=>"arrayDump", target=>RefRight($target), source=>$title);
+  $i;
  }
 
 sub ArrayIndex($$;$) {                                                          #i Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.  The business of returning -1 would have led to the confusion of "try catch" and we certainly do not want that.
@@ -3406,8 +3403,6 @@ if (1)                                                                          
 Array size: 3
 AAAA
 bless([1, 22, 333], "aaa")
-Stack trace:
-    1     9 arrayDump
 0
 1
 1
@@ -3430,8 +3425,6 @@ if (1)                                                                          
   is_deeply $e->out, <<END;
 AAAA
 bless([1, 22, 333], "aaa")
-Stack trace:
-    1     5 arrayDump
 END
  }
 
