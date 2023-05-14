@@ -6,6 +6,7 @@
 use v5.30;
 use warnings FATAL => qw(all);
 use strict;
+use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
 use Test::More tests=>5;
 
@@ -40,24 +41,27 @@ if (1)                                                                          
 
   selectionSort($a, "array");                                                   # Sort
 
-  ForArray                                                                      # Print array
-   {my ($i, $e) = @_;
-    Out $e;
-   } $a, "array";
+  ArrayDump $a, "array";
 
   my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
-  is_deeply $e->out, [1..8];                                                    # Check output
-  is_deeply $e->count,  328;                                                    # Instructions executed
-  is_deeply $e->counts, {                                                       # Counts of each instruction type executed
-  array     =>   1,
-  arraySize =>   2,
-  inc       =>  52,
-  jGe       =>  62,
-  jLe       =>  36,
-  jmp       =>  52,
-  mov       => 107,
-  out       =>   8,
-  push      =>   8};
+
+  is_deeply $e->out, <<END;
+array
+bless([1 .. 8], "array")
+END
+  is_deeply $e->count,  286;                                                    # Instructions executed
+
+  is_deeply formatTable($e->counts), <<END;
+array       1
+arrayDump   1
+arraySize   1
+inc        44
+jGe        53
+jLe        36
+jmp        44
+mov        98
+push        8
+END
  }
 
 if (1)                                                                          # Reversed array 4 times larger
@@ -68,13 +72,13 @@ if (1)                                                                          
 
   selectionSort($a, "array");
 
-  ForArray
-   {my ($i, $e, $Check, $Next, $End) = @_;
-    Out $e;
-   } $a, "array";
+  ArrayDump $a, "array";
 
   my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
 
-  is_deeply $e->out, [1..32];                                                   # Check output
-  is_deeply $e->count, 4519;                                                    # Approximately 4*4== 16 times bigger
+  is_deeply $e->out, <<END;
+array
+bless([1 .. 32], "array")
+END
+  is_deeply $e->count, 4357;                                                    # Approximately 4*4== 16 times bigger
  }
