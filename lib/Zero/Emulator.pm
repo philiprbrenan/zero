@@ -2241,7 +2241,7 @@ sub TracePoint(%)                                                               
   $assembly->instruction(action=>"tracePoint", %options);
  }
 
-sub Var(;$)                                                                     # Create a variable initialized to the specified value.
+sub Var(;$)                                                                     #i Create a variable initialized to the specified value.
  {my ($value) = @_;                                                             # Value
   return Mov $value if @_;
   $assembly->registers;
