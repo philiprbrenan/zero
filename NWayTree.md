@@ -167,7 +167,9 @@ Create a variable referring to a new tree descriptor.
       Out New(3);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [4];
+      is_deeply $e->out, <<END;
+    4
+    END
       is_deeply $e->memory, { 4 => [0, 0, 3, 0]};
      }
     
@@ -195,7 +197,7 @@ Create a variable referring to a new tree descriptor.
       AssertNe FindResult_found, FindResult_cmp(Find($t, $N));
     
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [];                                                        # No asserts
+      is_deeply $e->out, "";                                                        # No asserts
      }
     
 
@@ -257,7 +259,7 @@ Get the number of keys in the tree..
     
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->out, [1..$N];                                                   # Expected sequence
+      is_deeply $e->outLines, [1..$N];                                              # Expected sequence
     
       #say STDERR dump $e->tallyCount;
       is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
@@ -379,7 +381,7 @@ Get comparison from find result.
 
     
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [];                                                        # No asserts
+      is_deeply $e->out, "";                                                        # No asserts
      }
     
 
@@ -441,7 +443,7 @@ Get data field from find results.
     
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->out, [1..$N];                                                   # Expected sequence
+      is_deeply $e->outLines, [1..$N];                                              # Expected sequence
     
       #say STDERR dump $e->tallyCount;
       is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
@@ -582,7 +584,7 @@ Get key field from find results.
     
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->out, [1..$N];                                                   # Expected sequence
+      is_deeply $e->outLines, [1..$N];                                              # Expected sequence
     
       #say STDERR dump $e->tallyCount;
       is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
@@ -706,7 +708,7 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
 
     
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [];                                                        # No asserts
+      is_deeply $e->out, "";                                                        # No asserts
      }
     
     if (1)                                                                                
@@ -760,7 +762,7 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
     
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->out, [1..$N];                                                   # Expected sequence
+      is_deeply $e->outLines, [1..$N];                                              # Expected sequence
     
       #say STDERR dump $e->tallyCount;
       is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
@@ -868,7 +870,7 @@ Insert a key and its associated data into a tree.
       my $c = FindResult_cmp($f);
       AssertEq($c, FindResult_notFound);
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [];
+      is_deeply $e->out, "";
      }
     
     if (1)                                                                          
@@ -1018,7 +1020,7 @@ Insert a key and its associated data into a tree.
       AssertNe FindResult_found, FindResult_cmp(Find($t, $N));
     
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [];                                                        # No asserts
+      is_deeply $e->out, "";                                                        # No asserts
      }
     
 
@@ -1087,7 +1089,7 @@ Iterate over a tree.
     
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->out, [1..$N];                                                   # Expected sequence
+      is_deeply $e->outLines, [1..$N];                                              # Expected sequence
     
       #say STDERR dump $e->tallyCount;
       is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
@@ -1232,7 +1234,7 @@ Print the keys held in a tree.
     
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->out, [1..$N];                                                   # Expected sequence
+      is_deeply $e->outLines, [1..$N];                                              # Expected sequence
     
       #say STDERR dump $e->tallyCount;
       is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
@@ -1375,7 +1377,7 @@ Print the data held in a tree.
     
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->out, [1..$N];                                                   # Expected sequence
+      is_deeply $e->outLines, [1..$N];                                              # Expected sequence
     
       #say STDERR dump $e->tallyCount;
       is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
@@ -1494,7 +1496,7 @@ Create a random array.
        } $t;
     
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [1..$N];
+      is_deeply $e->outLines, [1..$N];
      }
     
 
