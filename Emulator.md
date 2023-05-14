@@ -314,9 +314,12 @@ Assert regardless.
       Assert;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
+      is_deeply $e->out, <<END;
     
-      is_deeply $e->out, ["Assert failed", "    1     1 assert"];  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+    Assert failed  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
+        1     1 assert
+    END
      }
     
 
@@ -338,7 +341,10 @@ Assert two memory locations are equal.
       AssertEq \0, 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, ["Assert 1 == 2 failed", "    1     2 assertEq"];
+      is_deeply $e->out, <<END;
+    Assert 1 == 2 failed
+        1     2 assertEq
+    END
      }
     
 
@@ -361,10 +367,12 @@ Assert false.
       my $e = Execute(suppressOutput=>1, trace=>1);
     
       is_deeply $e->out, <<END;
-       1     0     1    assertTrue
+        1     0     1    assertTrue
     
-     AssertFalse 1 failed     1     2 assertFalse    2     1     1   assertFalse  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+    AssertFalse 1 failed  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
+        1     2 assertFalse
+        2     1     1   assertFalse
     END
      }
     
@@ -387,7 +395,10 @@ Assert are greater than or equal.
       AssertGe \0, 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, ["Assert 1 >= 2 failed", "    1     2 assertGe"];
+      is_deeply $e->out, <<END;
+    Assert 1 >= 2 failed
+        1     2 assertGe
+    END
      }
     
 
@@ -409,7 +420,10 @@ Assert two memory locations are greater than.
       AssertGt \0, 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, ["Assert 1 >  2 failed", "    1     2 assertGt"];
+      is_deeply $e->out, <<END;
+    Assert 1 >  2 failed
+        1     2 assertGt
+    END
      }
     
 
@@ -431,7 +445,10 @@ Assert two memory locations are less than or equal.
       AssertLe \0, 0;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, ["Assert 1 <= 0 failed", "    1     2 assertLe"];
+      is_deeply $e->out, <<END;
+    Assert 1 <= 0 failed
+        1     2 assertLe
+    END
      }
     
 
@@ -453,7 +470,10 @@ Assert two memory locations are less than.
       AssertLt \0, 0;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, ["Assert 1 <  0 failed", "    1     2 assertLt"];
+      is_deeply $e->out, <<END;
+    Assert 1 <  0 failed
+        1     2 assertLt
+    END
      }
     
 
@@ -475,7 +495,10 @@ Assert two memory locations are not equal.
       AssertNe \0, 1;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, ["Assert 1 != 1 failed", "    1     2 assertNe"];
+      is_deeply $e->out, <<END;
+    Assert 1 != 1 failed
+        1     2 assertNe
+    END
      }
     
 
@@ -496,11 +519,13 @@ Assert true.
       AssertTrue  0;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1, trace=>1);
-     is_deeply $e->out, <<END;
-       1     0     1   assertFalse
+      is_deeply $e->out, <<END;
+        1     0     1   assertFalse
     
-     AssertTrue 0 failed     1     2 assertTrue    2     1     1    assertTrue  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+    AssertTrue 0 failed  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
+        1     2 assertTrue
+        2     1     1    assertTrue
     END
      }
     
@@ -531,8 +556,11 @@ A bad ending.
        };
       Out 4;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} 1,2,4];
+      is_deeply $e->out, <<END;
+    1
+    2
+    4
+    END
      }
     
 
@@ -563,8 +591,11 @@ Block of code that can either be restarted or come to a good or a bad ending.
        };
       Out 4;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} 1,2,4];
+      is_deeply $e->out, <<END;
+    1
+    2
+    4
+    END
      }
     
     if (1)                                                                          
@@ -584,8 +615,11 @@ Block of code that can either be restarted or come to a good or a bad ending.
        };
       Out 4;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} 1,3,4];
+      is_deeply $e->out, <<END;
+    1
+    3
+    4
+    END
      }
     
 
@@ -653,14 +687,15 @@ Call the subroutine at the target address.
       Dump "dddd";
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->out, [
-      "dddd",
-      "1=bless([4], \"stackArea\")",
-      "2=bless([], \"params\")",
-      "3=bless([], \"return\")",
-      "4=bless([], \"aaa\")",
-      "Stack trace",
-      "    1     2 dump"];
+      is_deeply $e->out, <<END;
+    dddd
+    1=bless([4], "stackArea")
+    2=bless([], "params")
+    3=bless([], "return")
+    4=bless([], "aaa")
+    Stack trace:
+        1     2 dump
+    END
      }
     
     if (1)                                                                              
@@ -685,8 +720,9 @@ Call the subroutine at the target address.
       AssertEq $v, $V;
       Out [$a, \$i, 'aaa'];
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [11, "
-  "];
+      is_deeply $e->out, <<END;
+    11
+    END
      }
     
     if (1)                                                                            
@@ -705,8 +741,11 @@ Call the subroutine at the target address.
       ParamsPut 0, 3;  Call $set;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} 1..3];
+      is_deeply $e->out, <<END;
+    1
+    2
+    3
+    END
      }
     
 
@@ -892,8 +931,18 @@ For loop 0..range-1 or in reverse.
         Out $i;
        } 10;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} 0..9];
+      is_deeply $e->out, <<END;
+    0
+    1
+    2
+    3
+    4
+    5
+    6
+    7
+    8
+    9
+    END
      }
     
     if (1)                                                                          
@@ -905,8 +954,18 @@ For loop 0..range-1 or in reverse.
         Out $i;
        } 10, reverse=>1;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} reverse 0..9];
+      is_deeply $e->out, <<END;
+    9
+    8
+    7
+    6
+    5
+    4
+    3
+    2
+    1
+    0
+    END
      }
     
     if (1)                                                                          
@@ -918,8 +977,16 @@ For loop 0..range-1 or in reverse.
         Out $i;
        } [2, 10];
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} 2..9];
+      is_deeply $e->out, <<END;
+    2
+    3
+    4
+    5
+    6
+    7
+    8
+    9
+    END
      }
     
     if (1)                                                                           
@@ -1062,8 +1129,11 @@ A good ending.
        };
       Out 4;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} 1,2,4];
+      is_deeply $e->out, <<END;
+    1
+    2
+    4
+    END
      }
     
 
@@ -1111,10 +1181,11 @@ Execute then or else clause depending on whether two memory locations are equal.
       IfGe $a, $b, Then {Out "Ge"};
       IfGt $a, $b, Then {Out "Gt"};
       my $e = Execute(suppressOutput=>1);
-      say STDERR '  is_deeply $e->out, <<END;', "
-  ", $e->out, "END"; exit;
-      is_deeply $e->out, [map {($_, "
-  ")} "Ne", "Le", "Lt"];
+      is_deeply $e->out, <<END;
+    Ne
+    Le
+    Lt
+    END
      }
     
     if (1)                                                                                   
@@ -1130,8 +1201,11 @@ Execute then or else clause depending on whether two memory locations are equal.
       IfGe $b, $a, Then {Out "Ge"};
       IfGt $b, $a, Then {Out "Gt"};
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} "Ne", "Ge", "Gt"];
+      is_deeply $e->out, <<END;
+    Ne
+    Ge
+    Gt
+    END
      }
     
 
@@ -1157,8 +1231,9 @@ Execute then clause if the specified memory address is zero thus representing fa
        {Out 0
        };
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [0, "
-  "];
+      is_deeply $e->out, <<END;
+    0
+    END
      }
     
 
@@ -1206,10 +1281,11 @@ Execute then or else clause depending on whether two memory locations are greate
 
       IfGt $a, $b, Then {Out "Gt"};
       my $e = Execute(suppressOutput=>1);
-      say STDERR '  is_deeply $e->out, <<END;', "
-  ", $e->out, "END"; exit;
-      is_deeply $e->out, [map {($_, "
-  ")} "Ne", "Le", "Lt"];
+      is_deeply $e->out, <<END;
+    Ne
+    Le
+    Lt
+    END
      }
     
     if (1)                                                                                   
@@ -1225,8 +1301,11 @@ Execute then or else clause depending on whether two memory locations are greate
 
       IfGt $b, $a, Then {Out "Gt"};
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} "Ne", "Ge", "Gt"];
+      is_deeply $e->out, <<END;
+    Ne
+    Ge
+    Gt
+    END
      }
     
 
@@ -1274,10 +1353,11 @@ Execute then or else clause depending on whether two memory locations are greate
       IfGt $a, $b, Then {Out "Gt"};  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      say STDERR '  is_deeply $e->out, <<END;', "
-  ", $e->out, "END"; exit;
-      is_deeply $e->out, [map {($_, "
-  ")} "Ne", "Le", "Lt"];
+      is_deeply $e->out, <<END;
+    Ne
+    Le
+    Lt
+    END
      }
     
     if (1)                                                                                   
@@ -1293,8 +1373,11 @@ Execute then or else clause depending on whether two memory locations are greate
       IfGt $b, $a, Then {Out "Gt"};  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} "Ne", "Ge", "Gt"];
+      is_deeply $e->out, <<END;
+    Ne
+    Ge
+    Gt
+    END
      }
     
 
@@ -1342,10 +1425,11 @@ Execute then or else clause depending on whether two memory locations are not eq
       IfGe $a, $b, Then {Out "Ge"};
       IfGt $a, $b, Then {Out "Gt"};
       my $e = Execute(suppressOutput=>1);
-      say STDERR '  is_deeply $e->out, <<END;', "
-  ", $e->out, "END"; exit;
-      is_deeply $e->out, [map {($_, "
-  ")} "Ne", "Le", "Lt"];
+      is_deeply $e->out, <<END;
+    Ne
+    Le
+    Lt
+    END
      }
     
     if (1)                                                                                   
@@ -1361,8 +1445,11 @@ Execute then or else clause depending on whether two memory locations are not eq
       IfGe $b, $a, Then {Out "Ge"};
       IfGt $b, $a, Then {Out "Gt"};
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} "Ne", "Ge", "Gt"];
+      is_deeply $e->out, <<END;
+    Ne
+    Ge
+    Gt
+    END
      }
     
 
@@ -1410,10 +1497,11 @@ Execute then or else clause depending on whether two memory locations are less t
       IfGe $a, $b, Then {Out "Ge"};
       IfGt $a, $b, Then {Out "Gt"};
       my $e = Execute(suppressOutput=>1);
-      say STDERR '  is_deeply $e->out, <<END;', "
-  ", $e->out, "END"; exit;
-      is_deeply $e->out, [map {($_, "
-  ")} "Ne", "Le", "Lt"];
+      is_deeply $e->out, <<END;
+    Ne
+    Le
+    Lt
+    END
      }
     
     if (1)                                                                                   
@@ -1429,8 +1517,11 @@ Execute then or else clause depending on whether two memory locations are less t
       IfGe $b, $a, Then {Out "Ge"};
       IfGt $b, $a, Then {Out "Gt"};
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} "Ne", "Ge", "Gt"];
+      is_deeply $e->out, <<END;
+    Ne
+    Ge
+    Gt
+    END
      }
     
 
@@ -1478,10 +1569,11 @@ Execute then or else clause depending on whether two memory locations are less t
       IfGe $a, $b, Then {Out "Ge"};
       IfGt $a, $b, Then {Out "Gt"};
       my $e = Execute(suppressOutput=>1);
-      say STDERR '  is_deeply $e->out, <<END;', "
-  ", $e->out, "END"; exit;
-      is_deeply $e->out, [map {($_, "
-  ")} "Ne", "Le", "Lt"];
+      is_deeply $e->out, <<END;
+    Ne
+    Le
+    Lt
+    END
      }
     
     if (1)                                                                                   
@@ -1497,8 +1589,11 @@ Execute then or else clause depending on whether two memory locations are less t
       IfGe $b, $a, Then {Out "Ge"};
       IfGt $b, $a, Then {Out "Gt"};
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} "Ne", "Ge", "Gt"];
+      is_deeply $e->out, <<END;
+    Ne
+    Ge
+    Gt
+    END
      }
     
 
@@ -1524,8 +1619,9 @@ Execute then clause if the specified memory address is not zero thus representin
        {Out 0
        };
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [1, "
-  "];
+      is_deeply $e->out, <<END;
+    1
+    END
      }
     
 
@@ -1630,8 +1726,10 @@ Jump to a target label if the first source field is equal to zero.
         Out 4;
        };
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} 2, 3];
+      is_deeply $e->out, <<END;
+    2
+    3
+    END
      }
     
 
@@ -1897,8 +1995,10 @@ Jump to a target label if the first source field is not equal to zero.
         Out 4;
        };
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} 2, 3];
+      is_deeply $e->out, <<END;
+    2
+    3
+    END
      }
     
 
@@ -1927,8 +2027,11 @@ Load the address component of an address.
     
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->out,    [map {($_, "
-  ")} 2, 4];
+      is_deeply $e->out, <<END;
+    2
+    4
+    END
+    
       is_deeply $e->memory, {4=>[undef, undef, 44, undef, undef, 33]};
      }
     
@@ -1958,8 +2061,11 @@ Load the area component of an address.
     
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->out,    [map {($_, "
-  ")} 2, 4];
+      is_deeply $e->out, <<END;
+    2
+    4
+    END
+    
       is_deeply $e->memory, {4=>[undef, undef, 44, undef, undef, 33]};
      }
     
@@ -2025,14 +2131,15 @@ Copy a constant or memory address to the target address.
       Dump "dddd";
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->out, [
-      "dddd",
-      "1=bless([4], \"stackArea\")",
-      "2=bless([], \"params\")",
-      "3=bless([], \"return\")",
-      "4=bless([], \"aaa\")",
-      "Stack trace",
-      "    1     2 dump"];
+      is_deeply $e->out, <<END;
+    dddd
+    1=bless([4], "stackArea")
+    2=bless([], "params")
+    3=bless([], "return")
+    4=bless([], "aaa")
+    Stack trace:
+        1     2 dump
+    END
      }
     
     if (1)                                                                              
@@ -2063,8 +2170,9 @@ Copy a constant or memory address to the target address.
       AssertEq $v, $V;
       Out [$a, \$i, 'aaa'];
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [11, "
-  "];
+      is_deeply $e->out, <<END;
+    11
+    END
      }
     
     if (1)                                                                            
@@ -2077,8 +2185,11 @@ Copy a constant or memory address to the target address.
       ParamsPut 0, 2;  Call $set;
       ParamsPut 0, 3;  Call $set;
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} 1..3];
+      is_deeply $e->out, <<END;
+    1
+    2
+    3
+    END
      }
     
     if (1)                                                                                 
@@ -2320,8 +2431,9 @@ Get a word from the parameters in the previous frame and store it in the current
       AssertEq $v, $V;
       Out [$a, \$i, 'aaa'];
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [11, "
-  "];
+      is_deeply $e->out, <<END;
+    11
+    END
      }
     
 
@@ -2361,8 +2473,9 @@ Put a word into the parameters list to make it visible in a called procedure.
       AssertEq $v, $V;
       Out [$a, \$i, 'aaa'];
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [11, "
-  "];
+      is_deeply $e->out, <<END;
+    11
+    END
      }
     
 
@@ -2436,8 +2549,18 @@ Define a procedure.
        {Out 99;
        };
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, [map {($_, "
-  ")} 1..10];
+      is_deeply $e->out, <<END;
+    1
+    2
+    3
+    4
+    5
+    6
+    7
+    8
+    9
+    10
+    END
      }
     
 
@@ -2647,8 +2770,9 @@ Shift an element down one in an area.
     
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->memory, {4=>[0, 2]};
-      is_deeply $e->out,    [99, "
-  "];
+      is_deeply $e->out, <<END;
+    99
+    END
      }
     
 
