@@ -1366,14 +1366,10 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     out=> sub                                                                   # Write source as output to an array of words
      {my $i = $exec->currentInstruction;
-      my $t = $exec->right($i->source);
-      print $t unless $exec->suppressOutput;
-      if ($exec->out and $exec->out !~ m(\n\Z) and $t !~ m(\A\n)s)
-       {$exec->out .= " $t";
-       }
-      else
-       {$exec->out .= $t;
-       }
+      my @t = map {$exec->right($_)} $i->source->@*;
+      my $t = join ' ', @t;
+      say STDERR $t unless $exec->suppressOutput;
+      $exec->output("$t\n");
      },
 
     pop=> sub                                                                   # Pop a value from the specified memory area if possible else confess
@@ -2038,10 +2034,8 @@ sub Nop()                                                                       
 
 sub Out(@)                                                                      #i Write memory location contents to out.
  {my (@source) = @_;                                                            # Either a scalar constant or memory address to output
-  for my $source(@source)
-   {$assembly->instruction(action=>"out", xSource($source))
-   }
-  $assembly->instruction(action=>"out",   xSource("\n"));
+  my @a = map {RefRight $_} @source;
+  $assembly->instruction(action=>"out",  source=>[@a]);
  }
 
 sub ParamsGet($;$) {                                                            #i Get a word from the parameters in the previous frame and store it in the current frame.
@@ -2646,7 +2640,7 @@ dddd
 3=bless([], "return")
 4=bless([undef, 1, 2], "node")
 Stack trace:
-    1     7 dump
+    1     6 dump
 END
  }
 
