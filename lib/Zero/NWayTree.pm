@@ -929,7 +929,9 @@ if (1)                                                                          
  {Start 1;
   Out New(3);
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [4];
+  is_deeply $e->out, <<END;
+4
+END
   is_deeply $e->memory, { 4 => [0, 0, 3, 0]};
  }
 
@@ -951,7 +953,10 @@ if (1)                                                                          
   Out nodes($t);
 
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out,    [3, 5];
+  is_deeply $e->out, <<END;
+3
+5
+END
   is_deeply $e->memory, {4 => [3, 5, 3, 1]};
  }
 
@@ -1108,7 +1113,7 @@ if (1)                                                                          
   my $c = FindResult_cmp($f);
   AssertEq($c, FindResult_notFound);
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [];
+  is_deeply $e->out, "";
  }
 
 #latest:;
@@ -1247,7 +1252,7 @@ if (1)                                                                          
   AssertNe FindResult_found, FindResult_cmp(Find($t, $N));
 
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [];                                                        # No asserts
+  is_deeply $e->out, "";                                                        # No asserts
  }
 
 
@@ -1269,7 +1274,7 @@ if (1)                                                                          
    } $t;
 
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, [1..$N];
+  is_deeply $e->outLines, [1..$N];
  }
 
 #latest:;
@@ -1320,7 +1325,7 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1);
 
-  is_deeply $e->out, [1..$N];                                                   # Expected sequence
+  is_deeply $e->outLines, [1..$N];                                              # Expected sequence
 
   #say STDERR dump $e->tallyCount;
   is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
