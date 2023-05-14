@@ -210,8 +210,10 @@ solution.
 
 ```               Short    Long```
 
-[bubble](https://github.com/philiprbrenan/zero/blob/main/examples/bubbleSort.pl)```           347    7892```
+[bubble](https://github.com/philiprbrenan/zero/blob/main/examples/bubbleSort.pl)```           305    7730```
 
-[insertion](https://github.com/philiprbrenan/zero/blob/main/examples/insertionSort.pl)```         231    3950```
+[insertion](https://github.com/philiprbrenan/zero/blob/main/examples/insertionSort.pl)```         189    3788```
 
-[selection](https://github.com/philiprbrenan/zero/blob/main/examples/selectionSort.pl)```         328    4519```
+[quick](https://github.com/philiprbrenan/zero/blob/main/examples/quickSort.pl)```         285    1434```
+
+[selection](https://github.com/philiprbrenan/zero/blob/main/examples/selectionSort.pl)```         286    4357```
