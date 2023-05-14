@@ -7,6 +7,7 @@ use v5.30;
 use warnings FATAL => qw(all);
 use strict;
 use Data::Dump qw(dump);
+use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
 use Test::More tests=>5;
 
@@ -50,29 +51,30 @@ if (1)                                                                          
 
   insertionSort($a, "array");                                                   # Sort
 
-  ForArray                                                                      # Print array
-   {my ($i, $e) = @_;
-    Out $e;
-   } $a, "array";
+  ArrayDump $a, "array";
 
   my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
 
-  is_deeply $e->out, [1..8];                                                    # Check output
+  is_deeply $e->out, <<END;
+array
+bless([1 .. 8], "array")
+END
 
-  is_deeply $e->count, 231;                                                     # Instructions executed
+  is_deeply $e->count, 189;                                                     # Instructions executed
 
-  is_deeply $e->counts, {                                                       # Counts of each instruction type executed
-  array     => 1,
-  arraySize => 2,
-  dec       => 15,
-  inc       => 15,
-  jGe       => 36,
-  jLt       => 22,
-  jmp       => 52,
-  mov       => 58,
-  out       => 8,
-  push      => 8,
-  subtract  => 14};
+  is_deeply formatTable($e->counts), <<END;
+array       1
+arrayDump   1
+arraySize   1
+dec        15
+inc         7
+jGe        27
+jLt        22
+jmp        44
+mov        49
+push        8
+subtract   14
+END
  }
 
 if (1)                                                                          # Reversed array 4 times larger
@@ -83,13 +85,13 @@ if (1)                                                                          
 
   insertionSort($a, "array");
 
-  ForArray
-   {my ($i, $e, $Check, $Next, $End) = @_;
-    Out $e;
-   } $a, "array";
+  ArrayDump $a, "array";
 
   my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
 
-  is_deeply $e->out, [1..32];                                                   # Check output
-  is_deeply $e->count, 3950;                                                    # Approximately 4*4== 16 times bigger
+  is_deeply $e->out, <<END;
+array
+bless([1 .. 32], "array")
+END
+  is_deeply $e->count, 3788;                                                    # Approximately 4*4== 16 times bigger
  }
