@@ -6,6 +6,7 @@
 # Pointless adds and subtracts by 0. Perhaps we should flag adds and subtracts by 1 as well so we can have an instruction optimized for these variants.
 # Assign needs to know from whence we got the value so we can write a better error message when it is no good
 # Count number of ways an if statement actually goes.
+# We do not allow recursion because it complicates memory handling without adding any extra power.
 use v5.30;
 package Zero::Emulator;
 our $VERSION = 20230515;                                                        # Version
@@ -211,6 +212,7 @@ sub Zero::Emulator::Procedure::registers($)                                     
 my sub Reference($$)                                                            # Record a reference to a left or right address
  {my ($r, $right) = @_;                                                         # Reference, right reference if true
   ref($r) and ref($r) !~ m(\A(array|scalar|ref)\Z)i and confess "Scalar or reference required, not: ".dump($r);
+  my $local = ref($r) !~ m(\Aarray\Z)i;                                         # Local variables are variables that are not on the heap
 
   my $type = "Zero::Emulator::". ($right ? "RefRight" : "RefLeft");
 
@@ -228,6 +230,7 @@ my sub Reference($$)                                                            
       address=>   $address,
       name=>      $name,
       delta=>     $delta//0,
+      local=>     $local,
      );
    }
   else
@@ -236,6 +239,7 @@ my sub Reference($$)                                                            
       address=>   $r,
       name=>      'stackArea',
       delta=>     0,
+      local=>     $local,
      );
    }
  }
@@ -533,11 +537,6 @@ sub setMemory($$$)                                                              
   $exec->memory->{$a}[$l] = $value;
  }
 
-sub stackArea($)                                                                #P Current stack frame.
- {my ($exec) = @_;                                                              # Execution environment
-  $exec->calls->[-1]->stackArea;                                                # Stack area
- }
-
 sub address($$$$)                                                               #P Record a reference to memory.
  {my ($exec, $area, $address, $name) = @_;                                      # Execution environment, area, address in area, memory
   @_ == 4 or confess "Four parameters";
@@ -629,7 +628,7 @@ sub setMemoryType($$$)                                                          
 
 sub notRead()                                                                   #P Record the unused memory locations in the current stack frame.
  {my ($exec) = @_;                                                              # Parameters
-  my $area = $exec->stackArea;
+  my $area = $exec->currentStackFrame;
 #    my @area = $memory{$area}->@*;                                             # Memory in area
 #    my %r;                                                                     # Location in stack frame=>  instruction defining vasriable
 #    for my $a(keys @area)
@@ -688,7 +687,7 @@ sub left($$)                                                                    
   my $delta = $ref->delta;
 
   my $x     = $extra // 0;                                                      # Default is to use the address as supplied without locating a nearby address
-  my $S     = $exec->stackArea;                                                 # Current stack frame
+  my $S     = $exec->currentStackFrame;                                                 # Current stack frame
 
   my sub invalid($)
    {my ($e) = @_;                                                               # Parameters
@@ -749,7 +748,7 @@ sub leftSuppress($$)                                                            
      $a = \$A if isScalar $a;                                                   # Interpret constants as direct memory locations in left hand side
 
   my $m;
-  my $stackArea = $exec->stackArea;
+  my $stackArea = $exec->currentStackFrame;
 
   if (isScalar $$a)                                                             # Direct
    {$m = $$a + $delta;
@@ -787,7 +786,7 @@ sub right($$)                                                                   
   ref($ref) =~ m((RefLeft|RefRight)\Z) or confess "RefLeft or RefRight required";
   my $a         = $ref->address;
   my $area      = $ref->area;
-  my $stackArea = $exec->stackArea;
+  my $stackArea = $exec->currentStackFrame;
   my $name      = $ref->name;
   my $delta     = $ref->delta;
   my $r; my $e = 0; my $tAddress = $a; my $tArea = $area; my $tDelta = $delta;
@@ -799,7 +798,7 @@ sub right($$)                                                                   
     $exec->stackTraceAndExit(
      "Invalid right area: ".dump($area)
      ." address: "    .dump($a)
-     ." stack: "      .$exec->stackArea
+     ." stack: "      .$exec->currentStackFrame
      ." error: "      .dump($e)
      ." target Area: ".dump($tArea)
      ." address: "    .dump($tAddress)
@@ -830,7 +829,7 @@ sub right($$)                                                                   
   if (!defined($area))                                                          # Stack frame
    {$exec->rwRead($stackArea, $m);
     $r = $exec->getMemory($stackArea, $m, "stackArea");                         # Indirect from stack area
-    $e = 1; $tAddress = $m; $tArea = $exec->stackArea;
+    $e = 1; $tAddress = $m; $tArea = $exec->currentStackFrame;
    }
   elsif (isScalar($area))
    {$exec->rwRead(        $area, $m);
@@ -838,7 +837,7 @@ sub right($$)                                                                   
     $e = 2; $tAddress = $m; $tArea = $area;
    }
   elsif (isScalar($$area))
-   {$exec->rwRead($exec->stackArea, $$area);                                    # Mark the address holding the area as having been read
+   {$exec->rwRead($exec->currentStackFrame, $$area);                                    # Mark the address holding the area as having been read
     if (defined(my $j = $exec->getMemory($stackArea, $$area, "stackArea")))
      {$exec->rwRead($j, $m);
       $r = $exec->getMemory($j, $m, $ref->name);                                # Indirect from stack area
@@ -3520,6 +3519,14 @@ if (1)                                                                          
   Out $a;
   my $e = Execute(suppressOutput=>1);
   ok $e->out =~ m(\A\d\Z);
+ }
+
+#latest:;
+if (1)                                                                          # Local variable
+ {Start 1;
+  my $a = Mov 1;
+  my $e = Execute(suppressOutput=>1);
+  #say STDERR dump($e);
  }
 
 # (\A.{80})\s+(#.*\Z) \1\2
