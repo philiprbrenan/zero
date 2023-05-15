@@ -6,7 +6,6 @@
 # Pointless adds and subtracts by 0. Perhaps we should flag adds and subtracts by 1 as well so we can have an instruction optimized for these variants.
 # Assign needs to know from whence we got the value so we can write a better error message when it is no good
 # Count number of ways an if statement actually goes.
-# We do not allow recursion because it complicates memory handling without adding any extra power.
 use v5.30;
 package Zero::Emulator;
 our $VERSION = 20230515;                                                        # Version
@@ -34,8 +33,10 @@ sub execute(%)                                                                  
     tallyCounts=>           {},                                                 # Executed instructions by name tally counts
     tallyTotal=>            {},                                                 # Total instructions executed in each tally
     instructionPointer=>    0,                                                  # Current instruction
-    memory=>                {},                                                 # Memory contents at the end of execution
-    memoryType=>            {},                                                 # Memory contents at the end of execution
+    localMemory=>           [],                                                 # Local memory
+    localMemoryType=>       [],                                                 # Local memory type
+    heapMemory=>            {},                                                 # Heap memory
+    heapMemoryType=>        {},                                                 # Heap memory type
     rw=>                    {},                                                 # Read / write access to memory
     read=>                  {},                                                 # Records whether a memory address was ever read allowing us to find all the unused locations
     notReadAddresses=>      {},                                                 # Memory addresses never read
@@ -575,18 +576,26 @@ sub stackTraceAndExit($$%)                                                      
   $t
  }
 
-my $allocs = 0;                                                                 # Allocations
-
-sub allocMemory($$;$)                                                           #P Create the name of a new memory area.
- {my ($exec, $name, $stacked) = @_;                                             # Execution environment, name of allocation, stacked if true
-  my $f = $exec->freedArrays;                                                   # Reuse recently freed array
-  my $a = @$f ? pop @$f : ++$allocs;
-  $exec->memory     ->{$a} = bless [], $name;
-  $exec->setMemoryType($a, $name);
+sub allocLocalMemory($$)                                                        #P Create a new local memory area.
+ {my ($exec, $name) = @_;                                                       # Execution environment, name of allocation
+  my $a = $exec->localMemory->@*;
+  push $exec->localMemory->@*, bless [], $name;
+  $exec->setLocalMemoryType($a, $name);
   $a
  }
 
-sub freeArea($$$)                                                               #P Free a memory area
+my $allocs = 0;                                                                 # Allocations
+
+sub allocHeapMemory($$)                                                         #P Create a new heap memory area.
+ {my ($exec, $name) = @_;                                                       # Execution environment, name of allocation
+  my $f = $exec->freedArrays;                                                   # Reuse recently freed array
+  my $a = @$f ? pop @$f : ++$allocs;
+  $exec->memory     ->{$a} = bless [], $name;
+  $exec->setHeapMemoryType($a, $name);
+  $a
+ }
+
+sub freeHeapArea($$$)                                                           #P Free a heap memory area
  {my ($exec, $area, $name) = @_;                                                # Execution environment, array, name of allocation
   @_ == 3 or confess "Three parameters";
   $exec->checkArrayName($area, $name);
@@ -613,16 +622,29 @@ sub popArea($$$)                                                                
   pop @$a;
  }
 
-sub getMemoryType($$)                                                           #P Get the type of an area
+sub getLocalMemoryType($$)                                                      #P Get the type of an area
  {my ($exec, $area) = @_;                                                       # Execution environment, name of area
   @_ == 2 or confess "Two parameters";
-  $exec->memoryType->{$area}
+  $exec->localMemoryType->[$area]
  }
 
-sub setMemoryType($$$)                                                          #P Set the type of a memory area - a name that can be used to confirm the validity of reads and writes to that array represented by that area.
+sub setLocalMemoryType($$$)                                                     #P Set the type of a memory area - a name that can be used to confirm the validity of reads and writes to that array represented by that area.
  {my ($exec, $area, $name) = @_;                                                # Execution environment, area name, name of allocation
   @_ == 3 or confess "Three parameters";
-  $exec->memoryType->{$area} = $name;
+  $exec->localMemoryType->[$area] = $name;
+  $exec
+ }
+
+sub getHeapMemoryType($$)                                                       #P Get the type of an area
+ {my ($exec, $area) = @_;                                                       # Execution environment, name of area
+  @_ == 2 or confess "Two parameters";
+  $exec->heapMemoryType->{$area}
+ }
+
+sub setHeapMemoryType($$$)                                                      #P Set the type of a memory area - a name that can be used to confirm the validity of reads and writes to that array represented by that area.
+ {my ($exec, $area, $name) = @_;                                                # Execution environment, area name, name of allocation
+  @_ == 3 or confess "Three parameters";
+  $exec->heapMemoryType->{$area} = $name;
   $exec
  }
 
@@ -914,21 +936,25 @@ sub assign($$$)                                                                 
   $exec->setMemory($target, $value);                                            # Actually do the assign
  }
 
-sub allocateSystemAreas($)                                                      #P Allocate system areas for a new stack frame.
+sub allocateLocalAreas($)                                                      #P Allocate system areas for a new stack frame.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
-  (stackArea=>   $exec->allocMemory("stackArea", 1),
-   params=>      $exec->allocMemory("params",    1),
-   return=>      $exec->allocMemory("return",    1));
+  (stackArea=>   $exec->allocLocalMemory("stackArea"),
+   params=>      $exec->allocLocalMemory("params"),
+   return=>      $exec->allocLocalMemory("return"));
  }
 
-sub freeSystemAreas($$)                                                         #P Free system areas for the specified stack frame.
- {my ($exec, $c) = @_;                                                          # Execution environment, stack frame
+sub freeLocalAreas($)                                                          #P Free local areas for the current stack frame.
+ {my ($exec) = @_;                                                              # Execution environment
   @_ == 2 or confess "Two parameters";
-  $exec->notRead;                                                               # Record unread memory locations in the current stack frame
-  $exec->freeArea($c->stackArea, "stackArea");
-  $exec->freeArea($c->params,    "params");
-  $exec->freeArea($c->return,    "return");
+  #$exec->notRead;                                                               # Record unread memory locations in the current stack frame
+  my $s = $exec->localMemory;
+  if (@$s > 2)
+   {pop @$s for 1..3;
+   }
+  else
+   {confess "Attempting to free local";
+   }
  }
 
 sub currentInstruction($)                                                       #P Locate current instruction.
@@ -943,7 +969,7 @@ sub createInitialStackEntry($)                                                  
   push $exec->calls->@*,                                                        # Variables in initial stack frame
     stackFrame(
      $exec->block ? (variables=>  $exec->block->variables) : (),
-     $exec->allocateSystemAreas);
+     $exec->allocateLocalAreas);
   $exec
  }
 
@@ -956,7 +982,7 @@ sub checkArrayName($$$)                                                         
     return 0;
    }
 
-  my $Name = $exec->getMemoryType($area);                                       # Area has a name
+  my $Name = $exec->getHeapMemoryType($area);                                   # Area has a name
   if (!defined($Name))
    {$exec->stackTraceAndExit("No name associated with array: $area");
     return 0;
@@ -1152,13 +1178,13 @@ sub Zero::Emulator::Code::execute($%)                                           
       push $exec->calls->@*,
         stackFrame(target=>$block->code->[$exec->instructionPointer],           # Create a new call stack entry
         instruction=>$i, variables=>$i->source->variables,
-        $exec->allocateSystemAreas());
+        $exec->allocateLocalAreas());
      },
 
     return=> sub                                                                # Return from a subroutine call via the call stack
      {my $i = $exec->currentInstruction;
       $exec->calls or $exec->stackTraceAndExit("The call stack is empty so I do not know where to return to");
-      $exec->freeSystemAreas(pop $exec->calls->@*);
+      $exec->freeLocalAreas(pop $exec->calls->@*);
       if ($exec->calls)
        {my $c = $exec->calls->[-1];
         $exec->instructionPointer = $c->instruction->number+1;
@@ -1505,7 +1531,7 @@ sub Zero::Emulator::Code::execute($%)                                           
     confess "Out of instructions after $j"if $j >= maximumInstructionsToExecute;
    }
 
-  $exec->freeSystemAreas($exec->calls->[0]);                                    # Free first stack frame
+  $exec->freeLocalAreas($exec->calls->[0]);                                    # Free first stack frame
 
   $exec
  }                                                                              # Execution results
