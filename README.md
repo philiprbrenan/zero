@@ -27,7 +27,7 @@ a second such [string](https://en.wikipedia.org/wiki/String_(computer_science)) 
 been represented by a unique number it can be located in one descent through
 the [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)); although a single traversal of the [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)) will no longer yield such [strings](https://en.wikipedia.org/wiki/String_(computer_science)) in alphabetic order.
 
-All communications with the chip will be done via tcp .  Incoming read requests
+All communications with the chip will be done via [TcpIp](https://en.wikipedia.org/wiki/Internet_protocol_suite) .  Incoming read requests
 can be done in parallel as long as there are processors left to assign work to.
 An update will have to wait for all existing finds to finish while stalling all
 trailing actions until the update is complete.
