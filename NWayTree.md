@@ -168,9 +168,9 @@ Create a variable referring to a new tree descriptor.
 
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    4
+    1
     END
-      is_deeply $e->memory, { 4 => [0, 0, 3, 0]};
+      is_deeply $e->heap(1), [ 0, 0, 3, 0];
      }
     
     if (1)                                                                             
@@ -321,8 +321,8 @@ Get the number of keys in the tree..
       mov        => 1111,
       not        => 180};
     
-      #say STDERR printTreeKeys($e->memory); x;
-      is_deeply printTreeKeys($e->memory), <<END;
+      #say STDERR printTreeKeys($e); x;
+      is_deeply printTreeKeys($e), <<END;
                                                                                                                     38                                                                                                    72
                                                                  21                                                                                                       56                                                                                                 89
                                 10             15                                     28             33                                  45                   52                                     65                                     78             83                               94          98            103
@@ -330,8 +330,8 @@ Get the number of keys in the tree..
       1  2     4  5     7     9    11 12    14    16    18    20    22    24 25    27    29 30    32    34 35    37    39    41    43 44    46    48    50 51    53    55    57    59    61    63 64    66    68    70 71    73 74    76 77    79 80    82    84 85    87 88    90    92 93    95    97    99100   102   104   106107
     END
     
-      #say STDERR printTreeData($e->memory); x;
-      is_deeply printTreeData($e->memory), <<END;
+      #say STDERR printTreeData($e); x;
+      is_deeply printTreeData($e), <<END;
                                                                                                                     76                                                                                                   144
                                                                  42                                                                                                      112                                                                                                178
                                 20             30                                     56             66                                  90                  104                                    130                                    156            166                              188         196            206
@@ -505,8 +505,8 @@ Get data field from find results.
       mov        => 1111,
       not        => 180};
     
-      #say STDERR printTreeKeys($e->memory); x;
-      is_deeply printTreeKeys($e->memory), <<END;
+      #say STDERR printTreeKeys($e); x;
+      is_deeply printTreeKeys($e), <<END;
                                                                                                                     38                                                                                                    72
                                                                  21                                                                                                       56                                                                                                 89
                                 10             15                                     28             33                                  45                   52                                     65                                     78             83                               94          98            103
@@ -514,8 +514,8 @@ Get data field from find results.
       1  2     4  5     7     9    11 12    14    16    18    20    22    24 25    27    29 30    32    34 35    37    39    41    43 44    46    48    50 51    53    55    57    59    61    63 64    66    68    70 71    73 74    76 77    79 80    82    84 85    87 88    90    92 93    95    97    99100   102   104   106107
     END
     
-      #say STDERR printTreeData($e->memory); x;
-      is_deeply printTreeData($e->memory), <<END;
+      #say STDERR printTreeData($e); x;
+      is_deeply printTreeData($e), <<END;
                                                                                                                     76                                                                                                   144
                                                                  42                                                                                                      112                                                                                                178
                                 20             30                                     56             66                                  90                  104                                    130                                    156            166                              188         196            206
@@ -646,8 +646,8 @@ Get key field from find results.
       mov        => 1111,
       not        => 180};
     
-      #say STDERR printTreeKeys($e->memory); x;
-      is_deeply printTreeKeys($e->memory), <<END;
+      #say STDERR printTreeKeys($e); x;
+      is_deeply printTreeKeys($e), <<END;
                                                                                                                     38                                                                                                    72
                                                                  21                                                                                                       56                                                                                                 89
                                 10             15                                     28             33                                  45                   52                                     65                                     78             83                               94          98            103
@@ -655,8 +655,8 @@ Get key field from find results.
       1  2     4  5     7     9    11 12    14    16    18    20    22    24 25    27    29 30    32    34 35    37    39    41    43 44    46    48    50 51    53    55    57    59    61    63 64    66    68    70 71    73 74    76 77    79 80    82    84 85    87 88    90    92 93    95    97    99100   102   104   106107
     END
     
-      #say STDERR printTreeData($e->memory); x;
-      is_deeply printTreeData($e->memory), <<END;
+      #say STDERR printTreeData($e); x;
+      is_deeply printTreeData($e), <<END;
                                                                                                                     76                                                                                                   144
                                                                  42                                                                                                      112                                                                                                178
                                 20             30                                     56             66                                  90                  104                                    130                                    156            166                              188         196            206
@@ -826,8 +826,8 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
       mov        => 1111,
       not        => 180};
     
-      #say STDERR printTreeKeys($e->memory); x;
-      is_deeply printTreeKeys($e->memory), <<END;
+      #say STDERR printTreeKeys($e); x;
+      is_deeply printTreeKeys($e), <<END;
                                                                                                                     38                                                                                                    72
                                                                  21                                                                                                       56                                                                                                 89
                                 10             15                                     28             33                                  45                   52                                     65                                     78             83                               94          98            103
@@ -835,8 +835,8 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
       1  2     4  5     7     9    11 12    14    16    18    20    22    24 25    27    29 30    32    34 35    37    39    41    43 44    46    48    50 51    53    55    57    59    61    63 64    66    68    70 71    73 74    76 77    79 80    82    84 85    87 88    90    92 93    95    97    99100   102   104   106107
     END
     
-      #say STDERR printTreeData($e->memory); x;
-      is_deeply printTreeData($e->memory), <<END;
+      #say STDERR printTreeData($e); x;
+      is_deeply printTreeData($e), <<END;
                                                                                                                     76                                                                                                   144
                                                                  42                                                                                                      112                                                                                                178
                                 20             30                                     56             66                                  90                  104                                    130                                    156            166                              188         196            206
@@ -880,12 +880,10 @@ Insert a key and its associated data into a tree.
       Insert($t, 1, 11);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-    
-      is_deeply $e->memory, {
-      4 => bless([1, 1, 3, 6], "Tree"),
-      6 => bless([1, 1, 0, 4, 7, 8, 0], "Node"),
-      7 => bless([1], "Keys"),
-      8 => bless([11], "Data")};
+      is_deeply $e->heap(1), bless([1, 1, 3, 3], "Tree");
+      is_deeply $e->heap(3), bless([1, 1, 0, 1, 4, 5, 0], "Node");
+      is_deeply $e->heap(4), bless([1], "Keys");
+      is_deeply $e->heap(5), bless([11], "Data");
      }
     
     if (1)                                                                          
@@ -899,11 +897,10 @@ Insert a key and its associated data into a tree.
 
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->memory, {
-      4 => bless([2, 1, 3, 6], "Tree"),
-      6 => bless([2, 1, 0, 4, 7, 8, 0], "Node"),
-      7 => bless([1, 2], "Keys"),
-      8 => bless([11, 22], "Data")};
+      is_deeply $e->heap(1), bless([2, 1, 3, 3], "Tree");
+      is_deeply $e->heap(3), bless([2, 1, 0, 1, 4, 5, 0], "Node");
+      is_deeply $e->heap(4), bless([1, 2], "Keys");
+      is_deeply $e->heap(5), bless([11, 22], "Data");
      }
     
     if (1)                                                                          
@@ -914,11 +911,10 @@ Insert a key and its associated data into a tree.
 
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->memory, {
-      4 => bless([3, 1, 3, 6], "Tree"),
-      6 => bless([3, 1, 0, 4, 7, 8, 0], "Node"),
-      7 => bless([1, 2, 3], "Keys"),
-      8 => bless([11, 22, 33], "Data")};
+      is_deeply $e->heap(1), bless([3, 1, 3, 3], "Tree");
+      is_deeply $e->heap(3), bless([3, 1, 0, 1, 4, 5, 0], "Node");
+      is_deeply $e->heap(4), bless([1, 2, 3], "Keys");
+      is_deeply $e->heap(5), bless([11, 22, 33], "Data");
      }
     
     if (1)                                                                          
@@ -929,18 +925,17 @@ Insert a key and its associated data into a tree.
 
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->memory, {
-      4  => bless([4, 3, 3, 6], "Tree"),
-      6  => bless([1, 1, 0, 4, 7, 8, 15], "Node"),
-      7  => bless([2], "Keys"),
-      8  => bless([22], "Data"),
-      9  => bless([1, 2, 6, 4, 10, 11, 0], "Node"),
-      10 => bless([1], "Keys"),
-      11 => bless([11], "Data"),
-      12 => bless([2, 3, 6, 4, 13, 14, 0], "Node"),
-      13 => bless([3, 4], "Keys"),
-      14 => bless([33, 44], "Data"),
-      15 => bless([9, 12], "Down")};
+      is_deeply $e->heap(1 ), bless([4, 3, 3, 3], "Tree");
+      is_deeply $e->heap(3 ), bless([1, 1, 0, 1, 4, 5, 12], "Node");
+      is_deeply $e->heap(4 ), bless([2], "Keys");
+      is_deeply $e->heap(5 ), bless([22], "Data");
+      is_deeply $e->heap(6 ), bless([1, 2, 3, 1, 7, 8, 0], "Node"),;
+      is_deeply $e->heap(7 ), bless([1], "Keys");
+      is_deeply $e->heap(8 ), bless([11], "Data");
+      is_deeply $e->heap(9 ), bless([2, 3, 3, 1, 10, 11, 0], "Node"),;
+      is_deeply $e->heap(10), bless([3, 4], "Keys");
+      is_deeply $e->heap(11), bless([33, 44], "Data");
+      is_deeply $e->heap(12), bless([6, 9], "Down");
      }
     
     if (1)                                                                          
@@ -952,21 +947,20 @@ Insert a key and its associated data into a tree.
     
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->memory, {
-      4  => bless([5, 4, 3, 6], "Tree"),
-      6  => bless([2, 1, 0, 4, 7, 8, 15], "Node"),
-      7  => bless([2, 4], "Keys"),
-      8  => bless([22, 44], "Data"),
-      9  => bless([1, 2, 6, 4, 10, 11, 0], "Node"),
-      10 => bless([1], "Keys"),
-      11 => bless([11], "Data"),
-      12 => bless([1, 3, 6, 4, 13, 14, 0], "Node"),
-      13 => bless([3], "Keys"),
-      14 => bless([33], "Data"),
-      15 => bless([9, 12, 16], "Down"),
-      16 => bless([1, 4, 6, 4, 17, 18, 0], "Node"),
-      17 => bless([5], "Keys"),
-      18 => bless([55], "Data")};
+      is_deeply $e->heap(1 ), bless([5, 4, 3, 3], "Tree");
+      is_deeply $e->heap(3 ), bless([2, 1, 0, 1, 4, 5, 12], "Node"),;
+      is_deeply $e->heap(4 ), bless([2, 4], "Keys");
+      is_deeply $e->heap(5 ), bless([22, 44], "Data");
+      is_deeply $e->heap(6 ), bless([1, 2, 3, 1, 7, 8, 0], "Node"),;
+      is_deeply $e->heap(7 ), bless([1], "Keys");
+      is_deeply $e->heap(8 ), bless([11], "Data");
+      is_deeply $e->heap(9 ), bless([1, 3, 3, 1, 10, 11, 0], "Node"),;
+      is_deeply $e->heap(10), bless([3], "Keys");
+      is_deeply $e->heap(11), bless([33], "Data");
+      is_deeply $e->heap(12), bless([6, 9, 13], "Down"),;
+      is_deeply $e->heap(13), bless([1, 4, 3, 1, 14, 15, 0], "Node"),;
+      is_deeply $e->heap(14), bless([5], "Keys");
+      is_deeply $e->heap(15), bless([55], "Data");
      }
     
     if (1)                                                                          
@@ -977,21 +971,20 @@ Insert a key and its associated data into a tree.
 
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->memory, {
-      4  => bless([6, 4, 3, 6], "Tree"),
-      6  => bless([2, 1, 0, 4, 7, 8, 15], "Node"),
-      7  => bless([2, 4], "Keys"),
-      8  => bless([22, 44], "Data"),
-      9  => bless([1, 2, 6, 4, 10, 11, 0], "Node"),
-      10 => bless([1], "Keys"),
-      11 => bless([11], "Data"),
-      12 => bless([1, 3, 6, 4, 13, 14, 0], "Node"),
-      13 => bless([3], "Keys"),
-      14 => bless([33], "Data"),
-      15 => bless([9, 12, 16], "Down"),
-      16 => bless([2, 4, 6, 4, 17, 18, 0], "Node"),
-      17 => bless([5, 6], "Keys"),
-      18 => bless([55, 66], "Data")};
+      is_deeply $e->heap(1 ), bless([6, 4, 3, 3], "Tree");
+      is_deeply $e->heap(3 ), bless([2, 1, 0, 1, 4, 5, 12], "Node"),;
+      is_deeply $e->heap(4 ), bless([2, 4], "Keys");
+      is_deeply $e->heap(5 ), bless([22, 44], "Data");
+      is_deeply $e->heap(6 ), bless([1, 2, 3, 1, 7, 8, 0], "Node"),;
+      is_deeply $e->heap(7 ), bless([1], "Keys");
+      is_deeply $e->heap(8 ), bless([11], "Data");
+      is_deeply $e->heap(9 ), bless([1, 3, 3, 1, 10, 11, 0], "Node"),;
+      is_deeply $e->heap(10), bless([3], "Keys");
+      is_deeply $e->heap(11), bless([33], "Data");
+      is_deeply $e->heap(12),     bless([6, 9, 13], "Down"),;
+      is_deeply $e->heap(13), bless([2, 4, 3, 1, 14, 15, 0], "Node"),;
+      is_deeply $e->heap(14), bless([5, 6], "Keys");
+      is_deeply $e->heap(15), bless([55, 66], "Data");
      }
     
     if (1)                                                                             
@@ -1153,8 +1146,8 @@ Iterate over a tree.
       mov        => 1111,
       not        => 180};
     
-      #say STDERR printTreeKeys($e->memory); x;
-      is_deeply printTreeKeys($e->memory), <<END;
+      #say STDERR printTreeKeys($e); x;
+      is_deeply printTreeKeys($e), <<END;
                                                                                                                     38                                                                                                    72
                                                                  21                                                                                                       56                                                                                                 89
                                 10             15                                     28             33                                  45                   52                                     65                                     78             83                               94          98            103
@@ -1162,8 +1155,8 @@ Iterate over a tree.
       1  2     4  5     7     9    11 12    14    16    18    20    22    24 25    27    29 30    32    34 35    37    39    41    43 44    46    48    50 51    53    55    57    59    61    63 64    66    68    70 71    73 74    76 77    79 80    82    84 85    87 88    90    92 93    95    97    99100   102   104   106107
     END
     
-      #say STDERR printTreeData($e->memory); x;
-      is_deeply printTreeData($e->memory), <<END;
+      #say STDERR printTreeData($e); x;
+      is_deeply printTreeData($e), <<END;
                                                                                                                     76                                                                                                   144
                                                                  42                                                                                                      112                                                                                                178
                                 20             30                                     56             66                                  90                  104                                    130                                    156            166                              188         196            206
@@ -1178,12 +1171,12 @@ Iterate over a tree.
 
 Print trees horizontally.
 
-## printTreeKeys($m)
+## printTreeKeys($e)
 
 Print the keys held in a tree.
 
        Parameter  Description
-    1  $m         Memory
+    1  $e         Memory
 
 **Example:**
 
@@ -1297,10 +1290,10 @@ Print the keys held in a tree.
       not        => 180};
     
     
-      #say STDERR printTreeKeys($e->memory); x;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      #say STDERR printTreeKeys($e); x;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
-      is_deeply printTreeKeys($e->memory), <<END;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      is_deeply printTreeKeys($e), <<END;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
                                                                                                                     38                                                                                                    72
                                                                  21                                                                                                       56                                                                                                 89
@@ -1309,8 +1302,8 @@ Print the keys held in a tree.
       1  2     4  5     7     9    11 12    14    16    18    20    22    24 25    27    29 30    32    34 35    37    39    41    43 44    46    48    50 51    53    55    57    59    61    63 64    66    68    70 71    73 74    76 77    79 80    82    84 85    87 88    90    92 93    95    97    99100   102   104   106107
     END
     
-      #say STDERR printTreeData($e->memory); x;
-      is_deeply printTreeData($e->memory), <<END;
+      #say STDERR printTreeData($e); x;
+      is_deeply printTreeData($e), <<END;
                                                                                                                     76                                                                                                   144
                                                                  42                                                                                                      112                                                                                                178
                                 20             30                                     56             66                                  90                  104                                    130                                    156            166                              188         196            206
@@ -1321,12 +1314,12 @@ Print the keys held in a tree.
      }
     
 
-## printTreeData($m)
+## printTreeData($e)
 
 Print the data held in a tree.
 
        Parameter  Description
-    1  $m         Memory
+    1  $e         Memory
 
 **Example:**
 
@@ -1439,8 +1432,8 @@ Print the data held in a tree.
       mov        => 1111,
       not        => 180};
     
-      #say STDERR printTreeKeys($e->memory); x;
-      is_deeply printTreeKeys($e->memory), <<END;
+      #say STDERR printTreeKeys($e); x;
+      is_deeply printTreeKeys($e), <<END;
                                                                                                                     38                                                                                                    72
                                                                  21                                                                                                       56                                                                                                 89
                                 10             15                                     28             33                                  45                   52                                     65                                     78             83                               94          98            103
@@ -1449,10 +1442,10 @@ Print the data held in a tree.
     END
     
     
-      #say STDERR printTreeData($e->memory); x;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      #say STDERR printTreeData($e); x;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
-      is_deeply printTreeData($e->memory), <<END;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      is_deeply printTreeData($e), <<END;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
                                                                                                                     76                                                                                                   144
                                                                  42                                                                                                      112                                                                                                178
