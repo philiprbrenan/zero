@@ -15,7 +15,7 @@ use strict;
 use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>79" unless caller;
+eval "use Test::More tests=>83" unless caller;
 
 makeDieConfess;
 
@@ -936,7 +936,7 @@ sub assign($$$)                                                                 
      }
    }
 
-  if (defined $exec->watch->[$arena][$area][$address])                          # Watch for specified changes
+  if (defined $exec->watch->[$area][$address])                                  # Watch for specified changes
    {my @s = $exec->stackTrace("Change at watched "
      ."arena: $arena, area: $area($name), address: $address");
     $s[-1] .= join ' ', "Current value:", $exec->getMemory($arena, $area, $address, $name),
@@ -1475,7 +1475,7 @@ sub Zero::Emulator::Code::execute($%)                                           
     watch=> sub                                                                 # Watch a memory location for changes
      {my $i = $exec->currentInstruction;
       my $t = $exec->left($i->target);
-      $exec->watch->[$t->area]{$t->address}++;
+      $exec->watch->[$t->area][$t->address]++;
      },
    );
 
@@ -2537,7 +2537,7 @@ aaa
 END
  }
 
-latest:;
+#latest:;
 if (1)                                                                          ##Call
  {Start 1;
   my $w = Procedure 'write', sub
@@ -3076,19 +3076,19 @@ END
  }
 
 #latest:;
-if (0)                                                                          # Double write
+if (1)                                                                          # Double write
  {Start 1;
   Mov 1, 1;
   Mov 2, 1;
   Mov 3, 1;
   Mov 3, 1;
   Mov 1, 1;
-  my $e = Execute(suppressOutput=>1);
-  is_deeply keys($e->doubleWrite->%*), 1;                                       # In area 0, variable 1 was first written by instruction 0 then again by instruction 1 once.
+  my $e = Execute(suppressOutput=>0);
+  ok keys($e->doubleWrite->%*) == 2;                                       # In area 0, variable 1 was first written by instruction 0 then again by instruction 1 once.
  }
 
 #latest:;
-if (0)                                                                          # Pointless assign
+if (1)                                                                          # Pointless assign
  {Start 1;
   Add 2,  1, 1;
   Add 2, \2, 0;
@@ -3360,7 +3360,7 @@ END
  }
 
 #latest:;
-if (0)                                                                          ##Watch
+if (1)                                                                          ##Watch
  {Start 1;
   my $a = Mov 1;
   my $b = Mov 2;
@@ -3371,7 +3371,7 @@ if (0)                                                                          
   Mov $c, 6;
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, <<END;
-Change at watched area: 1 (stackArea), address: 1
+Change at watched arena: 0, area: 1(stackArea), address: 1
     1     6 mov
 Current value: 2 New value: 5
 END
