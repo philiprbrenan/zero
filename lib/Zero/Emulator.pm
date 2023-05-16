@@ -1,5 +1,4 @@
 #!/usr/bin/perl -I../lib/ -Ilib
-#!/usr/bin/perl -I../lib/ -Ilib
 #-------------------------------------------------------------------------------
 # Assemble and execute code written in the Zero assembler programming language.
 # Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
@@ -225,16 +224,16 @@ sub heap($$)                                                                    
 my sub Reference($$)                                                            # Record a reference to a left or right address
  {my ($r, $right) = @_;                                                         # Reference, right reference if true
   ref($r) and ref($r) !~ m(\A(array|scalar|ref)\Z)i and confess "Scalar or reference required, not: ".dump($r);
-  my $arena = ref($r) =~ m(\Aarray\Z)i ? arenaHeap : arenaLocal;            # Local variables are variables that are not on the heap
+  my $arena = ref($r) =~ m(\Aarray\Z)i ? arenaHeap : arenaLocal;                # Local variables are variables that are not on the heap
 
   my $type = "Zero::Emulator::". ($right ? "RefRight" : "RefLeft");
 
-  if (ref($r) =~ m(array)i)
+  if (ref($r) =~ m(array)i)                                                     # Reference represented as [area, address, name]
    {my ($area, $address, $name, $delta) = @$r;
      defined($area) and !defined($name) and confess "Name required for address specification: in [Area, address, name]";
     !defined($area) and  defined($name) and confess "Area required for address specification: in [Area, address, name]";
 
-    if($right)
+    if($right)                                                                  # The dofference between a left and a right is that a right can be interpreted as a constant, a left never can becuase we cannot assign to a constant.
      {isScalar($address) and defined($area) || defined($name) and confess "Right hand constants cannot have an associated area";
      }
 
@@ -246,7 +245,7 @@ my sub Reference($$)                                                            
       delta=>     $delta//0,
      );
    }
-  else
+  else                                                                          # Reference represented as an address
    {return genHash($type,
       arena=>     $arena,
       area=>      undef,
@@ -513,7 +512,7 @@ sub checkMemoryType($$$$)                                                       
 
 sub getMemory($$$$$%)                                                           #P Get from memory.
  {my ($exec, $arena, $area, $address, $name, %options) = @_;                    # Execution environment, arena, area, address, expected name of area, options
-  @_ < 4 and confess "At least four parameters";
+  @_ < 5 and confess "At least five parameters";
   $exec->checkMemoryType($arena, $area, $name);
   my $v = $exec->memory->[$arena][$area][$address];
   if (!defined($v) and !defined($options{undefinedOk}))
@@ -522,6 +521,13 @@ sub getMemory($$$$$%)                                                           
      ("Undefined memory accessed in arena: $arena, at area: $area ($n), address: $address\n");
    }
   $v
+ }
+
+sub getMemoryAddress($)                                                         #P Get address of memory location
+ {my ($exec, $left) = @_;                                                       # Execution environment, address
+  @_ == 2 or confess "Two parameters";
+  $exec->checkMemoryType($left->arena, $left->area, $left->name);
+  \$exec->memory->[$left->arena][$left->area][$left->address];
  }
 
 sub getMemoryAtAddress($$%)                                                     #P Get a value from memory at a specified address
@@ -925,12 +931,12 @@ sub assign($$$)                                                                 
      ." address: $address");
    }
   else
-   {my $currently = $exec->getMemoryAtAddress($target, undefinedOk=>1);
-    if (defined $currently)
-     {if ($currently == $value)
-       {$exec->pointlessAssign->{$exec->currentInstruction->number}++;
+   {my $currently = $exec->getMemoryAddress($target);
+    if (defined $$currently)
+     {if ($$currently == $value)
+       {$exec->pointlessAssign->{$exec->currentInstruction->number}++;          # Record the pointless assign
         if ($exec->stopOnError)
-         {$exec->stackTraceAndExit("Pointless assign of: $currently "
+         {$exec->stackTraceAndExit("Pointless assign of: $$currently "
           ."to arena: $arena, area: $area($name), at: $address");
          }
        }
