@@ -57,13 +57,13 @@ if (1)                                                                          
 
   is_deeply $e->outLines, [0..$N-1];                                            # Check output
 
-  is_deeply printTreeKeys($e->memory), <<END;                                   # Check keys in memory
+  is_deeply printTreeKeys($e), <<END;                                           # Check keys in memory
            3           7
      1           5           9    11    13
   0     2     4     6     8    10    12    14
 END
 
-  is_deeply printTreeData($e->memory), <<END;                                   # Check data in memory
+  is_deeply printTreeData($e), <<END;                                           # Check data in memory
            6          14
      2          10          18    22    26
   0     4     8    12    16    20    24    28
