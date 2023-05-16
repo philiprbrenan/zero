@@ -510,12 +510,12 @@ sub checkMemoryType($$$$)                                                       
    }
  }
 
-sub getMemory($$$$$%)                                                           #P Get from memory.
- {my ($exec, $arena, $area, $address, $name, %options) = @_;                    # Execution environment, arena, area, address, expected name of area, options
-  @_ < 5 and confess "At least five parameters";
+sub getMemory($$$$$)                                                            #P Get from memory.
+ {my ($exec, $arena, $area, $address, $name) = @_;                              # Execution environment, arena, area, address, expected name of area
+  @_ == 5 or confess "Five parameters";
   $exec->checkMemoryType($arena, $area, $name);
   my $v = $exec->memory->[$arena][$area][$address];
-  if (!defined($v) and !defined($options{undefinedOk}))
+  if (!defined($v))                                                             # Check we are getting a defined value.  If undefined values are acceptable use L<getMemoryAddress> and dereference the result.
    {my $n = $name // 'unknown';
     $exec->stackTraceAndExit
      ("Undefined memory accessed in arena: $arena, at area: $area ($n), address: $address\n");
@@ -523,18 +523,25 @@ sub getMemory($$$$$%)                                                           
   $v
  }
 
-sub getMemoryAddress($)                                                         #P Get address of memory location
- {my ($exec, $left) = @_;                                                       # Execution environment, address
-  @_ == 2 or confess "Two parameters";
-  $exec->checkMemoryType($left->arena, $left->area, $left->name);
-  \$exec->memory->[$left->arena][$left->area][$left->address];
+sub getMemoryAddress($$$$$)                                                     #P Evaluate an address in the current execution environment
+ {my ($exec, $arena, $area, $address, $name) = @_;                              # Execution environment, arena, area, address, expected name of area
+  @_ == 5 or confess "Five parameters";
+  $exec->checkMemoryType($arena, $area, $name);
+  \$exec->memory->[$arena][$area][$address];
  }
 
-sub getMemoryAtAddress($$%)                                                     #P Get a value from memory at a specified address
- {my ($exec, $left, %options) = @_;                                             # Execution environment, left address, options
-  @_ < 2 and confess "At least two parameters";
+sub getMemoryFromAddress($$)                                                    #P Get a value from memory at a specified address
+ {my ($exec, $left) = @_;                                                       # Execution environment, left address
+  @_ == 2 or confess "Two parameters";
   ref($left) =~ m(Address) or confess "Address needed for second parameter, not: ".ref($left);
-  $exec->getMemory($left->arena, $left->area, $left->address, $left->name, %options);
+  $exec->getMemory($left->arena, $left->area, $left->address, $left->name);
+ }
+
+sub getMemoryAddressFromAddress($)                                              #P Get address of memory location from an address in the cirrent execution environment
+ {my ($exec, $left) = @_;                                                       # Execution environment, address
+  @_ == 2 or confess "Two parameters";
+  ref($left) =~ m(Address) or confess "Address needed for second parameter, not: ".ref($left);
+  $exec->getMemoryAddress($left->arena, $left->area, $left->address, $left->name);
  }
 
 sub setMemory($$$)                                                              #P Set the value of an address at the specified address in memory in the current execution environment.
@@ -548,7 +555,7 @@ sub setMemory($$$)                                                              
   $exec->lastAssignAddress = $address;
   $exec->lastAssignType    = $exec->getMemoryType($arena, $area);
   $exec->lastAssignValue   = $value;
-  $exec->lastAssignBefore  = $exec->getMemoryAtAddress($ref, undefinedOk=>1);
+  $exec->lastAssignBefore  = $exec->getMemoryAddressFromAddress($ref)->$*;
 
   $exec->memory->[$arena][$area][$address] = $value;
  }
@@ -673,8 +680,8 @@ sub rwWrite($$$$)                                                               
   my $P = $exec->rw->[$arena][$area][$address];
   if (defined($P))
    {my $T = $exec->getMemoryType($arena, $area);
-    my $M = $exec->getMemory($arena, $area, $address, $T, undefinedOk=>1);
-    if ($M)
+    my $M = $exec->getMemoryAddress($arena, $area, $address, $T);
+    if ($$M)
      {my $Q = $exec->currentInstruction;
       my $p = $exec->contextString($P, "Previous write");
       my $q = $exec->contextString($Q, "Current  write");
@@ -931,7 +938,7 @@ sub assign($$$)                                                                 
      ." address: $address");
    }
   else
-   {my $currently = $exec->getMemoryAddress($target);
+   {my $currently = $exec->getMemoryAddressFromAddress($target);
     if (defined $$currently)
      {if ($$currently == $value)
        {$exec->pointlessAssign->{$exec->currentInstruction->number}++;          # Record the pointless assign
@@ -1347,7 +1354,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $t = $exec->left ($i->target);
       my $s = $exec->right($i->source);
       my $S = $exec->address(arenaParms, $exec->currentParamsGet, $s, "params");
-      my $v = $exec->getMemoryAtAddress($S);
+      my $v = $exec->getMemoryFromAddress($S);
       $exec->assign($t, $v);
      },
 
@@ -1377,7 +1384,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $t = $exec->left ($i->target);
       my $s = $exec->right($i->source);
       my $S = $exec->address(arenaReturn, $exec->currentReturnGet, $s, "return");
-      my $v = $exec->getMemoryAtAddress($S);
+      my $v = $exec->getMemoryFromAddress($S);
       $exec->assign($t, $v);
      },
 
@@ -1428,7 +1435,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->leftSuppress ($i->target);                                         # Make sure there something to shift
       my $t = $exec->left ($i->target);
       my $s = $exec->right($i->source);
-      my $v = $exec->getMemoryAtAddress($t) << $s;
+      my $v = $exec->getMemoryFromAddress($t) << $s;
       $exec->assign($t, $v);
      },
 
@@ -1437,7 +1444,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->leftSuppress ($i->target);                                         # Make sure there something to shift
       my $t = $exec->left ($i->target);
       my $s = $exec->right($i->source);
-      my $v = $exec->getMemoryAtAddress($t) >> $s;
+      my $v = $exec->getMemoryFromAddress($t) >> $s;
       $exec->assign($t, $v);
      },
 
@@ -1450,7 +1457,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       for my $j(reverse 1..$L-$l)
        {my $s = $exec->left($i->target, $j-1);
         my $t = $exec->left($i->target, $j);
-        my $v = $exec->getMemoryAtAddress($s);
+        my $v = $exec->getMemoryFromAddress($s);
         $exec->assign($t, $v);
        }
       $exec->assign($t, $s);
@@ -1462,11 +1469,11 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $t = $exec->left($i->target);
       my $L = $exec->areaLength($s->area);                                      # Length of source array
       my $l = $s->address;
-      my $v = $exec->getMemoryAtAddress($s);
+      my $v = $exec->getMemoryFromAddress($s);
       for my $j($l..$L-2)                                                       # Each element in specified range
        {my $S = $exec->left(RefLeft([$s->area, $j+1, $s->name]));
         my $T = $exec->left(RefLeft([$s->area, $j,   $s->name]));
-        $exec->assign($T, $exec->getMemoryAtAddress($S));
+        $exec->assign($T, $exec->getMemoryFromAddress($S));
        }
       $exec->popArea(arenaHeap, $s->area, $s->name);
       my $T = $exec->left($i->target);
