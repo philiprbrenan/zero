@@ -1,4 +1,5 @@
 #!/usr/bin/perl -I../lib/ -Ilib
+#!/usr/bin/perl -I../lib/ -Ilib
 #-------------------------------------------------------------------------------
 # Assemble and execute code written in the Zero assembler programming language.
 # Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
@@ -259,7 +260,7 @@ my sub Reference($$)                                                            
 my sub RefRight($)                                                              # Record a reference to a right address
  {my ($r) = @_;                                                                 # Reference
   @_ == 1 or confess "One parameter required formatted as either a address or an [area, address, name, delta]";
-  Reference($r, 1);
+  Reference($r, 0);
  }
 
 my sub RefLeft($)                                                               # Record a reference to a right address
@@ -692,7 +693,7 @@ sub rwRead($$$$)                                                                
    }
  }
 
-sub left($$)                                                                    #P Address of a location in memory.
+sub left($$;$)                                                                    #P Address of a location in memory.
  {my ($exec, $ref, $extra) = @_;                                                # Reference, an optional extra offset to add or subtract to the final memory address
   @_ == 2 or @_ == 3 or confess "Two or three parameters";
   ref($ref) =~ m((RefLeft|RefRight)\Z)
@@ -2275,23 +2276,49 @@ sub Watch($)                                                                    
   $assembly->instruction(action=>"watch", xTarget($target));
  }
 
-#D0
+#D1 Instruction Set Architecture                                                # List the set of instructions in various ways
 
-sub instructionList()
+sub instructionList()                                                           #P Create a list of instructinos
  {my @i = grep {m(\s+#i)} readFile $0;
-  my @j;
+  my @j;                                                                        # Description of instruction
   for my $i(@i)
    {my @parse     = split /[ (){}]+/, $i, 5;
     my $name = $parse[1];
     my $sig  = $parse[2];
     my $comment = $i =~ s(\A.*?#i\s*) ()r;
     push @j, [$name, $sig, $comment];
-#   say STDERR sprintf("%10s  %8s   %s", $name, $sig, $comment);
-#   say STDERR "AAAA", dump(\@parse);
    }
-  say STDERR '@EXPORT_OK   = qw(', (join ' ', map {$$_[0]} @j), ");\n";
+  [sort {$$a[0] cmp $$b[0]} @j]
+}
+
+sub instructionListExport()                                                     #P Create an export statement
+ {my $i = instructionList;
+  say STDERR '@EXPORT_OK   = qw(', (join ' ', map {$$_[0]} @$i), ");\n";
+}
+#instructionListExport; exit;
+
+sub instructionListReadMe()                                                     #P List  instructions for inclusion in read me
+ {my $i = instructionList;
+  my $s = '';
+  for my $i(@$i)
+   {my ($name, $sig, $comment) = @$i;
+    $s .= sprintf("**%10s**  %s\n", $name, $comment);
+   }
+  $s
  }
-#instructionList(); exit;
+
+sub instructionListMapping()                                                    #P Map instructions to small integers
+ {my $i = instructionList;
+  my @n = map {$$_[0]} @$i;                                                     # Description of instruction
+  my $n = join ' ', @n;
+  say STDERR <<END;
+my \@instructions = qw($n);
+my \%instructions = map {\$instructions[\$_]=> \$_} \@instructions;
+END
+}
+#instructionListMapping(); exit;
+
+#D0
 
 use Exporter qw(import);
 use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
