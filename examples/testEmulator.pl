@@ -20,7 +20,7 @@ if (1)
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->out, "Hello World\n";
-  is_deeply $e->memory, { 4 => bless([1], "aaa") };
+  is_deeply $e->heap(1), bless([1], "aaa");
  }
 
 done_testing;
