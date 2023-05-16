@@ -3079,7 +3079,7 @@ Watches for changes to the specified memory location.
 
 **Example:**
 
-    if (0)                                                                          
+    if (1)                                                                          
      {Start 1;
       my $a = Mov 1;
       my $b = Mov 2;
@@ -3092,7 +3092,7 @@ Watches for changes to the specified memory location.
       Mov $c, 6;
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    Change at watched area: 1 (stackArea), address: 1
+    Change at watched arena: 0, area: 1(stackArea), address: 1
         1     6 mov
     Current value: 2 New value: 5
     END
