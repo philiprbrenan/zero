@@ -2281,6 +2281,10 @@ sub GenerateMachineCode(%)                                                      
  {my (%options) = @_;                                                           # Generation options
 
   $assembly->assemble(%options);                                                # Assemble code
+
+#  my $code
+#  for(
+
  }
 
 #D0
