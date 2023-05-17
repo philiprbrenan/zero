@@ -985,20 +985,20 @@ if (1)                                                                          
 
   for my $i(0..$N-1)
    {my $I = $i + 1;
-    Node_setKeys($n, $i,  10  *$I);
-    Node_setData($n, $i,  100 *$I);
-    Node_setDown($n, $i,  1000*$I);
+    Node_setKeys($n, $i,  10*$I);
+    Node_setData($n, $i,  10*$I);
+    Node_setDown($n, $i,  10*$i+5);
    }
 
-  Node_setDown($n, $N, 8000);
+  Node_setDown($n, $N, 75);
 
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->heap(1), bless([0, 1, 7, 0], "Tree");
   is_deeply $e->heap(2), bless([7, 1, 0, 1, 3, 4, 5], "Node");
   is_deeply $e->heap(3), bless([10, 20, 30, 40, 50, 60, 70], "Keys");
-  is_deeply $e->heap(4), bless([100, 200, 300, 400, 500, 600, 700], "Data");
-  is_deeply $e->heap(5), bless([1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000], "Down");
+  is_deeply $e->heap(4), bless([10, 20, 30, 40, 50, 60, 70], "Data");
+  is_deeply $e->heap(5), bless([5, 15, 25, 35, 45, 55, 65, 75], "Down");
  }
 
 #latest:;
@@ -1264,7 +1264,7 @@ if (1)                                                                          
   is_deeply $e->outLines, [1..$N];
  }
 
-latest:;
+#latest:;
 if (1)                                                                          ##Iterate ##Keys ##FindResult_key ##FindResult_data ##Find ##printTreeKeys ##printTreeData
  {my $W = 3; my $N = 107; my @r = randomArray $N;
 
