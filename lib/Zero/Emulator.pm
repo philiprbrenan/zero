@@ -717,7 +717,6 @@ sub left($$)                                                                    
   my $arena   = $ref->arena;
   my $area    = $ref->area;
   my $delta   = $ref->delta;
-confess if $delta;
   my $S       = $exec->currentStackFrame;                                       # Current stack frame
 
   my sub invalid($)
@@ -779,7 +778,7 @@ sub right($$)                                                                   
   my $stackArea = $exec->currentStackFrame;
   my $name      = $ref->name;
   my $delta     = $ref->delta;
-confess if $delta;
+
   my $r; my $e = 0; my $tArena = $arena; my $tArea = $area; my $tAddress = $address; my $tDelta = $delta;
 
   my sub invalid($)                                                             # Invalid address
