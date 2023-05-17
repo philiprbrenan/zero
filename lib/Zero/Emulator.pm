@@ -21,7 +21,7 @@ makeDieConfess;
 
 my sub maximumInstructionsToExecute {1e6}                                       # Maximum number of subroutines to execute
 
-sub execute(%)                                                                  # Execution environment for a block of code
+sub ExecutionEnvironment(%)                                                     # Execution environment for a block of code
  {my (%options) = @_;                                                           # Execution options
 
   my $exec=                 genHash("Zero::Emulator",                           # Execution results
@@ -717,7 +717,7 @@ sub left($$)                                                                    
   my $arena   = $ref->arena;
   my $area    = $ref->area;
   my $delta   = $ref->delta;
-
+confess if $delta;
   my $S       = $exec->currentStackFrame;                                       # Current stack frame
 
   my sub invalid($)
@@ -779,6 +779,7 @@ sub right($$)                                                                   
   my $stackArea = $exec->currentStackFrame;
   my $name      = $ref->name;
   my $delta     = $ref->delta;
+confess if $delta;
   my $r; my $e = 0; my $tArena = $arena; my $tArea = $area; my $tAddress = $address; my $tDelta = $delta;
 
   my sub invalid($)                                                             # Invalid address
@@ -1018,7 +1019,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
   $block->assemble;                                                             # Assemble if necessary
 
-  my $exec = execute(code=>$block, %options);                                   # Execution environment
+  my $exec = ExecutionEnvironment(code=>$block, %options);                      # Execution environment
 
   my %instructions =                                                            # Instruction definitions
    (add=> sub                                                                   # Add the two source operands and store the result in the target
@@ -2276,6 +2277,12 @@ END
 }
 #instructionListMapping(); exit;
 
+sub GenerateMachineCode(%)                                                      # Generate machine code for the current block of code
+ {my (%options) = @_;                                                           # Generation options
+
+  $assembly->assemble(%options);                                                # Assemble code
+ }
+
 #D0
 
 use Exporter qw(import);
@@ -3527,6 +3534,14 @@ if (1)                                                                          
   my $a = Mov 1;
   my $e = Execute(suppressOutput=>1);
   #say STDERR dump($e);
+ }
+
+#latest:;
+if (0)                                                                          # Local variable
+ {Start 1;
+  my $a = Mov 1;
+  my $e = GenerateMachineCode;
+  say STDERR dump($e);
  }
 
 # (\A.{80})\s+(#.*\Z) \1\2
