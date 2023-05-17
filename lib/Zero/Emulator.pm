@@ -6,7 +6,6 @@
 # Pointless adds and subtracts by 0. Perhaps we should flag adds and subtracts by 1 as well so we can have an instruction optimized for these variants.
 # Assign needs to know from whence we got the value so we can write a better error message when it is no good
 # Count number of ways an if statement actually goes.
-# Remove left suppress , double write etc. as it is too complicated versus tracing
 use v5.30;
 package Zero::Emulator;
 our $VERSION = 20230515;                                                        # Version
@@ -2513,13 +2512,15 @@ sub disAssemble(%)                                                              
   $C
  }
 
-sub disAssembleMinusContext($)                                                  # Remove context information from disassembly
- {my ($d) = @_;                                                                 # Machine code string
-  for my $c($d->code->@*)
+sub disAssembleMinusContext($)                                                  # Disassemble and remove context information from disassembly to make testing easier
+ {my ($D) = @_;                                                                 # Machine code string
+
+  my $d = disAssemble  $D;
+
+  for my $c($d->code->@*)                                                       # Remove context fields
    {delete @$c{qw(context executed file line number)};
     delete $$c{$_}{name} for qw(target source source2);
    }
-
 
   delete @$d{qw(assembled files labelCounter labels procedures variables)};
 
@@ -3794,7 +3795,7 @@ if (1)                                                                          
   my $e = GenerateMachineCode;
   is_deeply unpack("h*", $e), "0000003200000000000000000000100000000010000000000000000000000000";
 
-  my $E = disAssembleMinusContext disAssemble $e;
+  my $E = disAssembleMinusContext $e;
   is_deeply $E,
 bless({
   code => [
