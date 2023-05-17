@@ -1418,13 +1418,8 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = $exec->currentInstruction;
       my $s = $exec->right($i->source);
       my $S = $i->source2;
-      if ($i->target)
-       {my $t = $exec->right($i->target);
-        $exec->pushArea(arenaHeap, $t, $S, $s);                                            # Supply the are name as ther was no conveneioent placew
-       }
-      else
-       {$exec->pushArea($exec->currentStackFrame, "stackArea", $s);
-       }
+      my $t = $exec->right($i->target);
+      $exec->pushArea(arenaHeap, $t, $S, $s);
      },
 
     shiftLeft=> sub                                                             # Shift left within an element
