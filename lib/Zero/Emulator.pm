@@ -15,7 +15,7 @@ use strict;
 use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>86" unless caller;
+eval "use Test::More tests=>88" unless caller;
 
 makeDieConfess;
 
@@ -2236,6 +2236,132 @@ sub Watch($)                                                                    
 
 #D1 Instruction Set Architecture                                                # List the set of instructions in various ways
 
+my @instructions = (
+  "add",
+  "array",
+  "arrayCountGreater",
+  "arrayCountLess",
+  "arrayDump",
+  "arrayIndex",
+  "arraySize",
+  "assert",
+  "assertEq",
+  "assertFalse",
+  "assertGe",
+  "assertGt",
+  "assertLe",
+  "assertLt",
+  "assertNe",
+  "assertTrue",
+  "call",
+  "clear",
+  "confess",
+  "dec",
+  "dump",
+  "free",
+  "inc",
+  "jEq",
+  "jFalse",
+  "jGe",
+  "jGt",
+  "jLe",
+  "jLt",
+  "jNe",
+  "jTrue",
+  "jmp",
+  "label",
+  "loadAddress",
+  "loadArea",
+  "mov",
+  "moveLong",
+  "nop",
+  "not",
+  "out",
+  "paramsGet",
+  "paramsPut",
+  "pop",
+  "push",
+  "random",
+  "randomSeed",
+  "resize",
+  "return",
+  "returnGet",
+  "returnPut",
+  "shiftDown",
+  "shiftLeft",
+  "shiftRight",
+  "shiftUp",
+  "subtract",
+  "tally",
+  "trace",
+  "tracePoint",
+  "tracePoints",
+  "watch",
+);
+
+my %instructions = (
+  add               => 0,
+  array             => 1,
+  arrayCountGreater => 2,
+  arrayCountLess    => 3,
+  arrayDump         => 4,
+  arrayIndex        => 5,
+  arraySize         => 6,
+  assert            => 7,
+  assertEq          => 8,
+  assertFalse       => 9,
+  assertGe          => 10,
+  assertGt          => 11,
+  assertLe          => 12,
+  assertLt          => 13,
+  assertNe          => 14,
+  assertTrue        => 15,
+  call              => 16,
+  clear             => 17,
+  confess           => 18,
+  dec               => 19,
+  dump              => 20,
+  free              => 21,
+  inc               => 22,
+  jEq               => 23,
+  jFalse            => 24,
+  jGe               => 25,
+  jGt               => 26,
+  jLe               => 27,
+  jLt               => 28,
+  jmp               => 31,
+  jNe               => 29,
+  jTrue             => 30,
+  label             => 32,
+  loadAddress       => 33,
+  loadArea          => 34,
+  mov               => 35,
+  moveLong          => 36,
+  nop               => 37,
+  not               => 38,
+  out               => 39,
+  paramsGet         => 40,
+  paramsPut         => 41,
+  pop               => 42,
+  push              => 43,
+  random            => 44,
+  randomSeed        => 45,
+  resize            => 46,
+  return            => 47,
+  returnGet         => 48,
+  returnPut         => 49,
+  shiftDown         => 50,
+  shiftLeft         => 51,
+  shiftRight        => 52,
+  shiftUp           => 53,
+  subtract          => 54,
+  tally             => 55,
+  trace             => 56,
+  tracePoint        => 57,
+  tracePoints       => 58,
+  watch             => 59,
+ );
+
 sub instructionList()                                                           #P Create a list of instructinos
  {my @i = grep {m(\s+#i)} readFile $0;
   my @j;                                                                        # Description of instruction
@@ -2275,7 +2401,7 @@ END
 }
 #instructionListMapping(); exit;
 
-sub refDepth($)                                                                 # The depth of a reference
+sub refDepth($)                                                                 #P The depth of a reference
  {my ($ref) = @_;                                                               # Reference to pack
   return 0 if isScalar($ref);
   return 1 if isScalar($$ref);
@@ -2283,7 +2409,7 @@ sub refDepth($)                                                                 
   confess "Reference too deep".dump($ref);
  }
 
-sub refValue($)                                                                 # The value of a reference after dereferencing
+sub refValue($)                                                                 #P The value of a reference after dereferencing
  {my ($ref) = @_;                                                               # Reference to pack
   return $ref if isScalar($ref);
   return $$ref if isScalar($$ref);
@@ -2291,7 +2417,15 @@ sub refValue($)                                                                 
   confess "Reference too deep".dump($ref);
  }
 
-sub packRef($)                                                                  # Pack a reference into 8 bytes
+sub rerefValue($$)                                                              #P Rereference a value
+ {my ($value, $depth) = @_;                                                     # Value to reference, depth of reference
+  return   $value if $depth == 0;
+  return  \$value if $depth == 1;
+  return \\$value if $depth == 2;
+  confess "Rereference depth of $depth is too deep";
+ }
+
+sub packRef($)                                                                  #P Pack a reference into 8 bytes
  {my ($ref) = @_;                                                               # Reference to pack
 
   my @a = @$ref{qw(arena area address delta)};
@@ -2313,14 +2447,39 @@ sub packRef($)                                                                  
   $a
  }
 
-sub packInstruction($$)                                                         # Pack an instruction
- {my ($instructions, $i) = @_;                                                  # Instruction numbers, instruction to pack
+sub unpackRef($)                                                                #P Unpack a reference
+ {my ($a) = @_;                                                                 # String to unpack
+
+  my $vAddress = vec($a,  0, 32);
+  my $vArea    = vec($a,  2, 16);
+  my $rAddress = vec($a, 24,  2);
+  my $rArea    = vec($a, 25,  2);
+  my $arena    = vec($a, 26,  2);
+  my $delta    = vec($a,  7,  8);
+
+  my $area    = rerefValue($vArea,    $rArea);
+  my $address = rerefValue($vAddress, $rAddress);
+
+  Address($arena, $area, $address, '', $delta);
+ }
+
+sub packInstruction($)                                                          #P Pack an instruction
+ {my ($i) = @_;                                                                 # Instruction numbers, instruction to pack
 
   my  $a = '';
-  vec($a, 0, 32) = $$instructions{$i->action};
+  vec($a, 0, 32) = $instructions{$i->action};
   vec($a, 1, 32) = 0;
   $a .= packRef($_) for $i->target, $i->source, $i->source2;
   $a
+ }
+
+sub unpackInstruction($)                                                        #P Unpack an instruction
+ {my ($I) = @_;                                                                 # Instruction numbers, instruction to pack
+
+  my $i = vec($I, 0, 32);
+  my $n = $instructions[$i];
+  confess "Invalid instruction number: $i" unless defined $n;
+  $n
  }
 
 sub GenerateMachineCode(%)                                                      # Generate machine code for the current block of code
@@ -2328,16 +2487,43 @@ sub GenerateMachineCode(%)                                                      
 
   $assembly->assemble(%options);                                                # Assemble code
 
-  my $instructions = Execute(instructions=>1);
-  my @instructions = sort keys %$instructions;
-  my %instructions = map {$instructions[$_]=> $_} keys @instructions;
 
   my $code = $assembly->code;
   my $pack = '';
   for my $i(@$code)
-   {$pack .= packInstruction \%instructions, $i;
+   {$pack .= packInstruction $i;
    }
   $pack
+ }
+
+sub disAssemble(%)                                                              # Disassemble machine code
+ {my ($mc) = @_;                                                                # Machine code string
+
+  my $C = Code;
+
+  my $n = length($mc) / 32;                                                     # The  instrictions are formatted into 32 byte blocks
+  for my $i(1..$n)
+   {my $c = substr($mc, ($i-1)*32, 32);
+    my $i = $C->instruction
+     (action=>  unpackInstruction(substr($c,  0, 8)),
+      target=>  unpackRef        (substr($c,  8, 8)),
+      source=>  unpackRef        (substr($c, 16, 8)),
+      source2=> unpackRef        (substr($c, 24, 8)));
+   }
+  $C
+ }
+
+sub disAssembleMinusContext($)                                                  # Remove context information from disassembly
+ {my ($d) = @_;                                                                 # Machine code string
+  for my $c($d->code->@*)
+   {delete @$c{qw(context executed file line number)};
+    delete $$c{$_}{name} for qw(target source source2);
+   }
+
+
+  delete @$d{qw(assembled files labelCounter labels procedures variables)};
+
+  $d
  }
 
 #D0
@@ -3593,15 +3779,34 @@ if (1)                                                                          
 #latest:;
 if (1)                                                                          ##packRef ##Address
  {my $a = Address 1, 2, 3, 4, 5;
-  is_deeply unpack("h*", packRef $a), "0000003000200150";
+  my $A = packRef $a;
+  is_deeply unpack("h*", $A), "0000003000200150";
+
+  my $b = unpackRef $A;
+  $b->name = 4;                                                                 # The name is not held in the packed version
+  is_deeply $a, $b;
  }
 
 #latest:;
-if (1)                                                                          # Local variable
+if (1)                                                                          ##GenerateMachineCode
  {Start 1;
   my $a = Mov 1;
   my $e = GenerateMachineCode;
   is_deeply unpack("h*", $e), "0000003200000000000000000000100000000010000000000000000000000000";
+
+  my $E = disAssembleMinusContext disAssemble $e;
+  is_deeply $E,
+bless({
+  code => [
+    bless({
+      action  => "mov",
+      source  => bless({ address => 1, area => 0, arena => 0, delta => 0 }, "Zero::Emulator::Address"),
+      source2 => bless({ address => 0, area => 0, arena => 0, delta => 0 }, "Zero::Emulator::Address"),
+      target  => bless({ address => \0, area => 0, arena => 0, delta => 0 }, "Zero::Emulator::Address"),
+    }, "Zero::Emulator::Code::Instruction"),
+  ],
+}, "Zero::Emulator::Code");
+
  }
 
 # (\A.{80})\s+(#.*\Z) \1\2
