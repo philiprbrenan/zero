@@ -706,10 +706,9 @@ sub rwRead($$$$)                                                                
    }
  }
 
-sub left($$;$)                                                                    #P Address of a location in memory.
- {my ($exec, $ref, $extra) = @_;                                                # Reference, an optional extra offset to add or subtract to the final memory address
-  @_ == 2 or @_ == 3 or confess "Two or three parameters";
-confess "AAAA" if @_ == 3;
+sub left($$)                                                                    #P Address of a location in memory.
+ {my ($exec, $ref) = @_;                                                        # Exececution environment, reference
+  @_ == 2 or confess "Two parameters";
   ref($ref) =~ m((RefLeft|RefRight)\Z)
     or confess "RefLeft or RefRight required, not: ".dump($ref);
   my $r       =  $ref->address;
@@ -719,7 +718,6 @@ confess "AAAA" if @_ == 3;
   my $area    = $ref->area;
   my $delta   = $ref->delta;
 
-  my $x       = $extra // 0;                                                    # Default is to use the address as supplied without locating a nearby address
   my $S       = $exec->currentStackFrame;                                       # Current stack frame
 
   my sub invalid($)
@@ -733,17 +731,16 @@ confess "AAAA" if @_ == 3;
      ." area: ".dump($area)
      ." address: ".dump($address)
      ." e: ".dump($e)
-     .(defined($extra) ? " + extra: ".dump($extra) : ''), confess=>1)
+     , confess=>1)
    };
 
   my $M;                                                                        # Memory address
   if (isScalar $$address)
-   {$M = $$address + $x + $delta;
+   {$M = $$address + $delta;
    }
   elsif (isScalar $$$address)
-   {$exec->rwRead(arenaLocal, $S, $$$address + $x + $delta);
-#   $M = $exec->getMemory($S, $$$a, $ref->name) + $x + $delta;
-    $M = $exec->getMemory(arenaLocal, $S, $$$address, "stackArea") + $x + $delta;
+   {$exec->rwRead(arenaLocal, $S, $$$address +  $delta);
+    $M = $exec->getMemory(arenaLocal, $S, $$$address, "stackArea") + $delta;
    }
   else
    {invalid(1)
@@ -753,8 +750,7 @@ confess "AAAA" if @_ == 3;
    {$exec->stackTraceAndExit("Negative address: $M, "
      ." for arena: ".dump($arena)
      ." for area: " .dump($area)
-     .", address: " .dump($address)
-     ." extra:"     .dump($x));
+     .", address: " .dump($address));
    }
   elsif (!defined($area))                                                       # Current stack frame
    {$exec->rwWrite(        arenaLocal, $S, $M);
