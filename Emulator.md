@@ -3129,7 +3129,7 @@ Generate machine code for the current block of code
 
       is_deeply unpack("h*", $e), "0000003200000000000000000000100000000010000000000000000000000000";
     
-      my $E = disAssembleMinusContext disAssemble $e;
+      my $E = disAssembleMinusContext $e;
       is_deeply $E,
     bless({
       code => [
@@ -3160,9 +3160,7 @@ Disassemble machine code
       my $e = GenerateMachineCode;
       is_deeply unpack("h*", $e), "0000003200000000000000000000100000000010000000000000000000000000";
     
-    
-      my $E = disAssembleMinusContext disAssemble $e;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
+      my $E = disAssembleMinusContext $e;
       is_deeply $E,
     bless({
       code => [
@@ -3178,12 +3176,12 @@ Disassemble machine code
      }
     
 
-## disAssembleMinusContext($d)
+## disAssembleMinusContext($D)
 
-Remove context information from disassembly
+Disassemble and remove context information from disassembly to make testing easier
 
        Parameter  Description
-    1  $d         Machine code string
+    1  $D         Machine code string
 
 **Example:**
 
@@ -3194,7 +3192,7 @@ Remove context information from disassembly
       is_deeply unpack("h*", $e), "0000003200000000000000000000100000000010000000000000000000000000";
     
     
-      my $E = disAssembleMinusContext disAssemble $e;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      my $E = disAssembleMinusContext $e;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       is_deeply $E,
     bless({
@@ -3435,7 +3433,7 @@ Unpack an instruction
 
 25 [disAssemble](#disassemble) - Disassemble machine code
 
-26 [disAssembleMinusContext](#disassembleminuscontext) - Remove context information from disassembly
+26 [disAssembleMinusContext](#disassembleminuscontext) - Disassemble and remove context information from disassembly to make testing easier
 
 27 [Dump](#dump) - Dump all the arrays currently in memory.
 
