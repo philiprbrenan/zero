@@ -15,7 +15,7 @@ use strict;
 use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>83" unless caller;
+eval "use Test::More tests=>84" unless caller;
 
 makeDieConfess;
 
@@ -1451,11 +1451,10 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $t = $exec->left($i->target);
       my $L = $exec->areaLength($t->area);                                      # Length of target array
       my $l = $t->address;
-      for my $j(reverse 1..$L-$l+1)
-       {my $T = $exec->left(RefLeft([$t->area, $j,   $t->name]));
-        my $S = $exec->left(RefLeft([$t->area, $j-1, $t->name]));
-        my $v = $exec->getMemoryFromAddress($S);
-        $exec->assign($T, $v);
+      for my $j(reverse $l..$L)
+       {my $T = $exec->left (RefLeft([$t->area, \ $j,   $t->name]));
+        my $S = $exec->right(RefLeft([$t->area, \($j-1), $t->name]));
+        $exec->assign($T, $S);
        }
       $exec->assign($t, $s);
      },
@@ -1468,10 +1467,9 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $l = $s->address;
       my $v = $exec->getMemoryFromAddress($s);
       for my $j($l..$L-2)                                                       # Each element in specified range
-       {my $S = $exec->left(RefLeft([$s->area, $j+1, $s->name]));
-        my $T = $exec->left(RefLeft([$s->area, $j,   $s->name]));
-        my $v = $exec->getMemoryFromAddress($S);
-        $exec->assign($T, $v);
+       {my $S = $exec->right(RefLeft([$s->area, \($j+1), $s->name]));
+        my $T = $exec->left(RefLeft([$s->area,  \ $j,   $s->name]));
+        $exec->assign($T, $S);
        }
       $exec->popArea(arenaHeap, $s->area, $s->name);
       my $T = $exec->left($i->target);
@@ -3207,6 +3205,18 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->heap(1), [0, 99, 1, 2];
+ }
+
+#latest:;
+if (1)                                                                          ##ShiftUp
+ {Start 1;
+  my $a = Array "array";
+
+  Mov [$a, $_-1, 'array'], 10*$_ for 1..7;
+  ShiftUp [$a, 2, 'array'], 26;
+
+  my $e = Execute(suppressOutput=>1);
+  is_deeply $e->heap(1), bless([10, 20, 26, 30, 40, 50, 60, 70], "array");
  }
 
 #latest:;
