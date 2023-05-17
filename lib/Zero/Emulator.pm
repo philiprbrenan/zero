@@ -3788,7 +3788,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          ##GenerateMachineCode
+if (1)                                                                          ##GenerateMachineCode ##disAssemble ##disAssembleMinusContext
  {Start 1;
   my $a = Mov 1;
   my $e = GenerateMachineCode;
