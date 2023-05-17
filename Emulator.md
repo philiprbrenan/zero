@@ -2821,7 +2821,6 @@ Shift an element up one in an area.
 
     
       my $e = Execute(suppressOutput=>1);
-    
       is_deeply $e->heap(1), [0, 99, 1, 2];
      }
     
