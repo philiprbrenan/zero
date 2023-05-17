@@ -709,6 +709,7 @@ sub rwRead($$$$)                                                                
 sub left($$;$)                                                                    #P Address of a location in memory.
  {my ($exec, $ref, $extra) = @_;                                                # Reference, an optional extra offset to add or subtract to the final memory address
   @_ == 2 or @_ == 3 or confess "Two or three parameters";
+confess "AAAA" if @_ == 3;
   ref($ref) =~ m((RefLeft|RefRight)\Z)
     or confess "RefLeft or RefRight required, not: ".dump($ref);
   my $r       =  $ref->address;
@@ -1454,11 +1455,11 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $t = $exec->left($i->target);
       my $L = $exec->areaLength($t->area);                                      # Length of target array
       my $l = $t->address;
-      for my $j(reverse 1..$L-$l)
-       {my $s = $exec->left($i->target, $j-1);
-        my $t = $exec->left($i->target, $j);
-        my $v = $exec->getMemoryFromAddress($s);
-        $exec->assign($t, $v);
+      for my $j(reverse 1..$L-$l+1)
+       {my $T = $exec->left(RefLeft([$t->area, $j,   $t->name]));
+        my $S = $exec->left(RefLeft([$t->area, $j-1, $t->name]));
+        my $v = $exec->getMemoryFromAddress($S);
+        $exec->assign($T, $v);
        }
       $exec->assign($t, $s);
      },
@@ -1473,7 +1474,8 @@ sub Zero::Emulator::Code::execute($%)                                           
       for my $j($l..$L-2)                                                       # Each element in specified range
        {my $S = $exec->left(RefLeft([$s->area, $j+1, $s->name]));
         my $T = $exec->left(RefLeft([$s->area, $j,   $s->name]));
-        $exec->assign($T, $exec->getMemoryFromAddress($S));
+        my $v = $exec->getMemoryFromAddress($S);
+        $exec->assign($T, $v);
        }
       $exec->popArea(arenaHeap, $s->area, $s->name);
       my $T = $exec->left($i->target);
@@ -3208,7 +3210,6 @@ if (1)                                                                          
   ShiftUp [$a, 1, 'array'], 99;
 
   my $e = Execute(suppressOutput=>1);
-
   is_deeply $e->heap(1), [0, 99, 1, 2];
  }
 
