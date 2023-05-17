@@ -769,50 +769,6 @@ sub left($$)                                                                    
   invalid(2);
  }
 
-sub leftSuppress($$)                                                            #P Indicate that a memory address has been read.
- {my ($exec, $ref) = @_;                                                        #  Execution environment, Reference
-  @_ == 2 or confess "Two parameters";
-  ref($ref) =~ m((RefLeft|RefRight)\Z) or confess "RefLeft or RefRight required";
-  my $A     = $ref->address;
-  my $arena = $ref->arena;
-  my $area  = $ref->area;
-  my $delta = $ref->delta;
-  my $address = $A;
-     $address = \$A if isScalar $address;                                       # Interpret constants as direct memory locations in left hand side
-
-  my $m;
-  my $stackArea = $exec->currentStackFrame;
-
-  if (isScalar $$address)                                                       # Direct
-   {$m = $$address + $delta;
-   }
-  elsif (isScalar $$$address)                                                   # Indirect
-   {$exec->rwRead  (arenaLocal, $stackArea, $$$address+$delta);
-    $m = $exec->get(arenaLocal, $stackArea, $$$address+$delta, $ref->name);
-   }
-  else
-   {$exec->stackTraceAndExit('Only two levels of address indirection allowed',
-      confess=>1);
-   }
-
-  if (defined($m))
-   {if (!defined($area))                                                        # Current stack frame
-     {$exec->rwRead(arenaLocal, $stackArea, $m);
-     }
-    elsif (isScalar($area))                                                     # Direct area
-     {$exec->rwRead($arena, $area, $m);
-     }
-    elsif (isScalar($$area))                                                    # Indirect area
-     {$exec->rwRead(           arenaLocal, $stackArea,  $area);
-      $exec->rwRead($exec->get(arenaLocal, $stackArea, $$area), $m);
-     }
-    else
-     {$exec->stackTraceAndExit('Only two levels of area indirection allowed',
-        confess=>1);
-     }
-   }
- }
-
 sub right($$)                                                                   #P Get a constant or a value from memory.
  {my ($exec, $ref) = @_;                                                        # Location, optional area
   @_ == 2 or confess "Two parameters";
@@ -1424,7 +1380,6 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     shiftLeft=> sub                                                             # Shift left within an element
      {my $i = $exec->currentInstruction;
-      $exec->leftSuppress ($i->target);                                         # Make sure there something to shift
       my $t = $exec->left ($i->target);
       my $s = $exec->right($i->source);
       my $v = $exec->getMemoryFromAddress($t) << $s;
@@ -1433,7 +1388,6 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     shiftRight=> sub                                                            # Shift right within an element
      {my $i = $exec->currentInstruction;
-      $exec->leftSuppress ($i->target);                                         # Make sure there something to shift
       my $t = $exec->left ($i->target);
       my $s = $exec->right($i->source);
       my $v = $exec->getMemoryFromAddress($t) >> $s;
