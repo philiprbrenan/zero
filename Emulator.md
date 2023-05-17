@@ -2824,6 +2824,19 @@ Shift an element up one in an area.
       is_deeply $e->heap(1), [0, 99, 1, 2];
      }
     
+    if (1)                                                                          
+     {Start 1;
+      my $a = Array "array";
+    
+      Mov [$a, $_-1, 'array'], 10*$_ for 1..7;
+    
+      ShiftUp [$a, 2, 'array'], 26;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+    
+      my $e = Execute(suppressOutput=>1);
+      is_deeply $e->heap(1), bless([10, 20, 26, 30, 40, 50, 60, 70], "array");
+     }
+    
 
 ## Start($version)
 
