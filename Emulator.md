@@ -3121,7 +3121,7 @@ Generate machine code for the current block of code
 
 **Example:**
 
-    if (1)                                                                          
+    if (1)                                                                            
      {Start 1;
       my $a = Mov 1;
     
@@ -3152,12 +3152,64 @@ Disassemble machine code
        Parameter  Description
     1  $mc        Machine code string
 
+**Example:**
+
+    if (1)                                                                            
+     {Start 1;
+      my $a = Mov 1;
+      my $e = GenerateMachineCode;
+      is_deeply unpack("h*", $e), "0000003200000000000000000000100000000010000000000000000000000000";
+    
+    
+      my $E = disAssembleMinusContext disAssemble $e;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      is_deeply $E,
+    bless({
+      code => [
+        bless({
+          action  => "mov",
+          source  => bless({ address => 1, area => 0, arena => 0, delta => 0 }, "Zero::Emulator::Address"),
+          source2 => bless({ address => 0, area => 0, arena => 0, delta => 0 }, "Zero::Emulator::Address"),
+          target  => bless({ address => \0, area => 0, arena => 0, delta => 0 }, "Zero::Emulator::Address"),
+        }, "Zero::Emulator::Code::Instruction"),
+      ],
+    }, "Zero::Emulator::Code");
+    
+     }
+    
+
 ## disAssembleMinusContext($d)
 
 Remove context information from disassembly
 
        Parameter  Description
     1  $d         Machine code string
+
+**Example:**
+
+    if (1)                                                                            
+     {Start 1;
+      my $a = Mov 1;
+      my $e = GenerateMachineCode;
+      is_deeply unpack("h*", $e), "0000003200000000000000000000100000000010000000000000000000000000";
+    
+    
+      my $E = disAssembleMinusContext disAssemble $e;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      is_deeply $E,
+    bless({
+      code => [
+        bless({
+          action  => "mov",
+          source  => bless({ address => 1, area => 0, arena => 0, delta => 0 }, "Zero::Emulator::Address"),
+          source2 => bless({ address => 0, area => 0, arena => 0, delta => 0 }, "Zero::Emulator::Address"),
+          target  => bless({ address => \0, area => 0, arena => 0, delta => 0 }, "Zero::Emulator::Address"),
+        }, "Zero::Emulator::Code::Instruction"),
+      ],
+    }, "Zero::Emulator::Code");
+    
+     }
+    
 
 # Private Methods
 
