@@ -3307,17 +3307,14 @@ if (1)                                                                          
   Mov [$a, 0, 'aaa'], 1;
   Mov [$a, 1, 'aaa'], 2;
   Mov [$a, 2, 'aaa'], 3;
-  my $n = Mov [$a, \1, 'aaa', -1];
-  my $N = Mov [$a, \1, 'aaa', +1];
   Resize $a, 2, "aaa";
-
-  Out $N, $n;
-
+  ArrayDump $a, "array";
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->heap(1), [1, 2];
   is_deeply $e->out, <<END;
-3 1
+array
+bless([1, 2], "aaa")
 END
  }
 
