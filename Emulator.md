@@ -3112,6 +3112,45 @@ Watches for changes to the specified memory location.
 
 List the set of instructions in various ways
 
+## refDepth($ref)
+
+The depth of a reference
+
+       Parameter  Description
+    1  $ref       Reference to pack
+
+## refValue($ref)
+
+The value of a reference after dereferencing
+
+       Parameter  Description
+    1  $ref       Reference to pack
+
+## packRef($ref)
+
+Pack a reference into 8 bytes
+
+       Parameter  Description
+    1  $ref       Reference to pack
+
+**Example:**
+
+    if (1)                                                                           
+     {my $a = Address 1, 2, 3, 4, 5;
+    
+      is_deeply unpack("h*", packRef $a), "0000003000200150";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+     }
+    
+
+## packInstruction($instructions, $i)
+
+Pack an instruction
+
+       Parameter      Description
+    1  $instructions  Instruction numbers
+    2  $i             Instruction to pack
+
 ## GenerateMachineCode(%options)
 
 Generate machine code for the current block of code
@@ -3354,53 +3393,61 @@ Map instructions to small integers
 
 63 [Out](#out) - Write memory location contents to out.
 
-64 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
+64 [packInstruction](#packinstruction) - Pack an instruction
 
-65 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
+65 [packRef](#packref) - Pack a reference into 8 bytes
 
-66 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
+66 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
 
-67 [Procedure](#procedure) - Define a procedure.
+67 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
 
-68 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
+68 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
 
-69 [Random](#random) - Create a random number in a specified range
+69 [Procedure](#procedure) - Define a procedure.
 
-70 [RandomSeed](#randomseed) - Seed the random number generator
+70 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
 
-71 [Resize](#resize) - Resize the target area to the source size.
+71 [Random](#random) - Create a random number in a specified range
 
-72 [Return](#return) - Return from a procedure via the call stack.
+72 [RandomSeed](#randomseed) - Seed the random number generator
 
-73 [ReturnGet](#returnget) - Get a word from the return area and save it.
+73 [refDepth](#refdepth) - The depth of a reference
 
-74 [ReturnPut](#returnput) - Put a word into the return area.
+74 [refValue](#refvalue) - The value of a reference after dereferencing
 
-75 [ShiftDown](#shiftdown) - Shift an element down one in an area.
+75 [Resize](#resize) - Resize the target area to the source size.
 
-76 [ShiftLeft](#shiftleft) - Shift left within an element.
+76 [Return](#return) - Return from a procedure via the call stack.
 
-77 [ShiftRight](#shiftright) - Shift right with an element.
+77 [ReturnGet](#returnget) - Get a word from the return area and save it.
 
-78 [ShiftUp](#shiftup) - Shift an element up one in an area.
+78 [ReturnPut](#returnput) - Put a word into the return area.
 
-79 [Start](#start) - Start the current assembly using the specified version of the Zero language.
+79 [ShiftDown](#shiftdown) - Shift an element down one in an area.
 
-80 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
+80 [ShiftLeft](#shiftleft) - Shift left within an element.
 
-81 [Tally](#tally) - Counts instructions when enabled.
+81 [ShiftRight](#shiftright) - Shift right with an element.
 
-82 [Then](#then) - Then block.
+82 [ShiftUp](#shiftup) - Shift an element up one in an area.
 
-83 [Trace](#trace) - Start or stop tracing.
+83 [Start](#start) - Start the current assembly using the specified version of the Zero language.
 
-84 [TracePoint](#tracepoint) - Trace point - a point in the code where the flow of execution might change.
+84 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
 
-85 [TracePoints](#tracepoints) - Enable or disable trace points.
+85 [Tally](#tally) - Counts instructions when enabled.
 
-86 [Var](#var) - Create a variable initialized to the specified value.
+86 [Then](#then) - Then block.
 
-87 [Watch](#watch) - Watches for changes to the specified memory location.
+87 [Trace](#trace) - Start or stop tracing.
+
+88 [TracePoint](#tracepoint) - Trace point - a point in the code where the flow of execution might change.
+
+89 [TracePoints](#tracepoints) - Enable or disable trace points.
+
+90 [Var](#var) - Create a variable initialized to the specified value.
+
+91 [Watch](#watch) - Watches for changes to the specified memory location.
 
 # Installation
 
