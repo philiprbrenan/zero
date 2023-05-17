@@ -15,7 +15,7 @@ use strict;
 use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>84" unless caller;
+eval "use Test::More tests=>86" unless caller;
 
 makeDieConfess;
 
@@ -113,7 +113,6 @@ sub Zero::Emulator::Code::instruction($%)                                       
       source=>         $options{source      },                                  # Source memory address
       source2=>        $options{source2     },                                  # Secondary source memory address
       target=>         $options{target      },                                  # Target memory address
-      target2=>        $options{target2     },                                  # Secondary target memory address
       line=>           $line,                                                   # Line in source file at which this instruction was encoded
       file=>           fne $fileName,                                           # Source file in which instruction was encoded
       context=>        stackTrace(),                                            # The call context in which this instruction was created
@@ -228,8 +227,8 @@ my sub Reference($$)                                                            
 
   my $type = "Zero::Emulator::". ($right ? "RefRight" : "RefLeft");
 
-  if (ref($r) =~ m(array)i)                                                     # Reference represented as [area, address, name]
-   {my ($area, $address, $name, $delta) = @$r;
+  if (ref($r) =~ m(array)i)                                                     # Reference represented as [area, address, name, delta]
+   {my ($area, $address, $name, $delta) = @$r;                                  # Delta is oddly useful, as illustarted by examples/*Sort, in that it enables us to avoid adding or subtracting one with a separate instruction that does not achieve very much in one clock but that which, is otherwise necessary.
      defined($area) and !defined($name) and confess "Name required for address specification: in [Area, address, name]";
     !defined($area) and  defined($name) and confess "Area required for address specification: in [Area, address, name]";
 
@@ -560,14 +559,14 @@ sub setMemory($$$)                                                              
   $exec->memory->[$arena][$area][$address] = $value;
  }
 
-sub address($$$$$)                                                              #P Record a reference to memory.
- {my ($exec, $arena, $area, $address, $name) = @_;                              # Execution environment, arena, area, address in area, memory
-  @_ == 5 or confess "Five parameters";
+sub Address($$$$;$)                                                             #P Record a reference to memory.
+ {my ($arena, $area, $address, $name, $delta) = @_;                             # Arena, area, address in area, name of area, delta from specified address
   genHash("Zero::Emulator::Address",                                            # Address memory
     arena=>     $arena,                                                         # Arena in memory
     area=>      $area,                                                          # Area in memory
     address=>   $address,                                                       # Address within area
     name=>      $name // 'stackArea',                                           # Name of area
+    delta=>     ($delta//0),                                                    # Offset from indicated address
    );
  }
 
@@ -752,18 +751,18 @@ sub left($$)                                                                    
      .", address: " .dump($address));
    }
   elsif (!defined($area))                                                       # Current stack frame
-   {$exec->rwWrite(        arenaLocal, $S, $M);
-    return  $exec->address(arenaLocal, $S, $M, $ref->name);                     # Stack frame
+   {$exec->rwWrite (arenaLocal, $S, $M);
+    return  Address(arenaLocal, $S, $M, $ref->name);                            # Stack frame
    }
   elsif (isScalar($area))
-   {$exec->rwWrite(        $arena, $area, $M);
-    return  $exec->address($arena, $area, $M, $ref->name)                       # Specified constant area
+   {$exec->rwWrite ($arena, $area, $M);
+    return  Address($arena, $area, $M, $ref->name)                              # Specified constant area
    }
   elsif (isScalar($$area))
    {$exec->rwRead           (arenaLocal, $S, $$area);
     my $A = $exec->getMemory(arenaLocal, $S, $$area, "stackArea");
-    $exec->rwWrite(          $arena, $A, $M);
-    return  $exec->address  ($arena, $A, $M, $ref->name)                        # Indirect area
+    $exec->rwWrite ($arena, $A, $M);
+    return  Address($arena, $A, $M, $ref->name)                                 # Indirect area
    }
   invalid(2);
  }
@@ -1016,8 +1015,6 @@ sub outLines($)                                                                 
 sub Zero::Emulator::Code::execute($%)                                           #P Execute a block of code.
  {my ($block, %options) = @_;                                                   # Block of code, execution options
 
-  $block->assemble;                                                             # Assemble if necessary
-
   my $exec = ExecutionEnvironment(code=>$block, %options);                      # Execution environment
 
   my %instructions =                                                            # Instruction definitions
@@ -1152,7 +1149,7 @@ sub Zero::Emulator::Code::execute($%)                                           
     return=> sub                                                                # Return from a subroutine call via the call stack
      {my $i = $exec->currentInstruction;
       $exec->calls or $exec->stackTraceAndExit("The call stack is empty so I do not know where to return to");
-      $exec->freeSystemAreas(pop $exec->calls->@*);
+      $exec->freeSystemAreas(pop $exec->calls->@* );
       if ($exec->calls)
        {my $c = $exec->calls->[-1];
         $exec->instructionPointer = $c->instruction->number+1;
@@ -1257,7 +1254,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $N =  $exec->right($i->source);
       my $n =  $exec->right($i->source2);
       for my $a(0..$N-1)
-       {my $p = $exec->address(arenaHeap, $t, $a, $N);
+       {my $p = Address(arenaHeap, $t, $a, $N);
         $exec->assign($p, 0);
        }
      },
@@ -1306,7 +1303,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = $exec->currentInstruction;
       my $t = $exec->left ($i->target);
       my $s = $exec->right($i->source);
-      my $S = $exec->address(arenaParms, $exec->currentParamsGet, $s, "params");
+      my $S = Address(arenaParms, $exec->currentParamsGet, $s, "params");
       my $v = $exec->getMemoryFromAddress($S);
       $exec->assign($t, $v);
      },
@@ -1315,7 +1312,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = $exec->currentInstruction;
       my $s = $exec->right($i->source);
       my $t = $exec->right($i->target);
-      my $T = $exec->address(arenaParms, $exec->currentParamsPut, $t, "params");
+      my $T = Address(arenaParms, $exec->currentParamsPut, $t, "params");
       $exec->assign($T, $s);
      },
 
@@ -1336,7 +1333,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = $exec->currentInstruction;
       my $t = $exec->left ($i->target);
       my $s = $exec->right($i->source);
-      my $S = $exec->address(arenaReturn, $exec->currentReturnGet, $s, "return");
+      my $S = Address(arenaReturn, $exec->currentReturnGet, $s, "return");
       my $v = $exec->getMemoryFromAddress($S);
       $exec->assign($t, $v);
      },
@@ -1345,7 +1342,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = $exec->currentInstruction;
       my $s = $exec->right($i->source);
       my $t = $exec->right($i->target);
-      my $T = $exec->address(arenaReturn, $exec->currentReturnPut, $t, "return");
+      my $T = Address(arenaReturn, $exec->currentReturnPut, $t, "return");
       $exec->assign($T, $s);
      },
 
@@ -1437,6 +1434,9 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->watch->[$t->area][$t->address]++;
      },
    );
+  return {%instructions} if $options{instructions};                             # Return a list of the instructions
+
+  $block->assemble;                                                             # Assemble if necessary
 
   $exec->createInitialStackEntry;                                               # Variables in initial stack frame
 
@@ -2271,19 +2271,73 @@ sub instructionListMapping()                                                    
   my $n = join ' ', @n;
   say STDERR <<END;
 my \@instructions = qw($n);
-my \%instructions = map {\$instructions[\$_]=> \$_} \@instructions;
 END
 }
 #instructionListMapping(); exit;
+
+sub refDepth($)                                                                 # The depth of a reference
+ {my ($ref) = @_;                                                               # Reference to pack
+  return 0 if isScalar($ref);
+  return 1 if isScalar($$ref);
+  return 2 if isScalar($$$ref);
+  confess "Reference too deep".dump($ref);
+ }
+
+sub refValue($)                                                                 # The value of a reference after dereferencing
+ {my ($ref) = @_;                                                               # Reference to pack
+  return $ref if isScalar($ref);
+  return $$ref if isScalar($$ref);
+  return $$$ref if isScalar($$$ref);
+  confess "Reference too deep".dump($ref);
+ }
+
+sub packRef($)                                                                  # Pack a reference into 8 bytes
+ {my ($ref) = @_;                                                               # Reference to pack
+
+  my @a = @$ref{qw(arena area address delta)};
+  $_ //= 0 for @a;
+  my ($arena, $area, $address, $delta) = @a;
+
+  confess "Area too big"     if refValue($area)    >= 2**16;                    # 2 + 16
+  confess "Address too big"  if refValue($address) >= 2**32;                    # 2 + 32
+  confess "Arena too big"    if     $arena         >= 2**2;                     # 2
+  confess "Delta too big"    if abs($delta)        >= 2**7;                     # 8
+
+  my $a = '';
+  vec($a, 0, 32) =  refValue $address;
+  vec($a, 2, 16) =  refValue $area;
+  vec($a, 24, 2) =  refDepth $address;
+  vec($a, 25, 2) =  refDepth $area;
+  vec($a, 26, 2) =           $arena;
+  vec($a, 7,  8) =           $delta;
+  $a
+ }
+
+sub packInstruction($$)                                                         # Pack an instruction
+ {my ($instructions, $i) = @_;                                                  # Instruction numbers, instruction to pack
+
+  my  $a = '';
+  vec($a, 0, 32) = $$instructions{$i->action};
+  vec($a, 1, 32) = 0;
+  $a .= packRef($_) for $i->target, $i->source, $i->source2;
+  $a
+ }
 
 sub GenerateMachineCode(%)                                                      # Generate machine code for the current block of code
  {my (%options) = @_;                                                           # Generation options
 
   $assembly->assemble(%options);                                                # Assemble code
 
-#  my $code
-#  for(
+  my $instructions = Execute(instructions=>1);
+  my @instructions = sort keys %$instructions;
+  my %instructions = map {$instructions[$_]=> $_} keys @instructions;
 
+  my $code = $assembly->code;
+  my $pack = '';
+  for my $i(@$code)
+   {$pack .= packInstruction \%instructions, $i;
+   }
+  $pack
  }
 
 #D0
@@ -3537,11 +3591,17 @@ if (1)                                                                          
  }
 
 #latest:;
-if (0)                                                                          # Local variable
+if (1)                                                                          ##packRef ##Address
+ {my $a = Address 1, 2, 3, 4, 5;
+  is_deeply unpack("h*", packRef $a), "0000003000200150";
+ }
+
+#latest:;
+if (1)                                                                          # Local variable
  {Start 1;
   my $a = Mov 1;
   my $e = GenerateMachineCode;
-  say STDERR dump($e);
+  is_deeply unpack("h*", $e), "0000003200000000000000000000100000000010000000000000000000000000";
  }
 
 # (\A.{80})\s+(#.*\Z) \1\2
