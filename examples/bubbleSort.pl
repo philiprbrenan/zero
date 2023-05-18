@@ -48,8 +48,8 @@ if (1)                                                                          
 
   ArrayDump $a, array;
 
-  my $e = Execute;
-  #my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>0);             # Execute a disassembled copy of the program just to show that we can
+  #my $e = Execute;
+  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>0);             # Execute a disassembled copy of the program just to show that we can
   is_deeply $e->out, <<END;
 99
 bless([1 .. 8], "99")
@@ -57,7 +57,7 @@ END
 
   is_deeply $e->count,  245;                                                    # Instructions executed
 
-  say STDERR formatTable($e->counts);
+  #say STDERR formatTable($e->counts);
   is_deeply formatTable($e->counts), <<END;
 array       1
 arrayDump   1
