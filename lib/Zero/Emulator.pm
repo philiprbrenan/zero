@@ -1502,7 +1502,7 @@ sub formatTrace($)                                                              
 
 my $assembly;                                                                   # The current assembly
 
-sub Assembly()                                                                  #p Start some assembly code
+sub Assembly()                                                                  #P Start some assembly code
  {$assembly = Code;                                                             # The current assembly
  }
 
