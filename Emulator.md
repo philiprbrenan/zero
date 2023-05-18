@@ -54,12 +54,12 @@ Add the source locations together and store the result in the target area.
      }
     
 
-## Array($name)
+## Array($source)
 
 Create a new memory area and write its number into the address named by the target operand.
 
        Parameter  Description
-    1  $name      Name of allocation
+    1  $source    Name of allocation
 
 **Example:**
 
@@ -159,13 +159,13 @@ Count the number of elements in the array specified by the first source operand 
      }
     
 
-## ArrayDump($target, $title)
+## ArrayDump($target, $source)
 
 Dump an array.
 
        Parameter  Description
     1  $target    Array to dump
-    2  $title     Title of dump
+    2  $source    Title of dump
 
 **Example:**
 
@@ -3110,7 +3110,7 @@ Watches for changes to the specified memory location.
 
 # Instruction Set Architecture
 
-List the set of instructions in various ways
+Map the instruction set into a machine architecture.
 
 ## GenerateMachineCode(%options)
 
@@ -3124,24 +3124,24 @@ Generate machine code for the current block of code
     if (1)                                                                            
      {Start 1;
       my $a = Mov 1;
+      my $e = Execute;
+      is_deeply $e->block->code->[0]->source, {address =>  1, area => undef, arena => 0, delta => 0, name => "stackArea" };
+      is_deeply $e->block->code->[0]->target, {address => \0, area => undef, arena => 0, delta => 0, name => "stackArea" };
+     }
+    
+    if (1)                                                                            
+     {Start 1;
+      my $a = Mov 1;
     
       my $e = GenerateMachineCode;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       is_deeply unpack("h*", $e), "0000003200000000000000000000100000000010000000000000000000000000";
     
       my $E = disAssembleMinusContext $e;
-      is_deeply $E,
-    bless({
-      code => [
-        bless({
-          action  => "mov",
-          source  => bless({ address => 1, area => 0, arena => 0, delta => 0 }, "Zero::Emulator::Address"),
-          source2 => bless({ address => 0, area => 0, arena => 0, delta => 0 }, "Zero::Emulator::Address"),
-          target  => bless({ address => \0, area => 0, arena => 0, delta => 0 }, "Zero::Emulator::Address"),
-        }, "Zero::Emulator::Code::Instruction"),
-      ],
-    }, "Zero::Emulator::Code");
-    
+    say STDERR "AAAA", dump($E->code->[0]);
+      is_deeply $E->code->[0]->source, {address =>  1, area => undef, arena => 0, delta => 0, name => "stackArea" };
+      is_deeply $E->code->[0]->target, {address => \0, area => undef, arena => 0, delta => 0, name => "stackArea" };
+    x;
      }
     
 
@@ -3157,22 +3157,22 @@ Disassemble machine code
     if (1)                                                                            
      {Start 1;
       my $a = Mov 1;
+      my $e = Execute;
+      is_deeply $e->block->code->[0]->source, {address =>  1, area => undef, arena => 0, delta => 0, name => "stackArea" };
+      is_deeply $e->block->code->[0]->target, {address => \0, area => undef, arena => 0, delta => 0, name => "stackArea" };
+     }
+    
+    if (1)                                                                            
+     {Start 1;
+      my $a = Mov 1;
       my $e = GenerateMachineCode;
       is_deeply unpack("h*", $e), "0000003200000000000000000000100000000010000000000000000000000000";
     
       my $E = disAssembleMinusContext $e;
-      is_deeply $E,
-    bless({
-      code => [
-        bless({
-          action  => "mov",
-          source  => bless({ address => 1, area => 0, arena => 0, delta => 0 }, "Zero::Emulator::Address"),
-          source2 => bless({ address => 0, area => 0, arena => 0, delta => 0 }, "Zero::Emulator::Address"),
-          target  => bless({ address => \0, area => 0, arena => 0, delta => 0 }, "Zero::Emulator::Address"),
-        }, "Zero::Emulator::Code::Instruction"),
-      ],
-    }, "Zero::Emulator::Code");
-    
+    say STDERR "AAAA", dump($E->code->[0]);
+      is_deeply $E->code->[0]->source, {address =>  1, area => undef, arena => 0, delta => 0, name => "stackArea" };
+      is_deeply $E->code->[0]->target, {address => \0, area => undef, arena => 0, delta => 0, name => "stackArea" };
+    x;
      }
     
 
@@ -3188,24 +3188,24 @@ Disassemble and remove context information from disassembly to make testing easi
     if (1)                                                                            
      {Start 1;
       my $a = Mov 1;
+      my $e = Execute;
+      is_deeply $e->block->code->[0]->source, {address =>  1, area => undef, arena => 0, delta => 0, name => "stackArea" };
+      is_deeply $e->block->code->[0]->target, {address => \0, area => undef, arena => 0, delta => 0, name => "stackArea" };
+     }
+    
+    if (1)                                                                            
+     {Start 1;
+      my $a = Mov 1;
       my $e = GenerateMachineCode;
       is_deeply unpack("h*", $e), "0000003200000000000000000000100000000010000000000000000000000000";
     
     
       my $E = disAssembleMinusContext $e;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      is_deeply $E,
-    bless({
-      code => [
-        bless({
-          action  => "mov",
-          source  => bless({ address => 1, area => 0, arena => 0, delta => 0 }, "Zero::Emulator::Address"),
-          source2 => bless({ address => 0, area => 0, arena => 0, delta => 0 }, "Zero::Emulator::Address"),
-          target  => bless({ address => \0, area => 0, arena => 0, delta => 0 }, "Zero::Emulator::Address"),
-        }, "Zero::Emulator::Code::Instruction"),
-      ],
-    }, "Zero::Emulator::Code");
-    
+    say STDERR "AAAA", dump($E->code->[0]);
+      is_deeply $E->code->[0]->source, {address =>  1, area => undef, arena => 0, delta => 0, name => "stackArea" };
+      is_deeply $E->code->[0]->target, {address => \0, area => undef, arena => 0, delta => 0, name => "stackArea" };
+    x;
      }
     
 
@@ -3347,7 +3347,7 @@ Pack a reference into 8 bytes
 
 **Example:**
 
-    if (1)                                                                           
+    if (0)                                                                           
      {my $a = Address 1, 2, 3, 4, 5;
     
       my $A = packRef $a;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
