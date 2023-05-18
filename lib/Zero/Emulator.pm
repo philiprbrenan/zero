@@ -44,7 +44,7 @@ sub ExecutionEnvironment(%)                                                     
     suppressOutput=>        $options{suppressOutput},                           # If true the Out instruction will only write to the execution out array but not to stdout as well.
     stopOnError=>           $options{stopOnError},                              # Stop on non fatal errors if true
     trace=>                 $options{trace},                                    # Trace all statements
-    tracePoints=>           undef,                                              # Trace changes in execution flow
+    traceLabels=>           undef,                                              # Trace changes in execution flow
     printNotRead=>          $options{NotRead},                                  # Memory locations never read
     printDoubleWrite=>      $options{doubleWrite},                              # Double writes: earlier instruction number to later instruction number
     printPointlessAssign=>  $options{pointlessAssign},                          # Pointless assigns {instruction number} to count - address already has the specified value
@@ -57,6 +57,7 @@ sub ExecutionEnvironment(%)                                                     
     lastAssignValue=>       undef,                                              # Last assignment performed - value
     lastAssignBefore=>      undef,                                              # Prior value of memory area before assignment
     freedArrays=>           [],                                                 # Arrays that have been recently freed and can thus be reused
+    checkArrayNames=>      ($options{checkArrayNames} // 1),                    # Check array names to confirm we are accessing the expected data
    );
  }
 
@@ -71,6 +72,8 @@ my sub Code(%)                                                                  
     labelCounter=>  0,                                                          # Label counter used to generate unique labels
     files=>         [],                                                         # File number to file name
     procedures=>    {},                                                         # Procedures defined in this block of code
+    arrayNames=>    {},                                                         # Array names as strings to numbers
+    arrayNumbers=>  [],                                                         # Array number to name
     %options,
    );
  }
@@ -214,6 +217,7 @@ my sub arenaLocal {0}                                                           
 my sub arenaHeap  {1}                                                           # Allocations whose location is dynamically allocated as the progam run
 my sub arenaParms {2}                                                           # Parameter areas
 my sub arenaReturn{3}                                                           # Return areas
+
 sub heap($$)                                                                    #P Return a heap entry
  {my ($exec, $area) = @_;                                                       # Exeecution environment, area
   $exec->memory->[arenaHeap][$area];
@@ -225,7 +229,6 @@ my sub Reference($$)                                                            
   my $arena = ref($r) =~ m(\Aarray\Z)i ? arenaHeap : arenaLocal;                # Local variables are variables that are not on the heap
 
   my $type = "Zero::Emulator::". ($right ? "RefRight" : "RefLeft");
-
 
   if (ref($r) =~ m(array)i)                                                     # Reference represented as [area, address, name, delta]
    {my ($area, $address, $name, $delta) = @$r;                                  # Delta is oddly useful, as illustrated by examples/*Sort, in that it enables us to avoid adding or subtracting one with a separate instruction that does not achieve very much in one clock but that which, is otherwise necessary.
@@ -935,7 +938,9 @@ sub createInitialStackEntry($)                                                  
 sub checkArrayName($$$$)                                                        #P Check the name of an array.
  {my ($exec, $arena, $area, $name) = @_;                                        # Execution environment, arena, array, array name
   @_ == 4 or confess "Four parameters";
-  return  1 unless $name;                                                       # Name checking is optional because, at the moment, names are not held in the executable format
+
+  return 1 unless $exec->checkArrayNames;                                          # Check the names of arrays if requested
+
   if (!defined($name))                                                          # A name is required
    {$exec->stackTraceAndExit("Array name required to size array: $area in arena $arena");
     return 0;
@@ -1157,20 +1162,13 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->output("$m\n");
      },
 
-    tracePoints=> sub                                                           # Start trace points
+    traceLabels=> sub                                                           # Start trace points
      {my $i = $exec->currentInstruction;
       my $s = $exec->right($i->source) ? 1 : 0;
-      $exec->tracePoints = $s;
-      my $m = "TracePoints: $s";
+      $exec->traceLabels = $s;
+      my $m = "TraceLabels: $s";
       say STDERR           $m unless $exec->suppressOutput;
       $exec->output("$m\n");
-     },
-
-    tracePoint=> sub                                                            # Trace point
-     {return unless $exec->tracePoints;
-      my $s = $exec->stackTrace("Trace");
-      say STDERR $s unless $exec->suppressOutput;
-      $exec->output($s);
      },
 
     dump=> sub                                                                  # Dump memory
@@ -1231,6 +1229,10 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     label=> sub                                                                 # Label - no operation
      {my ($i) = @_;                                                             # Instruction
+      return unless $exec->traceLabels;
+      my $s = $exec->stackTrace("Label");
+      say STDERR $s unless $exec->suppressOutput;
+      $exec->output($s);
      },
 
     clear=> sub                                                                 # Clear the first bytes of an area as specified by the target operand
@@ -1530,7 +1532,6 @@ sub Jlt($$$);
 sub Jmp($);
 sub Mov($;$);
 sub Subtract($$;$);
-sub TracePoint(%);
 
 sub Add($$;$)                                                                   #i Add the source locations together and store the result in the target area.
  {my ($target, $s1, $s2) = @_ == 2 ? (&Var(), @_) : @_;                         # Target address, source one, source two
@@ -1676,20 +1677,17 @@ sub Block(&%)                                                                   
 
   setLabel($Start);                                                             # Start
 
-  TracePoint level=>2;
   &$block($Start, $Good, $Bad, $End);                                           # Code of block
 
   if ($g)                                                                       # Good
    {Jmp $End;
     setLabel($Good);
-    TracePoint level=>2;
     &$g($Start, $Good, $Bad, $End);
    }
 
   if ($b)                                                                       # Bad
    {Jmp $End;
     setLabel($Bad);
-    TracePoint level=>2;
     &$b($Start, $Good, $Bad, $End);
    }
   setLabel($Good) unless $g;                                                    # Default positions for Good and Bad if not specified
@@ -1746,7 +1744,6 @@ sub For(&$%)                                                                    
     my $i = Mov $s;
       setLabel($Check);                                                         # Check
       Jge  $End, $i, $e;
-        TracePoint level=>2;
         &$block($i, $Check, $Next, $End);                                       # Block
       setLabel($Next);
       Inc $i;                                                                   # Next
@@ -1764,7 +1761,6 @@ sub For(&$%)                                                                    
     Subtract $i, $s;
       setLabel($Check);                                                         # Check
       Jlt  $End, $i, $e;
-        TracePoint level=>2;
         &$block($i, $Check, $Next, $End);                                       # Block
       setLabel($Next);
       Dec $i;                                                                   # Next
@@ -1784,7 +1780,6 @@ sub ForArray(&$$%)                                                              
   my $i = Mov $s;
     setLabel($Check);                                                           # Check
     Jge  $End, $i, $e;
-      TracePoint level=>2;
       my $a = Mov [$area, \$i, $name];
       &$block($i, $a, $Check, $Next, $End);                                     # Block
     setLabel($Next);
@@ -1811,11 +1806,9 @@ sub Ifx($$$%)                                                                   
    {my $else = label;
     my $end  = label;
     &$cmp($else, $a, $b);
-      TracePoint level=>2;
       &{$options{then}};
       Jmp $end;
     setLabel($else);
-      TracePoint level=>2;
       &{$options{else}};
     setLabel($end);
    }
@@ -2211,14 +2204,9 @@ sub Trace($)                                                                    
   $assembly->instruction(action=>"trace", xSource($source));
  }
 
-sub TracePoints($)                                                              #i Enable or disable trace points.  If trace points are enabled a stack trace is printed for each instruction executed showing the call stack at the time the instruction was generated as well as the current stack frames.
+sub TraceLabels($)                                                              #i Enable or disable label tracing.  If tracing is enabled a stack trace is printed for each label instruction executed showing the call stack at the time the instruction was generated as well as the current stack frames.
  {my ($source) = @_;                                                            # Trace points if true
-  $assembly->instruction(action=>"tracePoints", xSource($source));
- }
-
-sub TracePoint(%)                                                               #P Trace point - a point in the code where the flow of execution might change.
- {my (%options) = @_;                                                           # Parameters
-  $assembly->instruction(action=>"tracePoint", %options);
+  $assembly->instruction(action=>"traceLabels", xSource($source));
  }
 
 sub Var(;$)                                                                     #i Create a variable initialized to the specified value.
@@ -2346,7 +2334,6 @@ sub unpackRef($)                                                                
 
 sub packInstruction($)                                                          #P Pack an instruction
  {my ($i) = @_;                                                                 # Instruction numbers, instruction to pack
-
   my  $a = '';
   vec($a, 0, 32) = $instructions{$i->action};
   vec($a, 1, 32) = 0;
@@ -2409,10 +2396,10 @@ sub disAssembleMinusContext($)                                                  
   $d
  }
 
-sub GenerateMachineCodeDisAssembleExecute                                       # Round trip: generate amchine code, disassemble the generated machine code and execute it to prove that it works as expected
+sub GenerateMachineCodeDisAssembleExecute                                       #i Round trip: generate amchine code, disassemble the generated machine code and execute it to prove that it works as expected
  {my $m = GenerateMachineCode;
   my $M = disAssemble $m;
-     $M->execute(suppressOutput=>1);
+     $M->execute(suppressOutput=>1, checkArrayNames=>0);
  }
 
 #D0
@@ -2422,7 +2409,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 @ISA         = qw(Exporter);
 @EXPORT      = qw();
-@EXPORT_OK   = qw(Add Array ArrayCountLess ArrayCountGreater ArrayDump ArrayIndex ArraySize Assert AssertEq AssertFalse AssertGe AssertGt AssertLe AssertLt AssertNe AssertTrue Bad Block Call Clear Confess Dec Dump Else Execute For ForArray Free Good IfEq IfFalse IfGe IfGt IfNe IfLe IfLt IfTrue Inc Jeq JFalse Jge Jgt Jle Jlt Jmp Jne JTrue LoadAddress LoadArea Mov MoveLong Not Nop Out ParamsGet ParamsPut Pop Procedure Push Resize Random RandomSeed Return ReturnGet ReturnPut ShiftDown ShiftLeft ShiftRight ShiftUp Start Subtract Tally Then Trace TracePoints Watch Var);
+@EXPORT_OK   = qw(GenerateMachineCodeDisAssembleExecute Add Array ArrayCountGreater ArrayCountLess ArrayDump ArrayIndex ArraySize Assert AssertEq AssertFalse AssertGe AssertGt AssertLe AssertLt AssertNe AssertTrue Bad Block Call Clear Confess Dec Dump Else Execute For ForArray Free Good IfEq IfFalse IfGe IfGt IfLe IfLt IfNe IfTrue Inc JFalse JTrue Jeq Jge Jgt Jle Jlt Jmp Jne LoadAddress LoadArea Mov MoveLong Nop Not Out ParamsGet ParamsPut Pop Procedure Push Random RandomSeed Resize Return ReturnGet ReturnPut ShiftDown ShiftLeft ShiftRight ShiftUp Start Subtract Tally Then Trace TraceLabels Var Watch);
 %EXPORT_TAGS = (all=>[@EXPORT, @EXPORT_OK]);
 
 return 1 if caller;
@@ -3422,13 +3409,13 @@ if (1)                                                                          
   is_deeply $e->out, <<END;
 mmmm
 Stack trace:
-    1     9 dump
+    1     8 dump
 mmmm
 Stack trace:
-    1     9 dump
+    1     8 dump
 mmmm
 Stack trace:
-    1     9 dump
+    1     8 dump
 END
  }
 
@@ -3477,17 +3464,15 @@ if (1)                                                                          
 Trace: 1
     1     0     1         trace
     2     1     1           jNe
-    3     6     1         label
-    4     7     1    tracePoint
-    5     8     1           mov  [1, 3, stackArea] = 3
-    6     9     1           mov  [1, 4, stackArea] = 4
-    7    10     1         label
-    8    11     1           jNe
-    9    12     1    tracePoint
-   10    13     1           mov  [1, 1, stackArea] = 1
-   11    14     1           mov  [1, 2, stackArea] = 1
-   12    15     1           jmp
-   13    20     1         label
+    3     5     1         label
+    4     6     1           mov  [1, 3, stackArea] = 3
+    5     7     1           mov  [1, 4, stackArea] = 4
+    6     8     1         label
+    7     9     1           jNe
+    8    10     1           mov  [1, 1, stackArea] = 1
+    9    11     1           mov  [1, 2, stackArea] = 1
+   10    12     1           jmp
+   11    16     1         label
 END
  }
 
@@ -3622,10 +3607,10 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          ##TracePoints
+if (1)                                                                          ##TraceLabels
  {my $N = 5;
   Start 1;
-  TracePoints 1;
+  TraceLabels 1;
   For
    {my $a = Mov 1;
     Inc $a;
@@ -3633,17 +3618,33 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->out, <<END;
-TracePoints: 1
-Trace
-    1     6 tracePoint
-Trace
-    1     6 tracePoint
-Trace
-    1     6 tracePoint
-Trace
-    1     6 tracePoint
-Trace
-    1     6 tracePoint
+TraceLabels: 1
+Label
+    1     2 label
+Label
+    1     4 label
+Label
+    1     8 label
+Label
+    1     4 label
+Label
+    1     8 label
+Label
+    1     4 label
+Label
+    1     8 label
+Label
+    1     4 label
+Label
+    1     8 label
+Label
+    1     4 label
+Label
+    1     8 label
+Label
+    1     4 label
+Label
+    1    11 label
 END
  }
 
