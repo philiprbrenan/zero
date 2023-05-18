@@ -10,6 +10,8 @@ use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
 use Test::More tests=>5;
 
+sub array{99}                                                                   # an arbitrary number identifying the array being sorted
+
 sub bubbleSort($$)                                                              # As described at: https://en.wikipedia.org/wiki/Bubble_sort
  {my ($array, $name) = @_;                                                      # Array, name of array memory
 
@@ -38,15 +40,15 @@ sub bubbleSort($$)                                                              
 
 if (1)                                                                          # Small array
  {Start 1;
-  my $a = Array "array";
+  my $a = Array array;
   my @a = qw(6 8 4 2 1 3 5 7);
-  Push $a, $_, "array" for @a;                                                  # Load array
+  Push $a, $_, array for @a;                                                    # Load array
 
-  bubbleSort($a, "array");                                                      # Sort
+  bubbleSort($a, array);                                                        # Sort
 
-  ArrayDump $a, "array";
+  ArrayDump $a, array;
 
-  my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
+  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);                                           # Execute assembler program
   is_deeply $e->out, <<END;
 array
 bless([1 .. 8], "array")
