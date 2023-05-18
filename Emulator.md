@@ -2295,7 +2295,6 @@ Copy the number of elements specified by the second source operand from the loca
 
     
       my $e = Execute(suppressOutput=>1);
-    
       is_deeply $e->heap(1), [0 .. 9];
       is_deeply $e->heap(2), [100, 101, 4, 5, 6, 105 .. 109];
      }
@@ -3195,7 +3194,7 @@ Generate machine code for the current block of code
     
       my $e = GenerateMachineCode;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      is_deeply unpack("h*", $e), "0000003200000000000000000000100000000010000000000000000000000000";
+      is_deeply unpack("h*", $e), '0000003200000000000000000000100800000010000000080000000000000000';
     
       my $E = disAssembleMinusContext $e;
       is_deeply $E->code->[0]->source, {address =>  1, area => undef, arena => 1, delta => 0};
@@ -3224,7 +3223,7 @@ Disassemble machine code
      {Start 1;
       my $a = Mov 1;
       my $e = GenerateMachineCode;
-      is_deeply unpack("h*", $e), "0000003200000000000000000000100000000010000000000000000000000000";
+      is_deeply unpack("h*", $e), '0000003200000000000000000000100800000010000000080000000000000000';
     
       my $E = disAssembleMinusContext $e;
       is_deeply $E->code->[0]->source, {address =>  1, area => undef, arena => 1, delta => 0};
@@ -3253,7 +3252,7 @@ Disassemble and remove context information from disassembly to make testing easi
      {Start 1;
       my $a = Mov 1;
       my $e = GenerateMachineCode;
-      is_deeply unpack("h*", $e), "0000003200000000000000000000100000000010000000000000000000000000";
+      is_deeply unpack("h*", $e), '0000003200000000000000000000100800000010000000080000000000000000';
     
     
       my $E = disAssembleMinusContext $e;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
