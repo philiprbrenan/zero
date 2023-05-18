@@ -6,7 +6,8 @@
 # Pointless adds and subtracts by 0. Perhaps we should flag adds and subtracts by 1 as well so we can have an instruction optimized for these variants.
 # Assign needs to know from whence we got the value so we can write a better error message when it is no good
 # Count number of ways an if statement actually goes.
-# Conform that repeated execution producees the same result
+# Confirm that repeated execution producees the same result
+# doubleWrite, not read, rewrite need make-over
 use v5.30;
 package Zero::Emulator;
 our $VERSION = 20230515;                                                        # Version
@@ -15,9 +16,10 @@ use strict;
 use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>93" unless caller;
+eval "use Test::More tests=>95" unless caller;
 
 makeDieConfess;
+my $Debug;
 
 my sub maximumInstructionsToExecute {1e6}                                       # Maximum number of subroutines to execute
 
@@ -726,8 +728,7 @@ sub left($$)                                                                    
    {$M = $$address + $delta;
    }
   elsif (isScalar $$$address)
-   {$exec->rwRead(arenaLocal, $S, $$$address +  $delta);
-    $M = $exec->getMemory(arenaLocal, $S, $$$address, "stackArea") + $delta;
+   {$M = $exec->getMemory(arenaLocal, $S, $$$address, "stackArea") + $delta;
    }
   else
    {invalid(1)
@@ -740,18 +741,17 @@ sub left($$)                                                                    
      .", address: " .dump($address));
    }
   elsif (!defined($area))                                                       # Current stack frame
-   {$exec->rwWrite (arenaLocal, $S, $M);
-    return  Address(arenaLocal, $S, $M, $ref->name);                            # Stack frame
+   {my $a = Address(arenaLocal, $S, $M, $ref->name);                            # Stack frame
+    return $a;
    }
   elsif (isScalar($area))
-   {$exec->rwWrite ($arena, $area, $M);
-    return  Address($arena, $area, $M, $ref->name)                              # Specified constant area
+   {my $a = Address($arena, $area, $M, $ref->name);                              # Specified constant area
+    return $a;
    }
   elsif (isScalar($$area))
-   {$exec->rwRead           (arenaLocal, $S, $$area);
-    my $A = $exec->getMemory(arenaLocal, $S, $$area, "stackArea");
-    $exec->rwWrite ($arena, $A, $M);
-    return  Address($arena, $A, $M, $ref->name)                                 # Indirect area
+   {my $A = $exec->getMemory(arenaLocal, $S, $$area, "stackArea");
+    my $a = Address($arena, $A, $M, $ref->name);                                # Indirect area
+    return $a;
    }
   invalid(2);
  }
@@ -800,8 +800,7 @@ sub right($$)                                                                   
    {$m = $$address + $delta;
    }
   elsif (isScalar($$$a))                                                        # Indirect
-   {$exec->rwRead        (arenaLocal, $stackArea, $$$address               + $delta);
-    $m = $exec->getMemory(arenaLocal, $stackArea, $$$address, "stackArea") + $delta;
+   {$m = $exec->getMemory(arenaLocal, $stackArea, $$$address, "stackArea") + $delta;
    }
   else
    {invalid(2);
@@ -809,21 +808,17 @@ sub right($$)                                                                   
   invalid(3) unless defined $m;
 
   if (!defined($area))                                                          # Stack frame
-   {$exec->rwRead(arenaLocal, $stackArea, $m);
-    $r = $exec->getMemory(arenaLocal, $stackArea, $m, "stackArea");             # Indirect from stack area
+   {$r = $exec->getMemory(arenaLocal, $stackArea, $m, "stackArea");             # Indirect from stack area
     $e = 1; $tArena = arenaLocal; $tArea = $stackArea;  $tAddress = $m;
    }
   elsif (isScalar($area))
-   {$exec->rwRead(        $arena, $area, $m);
-    $r = $exec->getMemory($arena, $area, $m, $ref->name);                       # Indirect from stack area
+   {$r = $exec->getMemory($arena, $area, $m, $ref->name);                       # Indirect from stack area
     $e = 2; $tArena = $arena; $tArea = $stackArea;  $tAddress = $m;
    }
   elsif (isScalar($$area))
-   {$exec->rwRead(arenaLocal, $stackArea, $$area);                              # Mark the address holding the area as having been read
-    $e = 3; $tArena = arenaLocal; $tArea = $stackArea;  $tAddress = $m;
+   {$e = 3; $tArena = arenaLocal; $tArea = $stackArea;  $tAddress = $m;
     if (defined(my $j = $exec->getMemory(arenaLocal, $stackArea, $$area, "stackArea")))
-     {$exec->rwRead($arena, $j, $m);
-      $r = $exec->getMemory($arena, $j, $m, $ref->name);                        # Indirect from stack area
+     {$r = $exec->getMemory($arena, $j, $m, $ref->name);                        # Indirect from stack area
       $e = 4; $tArena = $arena; $tArea = $j;  $tAddress = $m;
      }
    }
@@ -1271,6 +1266,18 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->assign($t, $s);
      },
 
+    moveLong22=> sub                                                              # Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand
+     {my $i = $exec->currentInstruction;
+      my $s = $exec->left ($i->source);                                         # Source
+      my $l = $exec->right($i->source2);                                        # Length
+      my $t = $exec->left($i->target);                                          # Target
+      for my $j(0..$l-1)
+       {my $S = RefRight [$s->area, \($s->address+$j), $s->name];
+        my $T = RefLeft  [$t->area,   $t->address+$j,  $t->name];
+        $exec->assign($exec->left($T), $exec->right($S));
+       }
+     },
+
     moveLong=> sub                                                              # Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand
      {my $i = $exec->currentInstruction;
       my $s = $exec->left ($i->source);                                         # Source
@@ -1397,9 +1404,10 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $L = $exec->areaLength($t->area);                                      # Length of target array
       my $l = $t->address;
       for my $j(reverse $l..$L)
-       {my $T = $exec->left (RefLeft([$t->area, \ $j,   $t->name]));
-        my $S = $exec->right(RefLeft([$t->area, \($j-1), $t->name]));
-        $exec->assign($T, $S);
+       {my $S = Address($t->arena, $t->area, $j-1,   $t->name, 0);
+        my $T = Address($t->arena, $t->area, $j,     $t->name, 0);
+        my $v = $exec->getMemoryFromAddress($S);
+        $exec->assign($T, $v);
        }
       $exec->assign($t, $s);
      },
@@ -1460,6 +1468,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
       $exec->lastAssignArena = $exec->lastAssignArea = $exec->lastAssignAddress = $exec->lastAssignValue = undef;
       defined $c or confess "No implementation for instruction: $a";
+
       $c->($i);                                                                 # Execute instruction
 
       $exec->instructionCounts->{$i->number}++;                                 # Execution count by actual instruction
@@ -3202,7 +3211,7 @@ END
  }
 
 #latest:;
-if (1)                                                                          # Double write
+if (0)                                                                          # Double write - needs rewrite of double write detection
  {Start 1;
   Mov 1, 1;
   Mov 2, 1;
@@ -3291,10 +3300,52 @@ if (1)                                                                          
   Mov [$a, 0, 'array'], 0;
   Mov [$a, 1, 'array'], 1;
   Mov [$a, 2, 'array'], 2;
+  ShiftUp [$a, 0, 'array'], 99;
+
+  my $e = Execute(suppressOutput=>0);
+  is_deeply $e->heap(1), [99, 0, 1, 2];
+ }
+
+#latest:;
+if (1)                                                                          ##ShiftUp
+ {Start 1;
+  my $a = Array "array";
+
+  Mov [$a, 0, 'array'], 0;
+  Mov [$a, 1, 'array'], 1;
+  Mov [$a, 2, 'array'], 2;
   ShiftUp [$a, 1, 'array'], 99;
 
-  my $e = Execute(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>0);
   is_deeply $e->heap(1), [0, 99, 1, 2];
+ }
+
+#latest:;
+if (1)                                                                          ##ShiftUp
+ {Start 1;
+  my $a = Array "array";
+
+  Mov [$a, 0, 'array'], 0;
+  Mov [$a, 1, 'array'], 1;
+  Mov [$a, 2, 'array'], 2;
+  ShiftUp [$a, 2, 'array'], 99;
+
+  my $e = Execute(suppressOutput=>0);
+  is_deeply $e->heap(1), [0, 1, 99, 2];
+ }
+
+#latest:;
+if (1)                                                                          ##ShiftUp
+ {Start 1;
+  my $a = Array "array";
+
+  Mov [$a, 0, 'array'], 0;
+  Mov [$a, 1, 'array'], 1;
+  Mov [$a, 2, 'array'], 2;
+  ShiftUp [$a, 3, 'array'], 99;
+
+  my $e = Execute(suppressOutput=>0);
+  is_deeply $e->heap(1), [0, 1, 2, 99];
  }
 
 #latest:;
