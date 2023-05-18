@@ -14,7 +14,7 @@ use strict;
 use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>88" unless caller;
+eval "use Test::More tests=>91" unless caller;
 
 makeDieConfess;
 
@@ -226,12 +226,13 @@ my sub Reference($$)                                                            
 
   my $type = "Zero::Emulator::". ($right ? "RefRight" : "RefLeft");
 
-  if (ref($r) =~ m(array)i)                                                     # Reference represented as [area, address, name, delta]
-   {my ($area, $address, $name, $delta) = @$r;                                  # Delta is oddly useful, as illustarted by examples/*Sort, in that it enables us to avoid adding or subtracting one with a separate instruction that does not achieve very much in one clock but that which, is otherwise necessary.
-     defined($area) and !defined($name) and confess "Name required for address specification: in [Area, address, name]";
-    !defined($area) and  defined($name) and confess "Area required for address specification: in [Area, address, name]";
 
-    if($right)                                                                  # The dofference between a left and a right is that a right can be interpreted as a constant, a left never can becuase we cannot assign to a constant.
+  if (ref($r) =~ m(array)i)                                                     # Reference represented as [area, address, name, delta]
+   {my ($area, $address, $name, $delta) = @$r;                                  # Delta is oddly useful, as illustrated by examples/*Sort, in that it enables us to avoid adding or subtracting one with a separate instruction that does not achieve very much in one clock but that which, is otherwise necessary.
+     defined($area) and !defined($name) and confess "Name required for address specification: in [Area, address, name]";
+   #!defined($area) and  defined($name) and confess "Area required for address specification: in [Area, address, name]";
+
+    if($right)                                                                  # The difference between a left and a right is that a right can be interpreted as a constant, a left never can becuase we cannot assign to a constant.
      {isScalar($address) and defined($area) || defined($name) and confess "Right hand constants cannot have an associated area";
      }
 
@@ -493,25 +494,10 @@ sub analyzeExecutionResults($%)                                                 
   join "\n", @r;
  }
 
-sub checkMemoryType($$$$)                                                       #P Check that a user area access is valid.
- {my ($exec, $arena, $area, $name) = @_;                                        # Execution environment, arena, area, expected area name
-  @_ == 4 or confess "Four parameters";
-  if ($area and $area =~ m(\A\d+\Z))
-   {my $Name = $exec->getMemoryType($arena, $area);
-    if (!defined $Name)
-     {$exec->stackTraceAndExit("Attempting to access unnamed area: $area");
-      return;
-     }
-    if ($name ne $Name)
-     {$exec->stackTraceAndExit("Attempting to access area: $area($Name) using: $name");
-     }
-   }
- }
-
 sub getMemory($$$$$)                                                            #P Get from memory.
  {my ($exec, $arena, $area, $address, $name) = @_;                              # Execution environment, arena, area, address, expected name of area
   @_ == 5 or confess "Five parameters";
-  $exec->checkMemoryType($arena, $area, $name);
+  $exec->checkArrayName($arena, $area, $name);
   my $v = $exec->memory->[$arena][$area][$address];
   if (!defined($v))                                                             # Check we are getting a defined value.  If undefined values are acceptable use L<getMemoryAddress> and dereference the result.
    {my $n = $name // 'unknown';
@@ -524,7 +510,7 @@ sub getMemory($$$$$)                                                            
 sub getMemoryAddress($$$$$)                                                     #P Evaluate an address in the current execution environment
  {my ($exec, $arena, $area, $address, $name) = @_;                              # Execution environment, arena, area, address, expected name of area
   @_ == 5 or confess "Five parameters";
-  $exec->checkMemoryType($arena, $area, $name);
+  $exec->checkArrayName($arena, $area, $name);
   \$exec->memory->[$arena][$area][$address];
  }
 
@@ -626,7 +612,7 @@ sub freeArea($$$$)                                                              
 sub pushArea($$$$$)                                                             #P Push a value onto the specified array
  {my ($exec, $arena, $area, $name, $value) = @_;                                # Execution environment, arena, array, name of allocation, value to assign
   @_ == 5 or confess "Five parameters";
-  $exec->checkMemoryType($arena, $area, $name);
+  $exec->checkArrayName($arena, $area, $name);
 
   push $exec->memory->[$arena][$area]->@*, $value;
  }
@@ -880,8 +866,7 @@ sub assign($$$)                                                                 
   my $area    = $target->area;
   my $address = $target->address;
   my $name    = $target->name;
-  confess "Missing area name" unless $name;
-  $exec->checkArrayName($arena, $area, $name);
+  $exec->checkArrayName($arena, $area, $name) if $name;
 
   if (!defined($value))                                                         # Check that the assign is not pointless
    {$exec->stackTraceAndExit
@@ -950,7 +935,7 @@ sub createInitialStackEntry($)                                                  
 sub checkArrayName($$$$)                                                        #P Check the name of an array.
  {my ($exec, $arena, $area, $name) = @_;                                        # Execution environment, arena, array, array name
   @_ == 4 or confess "Four parameters";
-
+  return  1 unless $name;                                                       # Name checking is optional because, at the moment, names are not held in the executable format
   if (!defined($name))                                                          # A name is required
    {$exec->stackTraceAndExit("Array name required to size array: $area in arena $arena");
     return 0;
@@ -1072,7 +1057,8 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     array=> sub                                                                 # Create a new memory area and write its number into the address named by the target operand
      {my $i = $exec->currentInstruction;
-      my $a = $exec->allocMemory($i->source, arenaHeap);                        # The reason for this allocation
+      my $s = $exec->right($i->source);                                         # The reason for this allocation
+      my $a = $exec->allocMemory($s, arenaHeap);                                # The reason for this allocation
       my $t = $exec->left($i->target);
       $exec->assign($t, $a);
       $a
@@ -1206,7 +1192,7 @@ sub Zero::Emulator::Code::execute($%)                                           
     arrayDump=> sub                                                             # Dump array in memory
      {my $i = $exec->currentInstruction;
       my $a = $exec->right($i->target);
-      my $t = $i->source // "Array dump";
+      my $t = $exec->right($i->source) // "Array dump";
       my $d = dump($exec->memory->[arenaHeap][$a]) =~ s(\n) ()gsr;
       my $m = "$t\n$d";
       say STDERR $m unless $exec->suppressOutput;
@@ -1547,9 +1533,9 @@ sub Add($$;$)                                                                   
  }
 
 sub Array($)                                                                    #i Create a new memory area and write its number into the address named by the target operand.
- {my ($name) = @_;                                                              # Name of allocation
+ {my ($source) = @_;                                                            # Name of allocation
   my $t = &Var();
-  $assembly->instruction(action=>"array", target=>RefLeft($t), source=>$name);
+  $assembly->instruction(action=>"array", xTarget($t), xSource($source));
   $t;
  }
 
@@ -1584,8 +1570,9 @@ sub ArrayCountGreater($$;$) {                                                   
  }
 
 sub ArrayDump($;$)                                                              #i Dump an array.
- {my ($target, $title) = @_;                                                    # Array to dump, title of dump
-  my $i = $assembly->instruction(action=>"arrayDump", target=>RefRight($target), source=>$title);
+ {my ($target, $source) = @_;                                                   # Array to dump, title of dump
+  my $i = $assembly->instruction(action=>"arrayDump", xTarget($target),
+    xSource($source));
   $i;
  }
 
@@ -2233,10 +2220,9 @@ sub Watch($)                                                                    
   $assembly->instruction(action=>"watch", xTarget($target));
  }
 
-#D1 Instruction Set Architecture                                                # List the set of instructions in various ways
+#D1 Instruction Set Architecture                                                # Map the instruction set into a machine architecture.
 
 my $instructions = Zero::Emulator::Code::execute(undef, instructions=>1);
-
 my @instructions = sort keys %$instructions;
 my %instructions = map {$instructions[$_]=>$_} keys @instructions;
 
@@ -2305,8 +2291,9 @@ sub rerefValue($$)                                                              
 
 sub packRef($)                                                                  #P Pack a reference into 8 bytes
  {my ($ref) = @_;                                                               # Reference to pack
+  my @a = (arenaLocal, 0, $ref, 0);                                             # Local variable or constant
+  @a = @$ref{qw(arena area address delta)} if ref($ref) =~ m(Ref(Left|Right))i; # Heap reference
 
-  my @a = @$ref{qw(arena area address delta)};
   $_ //= 0 for @a;
   my ($arena, $area, $address, $delta) = @a;
 
@@ -2337,8 +2324,12 @@ sub unpackRef($)                                                                
 
   my $area    = rerefValue($vArea,    $rArea);
   my $address = rerefValue($vAddress, $rAddress);
-
-  Address($arena, $area, $address, '', $delta);
+  if ($arena != arenaHeap)
+   {RefLeft([undef, $address, 0, $delta]);
+   }
+  else
+   {RefLeft([$area, $address, 0, $delta]);
+   }
  }
 
 sub packInstruction($)                                                          #P Pack an instruction
@@ -2374,7 +2365,7 @@ sub GenerateMachineCode(%)                                                      
   $pack
  }
 
-sub disAssemble(%)                                                              # Disassemble machine code
+sub disAssemble($)                                                              # Disassemble machine code
  {my ($mc) = @_;                                                                # Machine code string
 
   my $C = Code;
@@ -3657,7 +3648,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          ##packRef ##Address
+if (0)                                                                          ##packRef ##Address
  {my $a = Address 1, 2, 3, 4, 5;
   my $A = packRef $a;
   is_deeply unpack("h*", $A), "0000003000200150";
@@ -3671,22 +3662,45 @@ if (1)                                                                          
 if (1)                                                                          ##GenerateMachineCode ##disAssemble ##disAssembleMinusContext
  {Start 1;
   my $a = Mov 1;
+  my $e = Execute;
+  is_deeply $e->block->code->[0]->source, {address =>  1, area => undef, arena => 0, delta => 0, name => "stackArea" };
+  is_deeply $e->block->code->[0]->target, {address => \0, area => undef, arena => 0, delta => 0, name => "stackArea" };
+ }
+
+#latest:;
+if (1)                                                                          ##GenerateMachineCode ##disAssemble ##disAssembleMinusContext
+ {Start 1;
+  my $a = Mov 1;
   my $e = GenerateMachineCode;
   is_deeply unpack("h*", $e), "0000003200000000000000000000100000000010000000000000000000000000";
 
   my $E = disAssembleMinusContext $e;
-  is_deeply $E,
-bless({
-  code => [
-    bless({
-      action  => "mov",
-      source  => bless({ address => 1, area => 0, arena => 0, delta => 0 }, "Zero::Emulator::Address"),
-      source2 => bless({ address => 0, area => 0, arena => 0, delta => 0 }, "Zero::Emulator::Address"),
-      target  => bless({ address => \0, area => 0, arena => 0, delta => 0 }, "Zero::Emulator::Address"),
-    }, "Zero::Emulator::Code::Instruction"),
-  ],
-}, "Zero::Emulator::Code");
+  is_deeply $E->code->[0]->source, {address =>  1, area => undef, arena => 1, delta => 0};
+  is_deeply $E->code->[0]->target, {address => \0, area => undef, arena => 1, delta => 0};
+ }
 
+#latest:;
+if (1)                                                                          # Round trip start
+ {Start 1;
+  my $a = Array 99;
+  Mov [$a, 0, 99], 10;
+  Mov [$a, 1, 99], 11;
+  Mov [$a, 2, 99], 12;
+  my $e = Execute(suppressOutput=>1);
+  is_deeply $e->heap(1), [10, 11, 12];
+ }
+
+#latest:;
+if (1)                                                                          # Round trip end
+ {Start 1;
+  my $a = Array 99;
+  Mov [$a, 0, 99], 10;
+  Mov [$a, 1, 99], 11;
+  Mov [$a, 2, 99], 12;
+  my $m = GenerateMachineCode;
+  my $M = disAssemble $m;
+  my $e = $M->execute(suppressOutput=>1);
+  is_deeply $e->heap(1), [10, 11, 12];
  }
 
 # (\A.{80})\s+(#.*\Z) \1\2
