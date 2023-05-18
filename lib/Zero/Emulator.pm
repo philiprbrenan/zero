@@ -6,6 +6,7 @@
 # Pointless adds and subtracts by 0. Perhaps we should flag adds and subtracts by 1 as well so we can have an instruction optimized for these variants.
 # Assign needs to know from whence we got the value so we can write a better error message when it is no good
 # Count number of ways an if statement actually goes.
+# Conform that repeated execution producees the same result
 use v5.30;
 package Zero::Emulator;
 our $VERSION = 20230515;                                                        # Version
@@ -14,7 +15,7 @@ use strict;
 use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>91" unless caller;
+eval "use Test::More tests=>93" unless caller;
 
 makeDieConfess;
 
@@ -276,7 +277,7 @@ sub Zero::Emulator::Procedure::call($)                                          
   Zero::Emulator::Call($procedure->target);
  }
 
-sub Zero::Emulator::Code::assemble($%)                                          #P Assemble a block of code to prepare it for execution.
+sub Zero::Emulator::Code::assemble($%)                                          #P Assemble a block of code to prepare it for execution.  This modifies the jump targets and so once assembled we cannot assembled again
  {my ($Block, %options) = @_;                                                   # Code block, assembly options
   return $Block if $Block->assembled;                                           # Already assembled
   my $code = $Block->code;                                                      # The code to be assembled
@@ -289,7 +290,7 @@ sub Zero::Emulator::Code::assemble($%)                                          
    {my $i = $$code[$c];
     $i->number = $c;
     next unless $i->action eq "label";
-    $labels{$i->source->address} = $i;                                          # Point label to instruction
+    $labels{$i->source->address} = $c;                                          # Point label to instruction
    }
 
   for my $c(keys @$code)                                                        # Target jump and call instructions
@@ -297,7 +298,7 @@ sub Zero::Emulator::Code::assemble($%)                                          
     next unless $i->action =~ m(\A(j|call))i;
     if (my $l = $i->target->address)                                            # Label
      {if (my $t = $labels{$l})                                                  # Found label
-       {$i->target = RefRight($t->number - $c);                                 # Relative jump
+       {$i->target = RefRight($t - $c);                                         # Relative jump
        }
       else
        {my $a = $i->action;
@@ -1004,6 +1005,8 @@ sub outLines($)                                                                 
 sub Zero::Emulator::Code::execute($%)                                           #P Execute a block of code.
  {my ($block, %options) = @_;                                                   # Block of code, execution options
 
+  $block->assemble if $block;                                                   # Assemble unless we just want the instructions
+
   my $exec = ExecutionEnvironment(code=>$block, %options);                      # Execution environment
 
   my %instructions =                                                            # Instruction definitions
@@ -1428,10 +1431,9 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->watch->[$t->area][$t->address]++;
      },
    );
-  return {%instructions} if $options{instructions};                             # Return a list of the instructions
+  return {%instructions} unless $block;                                         # Return a list of the instructions
 
-  $block->assemble;                                                             # Assemble if necessary
-
+  $allocs = [];                                                                 # Reset all allocations
   $exec->createInitialStackEntry;                                               # Variables in initial stack frame
 
   my $mi = $options{maximumInstructionsToExecute} //                            # Prevent run away executions
@@ -1499,6 +1501,10 @@ sub formatTrace($)                                                              
 #D1 Instruction Set                                                             # The instruction set used by the Zero assembler programming language.
 
 my $assembly;                                                                   # The current assembly
+
+sub Assembly()                                                                  #p Start some assembly code
+ {$assembly = Code;                                                             # The current assembly
+ }
 
 my sub label()                                                                  # Next unique label
  {++$assembly->labelCounter;
@@ -2177,8 +2183,7 @@ sub ShiftUp($;$)                                                                
 sub Start($)                                                                    #i Start the current assembly using the specified version of the Zero language.  At  the moment only version 1 works.
  {my ($version) = @_;                                                           # Version desired - at the moment only 1
   $version == 1 or confess "Version 1 is currently the only version available";
-  $allocs = [];
-  $assembly = Code;                                                             # The current assembly
+  Assembly();
  }
 
 sub Subtract($$;$)                                                              #i Subtract the second source operand value from the first source operand value and store the result in the target area.
@@ -2222,7 +2227,7 @@ sub Watch($)                                                                    
 
 #D1 Instruction Set Architecture                                                # Map the instruction set into a machine architecture.
 
-my $instructions = Zero::Emulator::Code::execute(undef, instructions=>1);
+my $instructions = Zero::Emulator::Code::execute(undef);
 my @instructions = sort keys %$instructions;
 my %instructions = map {$instructions[$_]=>$_} keys @instructions;
 
@@ -2291,6 +2296,14 @@ sub rerefValue($$)                                                              
 
 sub packRef($)                                                                  #P Pack a reference into 8 bytes
  {my ($ref) = @_;                                                               # Reference to pack
+
+  if (!defined($ref) or ref($ref) =~ m(array)i && !@$ref)
+   {my $a = '';
+    vec($a, 0, 32) = 0;
+    vec($a, 1, 32) = 0;
+    return $a;
+   }
+
   my @a = (arenaLocal, 0, $ref, 0);                                             # Local variable or constant
   @a = @$ref{qw(arena area address delta)} if ref($ref) =~ m(Ref(Left|Right))i; # Heap reference
 
@@ -2337,7 +2350,10 @@ sub packInstruction($)                                                          
   my  $a = '';
   vec($a, 0, 32) = $instructions{$i->action};
   vec($a, 1, 32) = 0;
-  $a .= packRef($_) for $i->target, $i->source, $i->source2;
+
+  $a .= packRef($i->target);
+  $a .= packRef($i->source);
+  $a .= packRef($i->source2);
   $a
  }
 
@@ -2352,9 +2368,6 @@ sub unpackInstruction($)                                                        
 
 sub GenerateMachineCode(%)                                                      # Generate machine code for the current block of code
  {my (%options) = @_;                                                           # Generation options
-
-  $assembly->assemble(%options);                                                # Assemble code
-
 
   my $code = $assembly->code;
   my $pack = '';
@@ -3710,7 +3723,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          # Round trip end
+if (1)                                                                          ##GenerateMachineCodeDisAssembleExecute
  {Start 1;
   my $a = Array 99;
   Mov [$a, 0, 99], 10;
@@ -3718,6 +3731,32 @@ if (1)                                                                          
   Mov [$a, 2, 99], 12;
   my $e = GenerateMachineCodeDisAssembleExecute;
   is_deeply $e->heap(1), [10, 11, 12];
+ }
+
+#latest:;
+if (1)                                                                          ##Out ##Start ##Execute
+ {Start 1;
+  Out "Hello", "World";
+  my $e = Execute(suppressOutput=>1);
+  is_deeply $e->out, <<END;
+Hello World
+END
+ }
+
+#latest:;
+if (1)                                                                          ##IfFalse ##True ##False
+ {Start 1;
+  IfFalse 1,
+  Then
+   {Out 1
+   },
+  Else
+   {Out 0
+   };
+  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
+  is_deeply $e->out, <<END;
+0
+END
  }
 
 # (\A.{80})\s+(#.*\Z) \1\2
