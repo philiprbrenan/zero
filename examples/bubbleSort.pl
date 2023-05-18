@@ -48,7 +48,7 @@ if (1)                                                                          
 
   ArrayDump $a, array;
 
-  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);                                           # Execute assembler program
+  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);             # Execute a disassembled copy of the program just to show that we can
   is_deeply $e->out, <<END;
 99
 bless([1 .. 8], "99")
@@ -73,19 +73,19 @@ END
 
 if (1)                                                                          # Reversed array 4 times larger
  {Start 1;
-  my $a = Array "array";
+  my $a = Array array;
   my @a = reverse 1..32;
-  Push $a, $_, "array" for @a;
+  Push $a, $_, array for @a;
 
-  bubbleSort($a, "array");
+  bubbleSort($a, array);
 
-  ArrayDump $a, "array";
+  ArrayDump $a, array;
 
   my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
 
   is_deeply $e->out, <<END;
-array
-bless([1 .. 32], "array")
+99
+bless([1 .. 32], "99")
 END
   is_deeply $e->count, 7730;                                                    # Approximately 4*4== 16 times bigger
  }
