@@ -50,8 +50,8 @@ if (1)                                                                          
 
   my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);                                           # Execute assembler program
   is_deeply $e->out, <<END;
-array
-bless([1 .. 8], "array")
+99
+bless([1 .. 8], "99")
 END
 
   is_deeply $e->count,  305;                                                    # Instructions executed
