@@ -847,17 +847,15 @@ Else block.
     Trace: 1
         1     0     1         trace
         2     1     1           jNe
-        3     6     1         label
-        4     7     1    tracePoint
-        5     8     1           mov  [1, 3, stackArea] = 3
-        6     9     1           mov  [1, 4, stackArea] = 4
-        7    10     1         label
-        8    11     1           jNe
-        9    12     1    tracePoint
-       10    13     1           mov  [1, 1, stackArea] = 1
-       11    14     1           mov  [1, 2, stackArea] = 1
-       12    15     1           jmp
-       13    20     1         label
+        3     5     1         label
+        4     6     1           mov  [1, 3, stackArea] = 3
+        5     7     1           mov  [1, 4, stackArea] = 4
+        6     8     1         label
+        7     9     1           jNe
+        8    10     1           mov  [1, 1, stackArea] = 1
+        9    11     1           mov  [1, 2, stackArea] = 1
+       10    12     1           jmp
+       11    16     1         label
     END
      }
     
@@ -2951,17 +2949,15 @@ Then block.
     Trace: 1
         1     0     1         trace
         2     1     1           jNe
-        3     6     1         label
-        4     7     1    tracePoint
-        5     8     1           mov  [1, 3, stackArea] = 3
-        6     9     1           mov  [1, 4, stackArea] = 4
-        7    10     1         label
-        8    11     1           jNe
-        9    12     1    tracePoint
-       10    13     1           mov  [1, 1, stackArea] = 1
-       11    14     1           mov  [1, 2, stackArea] = 1
-       12    15     1           jmp
-       13    20     1         label
+        3     5     1         label
+        4     6     1           mov  [1, 3, stackArea] = 3
+        5     7     1           mov  [1, 4, stackArea] = 4
+        6     8     1         label
+        7     9     1           jNe
+        8    10     1           mov  [1, 1, stackArea] = 1
+        9    11     1           mov  [1, 2, stackArea] = 1
+       10    12     1           jmp
+       11    16     1         label
     END
      }
     
@@ -3005,24 +3001,22 @@ Start or stop tracing.  Tracing prints each instruction executed and its effect 
 
         1     0     1         trace
         2     1     1           jNe
-        3     6     1         label
-        4     7     1    tracePoint
-        5     8     1           mov  [1, 3, stackArea] = 3
-        6     9     1           mov  [1, 4, stackArea] = 4
-        7    10     1         label
-        8    11     1           jNe
-        9    12     1    tracePoint
-       10    13     1           mov  [1, 1, stackArea] = 1
-       11    14     1           mov  [1, 2, stackArea] = 1
-       12    15     1           jmp
-       13    20     1         label
+        3     5     1         label
+        4     6     1           mov  [1, 3, stackArea] = 3
+        5     7     1           mov  [1, 4, stackArea] = 4
+        6     8     1         label
+        7     9     1           jNe
+        8    10     1           mov  [1, 1, stackArea] = 1
+        9    11     1           mov  [1, 2, stackArea] = 1
+       10    12     1           jmp
+       11    16     1         label
     END
      }
     
 
-## TracePoints($source)
+## TraceLabels($source)
 
-Enable or disable trace points.  If trace points are enabled a stack trace is printed for each instruction executed showing the call stack at the time the instruction was generated as well as the current stack frames.
+Enable or disable label tracing.  If tracing is enabled a stack trace is printed for each label instruction executed showing the call stack at the time the instruction was generated as well as the current stack frames.
 
        Parameter  Description
     1  $source    Trace points if true
@@ -3033,7 +3027,7 @@ Enable or disable trace points.  If trace points are enabled a stack trace is pr
      {my $N = 5;
       Start 1;
     
-      TracePoints 1;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      TraceLabels 1;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       For
        {my $a = Mov 1;
@@ -3043,18 +3037,34 @@ Enable or disable trace points.  If trace points are enabled a stack trace is pr
     
       is_deeply $e->out, <<END;
     
-    TracePoints: 1  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+    TraceLabels: 1  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-    Trace
-        1     6 tracePoint
-    Trace
-        1     6 tracePoint
-    Trace
-        1     6 tracePoint
-    Trace
-        1     6 tracePoint
-    Trace
-        1     6 tracePoint
+    Label
+        1     2 label
+    Label
+        1     4 label
+    Label
+        1     8 label
+    Label
+        1     4 label
+    Label
+        1     8 label
+    Label
+        1     4 label
+    Label
+        1     8 label
+    Label
+        1     4 label
+    Label
+        1     8 label
+    Label
+        1     4 label
+    Label
+        1     8 label
+    Label
+        1     4 label
+    Label
+        1    11 label
     END
      }
     
@@ -3290,13 +3300,6 @@ Create a label.
     END
      }
     
-
-## TracePoint(%options)
-
-Trace point - a point in the code where the flow of execution might change.
-
-       Parameter  Description
-    1  %options   Parameters
 
 ## instructionList()
 
@@ -3563,17 +3566,15 @@ Unpack an instruction
 
 91 [Trace](#trace) - Start or stop tracing.
 
-92 [TracePoint](#tracepoint) - Trace point - a point in the code where the flow of execution might change.
+92 [TraceLabels](#tracelabels) - Enable or disable label tracing.
 
-93 [TracePoints](#tracepoints) - Enable or disable trace points.
+93 [unpackInstruction](#unpackinstruction) - Unpack an instruction
 
-94 [unpackInstruction](#unpackinstruction) - Unpack an instruction
+94 [unpackRef](#unpackref) - Unpack a reference
 
-95 [unpackRef](#unpackref) - Unpack a reference
+95 [Var](#var) - Create a variable initialized to the specified value.
 
-96 [Var](#var) - Create a variable initialized to the specified value.
-
-97 [Watch](#watch) - Watches for changes to the specified memory location.
+96 [Watch](#watch) - Watches for changes to the specified memory location.
 
 # Installation
 
