@@ -3203,6 +3203,10 @@ Disassemble and remove context information from disassembly to make testing easi
      }
     
 
+## GenerateMachineCodeDisAssembleExecute()
+
+Round trip: generate amchine code, disassemble the generated machine code and execute it to prove that it works as expected
+
 # Private Methods
 
 ## Assert1($op, $a)
@@ -3443,131 +3447,133 @@ Unpack an instruction
 
 33 [GenerateMachineCode](#generatemachinecode) - Generate machine code for the current block of code
 
-34 [Good](#good) - A good ending.
+34 [GenerateMachineCodeDisAssembleExecute](#generatemachinecodedisassembleexecute) - Round trip: generate amchine code, disassemble the generated machine code and execute it to prove that it works as expected
 
-35 [IfEq](#ifeq) - Execute then or else clause depending on whether two memory locations are equal.
+35 [Good](#good) - A good ending.
 
-36 [IfFalse](#iffalse) - Execute then clause if the specified memory address is zero thus representing false.
+36 [IfEq](#ifeq) - Execute then or else clause depending on whether two memory locations are equal.
 
-37 [IfGe](#ifge) - Execute then or else clause depending on whether two memory locations are greater than or equal.
+37 [IfFalse](#iffalse) - Execute then clause if the specified memory address is zero thus representing false.
 
-38 [IfGt](#ifgt) - Execute then or else clause depending on whether two memory locations are greater than.
+38 [IfGe](#ifge) - Execute then or else clause depending on whether two memory locations are greater than or equal.
 
-39 [IfLe](#ifle) - Execute then or else clause depending on whether two memory locations are less than or equal.
+39 [IfGt](#ifgt) - Execute then or else clause depending on whether two memory locations are greater than.
 
-40 [IfLt](#iflt) - Execute then or else clause depending on whether two memory locations are less than.
+40 [IfLe](#ifle) - Execute then or else clause depending on whether two memory locations are less than or equal.
 
-41 [IfNe](#ifne) - Execute then or else clause depending on whether two memory locations are not equal.
+41 [IfLt](#iflt) - Execute then or else clause depending on whether two memory locations are less than.
 
-42 [IfTrue](#iftrue) - Execute then clause if the specified memory address is not zero thus representing true.
+42 [IfNe](#ifne) - Execute then or else clause depending on whether two memory locations are not equal.
 
-43 [Ifx](#ifx) - Execute then or else clause depending on whether two memory locations are equal.
+43 [IfTrue](#iftrue) - Execute then clause if the specified memory address is not zero thus representing true.
 
-44 [Inc](#inc) - Increment the target.
+44 [Ifx](#ifx) - Execute then or else clause depending on whether two memory locations are equal.
 
-45 [instructionList](#instructionlist) - Create a list of instructinos
+45 [Inc](#inc) - Increment the target.
 
-46 [instructionListExport](#instructionlistexport) - Create an export statement
+46 [instructionList](#instructionlist) - Create a list of instructinos
 
-47 [instructionListMapping](#instructionlistmapping) - Map instructions to small integers
+47 [instructionListExport](#instructionlistexport) - Create an export statement
 
-48 [instructionListReadMe](#instructionlistreadme) - List  instructions for inclusion in read me
+48 [instructionListMapping](#instructionlistmapping) - Map instructions to small integers
 
-49 [Jeq](#jeq) - Jump to a target label if the first source field is equal to the second source field.
+49 [instructionListReadMe](#instructionlistreadme) - List  instructions for inclusion in read me
 
-50 [JFalse](#jfalse) - Jump to a target label if the first source field is equal to zero.
+50 [Jeq](#jeq) - Jump to a target label if the first source field is equal to the second source field.
 
-51 [Jge](#jge) - Jump to a target label if the first source field is greater than or equal to the second source field.
+51 [JFalse](#jfalse) - Jump to a target label if the first source field is equal to zero.
 
-52 [Jgt](#jgt) - Jump to a target label if the first source field is greater than the second source field.
+52 [Jge](#jge) - Jump to a target label if the first source field is greater than or equal to the second source field.
 
-53 [Jle](#jle) - Jump to a target label if the first source field is less than or equal to the second source field.
+53 [Jgt](#jgt) - Jump to a target label if the first source field is greater than the second source field.
 
-54 [Jlt](#jlt) - Jump to a target label if the first source field is less than the second source field.
+54 [Jle](#jle) - Jump to a target label if the first source field is less than or equal to the second source field.
 
-55 [Jmp](#jmp) - Jump to a label.
+55 [Jlt](#jlt) - Jump to a target label if the first source field is less than the second source field.
 
-56 [Jne](#jne) - Jump to a target label if the first source field is not equal to the second source field.
+56 [Jmp](#jmp) - Jump to a label.
 
-57 [JTrue](#jtrue) - Jump to a target label if the first source field is not equal to zero.
+57 [Jne](#jne) - Jump to a target label if the first source field is not equal to the second source field.
 
-58 [Label](#label) - Create a label.
+58 [JTrue](#jtrue) - Jump to a target label if the first source field is not equal to zero.
 
-59 [LoadAddress](#loadaddress) - Load the address component of an address.
+59 [Label](#label) - Create a label.
 
-60 [LoadArea](#loadarea) - Load the area component of an address.
+60 [LoadAddress](#loadaddress) - Load the address component of an address.
 
-61 [Mov](#mov) - Copy a constant or memory address to the target address.
+61 [LoadArea](#loadarea) - Load the area component of an address.
 
-62 [MoveLong](#movelong) - Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand.
+62 [Mov](#mov) - Copy a constant or memory address to the target address.
 
-63 [Nop](#nop) - Do nothing (but do it well!).
+63 [MoveLong](#movelong) - Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand.
 
-64 [Not](#not) - Move and not.
+64 [Nop](#nop) - Do nothing (but do it well!).
 
-65 [Out](#out) - Write memory location contents to out.
+65 [Not](#not) - Move and not.
 
-66 [packInstruction](#packinstruction) - Pack an instruction
+66 [Out](#out) - Write memory location contents to out.
 
-67 [packRef](#packref) - Pack a reference into 8 bytes
+67 [packInstruction](#packinstruction) - Pack an instruction
 
-68 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
+68 [packRef](#packref) - Pack a reference into 8 bytes
 
-69 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
+69 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
 
-70 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
+70 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
 
-71 [Procedure](#procedure) - Define a procedure.
+71 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
 
-72 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
+72 [Procedure](#procedure) - Define a procedure.
 
-73 [Random](#random) - Create a random number in a specified range
+73 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
 
-74 [RandomSeed](#randomseed) - Seed the random number generator
+74 [Random](#random) - Create a random number in a specified range
 
-75 [refDepth](#refdepth) - The depth of a reference
+75 [RandomSeed](#randomseed) - Seed the random number generator
 
-76 [refValue](#refvalue) - The value of a reference after dereferencing
+76 [refDepth](#refdepth) - The depth of a reference
 
-77 [rerefValue](#rerefvalue) - Rereference a value
+77 [refValue](#refvalue) - The value of a reference after dereferencing
 
-78 [Resize](#resize) - Resize the target area to the source size.
+78 [rerefValue](#rerefvalue) - Rereference a value
 
-79 [Return](#return) - Return from a procedure via the call stack.
+79 [Resize](#resize) - Resize the target area to the source size.
 
-80 [ReturnGet](#returnget) - Get a word from the return area and save it.
+80 [Return](#return) - Return from a procedure via the call stack.
 
-81 [ReturnPut](#returnput) - Put a word into the return area.
+81 [ReturnGet](#returnget) - Get a word from the return area and save it.
 
-82 [ShiftDown](#shiftdown) - Shift an element down one in an area.
+82 [ReturnPut](#returnput) - Put a word into the return area.
 
-83 [ShiftLeft](#shiftleft) - Shift left within an element.
+83 [ShiftDown](#shiftdown) - Shift an element down one in an area.
 
-84 [ShiftRight](#shiftright) - Shift right with an element.
+84 [ShiftLeft](#shiftleft) - Shift left within an element.
 
-85 [ShiftUp](#shiftup) - Shift an element up one in an area.
+85 [ShiftRight](#shiftright) - Shift right with an element.
 
-86 [Start](#start) - Start the current assembly using the specified version of the Zero language.
+86 [ShiftUp](#shiftup) - Shift an element up one in an area.
 
-87 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
+87 [Start](#start) - Start the current assembly using the specified version of the Zero language.
 
-88 [Tally](#tally) - Counts instructions when enabled.
+88 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
 
-89 [Then](#then) - Then block.
+89 [Tally](#tally) - Counts instructions when enabled.
 
-90 [Trace](#trace) - Start or stop tracing.
+90 [Then](#then) - Then block.
 
-91 [TracePoint](#tracepoint) - Trace point - a point in the code where the flow of execution might change.
+91 [Trace](#trace) - Start or stop tracing.
 
-92 [TracePoints](#tracepoints) - Enable or disable trace points.
+92 [TracePoint](#tracepoint) - Trace point - a point in the code where the flow of execution might change.
 
-93 [unpackInstruction](#unpackinstruction) - Unpack an instruction
+93 [TracePoints](#tracepoints) - Enable or disable trace points.
 
-94 [unpackRef](#unpackref) - Unpack a reference
+94 [unpackInstruction](#unpackinstruction) - Unpack an instruction
 
-95 [Var](#var) - Create a variable initialized to the specified value.
+95 [unpackRef](#unpackref) - Unpack a reference
 
-96 [Watch](#watch) - Watches for changes to the specified memory location.
+96 [Var](#var) - Create a variable initialized to the specified value.
+
+97 [Watch](#watch) - Watches for changes to the specified memory location.
 
 # Installation
 
