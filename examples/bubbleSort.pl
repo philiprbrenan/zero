@@ -10,7 +10,7 @@ use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
 use Test::More tests=>5;
 
-sub array{99}                                                                   # an arbitrary number identifying the array being sorted
+sub array{99}                                                                   # An arbitrary number identifying the array being sorted
 
 sub bubbleSort($$)                                                              # As described at: https://en.wikipedia.org/wiki/Bubble_sort
  {my ($array, $name) = @_;                                                      # Array, name of array memory
@@ -19,21 +19,21 @@ sub bubbleSort($$)                                                              
 
   For                                                                           # Outer loop
    {my ($i, $start, $check, $end) = @_;                                         # Loop labels
-    my  $L  = Subtract $N, 1;                                                   # An array of one element is already sorted
+    my  $l  = Subtract $N, $i;                                                   # An array of one element is already sorted
     my  $c  = Mov 0;                                                            # Count number of swaps
 
     For                                                                         # Inner loop
      {my ($j) = @_;
       my $a = Mov [$array, \$j, $name];
-      my $b = Mov [$array, \$j, $name, 1];
+      my $b = Mov [$array, \$j, $name, -1];
 
-      IfGt $a, $b,
+      IfLt $a, $b,
       Then                                                                      # Swap elements to place smaller element lower in array
-       {Mov [$array, \$j, $name, 1], $a;
+       {Mov [$array, \$j, $name, -1], $a;
         Mov [$array, \$j, $name],    $b;
         Inc $c;
        };
-     } $L;
+     } [1, $l];
     JFalse $end, $c;                                                            # Stop if the array is now sorted
    } $N;
  }
@@ -48,26 +48,27 @@ if (1)                                                                          
 
   ArrayDump $a, array;
 
-  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);             # Execute a disassembled copy of the program just to show that we can
+  my $e = Execute;
+  #my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>0);             # Execute a disassembled copy of the program just to show that we can
   is_deeply $e->out, <<END;
 99
 bless([1 .. 8], "99")
 END
 
-  is_deeply $e->count,  305;                                                    # Instructions executed
+  is_deeply $e->count,  245;                                                    # Instructions executed
 
+  say STDERR formatTable($e->counts);
   is_deeply formatTable($e->counts), <<END;
-array        1
-arrayDump    1
-arraySize    1
-inc         54
-jFalse       5
-jGe         45
-jLe         35
-jmp         39
-mov        111
-push         8
-subtract     5
+array       1
+arrayDump   1
+arraySize   1
+inc        44
+jFalse      5
+jGe        60
+jmp        29
+mov        91
+push        8
+subtract    5
 END
  }
 
@@ -87,5 +88,5 @@ if (1)                                                                          
 99
 bless([1 .. 32], "99")
 END
-  is_deeply $e->count, 7730;                                                    # Approximately 4*4== 16 times bigger
+  is_deeply $e->count, 4754;                                                    # Approximately 4*4== 16 times bigger
  }
