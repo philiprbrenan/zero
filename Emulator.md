@@ -30,10 +30,6 @@ module.  For an alphabetic listing of all methods by name see [Index](#index).
 
 The instruction set used by the Zero assembler programming language.
 
-## Assembly()
-
-Start some assembly code
-
 ## Add($target, $s1, $s2)
 
 Add the source locations together and store the result in the target area.
@@ -3287,6 +3283,10 @@ Round trip: generate amchine code, disassemble the generated machine code and ex
     
 
 # Private Methods
+
+## Assembly()
+
+Start some assembly code
 
 ## Assert1($op, $a)
 
