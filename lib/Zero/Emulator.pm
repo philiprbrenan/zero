@@ -552,8 +552,8 @@ sub Address($$$$;$)                                                             
  {my ($arena, $area, $address, $name, $delta) = @_;                             # Arena, area, address in area, name of area, delta from specified address
   genHash("Zero::Emulator::Address",                                            # Address memory
     arena=>     $arena,                                                         # Arena in memory
-    area=>      $area,                                                          # Area in memory
-    address=>   $address,                                                       # Address within area
+    area=>      $area,                                                          # Area in memory, either a number or a reference to a number indicating the level of indirection
+    address=>   $address,                                                       # Address within area, either a number or a reference to a number indicating the level of indirection
     name=>      $name // 'stackArea',                                           # Name of area
     delta=>     ($delta//0),                                                    # Offset from indicated address
    );
@@ -865,6 +865,7 @@ sub assign($$$)                                                                 
  {my ($exec, $target, $value) = @_;                                             # Execution environment, Target of assign, value to assign
   @_ == 3 or confess "Three parameters";
   ref($target) =~ m(Address)i or confess "Not an address: ".dump($target);
+  !ref($value) or confess "Not a  scalar value".dump($value);
 
   my $arena   = $target->arena;
   my $area    = $target->area;
@@ -1276,9 +1277,10 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $l = $exec->right($i->source2);                                        # Length
       my $t = $exec->left($i->target);                                          # Target
       for my $j(0..$l-1)
-       {my $S = RefRight [$s->area, \($s->address+$j), $s->name];
-        my $T = RefLeft  [$t->area,   $t->address+$j,  $t->name];
-        $exec->assign($exec->left($T), $exec->right($S));
+       {my $S = Address($s->arena, $s->area, $s->address+$j, $s->name, 0);
+        my $T = Address($t->arena, $t->area, $t->address+$j, $t->name, 0);
+        my $v = $exec->getMemoryFromAddress($S);
+        $exec->assign($T, $v);
        }
      },
 
@@ -2321,7 +2323,7 @@ sub packRef($)                                                                  
   vec($a, 24, 2) =  refDepth $address;
   vec($a, 25, 2) =  refDepth $area;
   vec($a, 26, 2) =           $arena;
-  vec($a, 7,  8) =           $delta;
+  vec($a, 7,  8) =  2**7 +   $delta;
   $a
  }
 
@@ -2333,11 +2335,11 @@ sub unpackRef($)                                                                
   my $rAddress = vec($a, 24,  2);
   my $rArea    = vec($a, 25,  2);
   my $arena    = vec($a, 26,  2);
-  my $delta    = vec($a,  7,  8);
+  my $delta    = vec($a,  7,  8) -2**7;
 
-  my $area    = rerefValue($vArea,    $rArea);
-  my $address = rerefValue($vAddress, $rAddress);
-  if ($arena != arenaHeap)
+  my $area     = rerefValue($vArea,    $rArea);
+  my $address  = rerefValue($vAddress, $rAddress);
+  if ($arena  != arenaHeap)
    {RefLeft([undef, $address, 0, $delta]);
    }
   else
@@ -3573,7 +3575,6 @@ if (1)                                                                          
   MoveLong [$b, \2, 'bbb'], [$a, \4, 'aaa'], 3;
 
   my $e = Execute(suppressOutput=>1);
-
   is_deeply $e->heap(1), [0 .. 9];
   is_deeply $e->heap(2), [100, 101, 4, 5, 6, 105 .. 109];
  }
@@ -3704,7 +3705,7 @@ if (1)                                                                          
  {Start 1;
   my $a = Mov 1;
   my $e = GenerateMachineCode;
-  is_deeply unpack("h*", $e), "0000003200000000000000000000100000000010000000000000000000000000";
+  is_deeply unpack("h*", $e), '0000003200000000000000000000100800000010000000080000000000000000';
 
   my $E = disAssembleMinusContext $e;
   is_deeply $E->code->[0]->source, {address =>  1, area => undef, arena => 1, delta => 0};
