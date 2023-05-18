@@ -2850,11 +2850,56 @@ Shift an element up one in an area.
       Mov [$a, 1, 'array'], 1;
       Mov [$a, 2, 'array'], 2;
     
+      ShiftUp [$a, 0, 'array'], 99;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+    
+      my $e = Execute(suppressOutput=>0);
+      is_deeply $e->heap(1), [99, 0, 1, 2];
+     }
+    
+    if (1)                                                                          
+     {Start 1;
+      my $a = Array "array";
+    
+      Mov [$a, 0, 'array'], 0;
+      Mov [$a, 1, 'array'], 1;
+      Mov [$a, 2, 'array'], 2;
+    
       ShiftUp [$a, 1, 'array'], 99;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = Execute(suppressOutput=>0);
       is_deeply $e->heap(1), [0, 99, 1, 2];
+     }
+    
+    if (1)                                                                          
+     {Start 1;
+      my $a = Array "array";
+    
+      Mov [$a, 0, 'array'], 0;
+      Mov [$a, 1, 'array'], 1;
+      Mov [$a, 2, 'array'], 2;
+    
+      ShiftUp [$a, 2, 'array'], 99;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+    
+      my $e = Execute(suppressOutput=>0);
+      is_deeply $e->heap(1), [0, 1, 99, 2];
+     }
+    
+    if (1)                                                                          
+     {Start 1;
+      my $a = Array "array";
+    
+      Mov [$a, 0, 'array'], 0;
+      Mov [$a, 1, 'array'], 1;
+      Mov [$a, 2, 'array'], 2;
+    
+      ShiftUp [$a, 3, 'array'], 99;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+    
+      my $e = Execute(suppressOutput=>0);
+      is_deeply $e->heap(1), [0, 1, 2, 99];
      }
     
     if (1)                                                                          
