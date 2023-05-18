@@ -3468,18 +3468,19 @@ Pack a reference into 8 bytes
 
       is_deeply unpack("h*", $A), "0000003000200150";
     
-      my $b = unpackRef $A;
+      my $b = $assembly->unpackRef($A);
       $b->name = 4;                                                                 # The name is not held in the packed version
       is_deeply $a, $b;
      }
     
 
-## unpackRef($a)
+## unpackRef($code, $a)
 
 Unpack a reference
 
        Parameter  Description
-    1  $a         String to unpack
+    1  $code      Code block
+    2  $a         String to unpack
 
 ## packInstruction($i)
 
