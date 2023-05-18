@@ -1266,18 +1266,6 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->assign($t, $s);
      },
 
-    moveLong22=> sub                                                              # Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand
-     {my $i = $exec->currentInstruction;
-      my $s = $exec->left ($i->source);                                         # Source
-      my $l = $exec->right($i->source2);                                        # Length
-      my $t = $exec->left($i->target);                                          # Target
-      for my $j(0..$l-1)
-       {my $S = RefRight [$s->area, \($s->address+$j), $s->name];
-        my $T = RefLeft  [$t->area,   $t->address+$j,  $t->name];
-        $exec->assign($exec->left($T), $exec->right($S));
-       }
-     },
-
     moveLong=> sub                                                              # Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand
      {my $i = $exec->currentInstruction;
       my $s = $exec->left ($i->source);                                         # Source
@@ -1420,9 +1408,10 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $l = $s->address;
       my $v = $exec->getMemoryFromAddress($s);
       for my $j($l..$L-2)                                                       # Each element in specified range
-       {my $S = $exec->right(RefLeft([$s->area, \($j+1), $s->name]));
-        my $T = $exec->left(RefLeft([$s->area,  \ $j,   $s->name]));
-        $exec->assign($T, $S);
+       {my $S = Address($s->arena, $s->area, $j+1,   $s->name, 0);
+        my $T = Address($s->arena, $s->area, $j,     $s->name, 0);
+        my $v = $exec->getMemoryFromAddress($S);
+        $exec->assign($T, $v);
        }
       $exec->popArea(arenaHeap, $s->area, $s->name);
       my $T = $exec->left($i->target);
