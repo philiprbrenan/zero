@@ -1337,10 +1337,17 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     out=> sub                                                                   # Write source as output to an array of words
      {my $i = $exec->currentInstruction;
-      my @t = map {$exec->right($_)} $i->source->@*;
-      my $t = join ' ', @t;
-      say STDERR $t unless $exec->suppressOutput;
-      $exec->output("$t\n");
+      if (ref($i->source) =~ m(array)i)
+       {my @t = map {$exec->right($_)} $i->source->@*;
+        my $t = join ' ', @t;
+        say STDERR $t unless $exec->suppressOutput;
+        $exec->output("$t\n");
+       }
+      else
+       {my $t = $exec->right($i->source);
+        say STDERR $t unless $exec->suppressOutput;
+        $exec->output("$t\n");
+       }
      },
 
     pop=> sub                                                                   # Pop a value from the specified memory area if possible else confess
@@ -2001,8 +2008,13 @@ sub Nop()                                                                       
 
 sub Out(@)                                                                      #i Write memory location contents to out.
  {my (@source) = @_;                                                            # Either a scalar constant or memory address to output
-  my @a = map {RefRight $_} @source;
-  $assembly->instruction(action=>"out",  source=>[@a]);
+  if (@source > 1)
+   {my @a = map {RefRight $_} @source;
+    $assembly->instruction(action=>"out",  source=>[@a]);
+   }
+  else
+   {$assembly->instruction(action=>"out",  xSource($source[0]));
+   }
  }
 
 sub ParamsGet($;$) {                                                            #i Get a word from the parameters in the previous frame and store it in the current frame.
@@ -2395,6 +2407,12 @@ sub disAssembleMinusContext($)                                                  
   delete @$d{qw(assembled files labelCounter labels procedures variables)};
 
   $d
+ }
+
+sub GenerateMachineCodeDisAssembleExecute                                       # Round trip: generate amchine code, disassemble the generated machine code and execute it to prove that it works as expected
+ {my $m = GenerateMachineCode;
+  my $M = disAssemble $m;
+     $M->execute(suppressOutput=>1);
  }
 
 #D0
@@ -3697,9 +3715,7 @@ if (1)                                                                          
   Mov [$a, 0, 99], 10;
   Mov [$a, 1, 99], 11;
   Mov [$a, 2, 99], 12;
-  my $m = GenerateMachineCode;
-  my $M = disAssemble $m;
-  my $e = $M->execute(suppressOutput=>1);
+  my $e = GenerateMachineCodeDisAssembleExecute;
   is_deeply $e->heap(1), [10, 11, 12];
  }
 
