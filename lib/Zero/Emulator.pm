@@ -226,23 +226,16 @@ sub heap($$)                                                                    
   $exec->memory->[arenaHeap][$area];
  }
 
-my sub Reference($$)                                                            # Record a reference to a left or right address
- {my ($r, $right) = @_;                                                         # Reference, right reference if true
+sub Zero::Emulator::Code::Reference($$)                                         # Record a reference to a left or right address
+ {my ($code, $r) = @_;                                                          # Code block, reference
   ref($r) and ref($r) !~ m(\A(array|scalar|ref)\Z)i and confess "Scalar or reference required, not: ".dump($r);
   my $arena = ref($r) =~ m(\Aarray\Z)i ? arenaHeap : arenaLocal;                # Local variables are variables that are not on the heap
 
-  my $type = "Zero::Emulator::". ($right ? "RefRight" : "RefLeft");
-
   if (ref($r) =~ m(array)i)                                                     # Reference represented as [area, address, name, delta]
    {my ($area, $address, $name, $delta) = @$r;                                  # Delta is oddly useful, as illustrated by examples/*Sort, in that it enables us to avoid adding or subtracting one with a separate instruction that does not achieve very much in one clock but that which, is otherwise necessary.
-     defined($area) and !defined($name) and confess "Name required for address specification: in [Area, address, name]";
-   #!defined($area) and  defined($name) and confess "Area required for address specification: in [Area, address, name]";
+    defined($area) and !defined($name) and confess "Name required for address specification: in [Area, address, name]";
 
-    if($right)                                                                  # The difference between a left and a right is that a right can be interpreted as a constant, a left never can becuase we cannot assign to a constant.
-     {isScalar($address) and defined($area) || defined($name) and confess "Right hand constants cannot have an associated area";
-     }
-
-    return genHash($type,
+    return genHash("Zero::Emulator::Reference",
       arena=>     $arena,                                                       # The memory arena being used.
       area=>      $area,
       address=>   $address,
@@ -251,7 +244,7 @@ my sub Reference($$)                                                            
      );
    }
   else                                                                          # Reference represented as an address
-   {return genHash($type,
+   {return genHash("Zero::Emulator::Reference",
       arena=>     $arena,
       area=>      undef,
       address=>   $r,
@@ -259,18 +252,6 @@ my sub Reference($$)                                                            
       delta=>     0,
      );
    }
- }
-
-my sub RefRight($)                                                              # Record a reference to a right address
- {my ($r) = @_;                                                                 # Reference
-  @_ == 1 or confess "One parameter required formatted as either a address or an [area, address, name, delta]";
-  Reference($r, 0);
- }
-
-my sub RefLeft($)                                                               # Record a reference to a right address
- {my ($r) = @_;                                                                 # Reference
-  @_ == 1 or confess "One parameter required formatted as either a address or an [area, address, name, delta]";
-  Reference($r, 0);
  }
 
 sub Zero::Emulator::Procedure::call($)                                          #P Call a procedure.  Arguments are supplied by the L<ParamsPut> and L<ParamsGet> commands, return values are supplied by the L<ReturnPut> and L<ReturnGet> commands.
@@ -300,7 +281,7 @@ sub Zero::Emulator::Code::assemble($%)                                          
     next unless $i->action =~ m(\A(j|call))i;
     if (my $l = $i->target->address)                                            # Label
      {if (my $t = $labels{$l})                                                  # Found label
-       {$i->target = RefRight($t - $c);                                         # Relative jump
+       {$i->target = $Block->Reference($t - $c);                                # Relative jump
        }
       else
        {my $a = $i->action;
@@ -699,8 +680,8 @@ sub rwRead($$$$)                                                                
 sub left($$)                                                                    #P Address of a location in memory.
  {my ($exec, $ref) = @_;                                                        # Exececution environment, reference
   @_ == 2 or confess "Two parameters";
-  ref($ref) =~ m((RefLeft|RefRight)\Z)
-    or confess "RefLeft or RefRight required, not: ".dump($ref);
+  ref($ref) =~ m(Reference)
+    or confess "Reference required, not: ".dump($ref);
   my $r       =  $ref->address;
   my $address =  $r;
      $address = \$r if isScalar $address;                                       # Interpret constants as direct memory locations
@@ -759,7 +740,7 @@ sub left($$)                                                                    
 sub right($$)                                                                   #P Get a constant or a value from memory.
  {my ($exec, $ref) = @_;                                                        # Location, optional area
   @_ == 2 or confess "Two parameters";
-  ref($ref) =~ m((RefLeft|RefRight)\Z) or confess "RefLeft or RefRight required";
+  ref($ref) =~ m(Reference) or confess "Reference required";
   my $address   = $ref->address;
   my $arena     = $ref->arena;
   my $area      = $ref->area;
@@ -1519,17 +1500,17 @@ my sub setLabel(;$)                                                             
 
 my sub xSource($)                                                               # Record a source argument
  {my ($s) = @_;                                                                 # Source expression
-  (q(source), RefRight $s)
+  (q(source), $assembly->Reference($s))
  }
 
 my sub xSource2($)                                                              # Record a source argument
  {my ($s) = @_;                                                                 # Source expression
-  (q(source2), RefRight $s)
+  (q(source2), $assembly->Reference($s))
  }
 
 my sub xTarget($)                                                               # Record a target argument
  {my ($t) = @_;                                                                 # Target expression
-  (q(target), RefLeft $t)
+  (q(target), $assembly->Reference($t))
  }
 
 sub Inc($);
@@ -1558,7 +1539,7 @@ sub ArrayCountLess($$;$) {                                                      
    {my ($area, $element) = @_;                                                  # Area, element to find
     my $t = &Var();
     $assembly->instruction(action=>"arrayCountLess",
-      target=>RefLeft($t), xSource($area), xSource2($element));
+      xTarget($t), xSource($area), xSource2($element));
     $t
    }
   else
@@ -1573,7 +1554,7 @@ sub ArrayCountGreater($$;$) {                                                   
    {my ($area, $element) = @_;                                                  # Area, element to find
     my $t = &Var();
     $assembly->instruction(action=>"arrayCountGreater",
-      target=>RefLeft($t), xSource($area), xSource2($element));
+      xTarget($t), xSource($area), xSource2($element));
     $t
    }
   else
@@ -1595,7 +1576,7 @@ sub ArrayIndex($$;$) {                                                          
    {my ($area, $element) = @_;                                                  # Area, element to find
     my $t = &Var();
     $assembly->instruction(action=>"arrayIndex",
-      target=>RefLeft($t), xSource($area), xSource2($element));
+      xTarget($t), xSource($area), xSource2($element));
     $t
    }
   else
@@ -1609,7 +1590,7 @@ sub ArraySize($$)                                                               
  {my ($area, $name) = @_;                                                       # Location of area, name of area
   my $t = &Var();
   $assembly->instruction(action=>"arraySize",                                   # Target - location to place the size in, source - address of the area, source2 - the name of the area which cannot be taken from the area of the first source operand because that area name is the name of the area that contains the location of the area we wish to work on.
-    target=>RefLeft($t), xSource($area), source2=>$name);
+    xTarget($t), xSource($area), source2=>$name);
   $t
  }
 sub Assert1($$)                                                                 #P Assert operation.
@@ -1704,7 +1685,7 @@ sub Block(&%)                                                                   
 sub Call($)                                                                     #i Call the subroutine at the target address.
  {my ($p) = @_;                                                                 # Procedure description
   $assembly->instruction(action=>"call",
-    target=>RefLeft($p->target), source=>$p);
+    xTarget($p->target), source=>$p);
  }
 
 sub Clear($$$)                                                                  #i Clear the first bytes of an area.  The area is specified by the first element of the address, the number of locations to clear is specified by the second element of the target address.
@@ -1931,8 +1912,7 @@ sub LoadAddress($;$) {                                                          
   if (@_ == 1)
    {my ($source) = @_;                                                          # Target address, source address
     my $t = &Var();
-    $assembly->instruction(action=>"loadAddress",
-      target=>RefLeft($t), xSource($source));
+    $assembly->instruction(action=>"loadAddress", xTarget($t), xSource($source));
     return $t;
    }
   elsif (@ == 2)
@@ -1950,7 +1930,7 @@ sub LoadArea($;$) {                                                             
    {my ($source) = @_;                                                          # Target address, source address
     my $t = &Var();
     $assembly->instruction(action=>"loadArea",
-      target=>RefLeft($t), xSource($source));
+      xTarget($t), xSource($source));
     return $t;
    }
   elsif (@ == 2)
@@ -1967,7 +1947,7 @@ sub Mov($;$) {                                                                  
   if (@_ == 1)
    {my ($source) = @_;                                                          # Target address, source address
     my $t = &Var();
-    $assembly->instruction(action=>"mov", target=>RefLeft($t),xSource($source));
+    $assembly->instruction(action=>"mov", xTarget($t), xSource($source));
     return $t;
    }
   elsif (@ == 2)
@@ -1989,7 +1969,7 @@ sub Not($) {                                                                    
   if (@_ == 1)
    {my ($source) = @_;                                                          # Target address, source address
     my $t = &Var();
-    $assembly->instruction(action=>"not", target=>RefLeft($t),xSource($source));
+    $assembly->instruction(action=>"not", xTarget($t), xSource($source));
     return $t;
    }
   elsif (@ == 2)
@@ -2008,7 +1988,7 @@ sub Nop()                                                                       
 sub Out(@)                                                                      #i Write memory location contents to out.
  {my (@source) = @_;                                                            # Either a scalar constant or memory address to output
   if (@source > 1)
-   {my @a = map {RefRight $_} @source;
+   {my @a = map {$assembly->Reference($_)} @source;
     $assembly->instruction(action=>"out",  source=>[@a]);
    }
   else
@@ -2020,8 +2000,7 @@ sub ParamsGet($;$) {                                                            
   if (@_ == 1)
    {my ($source) = @_;                                                          # Memory address to place parameter in, parameter number
     my $p = &Var();
-    $assembly->instruction(action=>"paramsGet",
-      target=>RefLeft($p), xSource($source));
+    $assembly->instruction(action=>"paramsGet", xTarget($p), xSource($source));
     return $p;
    }
   elsif (@_ == 2)
@@ -2044,7 +2023,8 @@ sub Pop(;$$) {                                                                  
   if (@_ == 2)                                                                  # Pop indicated area into a local variable
    {my ($source, $source2) = @_;                                                # Memory address to place return value in, return value to get
     my $p = &Var();
-    $assembly->instruction(action=>"pop", target=>RefLeft($p),xSource($source), source2=>$source2);
+    $assembly->instruction(action=>"pop", xTarget($p),
+      xSource($source), source2=>$source2);
     return $p;
    }
   elsif (@_ == 3)
@@ -2092,8 +2072,7 @@ sub Random($;$) {                                                               
   if (@_ == 1)                                                                  # Create a variable
    {my ($source) = @_;                                                          # Memory address to place return value in, return value to get
     my $p = &Var();
-    $assembly->instruction(action=>"random",
-      target=>RefLeft($p), xSource($source));
+    $assembly->instruction(action=>"random", xTarget($p), xSource($source));
     return $p;
    }
   elsif (@_ == 2)
@@ -2119,8 +2098,7 @@ sub ReturnGet($;$) {                                                            
   if (@_ == 1)                                                                  # Create a variable
    {my ($source) = @_;                                                          # Memory address to place return value in, return value to get
     my $p = &Var();
-    $assembly->instruction(action=>"returnGet",
-      target=>RefLeft($p), xSource($source));
+    $assembly->instruction(action=>"returnGet", xTarget($p), xSource($source));
     return $p;
    }
   elsif (@_ == 2)
@@ -2143,8 +2121,7 @@ sub ShiftDown($;$) {                                                            
   if (@_ == 1)                                                                  # Create a variable
    {my ($source) = @_;                                                          # Memory address to place return value in, return value to get
     my $p = &Var();
-    $assembly->instruction(action=>"shiftDown",
-      target=>RefLeft($p), xSource($source));
+    $assembly->instruction(action=>"shiftDown", xTarget($p), xSource($source));
     return $p;
    }
   elsif (@_ == 2)
@@ -2305,7 +2282,7 @@ sub packRef($)                                                                  
    }
 
   my @a = (arenaLocal, 0, $ref, 0);                                             # Local variable or constant
-  @a = @$ref{qw(arena area address delta)} if ref($ref) =~ m(Ref(Left|Right))i; # Heap reference
+  @a = @$ref{qw(arena area address delta)} if ref($ref) =~ m(Reference)i;       # Heap reference
 
   $_ //= 0 for @a;
   my ($arena, $area, $address, $delta) = @a;
@@ -2325,8 +2302,8 @@ sub packRef($)                                                                  
   $a
  }
 
-sub unpackRef($)                                                                #P Unpack a reference
- {my ($a) = @_;                                                                 # String to unpack
+sub unpackRef($$)                                                               #P Unpack a reference
+ {my ($code, $a) = @_;                                                          # Code block, string to unpack
 
   my $vAddress = vec($a,  0, 32);
   my $vArea    = vec($a,  2, 16);
@@ -2337,12 +2314,7 @@ sub unpackRef($)                                                                
 
   my $area     = rerefValue($vArea,    $rArea);
   my $address  = rerefValue($vAddress, $rAddress);
-  if ($arena  != arenaHeap)
-   {RefLeft([undef, $address, 0, $delta]);
-   }
-  else
-   {RefLeft([$area, $address, 0, $delta]);
-   }
+  $code->Reference([$arena  != arenaHeap ? undef : $area, $address, 0, $delta]);
  }
 
 sub packInstruction($)                                                          #P Pack an instruction
@@ -2350,7 +2322,6 @@ sub packInstruction($)                                                          
   my  $a = '';
   vec($a, 0, 32) = $instructions{$i->action};
   vec($a, 1, 32) = 0;
-
   $a .= packRef($i->target);
   $a .= packRef($i->source);
   $a .= packRef($i->source2);
@@ -2386,10 +2357,10 @@ sub disAssemble($)                                                              
   for my $i(1..$n)
    {my $c = substr($mc, ($i-1)*32, 32);
     my $i = $C->instruction
-     (action=>  unpackInstruction(substr($c,  0, 8)),
-      target=>  unpackRef        (substr($c,  8, 8)),
-      source=>  unpackRef        (substr($c, 16, 8)),
-      source2=> unpackRef        (substr($c, 24, 8)));
+     (action=>  unpackInstruction(    substr($c,  0, 8)),
+      target=>  unpackRef        ($C, substr($c,  8, 8)),
+      source=>  unpackRef        ($C, substr($c, 16, 8)),
+      source2=> unpackRef        ($C, substr($c, 24, 8)));
    }
   $C
  }
@@ -3726,7 +3697,7 @@ if (0)                                                                          
   my $A = packRef $a;
   is_deeply unpack("h*", $A), "0000003000200150";
 
-  my $b = unpackRef $A;
+  my $b = $assembly->unpackRef($A);
   $b->name = 4;                                                                 # The name is not held in the packed version
   is_deeply $a, $b;
  }
