@@ -1210,7 +1210,7 @@ if (1)                                                                          
   is_deeply $e->heap(9 ), bless([1, 3, 3, 1, 10, 11, 0], "Node"),;
   is_deeply $e->heap(10), bless([3], "Keys");
   is_deeply $e->heap(11), bless([33], "Data");
-  is_deeply $e->heap(12),     bless([6, 9, 13], "Down"),;
+  is_deeply $e->heap(12), bless([6, 9, 13], "Down"),;
   is_deeply $e->heap(13), bless([2, 4, 3, 1, 14, 15, 0], "Node"),;
   is_deeply $e->heap(14), bless([5, 6], "Keys");
   is_deeply $e->heap(15), bless([55, 66], "Data");
@@ -1249,7 +1249,6 @@ if (1)                                                                          
 
   Start 1;
   my $t = New($W);
-
   for my $i(0..$N-1)
    {Insert($t, $r[$i], $r[$i]);
    }
