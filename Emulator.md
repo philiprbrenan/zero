@@ -3138,10 +3138,8 @@ Generate machine code for the current block of code
       is_deeply unpack("h*", $e), "0000003200000000000000000000100000000010000000000000000000000000";
     
       my $E = disAssembleMinusContext $e;
-    say STDERR "AAAA", dump($E->code->[0]);
-      is_deeply $E->code->[0]->source, {address =>  1, area => undef, arena => 0, delta => 0, name => "stackArea" };
-      is_deeply $E->code->[0]->target, {address => \0, area => undef, arena => 0, delta => 0, name => "stackArea" };
-    x;
+      is_deeply $E->code->[0]->source, {address =>  1, area => undef, arena => 1, delta => 0};
+      is_deeply $E->code->[0]->target, {address => \0, area => undef, arena => 1, delta => 0};
      }
     
 
@@ -3169,10 +3167,8 @@ Disassemble machine code
       is_deeply unpack("h*", $e), "0000003200000000000000000000100000000010000000000000000000000000";
     
       my $E = disAssembleMinusContext $e;
-    say STDERR "AAAA", dump($E->code->[0]);
-      is_deeply $E->code->[0]->source, {address =>  1, area => undef, arena => 0, delta => 0, name => "stackArea" };
-      is_deeply $E->code->[0]->target, {address => \0, area => undef, arena => 0, delta => 0, name => "stackArea" };
-    x;
+      is_deeply $E->code->[0]->source, {address =>  1, area => undef, arena => 1, delta => 0};
+      is_deeply $E->code->[0]->target, {address => \0, area => undef, arena => 1, delta => 0};
      }
     
 
@@ -3202,10 +3198,8 @@ Disassemble and remove context information from disassembly to make testing easi
     
       my $E = disAssembleMinusContext $e;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-    say STDERR "AAAA", dump($E->code->[0]);
-      is_deeply $E->code->[0]->source, {address =>  1, area => undef, arena => 0, delta => 0, name => "stackArea" };
-      is_deeply $E->code->[0]->target, {address => \0, area => undef, arena => 0, delta => 0, name => "stackArea" };
-    x;
+      is_deeply $E->code->[0]->source, {address =>  1, area => undef, arena => 1, delta => 0};
+      is_deeply $E->code->[0]->target, {address => \0, area => undef, arena => 1, delta => 0};
      }
     
 
