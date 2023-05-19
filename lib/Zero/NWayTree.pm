@@ -13,7 +13,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
-eval "use Test::More tests=>98" unless caller;
+eval "use Test::More tests=>97" unless caller;
 
 makeDieConfess;
 
@@ -936,7 +936,7 @@ END
  }
 
 #latest:;
-if (1)                                                                          ##setRoot ##root ##incKeys
+if (1)                                                                          ##New
  {Start 1;
   my $t = New(3);
   my $r = root($t);
