@@ -134,16 +134,27 @@ data to be processed by the instruction.
 Each address indexes an [array](https://en.wikipedia.org/wiki/Dynamic_array) in [memory](https://en.wikipedia.org/wiki/Computer_memory). Each [array](https://en.wikipedia.org/wiki/Dynamic_array) has a non unique name to
 confirm that we are reading or writing to the right kind of [memory](https://en.wikipedia.org/wiki/Computer_memory). 
 
-## Left hand addresses
+### Left hand addresses
+
+#### Left hand address in current stack frame
 
 ```
-  [Array, address, name]
+  Mov \1, 2
+
+```
+
+The above instruction moves the constant ```2``` to the location in the current
+stack frame identified by location ```1``` in the current stack frame.
+
+#### Left hand addresses as indexed [arrays](https://en.wikipedia.org/wiki/Dynamic_array) 
+```
+  [Array, address, name, delta]
 
   Mov [1, 2, 'array name'], 99
 
 ```
 
-A left hand address specifies the address of a location in an [array](https://en.wikipedia.org/wiki/Dynamic_array) in [memory](https://en.wikipedia.org/wiki/Computer_memory). Left hand addresses always occur first in the written specification of an
+A left hand address can specifys the address of a location in an [array](https://en.wikipedia.org/wiki/Dynamic_array) in [memory](https://en.wikipedia.org/wiki/Computer_memory). Left hand addresses always occur first in the written specification of an
 instruction.  In the example above, the value 99 is being moved to location 2
 in [array](https://en.wikipedia.org/wiki/Dynamic_array) 1 operating under the name of 'array name'.
 
@@ -163,9 +174,9 @@ An address can also be specified as just as ```n``` meaning at location ```n```
 in the current stack frame, or ```\n``` indicating an indirect location in the
 current stack frame.
 
-## Right hand addresses
+### Right hand addresses
 
-### Right hand addresses as constants
+#### Right hand addresses as constants
 
 ```
   [Array, address, name]
@@ -177,17 +188,31 @@ current stack frame.
 The example above moves the constant 99 to the location 3 in the current stack
 frame.
 
-### Right hand addresses as indexes
+#### Right hand addresses as variables
 
 ```
-  [Array, address, name]
-
   Mov 3, \4
 
 ```
 
 The example above moves the contents of location 4 in the current stack frame
 to location 3 in the current stack frame.
+
+#### Right hand addresses as indexed [arrays](https://en.wikipedia.org/wiki/Dynamic_array) 
+```
+  [Array, address, name]
+
+  my $a = Array "keys";
+  Mov [$a, 3, 'keys'], \4
+
+```
+
+The example above moves the contents of location 4 in the current stack frame
+to location 3 in the [array](https://en.wikipedia.org/wiki/Dynamic_array) whose identifying number is located at location
+**$a** in the current stack frame.  The [array](https://en.wikipedia.org/wiki/Dynamic_array) is created with an identifying
+name of **keys**.  The [string](https://en.wikipedia.org/wiki/String_(computer_science)) **keys** must be presented on each subsequent
+access to this [array](https://en.wikipedia.org/wiki/Dynamic_array) to confirm that the correct type of [memory](https://en.wikipedia.org/wiki/Computer_memory) is being
+accessed.
 
 ## Instructions
 
