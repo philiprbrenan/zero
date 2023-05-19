@@ -64,6 +64,7 @@ sub ExecutionEnvironment(%)                                                     
     GetMemoryArena=>       \&getMemoryArena,                                    # Low level memory access - arena
     GetMemoryArea=>        \&getMemoryArea,                                     # Low level memory access - area
     GetMemoryLocation=>    \&getMemoryLocation,                                 # Low level memory access - location
+    AllocMemoryArea=>      \&allocMemoryArea,                                   # Low level memory access - allocate new area
    );
  }
 
@@ -449,6 +450,12 @@ sub getMemoryLocation($$$$)                                                     
   \$exec->memory->[$arena][$area][$address];
  }
 
+sub allocMemoryArea($$$)                                                        #P Allocate a memory area
+ {my ($exec, $number, $arena) = @_;                                             # Execution environment, name of allocation, arena to use
+  @_ == 3 or confess "Three parameters";
+  $exec->memory->[$arena][$arena] = $number ? bless [], $number : [];           # Blessing with 0 is a very bad idea!
+ }
+
 sub getMemory($$$$$)                                                            #P Get from memory.
  {my ($exec, $arena, $area, $address, $name) = @_;                              # Execution environment, arena, area, address, expected name of area
   @_ == 5 or confess "Five parameters";
@@ -496,7 +503,8 @@ sub setMemory($$$)                                                              
   $exec->lastAssignValue   = $value;
   $exec->lastAssignBefore  = $exec->getMemoryAddressFromAddress($ref)->$*;
 
-  $exec->memory->[$arena][$area][$address] = $value;
+  my $a = $exec->GetMemoryLocation->($exec, $arena, $area, $address);
+  $$a = $value;
  }
 
 sub Address($$$$;$)                                                             #P Record a reference to memory.
@@ -547,10 +555,10 @@ sub allocMemory($$$)                                                            
   @_ == 3 or confess "Three parameters";
   $number =~ m(\A\d+\Z) or confess "Array name must be numeric not : $number";
   my $f = $exec->freedArrays->[$arena];                                         # Reuse recently freed array if possible
-  my $a = $f && @$f ? pop @$f : ++$$allocs[$arena];
-  my $n = $exec->block->ArrayNumberToName($number);
-  $exec->memory->[$arena][$a] = $n ? bless [], $n : [];                         # Blessing with 0 is a very bad idea!
-  $exec->setMemoryType($arena, $a, $number);
+  my $a = $f && @$f ? pop @$f : ++$$allocs[$arena];                             # Allocation id to reuse or use for the first time
+  my $n = $exec->block->ArrayNumberToName($number);                             # Convert array name to number if possible
+  $exec->AllocMemoryArea->($exec, $n, $arena);                                  # Create new area
+  $exec->setMemoryType($arena, $a, $number);                                    # Track name of area
   $a
  }
 
@@ -560,7 +568,7 @@ sub freeArea($$$$)                                                              
   $number =~ m(\A\d+\Z) or confess "Array name must be numeric not : $number";
   $exec->checkArrayName($arena, $area, $number);
 
-  my $a = $exec->memory->[$arena];
+  my $a = $exec->GetMemoryArena->($exec, $arena);
   $a->[$area] = undef;                                                          # Mark area as freed
   for(my $i = 0; $i < 99 && @$a && !defined($$a[-1]); ++$i)
    {pop @$a;
@@ -574,13 +582,13 @@ sub pushArea($$$$$)                                                             
   @_ == 5 or confess "Five parameters";
   $exec->checkArrayName($arena, $area, $name);
 
-  push $exec->memory->[$arena][$area]->@*, $value;
+  push $exec->GetMemoryArea->($exec, $arena, $area)->@*, $value;
  }
 
 sub popArea($$$$)                                                               # Pop a value from the specified memory area if possible else confess
  {my ($exec, $arena, $area, $name) = @_;                                        # Execution environment, arena, array, name of allocation, value to assign
   $exec->checkArrayName($arena, $area, $name);                                  # Check stack name
-  my $a = $exec->memory->[$arena][$area];
+  my $a = $exec->GetMemoryArea->($exec, $arena, $area);
   if (!defined($a) or !$a->@*)                                                  # Stack not pop-able
    {$exec->stackTraceAndExit("Cannot pop area: $area, in arena: $arena");
    }
@@ -1211,7 +1219,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $name =  $exec->right($i->source2);                                    # Array name
       my $area =  $exec->right($i->target);                                     # Array to resize
       $exec->checkArrayName(arenaHeap, $area, $name);
-      $#{$exec->memory->[arenaHeap][$area]} = $size-1;
+      $#{$exec->GetMemoryArea->($exec, arenaHeap, $area)} = $size-1;
      },
 
     call=> sub                                                                  # Call a subroutine
@@ -1277,7 +1285,7 @@ sub Zero::Emulator::Code::execute($%)                                           
     arrayDump=> sub                                                             # Dump array in memory
      {my $i = $exec->currentInstruction;
       my $a = $exec->right($i->target);
-      my $m = dump($exec->memory->[arenaHeap][$a]) =~ s(\n) ()gsr;
+      my $m = dump($exec->GetMemoryArea->($exec, arenaHeap, $a)) =~ s(\n) ()gsr;
       say STDERR $m unless $exec->suppressOutput;
       $exec->output("$m\n");
      },
