@@ -200,6 +200,12 @@ specifications as writing each instruction by hand is hard work. Using a [prepro
 be captured as macros which can then be called upon as needed to generate the [code](https://en.wikipedia.org/wiki/Computer_program) for an application. The [Zero assembler programming language](https://github.com/philiprbrenan/zero) uses [Perl](http://www.perl.org/) as its macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor). Using [Perl](http://www.perl.org/) as the macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) for [Zero assembler programming language](https://github.com/philiprbrenan/zero) enables macro libraries to be
 published and distributed on [CPAN](https://metacpan.org/author/PRBRENAN) as [Perl](http://www.perl.org/) modules.
 
+## Machine [code](https://en.wikipedia.org/wiki/Computer_program) 
+The assembled [code](https://en.wikipedia.org/wiki/Computer_program) can be converted to a single [string](https://en.wikipedia.org/wiki/String_(computer_science)) which can
+specifications as writing each instruction by hand is hard work. Using a [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) saves programmer time by allowing common instruction sequences to
+be captured as macros which can then be called upon as needed to generate the [code](https://en.wikipedia.org/wiki/Computer_program) for an application. The [Zero assembler programming language](https://github.com/philiprbrenan/zero) uses [Perl](http://www.perl.org/) as its macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor). Using [Perl](http://www.perl.org/) as the macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) for [Zero assembler programming language](https://github.com/philiprbrenan/zero) enables macro libraries to be
+published and distributed on [CPAN](https://metacpan.org/author/PRBRENAN) as [Perl](http://www.perl.org/) modules.
+
 ## Example [sort](https://en.wikipedia.org/wiki/Sorting) [programs](https://en.wikipedia.org/wiki/Computer_program) 
 [The examples folder](https://github.com/philiprbrenan/zero/tree/main/examples)
 contains some [sort](https://en.wikipedia.org/wiki/Sorting) [programs](https://en.wikipedia.org/wiki/Computer_program) written in [Zero assembler programming language](https://github.com/philiprbrenan/zero) . The total number of instructions
