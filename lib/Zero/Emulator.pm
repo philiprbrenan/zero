@@ -6,7 +6,6 @@
 # Pointless adds and subtracts by 0. Perhaps we should flag adds and subtracts by 1 as well so we can have an instruction optimized for these variants.
 # Assign needs to know from whence we got the value so we can write a better error message when it is no good
 # Count number of ways an if statement actually goes.
-# Confirm that repeated execution producees the same result
 # doubleWrite, not read, rewrite need make-over
 use v5.30;
 package Zero::Emulator;
@@ -16,7 +15,7 @@ use strict;
 use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>96" unless caller;
+eval "use Test::More tests=>97" unless caller;
 
 makeDieConfess;
 my $Debug;
@@ -461,7 +460,7 @@ sub getMemory($$$$$)                                                            
   @_ == 5 or confess "Five parameters";
   $exec->checkArrayName($arena, $area, $name);
   my $v = $exec->GetMemoryLocation->($exec, $arena, $area, $address);
-  if (!defined($$v))                                                             # Check we are getting a defined value.  If undefined values are acceptable use L<getMemoryAddress> and dereference the result.
+  if (!defined($$v))                                                            # Check we are getting a defined value.  If undefined values are acceptable use L<getMemoryAddress> and dereference the result.
    {my $n = $name // 'unknown';
     $exec->stackTraceAndExit
      ("Undefined memory accessed in arena: $arena, at area: $area ($n), address: $address\n");
@@ -3624,6 +3623,21 @@ if (1)                                                                          
    };
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, <<END;
+Trace: 1
+    1     0     1         trace
+    2     1     1           jNe
+    3     5     1         label
+    4     6     1           mov  [1, 3, stackArea] = 3
+    5     7     1           mov  [1, 4, stackArea] = 4
+    6     8     1         label
+    7     9     1           jNe
+    8    10     1           mov  [1, 1, stackArea] = 1
+    9    11     1           mov  [1, 2, stackArea] = 1
+   10    12     1           jmp
+   11    16     1         label
+END
+  my $E = Execute(suppressOutput=>1);                                           # Repeated execution produces the same result
+  is_deeply $E->out, <<END;
 Trace: 1
     1     0     1         trace
     2     1     1           jNe
