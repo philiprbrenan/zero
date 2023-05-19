@@ -126,7 +126,6 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
   is_deeply $e->out, <<END;
-quick sorted
 bless([1 .. 8], "array")
 END
 
@@ -164,7 +163,6 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
 
   is_deeply $e->out, <<END;
-quick sorted
 bless([1 .. 32], "array")
 END
   is_deeply $e->count, 1434;                                                    # Approximately 5 times bigger
