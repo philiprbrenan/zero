@@ -51,12 +51,12 @@ if (1)                                                                          
 
   insertionSort($a, "array");                                                   # Sort
 
-  ArrayDump $a, "array";
+  ArrayDump $a;
 
   my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);             # Execute assembler program
 
   is_deeply $e->out, <<END;
-bless([1 .. 8], "array")
+[1 .. 8]
 END
 
   is_deeply $e->count, 189;                                                     # Instructions executed
@@ -84,12 +84,12 @@ if (1)                                                                          
 
   insertionSort($a, "array");
 
-  ArrayDump $a, "array";
+  ArrayDump $a;
 
   my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);             # Execute assembler program
 
   is_deeply $e->out, <<END;
-bless([1 .. 32], "array")
+[1 .. 32]
 END
   is_deeply $e->count, 3788;                                                    # Approximately 4*4== 16 times bigger
  }
