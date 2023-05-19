@@ -76,7 +76,7 @@ Create a new memory area and write its number into the address named by the targ
     
       Out "Array size:", $n;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      ArrayDump $a, "AAAA";
+      ArrayDump $a;
     
       ForArray
        {my ($i, $e, $check, $next, $end) = @_;
@@ -91,7 +91,6 @@ Create a new memory area and write its number into the address named by the targ
     
     Array size: 3  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-    AAAA
     bless([1, 22, 333], "aaa")
     0
     1
@@ -176,12 +175,11 @@ Dump an array.
       Mov [$a, 1, "aaa"], 22;
       Mov [$a, 2, "aaa"], 333;
     
-      ArrayDump $a, "AAAA";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      ArrayDump $a;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->out, <<END;
-    AAAA
     bless([1, 22, 333], "aaa")
     END
      }
@@ -236,7 +234,7 @@ The current size of an array.
       my $n = ArraySize $a, "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out "Array size:", $n;
-      ArrayDump $a, "AAAA";
+      ArrayDump $a;
     
       ForArray
        {my ($i, $e, $check, $next, $end) = @_;
@@ -249,7 +247,6 @@ The current size of an array.
       is_deeply $e->heap(1), [1, 22, 333];
       is_deeply $e->out, <<END;
     Array size: 3
-    AAAA
     bless([1, 22, 333], "aaa")
     0
     1
@@ -646,10 +643,9 @@ Call the subroutine at the target address.
     if (1)                                                                            
      {Start 1;
       my $a = Array "aaa";
-      Dump "dddd";
+      Dump;
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    dddd
     1=bless([], "aaa")
     Stack trace:
         1     2 dump
@@ -794,13 +790,12 @@ Dump all the arrays currently in memory.
       Mov [$a, 2, 'node'], 2;
       Mov 1, [$a, \1, 'node'];
     
-      Dump "dddd";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      Dump;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Free $a, "node";
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
     1
-    dddd
     1=bless([undef, 1, 2], "node")
     Stack trace:
         1     6 dump
@@ -1010,7 +1005,7 @@ For loop to process each element of the named area.
     
       my $n = ArraySize $a, "aaa";
       Out "Array size:", $n;
-      ArrayDump $a, "AAAA";
+      ArrayDump $a;
     
     
       ForArray  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -1025,7 +1020,6 @@ For loop to process each element of the named area.
       is_deeply $e->heap(1), [1, 22, 333];
       is_deeply $e->out, <<END;
     Array size: 3
-    AAAA
     bless([1, 22, 333], "aaa")
     0
     1
@@ -1067,14 +1061,13 @@ Free the memory area named by the target operand after confirming that it has th
       Mov [$a, 1, 'node'], 1;
       Mov [$a, 2, 'node'], 2;
       Mov 1, [$a, \1, 'node'];
-      Dump "dddd";
+      Dump;
     
       Free $a, "node";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
     1
-    dddd
     1=bless([undef, 1, 2], "node")
     Stack trace:
         1     6 dump
@@ -2130,10 +2123,9 @@ Copy a constant or memory address to the target address.
     if (1)                                                                            
      {Start 1;
       my $a = Array "aaa";
-      Dump "dddd";
+      Dump;
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    dddd
     1=bless([], "aaa")
     Stack trace:
         1     2 dump
@@ -2257,11 +2249,10 @@ Copy a constant or memory address to the target address.
     
       Mov [$a, 2, "aaa"], 333;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      ArrayDump $a, "AAAA";
+      ArrayDump $a;
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->out, <<END;
-    AAAA
     bless([1, 22, 333], "aaa")
     END
      }
@@ -2348,7 +2339,7 @@ Do nothing (but do it well!).
     
       my $n = ArraySize $a, "aaa";
       Out "Array size:", $n;
-      ArrayDump $a, "AAAA";
+      ArrayDump $a;
     
       ForArray
        {my ($i, $e, $check, $next, $end) = @_;
@@ -2363,7 +2354,6 @@ Do nothing (but do it well!).
       is_deeply $e->heap(1), [1, 22, 333];
       is_deeply $e->out, <<END;
     Array size: 3
-    AAAA
     bless([1, 22, 333], "aaa")
     0
     1
@@ -2625,12 +2615,11 @@ Resize the target area to the source size.
     
       Resize $a, 2, "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      ArrayDump $a, "array";
+      ArrayDump $a;
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->heap(1), [1, 2];
       is_deeply $e->out, <<END;
-    array
     bless([1, 2], "aaa")
     END
      }
@@ -3229,8 +3218,8 @@ Generate machine code for the current block of code
      {Start 1;
       my $a = Mov 1;
       my $e = Execute;
-      is_deeply $e->block->code->[0]->source, {address =>  1, area => undef, arena => 0, delta => 0, name => "stackArea" };
-      is_deeply $e->block->code->[0]->target, {address => \0, area => undef, arena => 0, delta => 0, name => "stackArea" };
+      is_deeply $e->block->code->[0]->source, {address =>  1, area => undef, arena => 0, delta => 0, name => 0 };
+      is_deeply $e->block->code->[0]->target, {address => \0, area => undef, arena => 0, delta => 0, name => 0 };
      }
     
     if (1)                                                                            
@@ -3239,7 +3228,7 @@ Generate machine code for the current block of code
     
       my $e = GenerateMachineCode;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      is_deeply unpack("h*", $e), '0000003200000000000000000000100800000010000000080000000000000000';
+      is_deeply unpack("h*", $e), '000000320000000000000000000010f700000010000000f700000000000000f7';
     
       my $E = disAssembleMinusContext $e;
       is_deeply $E->code->[0]->source, {address =>  1, area => undef, arena => 1, delta => 0};
@@ -3260,15 +3249,15 @@ Disassemble machine code
      {Start 1;
       my $a = Mov 1;
       my $e = Execute;
-      is_deeply $e->block->code->[0]->source, {address =>  1, area => undef, arena => 0, delta => 0, name => "stackArea" };
-      is_deeply $e->block->code->[0]->target, {address => \0, area => undef, arena => 0, delta => 0, name => "stackArea" };
+      is_deeply $e->block->code->[0]->source, {address =>  1, area => undef, arena => 0, delta => 0, name => 0 };
+      is_deeply $e->block->code->[0]->target, {address => \0, area => undef, arena => 0, delta => 0, name => 0 };
      }
     
     if (1)                                                                            
      {Start 1;
       my $a = Mov 1;
       my $e = GenerateMachineCode;
-      is_deeply unpack("h*", $e), '0000003200000000000000000000100800000010000000080000000000000000';
+      is_deeply unpack("h*", $e), '000000320000000000000000000010f700000010000000f700000000000000f7';
     
       my $E = disAssembleMinusContext $e;
       is_deeply $E->code->[0]->source, {address =>  1, area => undef, arena => 1, delta => 0};
@@ -3289,15 +3278,15 @@ Disassemble and remove context information from disassembly to make testing easi
      {Start 1;
       my $a = Mov 1;
       my $e = Execute;
-      is_deeply $e->block->code->[0]->source, {address =>  1, area => undef, arena => 0, delta => 0, name => "stackArea" };
-      is_deeply $e->block->code->[0]->target, {address => \0, area => undef, arena => 0, delta => 0, name => "stackArea" };
+      is_deeply $e->block->code->[0]->source, {address =>  1, area => undef, arena => 0, delta => 0, name => 0 };
+      is_deeply $e->block->code->[0]->target, {address => \0, area => undef, arena => 0, delta => 0, name => 0 };
      }
     
     if (1)                                                                            
      {Start 1;
       my $a = Mov 1;
       my $e = GenerateMachineCode;
-      is_deeply unpack("h*", $e), '0000003200000000000000000000100800000010000000080000000000000000';
+      is_deeply unpack("h*", $e), '000000320000000000000000000010f700000010000000f700000000000000f7';
     
     
       my $E = disAssembleMinusContext $e;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -3307,18 +3296,21 @@ Disassemble and remove context information from disassembly to make testing easi
      }
     
 
-## GenerateMachineCodeDisAssembleExecute()
+## GenerateMachineCodeDisAssembleExecute(%options)
 
 Round trip: generate amchine code, disassemble the generated machine code and execute it to prove that it works as expected
+
+       Parameter  Description
+    1  %options   Options
 
 **Example:**
 
     if (1)                                                                          
      {Start 1;
-      my $a = Array 99;
-      Mov [$a, 0, 99], 10;
-      Mov [$a, 1, 99], 11;
-      Mov [$a, 2, 99], 12;
+      my $a = Array "array";
+      Mov [$a, 0, "array"], 10;
+      Mov [$a, 1, "array"], 11;
+      Mov [$a, 2, "array"], 12;
     
       my $e = GenerateMachineCodeDisAssembleExecute;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
