@@ -76,13 +76,13 @@ if (1)                                                                          
 
   bubbleSort $a, 'array';
 
-  ArrayDump $a, 'array';
+  ArrayDump $a;
 
-  my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
+  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);             # Execute assembler program
 
   is_deeply $e->count, 4754;                                                    # Instructions executed
 
   is_deeply $e->out, <<END;
-bless([1 .. 32], "array")
+[1 .. 32]
 END
  }
