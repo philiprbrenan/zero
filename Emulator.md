@@ -158,13 +158,12 @@ Count the number of elements in the array specified by the first source operand 
      }
     
 
-## ArrayDump($target, $source)
+## ArrayDump($target)
 
 Dump an array.
 
        Parameter  Description
     1  $target    Array to dump
-    2  $source    Title of dump
 
 **Example:**
 
@@ -181,6 +180,16 @@ Dump an array.
     
       is_deeply $e->out, <<END;
     bless([1, 22, 333], "aaa")
+    END
+    
+      #say STDERR $e->block->codeToString;
+      #say STDERR dump($e->block->codeToString);
+      is_deeply $e->block->codeToString, <<'END';
+    0000     array           \0             3
+    0001       mov [\0, 0, 3, 0]             1
+    0002       mov [\0, 1, 3, 0]            22
+    0003       mov [\0, 2, 3, 0]           333
+    0004  arrayDump           \0
     END
      }
     
@@ -773,12 +782,9 @@ Decrement the target.
      }
     
 
-## Dump($title)
+## Dump()
 
 Dump all the arrays currently in memory.
-
-       Parameter  Description
-    1  $title     Title
 
 **Example:**
 
@@ -2255,6 +2261,16 @@ Copy a constant or memory address to the target address.
       is_deeply $e->out, <<END;
     bless([1, 22, 333], "aaa")
     END
+    
+      #say STDERR $e->block->codeToString;
+      #say STDERR dump($e->block->codeToString);
+      is_deeply $e->block->codeToString, <<'END';
+    0000     array           \0             3
+    0001       mov [\0, 0, 3, 0]             1
+    0002       mov [\0, 1, 3, 0]            22
+    0003       mov [\0, 2, 3, 0]           333
+    0004  arrayDump           \0
+    END
      }
     
 
@@ -3444,42 +3460,30 @@ Rereference a value
     1  $value     Value to reference
     2  $depth     Depth of reference
 
-## packRef($ref)
+## Zero::Emulator::Code::packRef($code, $instruction, $ref)
 
 Pack a reference into 8 bytes
 
-       Parameter  Description
-    1  $ref       Reference to pack
+       Parameter     Description
+    1  $code         Code block being packed
+    2  $instruction  Instruction being packed
+    3  $ref          Reference being packed
 
-**Example:**
-
-    if (0)                                                                           
-     {my $a = Address 1, 2, 3, 4, 5;
-    
-      my $A = packRef $a;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-      is_deeply unpack("h*", $A), "0000003000200150";
-    
-      my $b = $assembly->unpackRef($A);
-      $b->name = 4;                                                                 # The name is not held in the packed version
-      is_deeply $a, $b;
-     }
-    
-
-## unpackRef($code, $a)
+## Zero::Emulator::Code::unpackRef($code, $a)
 
 Unpack a reference
 
        Parameter  Description
-    1  $code      Code block
-    2  $a         String to unpack
+    1  $code      Code block being packed
+    2  $a         Instruction being packed
 
-## packInstruction($i)
+## Zero::Emulator::Code::packInstruction($code, $i)
 
 Pack an instruction
 
        Parameter  Description
-    1  $i         Instruction numbers
+    1  $code      Code being packed
+    2  $i         Instruction to pack
 
 ## unpackInstruction($I)
 
@@ -3624,65 +3628,65 @@ Unpack an instruction
 
 67 [Out](#out) - Write memory location contents to out.
 
-68 [packInstruction](#packinstruction) - Pack an instruction
+68 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
 
-69 [packRef](#packref) - Pack a reference into 8 bytes
+69 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
 
-70 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
+70 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
 
-71 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
+71 [Procedure](#procedure) - Define a procedure.
 
-72 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
+72 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
 
-73 [Procedure](#procedure) - Define a procedure.
+73 [Random](#random) - Create a random number in a specified range
 
-74 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
+74 [RandomSeed](#randomseed) - Seed the random number generator
 
-75 [Random](#random) - Create a random number in a specified range
+75 [refDepth](#refdepth) - The depth of a reference
 
-76 [RandomSeed](#randomseed) - Seed the random number generator
+76 [refValue](#refvalue) - The value of a reference after dereferencing
 
-77 [refDepth](#refdepth) - The depth of a reference
+77 [rerefValue](#rerefvalue) - Rereference a value
 
-78 [refValue](#refvalue) - The value of a reference after dereferencing
+78 [Resize](#resize) - Resize the target area to the source size.
 
-79 [rerefValue](#rerefvalue) - Rereference a value
+79 [Return](#return) - Return from a procedure via the call stack.
 
-80 [Resize](#resize) - Resize the target area to the source size.
+80 [ReturnGet](#returnget) - Get a word from the return area and save it.
 
-81 [Return](#return) - Return from a procedure via the call stack.
+81 [ReturnPut](#returnput) - Put a word into the return area.
 
-82 [ReturnGet](#returnget) - Get a word from the return area and save it.
+82 [ShiftDown](#shiftdown) - Shift an element down one in an area.
 
-83 [ReturnPut](#returnput) - Put a word into the return area.
+83 [ShiftLeft](#shiftleft) - Shift left within an element.
 
-84 [ShiftDown](#shiftdown) - Shift an element down one in an area.
+84 [ShiftRight](#shiftright) - Shift right with an element.
 
-85 [ShiftLeft](#shiftleft) - Shift left within an element.
+85 [ShiftUp](#shiftup) - Shift an element up one in an area.
 
-86 [ShiftRight](#shiftright) - Shift right with an element.
+86 [Start](#start) - Start the current assembly using the specified version of the Zero language.
 
-87 [ShiftUp](#shiftup) - Shift an element up one in an area.
+87 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
 
-88 [Start](#start) - Start the current assembly using the specified version of the Zero language.
+88 [Tally](#tally) - Counts instructions when enabled.
 
-89 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
+89 [Then](#then) - Then block.
 
-90 [Tally](#tally) - Counts instructions when enabled.
+90 [Trace](#trace) - Start or stop tracing.
 
-91 [Then](#then) - Then block.
+91 [TraceLabels](#tracelabels) - Enable or disable label tracing.
 
-92 [Trace](#trace) - Start or stop tracing.
+92 [unpackInstruction](#unpackinstruction) - Unpack an instruction
 
-93 [TraceLabels](#tracelabels) - Enable or disable label tracing.
+93 [Var](#var) - Create a variable initialized to the specified value.
 
-94 [unpackInstruction](#unpackinstruction) - Unpack an instruction
+94 [Watch](#watch) - Watches for changes to the specified memory location.
 
-95 [unpackRef](#unpackref) - Unpack a reference
+95 [Zero::Emulator::Code::packInstruction](#zero-emulator-code-packinstruction) - Pack an instruction
 
-96 [Var](#var) - Create a variable initialized to the specified value.
+96 [Zero::Emulator::Code::packRef](#zero-emulator-code-packref) - Pack a reference into 8 bytes
 
-97 [Watch](#watch) - Watches for changes to the specified memory location.
+97 [Zero::Emulator::Code::unpackRef](#zero-emulator-code-unpackref) - Unpack a reference
 
 # Installation
 
