@@ -10,8 +10,6 @@ use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
 use Test::More tests=>5;
 
-sub array{99}                                                                   # An arbitrary number identifying the array being sorted
-
 sub bubbleSort($$)                                                              # As described at: https://en.wikipedia.org/wiki/Bubble_sort
  {my ($array, $name) = @_;                                                      # Array, name of array memory
 
@@ -40,19 +38,17 @@ sub bubbleSort($$)                                                              
 
 if (1)                                                                          # Small array
  {Start 1;
-  my $a = Array array;
+  my $a = Array 'array';
   my @a = qw(6 8 4 2 1 3 5 7);
-  Push $a, $_, array for @a;                                                    # Load array
+  Push $a, $_, 'array' for @a;                                                    # Load array
 
-  bubbleSort($a, array);                                                        # Sort
-
-  ArrayDump $a, array;
+  bubbleSort $a, 'array';                                                       # Sort
+  ArrayDump $a;
 
   #my $e = Execute;
-  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>0);             # Execute a disassembled copy of the program just to show that we can
+  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);             # Execute a disassembled copy of the program just to show that we can
   is_deeply $e->out, <<END;
-99
-bless([1 .. 8], "99")
+[1 .. 8]
 END
 
   is_deeply $e->count,  245;                                                    # Instructions executed
@@ -74,19 +70,19 @@ END
 
 if (1)                                                                          # Reversed array 4 times larger
  {Start 1;
-  my $a = Array array;
+  my $a = Array 'array';
   my @a = reverse 1..32;
-  Push $a, $_, array for @a;
+  Push $a, $_, 'array' for @a;
 
-  bubbleSort($a, array);
+  bubbleSort $a, 'array';
 
-  ArrayDump $a, array;
+  ArrayDump $a, 'array';
 
   my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
 
+  is_deeply $e->count, 4754;                                                    # Instructions executed
+
   is_deeply $e->out, <<END;
-99
-bless([1 .. 32], "99")
+bless([1 .. 32], "array")
 END
-  is_deeply $e->count, 4754;                                                    # Approximately 4*4== 16 times bigger
  }
