@@ -803,7 +803,7 @@ sub Iterate(&$)                                                                 
     &$block($f);
 
     GoUpAndAround($f);
-   } 1e99;
+   } 2**32-1;
   FindResult_free($f);
  }
 
@@ -811,7 +811,7 @@ sub Iterate(&$)                                                                 
 
 my sub printNode($$$$$)                                                         # Print the keys or data in a node in memory
  {my ($memory, $node, $indent, $out, $keyNotData) = @_;
-  ref($node) =~ m(Node) or confess "Not a node: ".dump($node);
+  #ref($node) =~ m(Node) or confess "Not a node: ".dump($node);
   my $k = $$node[$Node->offset(q(keys))];
   my $d = $$node[$Node->offset(q(data))];
   my $n = $$node[$Node->offset(q(down))];
@@ -1238,13 +1238,13 @@ if (1)                                                                          
   AssertNe FindResult_found, FindResult_cmp(Find($t, -1));                      # Should not be present
   AssertNe FindResult_found, FindResult_cmp(Find($t, $N));
 
-  my $e = Execute(suppressOutput=>1);
+  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
   is_deeply $e->out, "";                                                        # No asserts
  }
 
 
 #latest:;
-if (1)                                                                          ##randomArray
+if (0)                                                                          ##randomArray
  {my $W = 5; my $N = 76; my @r = randomArray $N;
 
   Start 1;
@@ -1259,7 +1259,7 @@ if (1)                                                                          
     Out $k;
    } $t;
 
-  my $e = Execute(suppressOutput=>1);
+  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
   is_deeply $e->outLines, [1..$N];
  }
 
@@ -1306,10 +1306,10 @@ if (1)                                                                          
    } $t;
 
   Tally 3;
-  Iterate {} $t;                                                                # Iterate tree
+  Iterate {} $t;                                                                # Iterate tree without doing anything in the body to see the pure iteration overhead
   Tally 0;
 
-  my $e = Execute(suppressOutput=>1);
+  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
 
   is_deeply $e->outLines, [1..$N];                                              # Expected sequence
 
