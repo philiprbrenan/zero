@@ -122,11 +122,11 @@ if (1)                                                                          
 
   quickSort $a, "array";                                                        # Sort
 
-  ArrayDump $a, "quick sorted";
+  ArrayDump $a;
 
-  my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
+  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);             # Execute assembler program
   is_deeply $e->out, <<END;
-bless([1 .. 8], "array")
+[1 .. 8]
 END
 
   is_deeply $e->count,  285;                                                    # Instructions executed
@@ -158,12 +158,12 @@ if (1)                                                                          
 
   quickSort $a, "array";                                                        # Quick sort
 
-  ArrayDump $a, "quick sorted";
+  ArrayDump $a;
 
-  my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
+  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);             # Execute assembler program
 
   is_deeply $e->out, <<END;
-bless([1 .. 32], "array")
+[1 .. 32]
 END
   is_deeply $e->count, 1434;                                                    # Approximately 5 times bigger
  }
