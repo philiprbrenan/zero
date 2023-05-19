@@ -196,7 +196,7 @@ Create a variable referring to a new tree descriptor.
       AssertNe FindResult_found, FindResult_cmp(Find($t, -1));                      # Should not be present
       AssertNe FindResult_found, FindResult_cmp(Find($t, $N));
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
       is_deeply $e->out, "";                                                        # No asserts
      }
     
@@ -254,10 +254,10 @@ Get the number of keys in the tree..
        } $t;
     
       Tally 3;
-      Iterate {} $t;                                                                # Iterate tree
+      Iterate {} $t;                                                                # Iterate tree without doing anything in the body to see the pure iteration overhead
       Tally 0;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
     
       is_deeply $e->outLines, [1..$N];                                              # Expected sequence
     
@@ -380,7 +380,7 @@ Get comparison from find result.
       AssertNe FindResult_found, FindResult_cmp(Find($t, $N));  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
       is_deeply $e->out, "";                                                        # No asserts
      }
     
@@ -438,10 +438,10 @@ Get data field from find results.
        } $t;
     
       Tally 3;
-      Iterate {} $t;                                                                # Iterate tree
+      Iterate {} $t;                                                                # Iterate tree without doing anything in the body to see the pure iteration overhead
       Tally 0;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
     
       is_deeply $e->outLines, [1..$N];                                              # Expected sequence
     
@@ -579,10 +579,10 @@ Get key field from find results.
        } $t;
     
       Tally 3;
-      Iterate {} $t;                                                                # Iterate tree
+      Iterate {} $t;                                                                # Iterate tree without doing anything in the body to see the pure iteration overhead
       Tally 0;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
     
       is_deeply $e->outLines, [1..$N];                                              # Expected sequence
     
@@ -707,7 +707,7 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
       AssertNe FindResult_found, FindResult_cmp(Find($t, $N));  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
       is_deeply $e->out, "";                                                        # No asserts
      }
     
@@ -757,10 +757,10 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
        } $t;
     
       Tally 3;
-      Iterate {} $t;                                                                # Iterate tree
+      Iterate {} $t;                                                                # Iterate tree without doing anything in the body to see the pure iteration overhead
       Tally 0;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
     
       is_deeply $e->outLines, [1..$N];                                              # Expected sequence
     
@@ -1012,7 +1012,7 @@ Insert a key and its associated data into a tree.
       AssertNe FindResult_found, FindResult_cmp(Find($t, -1));                      # Should not be present
       AssertNe FindResult_found, FindResult_cmp(Find($t, $N));
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
       is_deeply $e->out, "";                                                        # No asserts
      }
     
@@ -1076,11 +1076,11 @@ Iterate over a tree.
     
       Tally 3;
     
-      Iterate {} $t;                                                                # Iterate tree  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      Iterate {} $t;                                                                # Iterate tree without doing anything in the body to see the pure iteration overhead  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Tally 0;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
     
       is_deeply $e->outLines, [1..$N];                                              # Expected sequence
     
@@ -1222,10 +1222,10 @@ Print the keys held in a tree.
        } $t;
     
       Tally 3;
-      Iterate {} $t;                                                                # Iterate tree
+      Iterate {} $t;                                                                # Iterate tree without doing anything in the body to see the pure iteration overhead
       Tally 0;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
     
       is_deeply $e->outLines, [1..$N];                                              # Expected sequence
     
@@ -1365,10 +1365,10 @@ Print the data held in a tree.
        } $t;
     
       Tally 3;
-      Iterate {} $t;                                                                # Iterate tree
+      Iterate {} $t;                                                                # Iterate tree without doing anything in the body to see the pure iteration overhead
       Tally 0;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
     
       is_deeply $e->outLines, [1..$N];                                              # Expected sequence
     
@@ -1470,7 +1470,7 @@ Create a random array.
 
 **Example:**
 
-    if (1)                                                                          
+    if (0)                                                                          
     
      {my $W = 5; my $N = 76; my @r = randomArray $N;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
@@ -1487,7 +1487,7 @@ Create a random array.
         Out $k;
        } $t;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
       is_deeply $e->outLines, [1..$N];
      }
     
