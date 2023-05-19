@@ -173,6 +173,32 @@ Create a variable referring to a new tree descriptor.
       is_deeply $e->heap(1), [ 0, 0, 3, 0];
      }
     
+    if (1)                                                                          
+     {Start 1;
+    
+      my $t = New(3);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      my $r = root($t);
+    
+      setRoot($t, 1);
+      my $R = root($t);
+    
+      my $n = maximumNumberOfKeys($t);
+    
+      incKeys($t) for 1..3;
+      Out [$t, $Tree->address(q(keys)), 'Tree'];
+    
+      incNodes($t) for 1..5;
+      Out nodes($t);
+    
+      my $e = Execute(suppressOutput=>1);
+      is_deeply $e->out, <<END;
+    3
+    5
+    END
+      is_deeply $e->heap(1), [ 3, 5, 3, 1];
+     }
+    
     if (1)                                                                             
      {my $W = 3; my $N = 66;
     
