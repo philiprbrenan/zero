@@ -858,6 +858,21 @@ Else block.
        10    12     1           jmp
        11    16     1         label
     END
+      my $E = Execute(suppressOutput=>1);                                           # Repeated execution produces the same result
+      is_deeply $E->out, <<END;
+    Trace: 1
+        1     0     1         trace
+        2     1     1           jNe
+        3     5     1         label
+        4     6     1           mov  [1, 3, stackArea] = 3
+        5     7     1           mov  [1, 4, stackArea] = 4
+        6     8     1         label
+        7     9     1           jNe
+        8    10     1           mov  [1, 1, stackArea] = 1
+        9    11     1           mov  [1, 2, stackArea] = 1
+       10    12     1           jmp
+       11    16     1         label
+    END
      }
     
 
@@ -3058,6 +3073,21 @@ Then block.
        10    12     1           jmp
        11    16     1         label
     END
+      my $E = Execute(suppressOutput=>1);                                           # Repeated execution produces the same result
+      is_deeply $E->out, <<END;
+    Trace: 1
+        1     0     1         trace
+        2     1     1           jNe
+        3     5     1         label
+        4     6     1           mov  [1, 3, stackArea] = 3
+        5     7     1           mov  [1, 4, stackArea] = 4
+        6     8     1         label
+        7     9     1           jNe
+        8    10     1           mov  [1, 1, stackArea] = 1
+        9    11     1           mov  [1, 2, stackArea] = 1
+       10    12     1           jmp
+       11    16     1         label
+    END
      }
     
 
@@ -3095,6 +3125,23 @@ Start or stop tracing.  Tracing prints each instruction executed and its effect 
        };
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
+    
+    Trace: 1  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+        1     0     1         trace
+        2     1     1           jNe
+        3     5     1         label
+        4     6     1           mov  [1, 3, stackArea] = 3
+        5     7     1           mov  [1, 4, stackArea] = 4
+        6     8     1         label
+        7     9     1           jNe
+        8    10     1           mov  [1, 1, stackArea] = 1
+        9    11     1           mov  [1, 2, stackArea] = 1
+       10    12     1           jmp
+       11    16     1         label
+    END
+      my $E = Execute(suppressOutput=>1);                                           # Repeated execution produces the same result
+      is_deeply $E->out, <<END;
     
     Trace: 1  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
