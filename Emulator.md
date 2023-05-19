@@ -3223,7 +3223,7 @@ Map the instruction set into a machine architecture.
 
 ## GenerateMachineCode(%options)
 
-Generate machine code for the current block of code
+Generate a string of machine code from the current block of code.
 
        Parameter  Description
     1  %options   Generation options
@@ -3254,7 +3254,7 @@ Generate machine code for the current block of code
 
 ## disAssemble($mc)
 
-Disassemble machine code
+Disassemble machine code.
 
        Parameter  Description
     1  $mc        Machine code string
@@ -3283,7 +3283,7 @@ Disassemble machine code
 
 ## disAssembleMinusContext($D)
 
-Disassemble and remove context information from disassembly to make testing easier
+Disassemble and remove context information from disassembly to make testing easier.
 
        Parameter  Description
     1  $D         Machine code string
@@ -3314,7 +3314,7 @@ Disassemble and remove context information from disassembly to make testing easi
 
 ## GenerateMachineCodeDisAssembleExecute(%options)
 
-Round trip: generate amchine code, disassemble the generated machine code and execute it to prove that it works as expected
+Round trip: generate machine code and write it onto a string, disassemble the generated machine code string and recreate a block of code from it, then execute the reconstituted code to prove that it works as well as the original code.
 
        Parameter  Description
     1  %options   Options
@@ -3440,21 +3440,21 @@ Map instructions to small integers
 
 ## refDepth($ref)
 
-The depth of a reference
+The depth of a reference.
 
        Parameter  Description
     1  $ref       Reference to pack
 
 ## refValue($ref)
 
-The value of a reference after dereferencing
+The value of a reference after dereferencing.
 
        Parameter  Description
     1  $ref       Reference to pack
 
 ## rerefValue($value, $depth)
 
-Rereference a value
+Rereference a value.
 
        Parameter  Description
     1  $value     Value to reference
@@ -3462,7 +3462,7 @@ Rereference a value
 
 ## Zero::Emulator::Code::packRef($code, $instruction, $ref)
 
-Pack a reference into 8 bytes
+Pack a reference into 8 bytes.
 
        Parameter     Description
     1  $code         Code block being packed
@@ -3471,7 +3471,7 @@ Pack a reference into 8 bytes
 
 ## Zero::Emulator::Code::unpackRef($code, $a)
 
-Unpack a reference
+Unpack a reference.
 
        Parameter  Description
     1  $code      Code block being packed
@@ -3479,7 +3479,7 @@ Unpack a reference
 
 ## Zero::Emulator::Code::packInstruction($code, $i)
 
-Pack an instruction
+Pack an instruction.
 
        Parameter  Description
     1  $code      Code being packed
@@ -3487,7 +3487,7 @@ Pack an instruction
 
 ## unpackInstruction($I)
 
-Unpack an instruction
+Unpack an instruction.
 
        Parameter  Description
     1  $I         Instruction numbers
@@ -3544,9 +3544,9 @@ Unpack an instruction
 
 25 [Dec](#dec) - Decrement the target.
 
-26 [disAssemble](#disassemble) - Disassemble machine code
+26 [disAssemble](#disassemble) - Disassemble machine code.
 
-27 [disAssembleMinusContext](#disassembleminuscontext) - Disassemble and remove context information from disassembly to make testing easier
+27 [disAssembleMinusContext](#disassembleminuscontext) - Disassemble and remove context information from disassembly to make testing easier.
 
 28 [Dump](#dump) - Dump all the arrays currently in memory.
 
@@ -3560,9 +3560,9 @@ Unpack an instruction
 
 33 [Free](#free) - Free the memory area named by the target operand after confirming that it has the name specified on the source operand.
 
-34 [GenerateMachineCode](#generatemachinecode) - Generate machine code for the current block of code
+34 [GenerateMachineCode](#generatemachinecode) - Generate a string of machine code from the current block of code.
 
-35 [GenerateMachineCodeDisAssembleExecute](#generatemachinecodedisassembleexecute) - Round trip: generate amchine code, disassemble the generated machine code and execute it to prove that it works as expected
+35 [GenerateMachineCodeDisAssembleExecute](#generatemachinecodedisassembleexecute) - Round trip: generate machine code and write it onto a string, disassemble the generated machine code string and recreate a block of code from it, then execute the reconstituted code to prove that it works as well as the original code.
 
 36 [Good](#good) - A good ending.
 
@@ -3642,11 +3642,11 @@ Unpack an instruction
 
 74 [RandomSeed](#randomseed) - Seed the random number generator
 
-75 [refDepth](#refdepth) - The depth of a reference
+75 [refDepth](#refdepth) - The depth of a reference.
 
-76 [refValue](#refvalue) - The value of a reference after dereferencing
+76 [refValue](#refvalue) - The value of a reference after dereferencing.
 
-77 [rerefValue](#rerefvalue) - Rereference a value
+77 [rerefValue](#rerefvalue) - Rereference a value.
 
 78 [Resize](#resize) - Resize the target area to the source size.
 
@@ -3676,17 +3676,17 @@ Unpack an instruction
 
 91 [TraceLabels](#tracelabels) - Enable or disable label tracing.
 
-92 [unpackInstruction](#unpackinstruction) - Unpack an instruction
+92 [unpackInstruction](#unpackinstruction) - Unpack an instruction.
 
 93 [Var](#var) - Create a variable initialized to the specified value.
 
 94 [Watch](#watch) - Watches for changes to the specified memory location.
 
-95 [Zero::Emulator::Code::packInstruction](#zero-emulator-code-packinstruction) - Pack an instruction
+95 [Zero::Emulator::Code::packInstruction](#zero-emulator-code-packinstruction) - Pack an instruction.
 
-96 [Zero::Emulator::Code::packRef](#zero-emulator-code-packref) - Pack a reference into 8 bytes
+96 [Zero::Emulator::Code::packRef](#zero-emulator-code-packref) - Pack a reference into 8 bytes.
 
-97 [Zero::Emulator::Code::unpackRef](#zero-emulator-code-unpackref) - Unpack a reference
+97 [Zero::Emulator::Code::unpackRef](#zero-emulator-code-unpackref) - Unpack a reference.
 
 # Installation
 
