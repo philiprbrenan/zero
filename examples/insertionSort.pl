@@ -56,7 +56,6 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
 
   is_deeply $e->out, <<END;
-array
 bless([1 .. 8], "array")
 END
 
@@ -90,7 +89,6 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
 
   is_deeply $e->out, <<END;
-array
 bless([1 .. 32], "array")
 END
   is_deeply $e->count, 3788;                                                    # Approximately 4*4== 16 times bigger
