@@ -61,7 +61,9 @@ sub ExecutionEnvironment(%)                                                     
     lastAssignBefore=>      undef,                                              # Prior value of memory area before assignment
     freedArrays=>           [],                                                 # Arrays that have been recently freed and can thus be reused
     checkArrayNames=>      ($options{checkArrayNames} // 1),                    # Check array names to confirm we are accessing the expected data
-    GetMemoryLocation=>    \&getMemoryLocation,                                 # Low level memory access
+    GetMemoryLocation=>    \&getMemoryLocation,                                 # Low level memory access - location
+    GetMemoryArena=>       \&getMemoryArena,                                    # Low level memory access - arena
+    GetMemoryArea=>        \&getMemoryArea,                                     # Low level memory access - area
    );
  }
 
@@ -249,11 +251,6 @@ my sub arenaHeap  {1}                                                           
 my sub arenaParms {2}                                                           # Parameter areas
 my sub arenaReturn{3}                                                           # Return areas
 
-sub heap($$)                                                                    #P Return a heap entry
- {my ($exec, $area) = @_;                                                       # Exeecution environment, area
-  $exec->memory->[arenaHeap][$area];
- }
-
 sub Zero::Emulator::Code::referenceToString($$)                                 #P Reference as a string
  {my ($block, $r) = @_;                                                         # Block of code, reference
   @_ == 2 or confess "Two parameters";
@@ -358,6 +355,16 @@ sub Zero::Emulator::Code::assemble($%)                                          
   $Block
  }
 
+sub memoryArena($$)                                                             #P Return a memory arena
+ {my ($exec, $arena) = @_;                                                      # Execution environment, arena
+  $exec->memory->[$arena]
+ }
+
+sub heap($$)                                                                    #P Return a heap entry
+ {my ($exec, $area) = @_;                                                       # Execution environment, area
+  $exec->memory->[arenaHeap][$area];
+ }
+
 sub areaContent($$)                                                             #P Content of an area containing a specified address in memory in the specified execution.
  {my ($exec, $ref) = @_;                                                        # Execution environment, reference to array
   @_ == 2 or confess "Two parameters";
@@ -429,6 +436,18 @@ sub dumpMemory($)                                                               
   join "\n", @m, '';
  }
 
+sub getMemoryArena($$$$)                                                        #P Lowest level memory access to an arena.
+ {my ($exec, $arena) = @_;                                                      # Execution environment, arena
+  @_ == 2 or confess "Two parameters";
+  $exec->memory->[$arena]
+ }
+
+sub getMemoryArea($$$$)                                                         #P Lowest level memory access to an area.
+ {my ($exec, $arena, $area) = @_;                                               # Execution environment, arena, area
+  @_ == 3 or confess "Three parameters";
+  $exec->memory->[$arena][$area]
+ }
+
 sub getMemoryLocation($$$$)                                                     #P Lowest level memory access to an array: get the address of the indicated location in memory.   This method is replacable to model different memory structures
  {my ($exec, $arena, $area, $address) = @_;                                     # Execution environment, arena, area, address, expected name of area
   @_ == 4 or confess "Four parameters";
@@ -439,7 +458,7 @@ sub getMemory($$$$$)                                                            
  {my ($exec, $arena, $area, $address, $name) = @_;                              # Execution environment, arena, area, address, expected name of area
   @_ == 5 or confess "Five parameters";
   $exec->checkArrayName($arena, $area, $name);
-  my $v = $exec->getMemoryLocation($arena, $area, $address);
+  my $v = $exec->GetMemoryLocation->($exec, $arena, $area, $address);
   if (!defined($$v))                                                             # Check we are getting a defined value.  If undefined values are acceptable use L<getMemoryAddress> and dereference the result.
    {my $n = $name // 'unknown';
     $exec->stackTraceAndExit
