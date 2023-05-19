@@ -16,7 +16,7 @@ use strict;
 use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>95" unless caller;
+eval "use Test::More tests=>96" unless caller;
 
 makeDieConfess;
 my $Debug;
@@ -127,6 +127,23 @@ sub Zero::Emulator::Code::instruction($%)                                       
    }
  }
 
+sub Zero::Emulator::Code::codeToString($)                                       #P Code as a string
+ {my ($block) = @_;                                                             # Block of code
+  @_ == 1 or confess "One parameter";
+  my @T;
+  my @code = $block->code->@*;
+  for my $i(@code)
+   {my $n = $i->number;
+    my $a = $i->action;
+    my $t = $block->referenceToString($i->{target});
+    my $s = $block->referenceToString($i->{source});
+    my $S = $block->referenceToString($i->{source2});
+    my $T = sprintf "%04d  %8s %12s  %12s  %12s", $n, $a, $t, $s, $S;
+    push @T, $T =~ s(\s+\Z) ()sr;
+   }
+  join "\n", @T, '';
+ }
+
 sub contextString($$$)                                                          #P Stack trace back for this instruction.
  {my ($exec, $i, $title) = @_;                                                  # Execution environment, Instruction, title
   @_ == 3 or confess "Three parameters";
@@ -137,6 +154,16 @@ sub contextString($$$)                                                          
      }
    }
   join "\n", @s
+ }
+
+sub Zero::Emulator::Code::Instruction::contextString($)                         #P Stack trace back for this instruction.
+ {my ($i) = @_;                                                                 # Instruction
+  @_ == 1 or confess "One parameter";
+  my @s;
+  for my $c($i->context->@*)
+   {push @s, sprintf "    at %s line %d", $$c[0], $$c[1];
+   }
+  @s;
  }
 
 sub AreaStructure($@)                                                           # Describe a data structure mapping a memory area.
@@ -224,6 +251,22 @@ my sub arenaReturn{3}                                                           
 sub heap($$)                                                                    #P Return a heap entry
  {my ($exec, $area) = @_;                                                       # Exeecution environment, area
   $exec->memory->[arenaHeap][$area];
+ }
+
+sub Zero::Emulator::Code::referenceToString($$)                                 #P Reference as a string
+ {my ($block, $r) = @_;                                                         # Block of code, reference
+  @_ == 2 or confess "Two parameters";
+
+  return "" unless defined $r;
+  ref($r) =~ m(Reference) or confess "Must be a reference, not: ".dump($r);
+
+  if ($r->arena == arenaLocal)
+   {return "" unless my $a = $r->address;
+    return dump $a
+   }
+  else
+   {return dump [$r->area, $r->address, $r->name, $r->delta];
+   }
  }
 
 sub Zero::Emulator::Code::ArrayNameToNumber($$)                                 #P Generate a unique number for this array name
@@ -1607,11 +1650,9 @@ sub ArrayCountGreater($$;$) {                                                   
    }
  }
 
-sub ArrayDump($;$)                                                              #i Dump an array.
- {my ($target, $source) = @_;                                                   # Array to dump, title of dump
-  my $i = $assembly->instruction(action=>"arrayDump", xTarget($target),
-    xSource($source));
-  $i;
+sub ArrayDump($)                                                                #i Dump an array.
+ {my ($target) = @_;                                                            # Array to dump, title of dump
+  $assembly->instruction(action=>"arrayDump", xTarget($target));
  }
 
 sub ArrayIndex($$;$) {                                                          #i Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.  The business of returning -1 would have led to the confusion of "try catch" and we certainly do not want that.
@@ -1746,9 +1787,8 @@ sub Dec($)                                                                      
   $assembly->instruction(action=>"dec", xTarget($target))
  }
 
-sub Dump(;$)                                                                    #i Dump all the arrays currently in memory.
- {my ($title) = @_;                                                             # Title
-  $assembly->instruction(action=>"dump", xSource($title));
+sub Dump()                                                                      #i Dump all the arrays currently in memory.
+ {$assembly->instruction(action=>"dump");
  }
 
 sub Else(&)                                                                     #i Else block.
@@ -2316,8 +2356,8 @@ sub rerefValue($$)                                                              
   confess "Rereference depth of $depth is too deep";
  }
 
-sub packRef($)                                                                  #P Pack a reference into 8 bytes
- {my ($ref) = @_;                                                               # Reference to pack
+sub Zero::Emulator::Code::packRef($$$)                                          #P Pack a reference into 8 bytes
+ {my ($code, $instruction, $ref) = @_;                                          # Code block being packed, instruction being packed, reference being packed
 
   if (!defined($ref) or ref($ref) =~ m(array)i && !@$ref)                       # Unused reference
    {my $a = '';
@@ -2333,10 +2373,37 @@ sub packRef($)                                                                  
   $_ //= 0 for @a;
   my ($arena, $area, $address, $delta, $name) = @a;
 
-  confess "Area too big"     if refValue($area)    >= 2**16;                    # 2 + 16
-  confess "Address too big"  if refValue($address) >= 2**32;                    # 2 + 32
-  confess "Arena too big"    if     $arena         >= 2**2;                     # 2
-  confess "Delta too big"    if abs($delta)        >  2**7;                     # 8
+  my $dArea    = dump $area;
+  my $dAddress = dump $address;
+  my $dArena   = dump $arena;
+  my $dDelta   = dump $delta;
+
+  my $b = "too big, should be less than:";
+
+  my $bArea    = "$b 2**16";
+  my $bAddress = "$b 2**32";
+  my $bArena   = "$b 2**2";
+  my $bDelta   = "$b 2**7";
+
+
+  my @m;
+  push @m, "Area: $dArea $bArea"          if refValue($area)    >= 2**16;       # 2 + 16
+  push @m, "Address: $dAddress $bAddress" if refValue($address) >= 2**32;       # 2 + 32
+  push @m, "Arena: $dArena $bArea"        if     $arena         >= 2**2;        # 2
+  push @m, "Delta: $dDelta $bDelta"       if abs($delta)        >  2**7;        # 8
+
+  if (@m)
+   {my $i = dump $instruction;
+    my $r = dump $ref;
+    my $c = join  "\n", $instruction->contextString, '';
+    my ($m) = @m;
+    confess <<END;
+Unable to pack reference: $r
+$m
+$i
+$c
+END
+   }
 
   my $a = '';
   vec($a, 0, 32) =  refValue $address;
@@ -2349,8 +2416,8 @@ sub packRef($)                                                                  
   $a
  }
 
-sub unpackRef($$)                                                               #P Unpack a reference
- {my ($code, $a) = @_;                                                          # Code block, string to unpack
+sub Zero::Emulator::Code::unpackRef($$)                                         #P Unpack a reference
+ {my ($code, $a) = @_;                                                          # Code block being packed, instruction being packed, reference being packed
 
   my $vAddress = vec($a,  0, 32);
   my $vArea    = vec($a,  2, 16);
@@ -2364,14 +2431,14 @@ sub unpackRef($$)                                                               
   $code->Reference([$arena  != arenaHeap ? undef : $area, $address, 0, $delta]);
  }
 
-sub packInstruction($)                                                          #P Pack an instruction
- {my ($i) = @_;                                                                 # Instruction numbers, instruction to pack
+sub Zero::Emulator::Code::packInstruction($$)                                   #P Pack an instruction
+ {my ($code, $i) = @_;                                                          # Code being packed, instruction to pack
   my  $a = '';
   vec($a, 0, 32) = $instructions{$i->action};
   vec($a, 1, 32) = 0;
-  $a .= packRef($i->target);
-  $a .= packRef($i->source);
-  $a .= packRef($i->source2);
+  $a .= $code->packRef($i, $i->target);
+  $a .= $code->packRef($i, $i->source);
+  $a .= $code->packRef($i, $i->source2);
   $a
  }
 
@@ -2390,7 +2457,7 @@ sub GenerateMachineCode(%)                                                      
   my $code = $assembly->code;
   my $pack = '';
   for my $i(@$code)
-   {$pack .= packInstruction $i;
+   {$pack .= $assembly->packInstruction($i);
    }
   $pack
  }
@@ -2404,10 +2471,10 @@ sub disAssemble($)                                                              
   for my $i(1..$n)
    {my $c = substr($mc, ($i-1)*32, 32);
     my $i = $C->instruction
-     (action=>  unpackInstruction(    substr($c,  0, 8)),
-      target=>  unpackRef        ($C, substr($c,  8, 8)),
-      source=>  unpackRef        ($C, substr($c, 16, 8)),
-      source2=> unpackRef        ($C, substr($c, 24, 8)));
+     (action=>  unpackInstruction(substr($c,  0, 8)),
+      target=>  $C->unpackRef    (substr($c,  8, 8)),
+      source=>  $C->unpackRef    (substr($c, 16, 8)),
+      source2=> $C->unpackRef    (substr($c, 24, 8)));
    }
   $C
  }
@@ -3608,6 +3675,16 @@ if (1)                                                                          
   is_deeply $e->out, <<END;
 bless([1, 22, 333], "aaa")
 END
+
+  #say STDERR $e->block->codeToString;
+  #say STDERR dump($e->block->codeToString);
+  is_deeply $e->block->codeToString, <<'END';
+0000     array           \0             3
+0001       mov [\0, 0, 3, 0]             1
+0002       mov [\0, 1, 3, 0]            22
+0003       mov [\0, 2, 3, 0]           333
+0004  arrayDump           \0
+END
  }
 
 #latest:;
@@ -3734,7 +3811,7 @@ if (1)                                                                          
 #latest:;
 if (0)                                                                          ##packRef ##Address
  {my $a = Address 1, 2, 3, 4, 5;
-  my $A = packRef $a;
+  my $A = $assembly->packRef($a);
   is_deeply unpack("h*", $A), "0000003000200150";
 
   my $b = $assembly->unpackRef($A);
