@@ -61,6 +61,7 @@ sub ExecutionEnvironment(%)                                                     
     lastAssignBefore=>      undef,                                              # Prior value of memory area before assignment
     freedArrays=>           [],                                                 # Arrays that have been recently freed and can thus be reused
     checkArrayNames=>      ($options{checkArrayNames} // 1),                    # Check array names to confirm we are accessing the expected data
+    GetMemoryLocation=>    \&getMemoryLocation,                                 # Low level memory access
    );
  }
 
@@ -361,7 +362,7 @@ sub areaContent($$)                                                             
  {my ($exec, $ref) = @_;                                                        # Execution environment, reference to array
   @_ == 2 or confess "Two parameters";
   my $array = $exec->right($ref);
-  my $a = $exec->memory->[arenaHeap][$array];
+  my $a = $exec->heap($array);
   $exec->stackTraceAndExit("Invalid area: ".dump($array)) unless defined $a;
   @$a
  }
@@ -369,7 +370,7 @@ sub areaContent($$)                                                             
 sub areaLength($$)                                                              #P Content of an area containing a specified address in memory in the specified execution.
  {my ($exec, $array) = @_;                                                      # Execution environment, reference to array
   @_ == 2 or confess "Two parameters";
-  my $a = $exec->memory->[arenaHeap][$array];
+  my $a = $exec->heap($array);
   $exec->stackTraceAndExit("Invalid area: ".dump($array)) unless defined $a;
   scalar @$a
  }
@@ -417,10 +418,9 @@ sub currentReturnPut($)                                                         
 sub dumpMemory($)                                                               #P Dump heap memory.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
-  my $memory = $exec->memory->[arenaHeap];
   my @m;
-  for my $area(1..$#$memory)                                                    # Each memory area
-   {my $l = dump $$memory[$area];
+  for my $area(grep {$_} keys $exec->memory->[arenaHeap]->@*)                   # Each memory area
+   {my $l = dump $exec->heap($area);
        $l = substr($l, 0, 100) if length($l) > 100;
        $l =~ s(\n) ( )gs;
     push @m, "$area=$l";
@@ -429,131 +429,23 @@ sub dumpMemory($)                                                               
   join "\n", @m, '';
  }
 
-sub analyzeExecutionResultsLeast($%)                                            #P Analyze execution results for least used code.
- {my ($exec, %options) = @_;                                                    # Execution results, options
-
-  my @c = $exec->block->code->@*;
-  my %l;
-  for my $i(@c)                                                                 # Count executions of each instruction
-   {$l{$i->file}{$i->line} += $i->executed unless $i->action =~ m(\Aassert)i;
-   }
-
-  my @L;
-  for   my $f(keys %l)
-   {for my $l(keys $l{$f}->%*)
-     {push @L, [$l{$f}{$l}, $f, $l];
-     }
-   }
-  my @l = sort {$$a[0] <=> $$b[0]}                                              # By frequency
-          sort {$$a[2] <=> $$b[2]} @L;                                          # By line number
-
-  my $N = $options{least}//1;
-  $#l = $N if @l > $N;
-  map {sprintf "%4d at %s line %4d", $$_[0], $$_[1], $$_[2]} @l;
- }
-
-sub analyzeExecutionResultsMost($%)                                             #P Analyze execution results for most used code.
- {my ($exec, %options) = @_;                                                    # Execution results, options
-
-  my @c = $exec->block->code->@*;
-  my %m;
-  for my $i(@c)                                                                 # Count executions of each instruction
-   {my $t =                                                                     # Traceback
-     join "\n", map {sprintf "    at %s line %4d", $$_[0], $$_[1]} $i->context->@*;
-    $m{$t} += $i->executed;
-   }
-  my @m = reverse sort {$$a[1] <=> $$b[1]} map {[$_, $m{$_}]} keys %m;          # Sort a hash into value order
-  my $N = $options{most}//1;
-  $#m = $N if @m > $N;
-  map{sprintf "%4d\n%s", $m[$_][1], $m[$_][0]} keys @m;
- }
-
-sub analyzeExecutionNotRead($%)                                                 #P Analyze execution results for variables never read.
- {my ($exec, %options) = @_;                                                    # Execution results, options
-
-  my @t;
-  my $n = $exec->notRead;
-  for my $areaK(sort keys %$n)
-   {my $area = $$n{$areaK};
-    for my $addressK(sort keys %$area)
-     {my $address = $$area{$addressK};
-      push @t, $exec->contextString(block->code->[$addressK],
-       "Not read from area: $areaK, address: $addressK in context:");
-     }
-   }
-  @t;
- }
-
-sub analyzeExecutionResultsDoubleWrite($%)                                      #P Analyze execution results - double writes.
- {my ($exec, %options) = @_;                                                    # Execution results, options
-
-  my @r;
-
-  my $W = $exec->doubleWrite;
-  if (keys %$W)
-   {for my $p(sort keys %$W)
-     {for my $q(keys $$W{$p}->%*)
-       {push @r, sprintf "Double write occured %d  times. ", $$W{$p}{$q};
-        if ($p eq $q)
-         {push @r, "First  and second write\n$p\n";
-         }
-        else
-         {push @r, "First  write:\n$p\n";
-          push @r, "Second write:\n$q\n";
-         }
-       }
-     }
-   }
-  @r
- }
-
-sub analyzeExecutionResults($%)                                                 #P Analyze execution results.
- {my ($exec, %options) = @_;                                                    # Execution results, options
-
-  my @r;
-
-  if (1)
-   {my @l = $exec->analyzeExecutionResultsLeast(%options);                      # Least/most executed
-    my @m = $exec->analyzeExecutionResultsMost (%options);
-    if (@l and $options{leastExecuted})
-     {push @r, "Least executed:";
-      push @r, @l;
-     }
-    if (@m and $options{mostExecuted})
-     {push @r, "Most executed:";
-      push @r, @m;
-     }
-   }
-
-  if (my @n = $exec->analyzeExecutionNotRead(%options))                         # Variables not read
-   {my $n = @n;
-    @n = () unless $options{notRead};
-    push @r, @n;
-    push @r, sprintf "# %8d variables not read", $n;
-   }
-
-  if (my @d = $exec->analyzeExecutionResultsDoubleWrite(%options))              # Analyze execution results - double writes
-   {my $d = @d;
-    @d = () unless $options{doubleWrite};
-    push @r, @d;
-    push @r, sprintf "# %8d double writes", $d/2;
-   }
-
-  push @r,   sprintf "# %8d instructions executed", $exec->count;
-  join "\n", @r;
+sub getMemoryLocation($$$$)                                                     #P Lowest level memory access to an array: get the address of the indicated location in memory.   This method is replacable to model different memory structures
+ {my ($exec, $arena, $area, $address) = @_;                                     # Execution environment, arena, area, address, expected name of area
+  @_ == 4 or confess "Four parameters";
+  \$exec->memory->[$arena][$area][$address];
  }
 
 sub getMemory($$$$$)                                                            #P Get from memory.
  {my ($exec, $arena, $area, $address, $name) = @_;                              # Execution environment, arena, area, address, expected name of area
   @_ == 5 or confess "Five parameters";
   $exec->checkArrayName($arena, $area, $name);
-  my $v = $exec->memory->[$arena][$area][$address];
-  if (!defined($v))                                                             # Check we are getting a defined value.  If undefined values are acceptable use L<getMemoryAddress> and dereference the result.
+  my $v = $exec->getMemoryLocation($arena, $area, $address);
+  if (!defined($$v))                                                             # Check we are getting a defined value.  If undefined values are acceptable use L<getMemoryAddress> and dereference the result.
    {my $n = $name // 'unknown';
     $exec->stackTraceAndExit
      ("Undefined memory accessed in arena: $arena, at area: $area ($n), address: $address\n");
    }
-  $v
+  $$v
  }
 
 sub getMemoryAddress($$$$$)                                                     #P Evaluate an address in the current execution environment
@@ -1071,6 +963,120 @@ sub output($$)                                                                  
 sub outLines($)                                                                 #P Turn the output channel into an array of lines
  {my ($exec) = @_;                                                              # Execution environment
   [split /\n/, $exec->out]
+ }
+
+sub analyzeExecutionResultsLeast($%)                                            #P Analyze execution results for least used code.
+ {my ($exec, %options) = @_;                                                    # Execution results, options
+
+  my @c = $exec->block->code->@*;
+  my %l;
+  for my $i(@c)                                                                 # Count executions of each instruction
+   {$l{$i->file}{$i->line} += $i->executed unless $i->action =~ m(\Aassert)i;
+   }
+
+  my @L;
+  for   my $f(keys %l)
+   {for my $l(keys $l{$f}->%*)
+     {push @L, [$l{$f}{$l}, $f, $l];
+     }
+   }
+  my @l = sort {$$a[0] <=> $$b[0]}                                              # By frequency
+          sort {$$a[2] <=> $$b[2]} @L;                                          # By line number
+
+  my $N = $options{least}//1;
+  $#l = $N if @l > $N;
+  map {sprintf "%4d at %s line %4d", $$_[0], $$_[1], $$_[2]} @l;
+ }
+
+sub analyzeExecutionResultsMost($%)                                             #P Analyze execution results for most used code.
+ {my ($exec, %options) = @_;                                                    # Execution results, options
+
+  my @c = $exec->block->code->@*;
+  my %m;
+  for my $i(@c)                                                                 # Count executions of each instruction
+   {my $t =                                                                     # Traceback
+     join "\n", map {sprintf "    at %s line %4d", $$_[0], $$_[1]} $i->context->@*;
+    $m{$t} += $i->executed;
+   }
+  my @m = reverse sort {$$a[1] <=> $$b[1]} map {[$_, $m{$_}]} keys %m;          # Sort a hash into value order
+  my $N = $options{most}//1;
+  $#m = $N if @m > $N;
+  map{sprintf "%4d\n%s", $m[$_][1], $m[$_][0]} keys @m;
+ }
+
+sub analyzeExecutionNotRead($%)                                                 #P Analyze execution results for variables never read.
+ {my ($exec, %options) = @_;                                                    # Execution results, options
+
+  my @t;
+  my $n = $exec->notRead;
+  for my $areaK(sort keys %$n)
+   {my $area = $$n{$areaK};
+    for my $addressK(sort keys %$area)
+     {my $address = $$area{$addressK};
+      push @t, $exec->contextString(block->code->[$addressK],
+       "Not read from area: $areaK, address: $addressK in context:");
+     }
+   }
+  @t;
+ }
+
+sub analyzeExecutionResultsDoubleWrite($%)                                      #P Analyze execution results - double writes.
+ {my ($exec, %options) = @_;                                                    # Execution results, options
+
+  my @r;
+
+  my $W = $exec->doubleWrite;
+  if (keys %$W)
+   {for my $p(sort keys %$W)
+     {for my $q(keys $$W{$p}->%*)
+       {push @r, sprintf "Double write occured %d  times. ", $$W{$p}{$q};
+        if ($p eq $q)
+         {push @r, "First  and second write\n$p\n";
+         }
+        else
+         {push @r, "First  write:\n$p\n";
+          push @r, "Second write:\n$q\n";
+         }
+       }
+     }
+   }
+  @r
+ }
+
+sub analyzeExecutionResults($%)                                                 #P Analyze execution results.
+ {my ($exec, %options) = @_;                                                    # Execution results, options
+
+  my @r;
+
+  if (1)
+   {my @l = $exec->analyzeExecutionResultsLeast(%options);                      # Least/most executed
+    my @m = $exec->analyzeExecutionResultsMost (%options);
+    if (@l and $options{leastExecuted})
+     {push @r, "Least executed:";
+      push @r, @l;
+     }
+    if (@m and $options{mostExecuted})
+     {push @r, "Most executed:";
+      push @r, @m;
+     }
+   }
+
+  if (my @n = $exec->analyzeExecutionNotRead(%options))                         # Variables not read
+   {my $n = @n;
+    @n = () unless $options{notRead};
+    push @r, @n;
+    push @r, sprintf "# %8d variables not read", $n;
+   }
+
+  if (my @d = $exec->analyzeExecutionResultsDoubleWrite(%options))              # Analyze execution results - double writes
+   {my $d = @d;
+    @d = () unless $options{doubleWrite};
+    push @r, @d;
+    push @r, sprintf "# %8d double writes", $d/2;
+   }
+
+  push @r,   sprintf "# %8d instructions executed", $exec->count;
+  join "\n", @r;
  }
 
 sub Zero::Emulator::Code::execute($%)                                           #P Execute a block of code.
