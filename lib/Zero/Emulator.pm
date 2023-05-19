@@ -2332,7 +2332,7 @@ END
 }
 #instructionListMapping(); exit;
 
-sub refDepth($)                                                                 #P The depth of a reference
+sub refDepth($)                                                                 #P The depth of a reference.
  {my ($ref) = @_;                                                               # Reference to pack
   return 0 if isScalar($ref);
   return 1 if isScalar($$ref);
@@ -2340,7 +2340,7 @@ sub refDepth($)                                                                 
   confess "Reference too deep".dump($ref);
  }
 
-sub refValue($)                                                                 #P The value of a reference after dereferencing
+sub refValue($)                                                                 #P The value of a reference after dereferencing.
  {my ($ref) = @_;                                                               # Reference to pack
   return $ref if isScalar($ref);
   return $$ref if isScalar($$ref);
@@ -2348,7 +2348,7 @@ sub refValue($)                                                                 
   confess "Reference too deep".dump($ref);
  }
 
-sub rerefValue($$)                                                              #P Rereference a value
+sub rerefValue($$)                                                              #P Rereference a value.
  {my ($value, $depth) = @_;                                                     # Value to reference, depth of reference
   return   $value if $depth == 0;
   return  \$value if $depth == 1;
@@ -2356,7 +2356,7 @@ sub rerefValue($$)                                                              
   confess "Rereference depth of $depth is too deep";
  }
 
-sub Zero::Emulator::Code::packRef($$$)                                          #P Pack a reference into 8 bytes
+sub Zero::Emulator::Code::packRef($$$)                                          #P Pack a reference into 8 bytes.
  {my ($code, $instruction, $ref) = @_;                                          # Code block being packed, instruction being packed, reference being packed
 
   if (!defined($ref) or ref($ref) =~ m(array)i && !@$ref)                       # Unused reference
@@ -2416,7 +2416,7 @@ END
   $a
  }
 
-sub Zero::Emulator::Code::unpackRef($$)                                         #P Unpack a reference
+sub Zero::Emulator::Code::unpackRef($$)                                         #P Unpack a reference.
  {my ($code, $a) = @_;                                                          # Code block being packed, instruction being packed, reference being packed
 
   my $vAddress = vec($a,  0, 32);
@@ -2431,7 +2431,7 @@ sub Zero::Emulator::Code::unpackRef($$)                                         
   $code->Reference([$arena  != arenaHeap ? undef : $area, $address, 0, $delta]);
  }
 
-sub Zero::Emulator::Code::packInstruction($$)                                   #P Pack an instruction
+sub Zero::Emulator::Code::packInstruction($$)                                   #P Pack an instruction.
  {my ($code, $i) = @_;                                                          # Code being packed, instruction to pack
   my  $a = '';
   vec($a, 0, 32) = $instructions{$i->action};
@@ -2442,7 +2442,7 @@ sub Zero::Emulator::Code::packInstruction($$)                                   
   $a
  }
 
-sub unpackInstruction($)                                                        #P Unpack an instruction
+sub unpackInstruction($)                                                        #P Unpack an instruction.
  {my ($I) = @_;                                                                 # Instruction numbers, instruction to pack
 
   my $i = vec($I, 0, 32);
@@ -2451,7 +2451,7 @@ sub unpackInstruction($)                                                        
   $n
  }
 
-sub GenerateMachineCode(%)                                                      # Generate machine code for the current block of code
+sub GenerateMachineCode(%)                                                      # Generate a string of machine code from the current block of code.
  {my (%options) = @_;                                                           # Generation options
 
   my $code = $assembly->code;
@@ -2462,7 +2462,7 @@ sub GenerateMachineCode(%)                                                      
   $pack
  }
 
-sub disAssemble($)                                                              # Disassemble machine code
+sub disAssemble($)                                                              # Disassemble machine code.
  {my ($mc) = @_;                                                                # Machine code string
 
   my $C = Code;
@@ -2479,7 +2479,7 @@ sub disAssemble($)                                                              
   $C
  }
 
-sub disAssembleMinusContext($)                                                  # Disassemble and remove context information from disassembly to make testing easier
+sub disAssembleMinusContext($)                                                  # Disassemble and remove context information from disassembly to make testing easier.
  {my ($D) = @_;                                                                 # Machine code string
 
   my $d = disAssemble  $D;
@@ -2494,7 +2494,7 @@ sub disAssembleMinusContext($)                                                  
   $d
  }
 
-sub GenerateMachineCodeDisAssembleExecute(%)                                    #i Round trip: generate amchine code, disassemble the generated machine code and execute it to prove that it works as expected
+sub GenerateMachineCodeDisAssembleExecute(%)                                    #i Round trip: generate machine code and write it onto a string, disassemble the generated machine code string and recreate a block of code from it, then execute the reconstituted code to prove that it works as well as the original code.
  {my (%options) = @_;                                                           # Options
   my $m = GenerateMachineCode;
   my $M = disAssemble $m;
