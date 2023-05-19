@@ -53,7 +53,7 @@ if (1)                                                                          
 
   ArrayDump $a, "array";
 
-  my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
+  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);             # Execute assembler program
 
   is_deeply $e->out, <<END;
 bless([1 .. 8], "array")
@@ -86,7 +86,7 @@ if (1)                                                                          
 
   ArrayDump $a, "array";
 
-  my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
+  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);             # Execute assembler program
 
   is_deeply $e->out, <<END;
 bless([1 .. 32], "array")
