@@ -129,6 +129,7 @@ sub Zero::Emulator::Code::instruction($%)                                       
       file=>           fne $fileName,                                           # Source file in which instruction was encoded
       context=>        stackTrace(),                                            # The call context in which this instruction was created
       executed=>       0,                                                       # The number of times this instruction was executed
+      step=>           0,                                                       # The last time (in steps from the start) that this instruction was executed
     );
     return $i;
    }
@@ -512,6 +513,21 @@ sub stringAllocMemoryArea($$$$)                                                 
  {my ($exec, $number, $arena, $area) = @_;                                      # Execution environment, name of allocation to bless result, arena to use, area to use
   @_ == 4 or confess "Four parameters";
   $exec->memory->[$arena][$area] = $number ? bless [], $number : [];            # Blessing with 0 is a very bad idea!
+ }
+
+sub stringPushMemoryArea($$$$)                                                  #P Push a value onto the specified array
+ {my ($exec, $arena, $area, $value) = @_;                                       # Execution environment, arena, array, value to assign
+  @_ == 4 or confess "Four parameters";
+  push $exec->memory->[$arena][$area]->@*, $value;                              # Push
+ }
+
+sub stringPopMemoryArea($$$)                                                    # Pop a value from the specified memory area if possible else confess
+ {my ($exec, $arena, $area) = @_;                                               # Execution environment, arena, array,
+  my $a = $exec->memory->[$arena][$area];
+  if (!defined($a) or !$a->@*)                                                  # Area does not exists or has zero elemenets
+   {$exec->stackTraceAndExit("Cannot pop area: $area, in arena: $arena");
+   }
+  pop @$a;                                                                      # Pop
  }
 
 # End of memory implementation
@@ -1608,25 +1624,14 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->lastAssignArena = $exec->lastAssignArea = $exec->lastAssignAddress = $exec->lastAssignValue = undef;
       defined $c or confess "No implementation for instruction: $a";
 
+      $i->step = $j;                                                            # Execution step number facilitates debugging
       $c->($i);                                                                 # Execute instruction
 
       $exec->instructionCounts->{$i->number}++;                                 # Execution count by actual instruction
 
       ++$i->executed;
 
-      if ($exec->trace)                                                         # Trace changes to memory
-       {my $e = $exec->instructionCounts->{$i->number};                         # Execution count for this instruction
-        my $f = $exec->formatTrace;
-        my $s = $exec->suppressOutput;
-        my $a = $i->action;
-        my $n = $i->number;
-        my $m  = sprintf "%5d  %4d  %4d  %12s", $j, $n, $e, $a;
-           $m .= sprintf "  %20s", $f if $f;
-           $m .= sprintf "  at %s line %d", $i->file, $i->line unless $s;
-        say STDERR $m unless $s;
-        $exec->output("$m\n");
-       }
-
+      $exec->traceMemory($i);                                                   # Trace changes to memory
      }
     confess "Out of instructions after $j"if $j >= maximumInstructionsToExecute;
    }
@@ -1635,6 +1640,24 @@ sub Zero::Emulator::Code::execute($%)                                           
 
   $exec
  }                                                                              # Execution results
+
+sub traceMemory($$)                                                             #P Trace memeory
+ {my ($exec, $instruction) = @_;                                                # Execution environment, current instruction
+  return unless $exec->trace;                                                   # Trace changes to memory if requested
+  my $e = $exec->instructionCounts->{$instruction->number};                     # Execution count for this instruction
+  my $f = $exec->formatTrace;
+  my $s = $exec->suppressOutput;
+  my $a = $instruction->action;
+  my $n = $instruction->number;
+  my $F = $instruction->file;
+  my $L = $instruction->line;
+  my $S = $instruction->step;
+  my $m  = sprintf "%5d  %4d  %4d  %12s", $S, $n, $e, $a;
+     $m .= sprintf "  %20s", $f if $f;
+     $m .= sprintf "  at %s line %d", $F, $L unless $s;
+  say STDERR $m unless $s;
+  $exec->output("$m\n");
+ }
 
 sub formatTrace($)                                                              #P Describe last memory assignment.
  {my ($exec) = @_;                                                              # Execution
