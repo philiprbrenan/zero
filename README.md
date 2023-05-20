@@ -202,6 +202,16 @@ Hello World
 END
 ```
 
+#### Explanation
+
+```Start``` starts a [program](https://en.wikipedia.org/wiki/Computer_program) using a specified version of the language.
+
+```Out``` writes a message to the ```out``` channel.
+
+```Execute``` causes the [program](https://en.wikipedia.org/wiki/Computer_program) to be assembled and then executed.  The
+execution results are stored in the [Perl](http://www.perl.org/) data structure returned by this
+instruction.
+
 ### N-Way-Tree
 
 An implementation of N-Way-Trees in [Zero assembler programming language](https://github.com/philiprbrenan/zero) .
@@ -234,16 +244,6 @@ your enhancememt.
   shiftUp           => 300,
   subtract          => 501,
 ```
-
-#### Explanation
-
-```Start``` starts a [program](https://en.wikipedia.org/wiki/Computer_program) using a specified version of the language.
-
-```Out``` writes a message to the ```out``` channel.
-
-```Execute``` causes the [program](https://en.wikipedia.org/wiki/Computer_program) to be assembled and then executed.  The
-execution results are stored in the [Perl](http://www.perl.org/) data structure returned by this
-instruction.
 
 ### Sort [programs](https://en.wikipedia.org/wiki/Computer_program) 
 [The examples folder](https://github.com/philiprbrenan/zero/tree/main/examples)
