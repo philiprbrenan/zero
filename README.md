@@ -76,61 +76,6 @@ executable instructions and then executes these instructions.
 [Documentation](https://metacpan.org/dist/Zero-Emulator/view/Emulator.pod)
 [Code](https://github.com/philiprbrenan/zero/blob/main/lib/Zero/Emulator.pm)
 
-## N-Way-Tree
-
-An implementation of N-Way-Trees in [Zero assembler programming language](https://github.com/philiprbrenan/zero) .
-
-[Documentation](https://metacpan.org/dist/Zero-Emulator/view/NWayTree.pod)
-[Code](https://github.com/philiprbrenan/zero/blob/main/lib/Zero/NWayTree.pm)
-
-Can you reduce the number of instructions required to perform ```107``` inserts
-into an N-Way-Tree? Please raise an issue if you can stating your terms for
-your enhancememt.
-
-```
-  add               => 159,
-  array             => 247,
-  arrayCountGreater => 2,
-  arrayCountLess    => 262,
-  arrayIndex        => 293,
-  dec               => 30,
-  inc               => 726,
-  jEq               => 894,
-  jGe               => 648,
-  jLe               => 461,
-  jLt               => 565,
-  jmp               => 878,
-  jNe               => 908,
-  mov               => 7619,
-  moveLong          => 171,
-  not               => 631,
-  resize            => 161,
-  shiftUp           => 300,
-  subtract          => 501,
-```
-
-# The [Zero assembler programming language](https://github.com/philiprbrenan/zero) 
-## Hello World
-
-"Hello World" in the [Zero assembler programming language](https://github.com/philiprbrenan/zero) 
-```
-  Start 1;
-
-  Out "hello World";
-
-  my $e = Execute(suppressOutput=>1);
-
-  is_deeply $e->out, ["hello World"];
-```
-
-```Start``` starts a [program](https://en.wikipedia.org/wiki/Computer_program) using a specified version of the language.
-
-```Out``` writes a message to the ```out``` channel.
-
-```Execute``` causes the [program](https://en.wikipedia.org/wiki/Computer_program) to be assembled and then executed.  The
-execution results are stored in the [Perl](http://www.perl.org/) data structure returned by this
-instruction.
-
 ## Addresses
 
 Each [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) instruction can potentially affect a target [memory](https://en.wikipedia.org/wiki/Computer_memory) location specified by
@@ -239,7 +184,68 @@ executed as usual via **Execute**.  Alternatively, the machine [code](https://en
 be used to [program](https://en.wikipedia.org/wiki/Computer_program) a [Silicon](https://en.wikipedia.org/wiki/Silicon) device such as an [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) to execute the [code](https://en.wikipedia.org/wiki/Computer_program) on a
 chip .
 
-## Example [sort](https://en.wikipedia.org/wiki/Sorting) [programs](https://en.wikipedia.org/wiki/Computer_program) 
+## Examples
+
+Examples of [Zero assembler programming language](https://github.com/philiprbrenan/zero) [programs](https://en.wikipedia.org/wiki/Computer_program): 
+### Hello World
+
+"Hello World" in the [Zero assembler programming language](https://github.com/philiprbrenan/zero): 
+```
+  Start 1;
+
+  Out "Hello World";
+
+  my $e = Execute(suppressOutput=>1);
+
+  is_deeply $e->out, <<END;
+Hello World
+END
+```
+
+### N-Way-Tree
+
+An implementation of N-Way-Trees in [Zero assembler programming language](https://github.com/philiprbrenan/zero) .
+
+[Documentation](https://metacpan.org/dist/Zero-Emulator/view/NWayTree.pod)
+[Code](https://github.com/philiprbrenan/zero/blob/main/lib/Zero/NWayTree.pm)
+
+Can you reduce the number of instructions required to perform ```107``` inserts
+into an N-Way-Tree? Please raise an issue if you can stating your terms for
+your enhancememt.
+
+```
+  add               => 159,
+  array             => 247,
+  arrayCountGreater => 2,
+  arrayCountLess    => 262,
+  arrayIndex        => 293,
+  dec               => 30,
+  inc               => 726,
+  jEq               => 894,
+  jGe               => 648,
+  jLe               => 461,
+  jLt               => 565,
+  jmp               => 878,
+  jNe               => 908,
+  mov               => 7619,
+  moveLong          => 171,
+  not               => 631,
+  resize            => 161,
+  shiftUp           => 300,
+  subtract          => 501,
+```
+
+#### Explanation
+
+```Start``` starts a [program](https://en.wikipedia.org/wiki/Computer_program) using a specified version of the language.
+
+```Out``` writes a message to the ```out``` channel.
+
+```Execute``` causes the [program](https://en.wikipedia.org/wiki/Computer_program) to be assembled and then executed.  The
+execution results are stored in the [Perl](http://www.perl.org/) data structure returned by this
+instruction.
+
+### Sort [programs](https://en.wikipedia.org/wiki/Computer_program) 
 [The examples folder](https://github.com/philiprbrenan/zero/tree/main/examples)
 contains some [sort](https://en.wikipedia.org/wiki/Sorting) [programs](https://en.wikipedia.org/wiki/Computer_program) written in [Zero assembler programming language](https://github.com/philiprbrenan/zero) . The total number of instructions
 executed for each [sort](https://en.wikipedia.org/wiki/Sorting) [program](https://en.wikipedia.org/wiki/Computer_program) on each of two sample sets of data are shown
