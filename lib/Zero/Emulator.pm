@@ -1603,42 +1603,57 @@ sub Zero::Emulator::Code::execute($%)                                           
 
   my $mi = $options{maximumInstructionsToExecute} //                            # Prevent run away executions
                     maximumInstructionsToExecute;
-  for my $j(1..$mi)                                                             # Each instruction in the code until we hit an undefined instruction
+
+  for my $step(1..$mi)                                                          # Each instruction in the code until we hit an undefined instruction
    {last unless defined($exec->instructionPointer);
-    my $i = $exec->block->code->[$exec->instructionPointer++];                  # Current instruction
-            $exec->calls->[-1]->instruction = $i;
-    last unless $i;
-    if (my $a = $i->action)                                                     # Action
-     {$exec->stackTraceAndExit(qq(Invalid instruction: "$a"))
-        unless my $c = $instructions{$a};
+    my $instruction = $exec->block->code->[$exec->instructionPointer++];        # Current instruction
+    last unless $instruction;                                                   # Current instruction is undefined so we must have reached the end of the program
 
-      if ($a !~ m(\A(assert.*|label|tally|trace(Points?)?)\Z))                  # Omit instructions that are not tally-able
-       {if (my $t = $exec->tally)                                               # Tally instruction counts
-         {$exec->tallyCount++;
-          $exec->tallyTotal->{$t}++;
-          $exec->tallyCounts->{$t}{$a}++;
-         }
-        $exec->counts->{$a}++; $exec->count++;                                  # Execution instruction counts
-       }
+    $exec->calls->[-1]->instruction = $instruction;                             # Make this instriction the current instruction
 
-      $exec->lastAssignArena = $exec->lastAssignArea = $exec->lastAssignAddress = $exec->lastAssignValue = undef;
-      defined $c or confess "No implementation for instruction: $a";
+    if (my $a = $instruction->action)                                           # Action
+     {$exec->stackTraceAndExit(qq(No implementation for instruction: "$a"))     # Check that there is come code implementing the action for this instruction
+        unless my $implementation = $instructions{$a};
 
-      $i->step = $j;                                                            # Execution step number facilitates debugging
-      $c->($i);                                                                 # Execute instruction
+      $exec->tallyInstructionCounts($instruction);                              # Tally instruction counts
+      $exec->resetLastAssign;                                                   # Trace assignments
+      $instruction->step = $step;                                               # Execution step number facilitates debugging
 
-      $exec->instructionCounts->{$i->number}++;                                 # Execution count by actual instruction
+      $implementation->($instruction);                                          # Execute instruction
 
-      ++$i->executed;
+      $exec->instructionCounts->{$instruction->number}++;                       # Execution count by actual instruction
 
-      $exec->traceMemory($i);                                                   # Trace changes to memory
+      ++$instruction->executed;
+
+      $exec->traceMemory($instruction);                                         # Trace changes to memory
      }
-    confess "Out of instructions after $j"if $j >= maximumInstructionsToExecute;
+    if ($step >= maximumInstructionsToExecute)
+     {confess "Out of instructions after $step";
+     }
    }
 
   $exec->freeSystemAreas($exec->calls->[0]);                                    # Free first stack frame
 
   $exec
+ }                                                                              # Execution results
+
+sub tallyInstructionCounts($$)                                                  #P Tally instruction counts
+ {my ($exec, $instruction) = @_;                                                # Execution environment, instruction being executed
+  my $a = $instruction->action;
+  if ($a !~ m(\A(assert.*|label|tally|trace(Points?)?)\Z))                      # Omit instructions that are not tally-able
+   {if (my $t = $exec->tally)                                                   # Tally instruction counts
+     {$exec->tallyCount++;
+      $exec->tallyTotal->{$t}++;
+      $exec->tallyCounts->{$t}{$a}++;
+     }
+    $exec->counts->{$a}++; $exec->count++;                                      # Execution instruction counts
+   }
+ }
+
+sub resetLastAssign($)                                                          #P Reset the last assign trace fields ready for this instruction
+ {my ($exec) = @_;                                                              # Execution environment
+  $exec->lastAssignArena   = $exec->lastAssignArea  =
+  $exec->lastAssignAddress = $exec->lastAssignValue = undef;
  }                                                                              # Execution results
 
 sub traceMemory($$)                                                             #P Trace memeory
