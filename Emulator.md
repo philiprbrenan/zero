@@ -881,7 +881,7 @@ Else block.
        10    12     1           jmp
        11    16     1         label
     END
-      my $E = &$ee(suppressOutput=>1);                                           # Repeated execution produces the same result
+      my $E = &$ee(suppressOutput=>1);
       is_deeply $E->out, <<END;
     Trace: 1
         1     0     1         trace
@@ -896,6 +896,9 @@ Else block.
        10    12     1           jmp
        11    16     1         label
     END
+    
+      is_deeply scalar($e->notExecuted->@*), 6;
+      is_deeply scalar($E->notExecuted->@*), 6;
      }
     
 
@@ -3105,7 +3108,7 @@ Then block.
        10    12     1           jmp
        11    16     1         label
     END
-      my $E = &$ee(suppressOutput=>1);                                           # Repeated execution produces the same result
+      my $E = &$ee(suppressOutput=>1);
       is_deeply $E->out, <<END;
     Trace: 1
         1     0     1         trace
@@ -3120,6 +3123,9 @@ Then block.
        10    12     1           jmp
        11    16     1         label
     END
+    
+      is_deeply scalar($e->notExecuted->@*), 6;
+      is_deeply scalar($E->notExecuted->@*), 6;
      }
     
 
@@ -3172,7 +3178,7 @@ Start or stop tracing.  Tracing prints each instruction executed and its effect 
        10    12     1           jmp
        11    16     1         label
     END
-      my $E = &$ee(suppressOutput=>1);                                           # Repeated execution produces the same result
+      my $E = &$ee(suppressOutput=>1);
       is_deeply $E->out, <<END;
     
     Trace: 1  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -3189,6 +3195,9 @@ Start or stop tracing.  Tracing prints each instruction executed and its effect 
        10    12     1           jmp
        11    16     1         label
     END
+    
+      is_deeply scalar($e->notExecuted->@*), 6;
+      is_deeply scalar($E->notExecuted->@*), 6;
      }
     
 
