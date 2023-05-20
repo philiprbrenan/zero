@@ -79,7 +79,7 @@ executable instructions and then executes these instructions.
 ## Addresses
 
 Each [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) instruction can potentially affect a target [memory](https://en.wikipedia.org/wiki/Computer_memory) location specified by
-the target operand known as the "left hand" address.  Each [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) instruction can potentially read zero, one or two source operands to locate the
+the target operand known as the **left hand** address.  Each [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) instruction can potentially read zero, one or two source operands to locate the
 data to be processed by the instruction.
 
 Each address indexes an [array](https://en.wikipedia.org/wiki/Dynamic_array) in [memory](https://en.wikipedia.org/wiki/Computer_memory). Each [array](https://en.wikipedia.org/wiki/Dynamic_array) has a non unique name to
@@ -105,9 +105,9 @@ stack frame identified by location ```1``` in the current stack frame.
 
 ```
 
-A left hand address can specifys the address of a location in an [array](https://en.wikipedia.org/wiki/Dynamic_array) in [memory](https://en.wikipedia.org/wiki/Computer_memory). Left hand addresses always occur first in the written specification of an
-instruction.  In the example above, the value 99 is being moved to location 2
-in [array](https://en.wikipedia.org/wiki/Dynamic_array) 1 operating under the name of 'array name'.
+A **left hand** address can specifys the address of a location in an [array](https://en.wikipedia.org/wiki/Dynamic_array) in [memory](https://en.wikipedia.org/wiki/Computer_memory). Left hand addresses always occur first in the written specification of
+an instruction.  In the example above, the value ```99``` is being moved to
+location ```2``` in [array](https://en.wikipedia.org/wiki/Dynamic_array) ```1``` operating under the name of 'array name'.
 
 If the [array](https://en.wikipedia.org/wiki/Dynamic_array) number is preceded by ```\``` as in ```\1``` then the number of
 the [array](https://en.wikipedia.org/wiki/Dynamic_array) will be retrieved from location ```1``` the current stack frame. This
@@ -136,18 +136,17 @@ current stack frame.
 
 ```
 
-The example above moves the constant 99 to the location 3 in the current stack
-frame.
+The example above moves the **right hand** constant ```99``` to the location
+```3``` in the current stack frame.
 
 #### Right hand addresses as variables
 
 ```
   Mov 3, \4
-
 ```
 
-The example above moves the contents of location 4 in the current stack frame
-to location 3 in the current stack frame.
+The example above moves the contents of location ```4``` in the current stack
+frame to location ```3``` in the current stack frame.
 
 #### Right hand addresses as indexed [arrays](https://en.wikipedia.org/wiki/Dynamic_array) 
 ```
@@ -158,7 +157,7 @@ to location 3 in the current stack frame.
 
 ```
 
-The example above moves the contents of location 4 in the current stack frame
+The example above moves the contents of location ```4``` in the current stack frame
 to location 3 in the [array](https://en.wikipedia.org/wiki/Dynamic_array) whose identifying number is located at location
 **$a** in the current stack frame.  The [array](https://en.wikipedia.org/wiki/Dynamic_array) is created with an identifying
 name of **keys**.  The [string](https://en.wikipedia.org/wiki/String_(computer_science)) **keys** must be presented on each subsequent
