@@ -15,7 +15,7 @@ use strict;
 use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>185" unless caller;
+eval "use Test::More tests=>189" unless caller;
 
 makeDieConfess;
 my $Debug;
@@ -41,6 +41,7 @@ sub ExecutionEnvironment(%)                                                     
     rw=>                    [],                                                 # Read / write access to memory
     read=>                  [],                                                 # Records whether a memory address was ever read allowing us to find all the unused locations
     notReadAddresses=>      [],                                                 # Memory addresses never read
+    notExecuted=>           [],                                                 # Instructions not executed
     out=>                   '',                                                 # The out channel. L<Out> writes an array of items to this followed by a new line.  L<out> does the same but without the new line.
     doubleWrite=>           {},                                                 # Source of double writes {instruction number} to count - an existing value was overwritten before it was used
     pointlessAssign=>       {},                                                 # Location already has the specified value
@@ -1177,7 +1178,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
   $block->assemble if $block;                                                   # Assemble unless we just want the instructions
 
-  my $exec = ExecutionEnvironment(code=>$block, %options);                      # Execution environment
+  my $exec = ExecutionEnvironment(code=>$block, %options);                      # Create the execution environment
 
   my %instructions =                                                            # Instruction definitions
    (add=> sub                                                                   # Add the two source operands and store the result in the target
@@ -1604,7 +1605,7 @@ sub Zero::Emulator::Code::execute($%)                                           
   my $mi = $options{maximumInstructionsToExecute} //                            # Prevent run away executions
                     maximumInstructionsToExecute;
 
-  for my $step(1..$mi)                                                          # Each instruction in the code until we hit an undefined instruction
+  for my $step(1..$mi)                                                          # Execute each instruction in the code until we hit an undefined instruction. Track various statistics to assist in debugging and code improvement.
    {last unless defined($exec->instructionPointer);
     my $instruction = $exec->block->code->[$exec->instructionPointer++];        # Current instruction
     last unless $instruction;                                                   # Current instruction is undefined so we must have reached the end of the program
@@ -1634,8 +1635,20 @@ sub Zero::Emulator::Code::execute($%)                                           
 
   $exec->freeSystemAreas($exec->calls->[0]);                                    # Free first stack frame
 
+  $exec->completionStatistics;
+
   $exec
  }                                                                              # Execution results
+
+sub completionStatistics($)                                                     #P Produce various statistics summarizing the execution of the program
+ {my ($exec) = @_;                                                              # Execution environment
+  my $code = $exec->block->code;                                                # Instructions in code block
+  my @n;
+  for my $i(@$code)                                                             # Each instruction
+   {push @n, $i unless $i->executed;
+   }
+  $exec->notExecuted = [@n];
+ }
 
 sub tallyInstructionCounts($$)                                                  #P Tally instruction counts
  {my ($exec, $instruction) = @_;                                                # Execution environment, instruction being executed
@@ -3767,7 +3780,7 @@ Trace: 1
    10    12     1           jmp
    11    16     1         label
 END
-  my $E = &$ee(suppressOutput=>1);                                           # Repeated execution produces the same result
+  my $E = &$ee(suppressOutput=>1);
   is_deeply $E->out, <<END;
 Trace: 1
     1     0     1         trace
@@ -3782,6 +3795,9 @@ Trace: 1
    10    12     1           jmp
    11    16     1         label
 END
+
+  is_deeply scalar($e->notExecuted->@*), 6;
+  is_deeply scalar($E->notExecuted->@*), 6;
  }
 
 #latest:;
