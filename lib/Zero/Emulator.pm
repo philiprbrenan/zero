@@ -15,7 +15,7 @@ use strict;
 use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>182" unless caller;
+eval "use Test::More tests=>185" unless caller;
 
 makeDieConfess;
 my $Debug;
@@ -2504,7 +2504,7 @@ sub disAssemble($)                                                              
   $C
  }
 
-sub disAssembleMinusContext($)                                                  # Disassemble and remove context information from disassembly to make testing easier.
+sub disAssembleMinusContext($)                                                  #P Disassemble and remove context information from disassembly to make testing easier.
  {my ($D) = @_;                                                                 # Machine code string
 
   my $d = disAssemble  $D;
@@ -2547,6 +2547,13 @@ sub is_deeply;
 sub ok($;$);
 sub x {exit if $debug}                                                          # Stop if debugging.
 
+=pod
+
+Tests are run using differnt combuinations of execution engine and memory
+manager to prove that different implementations produce the same results.
+
+=cut
+
 for my $testSet(1..2) {                                                         # Select various combinations of execution engine and memory handler
    my $ee = \&Execute;                                                          # Assemble and execute
       $ee = \&GenerateMachineCodeDisAssembleExecute if $testSet == 2;           # Generate machine code, load code and execute
@@ -2577,7 +2584,6 @@ if (1)                                                                          
   Nop;
   my $e = &$ee;
   is_deeply $e->out, "";
-
  }
 
 #latest:;
@@ -3899,6 +3905,24 @@ if (1)                                                                          
 END
  }
 }
+
+#latest:;
+if (1)                                                                          ##GenerateMachineCode ##GenerateMachineCodeDisAssembleExecute ##disAssemble
+ {Start 1;
+  my $a = Mov 1;
+  my $g = GenerateMachineCode;
+  is_deeply dump($g), 'pack("H*","0000002300000000000000000000017f000000010000007f000000000000007f")';
+
+  my $d = disAssemble $g;
+     $d->assemble;
+  is_deeply $d->codeToString, <<'END';
+0000       mov [undef, \0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+END
+  my $e =  GenerateMachineCodeDisAssembleExecute;
+  is_deeply $e->block->codeToString, <<'END';
+0000       mov [undef, \0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+END
+ }
 
 =pod
 (\A.{80})\s+(#.*\Z) \1\2
