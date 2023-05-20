@@ -2363,7 +2363,6 @@ Do nothing (but do it well!).
 
       my $e = &$ee;
       is_deeply $e->out, "";
-    
      }
     
     if (1)                                                                             
@@ -3308,6 +3307,28 @@ Generate a string of machine code from the current block of code.
        Parameter  Description
     1  %options   Generation options
 
+**Example:**
+
+    if (1)                                                                            
+     {Start 1;
+      my $a = Mov 1;
+    
+      my $g = GenerateMachineCode;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      is_deeply dump($g), 'pack("H*","0000002300000000000000000000017f000000010000007f000000000000007f")';
+    
+      my $d = disAssemble $g;
+         $d->assemble;
+      is_deeply $d->codeToString, <<'END';
+    0000       mov [undef, \0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+    END
+      my $e =  GenerateMachineCodeDisAssembleExecute;
+      is_deeply $e->block->codeToString, <<'END';
+    0000       mov [undef, \0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+    END
+     }
+    
+
 ## disAssemble($mc)
 
 Disassemble machine code.
@@ -3315,12 +3336,27 @@ Disassemble machine code.
        Parameter  Description
     1  $mc        Machine code string
 
-## disAssembleMinusContext($D)
+**Example:**
 
-Disassemble and remove context information from disassembly to make testing easier.
+    if (1)                                                                            
+     {Start 1;
+      my $a = Mov 1;
+      my $g = GenerateMachineCode;
+      is_deeply dump($g), 'pack("H*","0000002300000000000000000000017f000000010000007f000000000000007f")';
+    
+    
+      my $d = disAssemble $g;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-       Parameter  Description
-    1  $D         Machine code string
+         $d->assemble;
+      is_deeply $d->codeToString, <<'END';
+    0000       mov [undef, \0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+    END
+      my $e =  GenerateMachineCodeDisAssembleExecute;
+      is_deeply $e->block->codeToString, <<'END';
+    0000       mov [undef, \0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+    END
+     }
+    
 
 ## GenerateMachineCodeDisAssembleExecute(%options)
 
@@ -3328,6 +3364,28 @@ Round trip: generate machine code and write it onto a string, disassemble the ge
 
        Parameter  Description
     1  %options   Options
+
+**Example:**
+
+    if (1)                                                                            
+     {Start 1;
+      my $a = Mov 1;
+      my $g = GenerateMachineCode;
+      is_deeply dump($g), 'pack("H*","0000002300000000000000000000017f000000010000007f000000000000007f")';
+    
+      my $d = disAssemble $g;
+         $d->assemble;
+      is_deeply $d->codeToString, <<'END';
+    0000       mov [undef, \0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+    END
+    
+      my $e =  GenerateMachineCodeDisAssembleExecute;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      is_deeply $e->block->codeToString, <<'END';
+    0000       mov [undef, \0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+    END
+     }
+    
 
 # Private Methods
 
@@ -3486,6 +3544,13 @@ Unpack an instruction.
 
        Parameter  Description
     1  $I         Instruction numbers
+
+## disAssembleMinusContext($D)
+
+Disassemble and remove context information from disassembly to make testing easier.
+
+       Parameter  Description
+    1  $D         Machine code string
 
 # Index
 
