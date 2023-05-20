@@ -36,6 +36,7 @@ sub ExecutionEnvironment(%)                                                     
     tallyTotal=>            {},                                                 # Total instructions executed in each tally
     instructionPointer=>    0,                                                  # Current instruction
     memory=>                [],                                                 # Memory contents at the end of execution
+    memoryString=>          [],                                                 # Memory packed into one string
     memoryType=>            [],                                                 # Memory contents at the end of execution
     rw=>                    [],                                                 # Read / write access to memory
     read=>                  [],                                                 # Records whether a memory address was ever read allowing us to find all the unused locations
@@ -64,6 +65,8 @@ sub ExecutionEnvironment(%)                                                     
     GetMemoryArea=>        \&getMemoryArea,                                     # Low level memory access - area
     GetMemoryLocation=>    \&getMemoryLocation,                                 # Low level memory access - location
     AllocMemoryArea=>      \&allocMemoryArea,                                   # Low level memory access - allocate new area
+    PushMemoryArea=>       \&pushMemoryArea,                                    # Low level memory access - push onto area
+    PopMemoryArea=>        \&popMemoryArea,                                     # Low level memory access - pop from area
    );
  }
 
@@ -430,13 +433,15 @@ sub dumpMemory($)                                                               
   join "\n", @m, '';
  }
 
-sub getMemoryArena($$$$)                                                        #P Lowest level memory access to an arena.
+# These methods provide the original unlimited memory mechanism using multidimensional arrays
+
+sub getMemoryArena($$)                                                          #P Lowest level memory access to an arena.
  {my ($exec, $arena) = @_;                                                      # Execution environment, arena
   @_ == 2 or confess "Two parameters";
   $exec->memory->[$arena]
  }
 
-sub getMemoryArea($$$$)                                                         #P Lowest level memory access to an area.
+sub getMemoryArea($$$)                                                          #P Lowest level memory access to an area.
  {my ($exec, $arena, $area) = @_;                                               # Execution environment, arena, area
   @_ == 3 or confess "Three parameters";
   $exec->memory->[$arena][$area]
@@ -453,6 +458,63 @@ sub allocMemoryArea($$$$)                                                       
   @_ == 4 or confess "Four parameters";
   $exec->memory->[$arena][$area] = $number ? bless [], $number : [];            # Blessing with 0 is a very bad idea!
  }
+
+sub pushMemoryArea($$$$)                                                        #P Push a value onto the specified array
+ {my ($exec, $arena, $area, $value) = @_;                                       # Execution environment, arena, array, value to assign
+  @_ == 4 or confess "Four parameters";
+  push $exec->memory->[$arena][$area]->@*, $value;                              # Push
+ }
+
+sub popMemoryArea($$$)                                                          # Pop a value from the specified memory area if possible else confess
+ {my ($exec, $arena, $area) = @_;                                               # Execution environment, arena, array,
+  my $a = $exec->memory->[$arena][$area];
+  if (!defined($a) or !$a->@*)                                                  # Area does not exists or has zero elemenets
+   {$exec->stackTraceAndExit("Cannot pop area: $area, in arena: $arena");
+   }
+  pop @$a;                                                                      # Pop
+ }
+
+# These methods place the heap arena in a vector string. Each area is up to a prespecified width wide. The current length of each such array is held in the first element.
+
+sub stringGetMemoryArena($$$$)                                                  #P Lowest level memory access to an arena.
+ {my ($exec, $arena) = @_;                                                      # Execution environment, arena
+  @_ == 2 or confess "Two parameters";
+  return getMemoryArena($exec, $arena) if $arena != arenaHeap;                  # Non heap  objects continue as normal becuase the number of local variables and subroutines a human can produce in one lifetime are limited,
+  $exec->memoryString                                                           # Heap objects must be smaller than a maximum size so that we can calculate their offset in the memory string
+ }
+
+sub stringGetMemoryArea($$$$)                                                   #P Lowest level memory access to an area.
+ {my ($exec, $arena, $area) = @_;                                               # Execution environment, arena, area
+  @_ == 3 or confess "Three parameters";
+  return getMemoryArea($exec, $arena, $area) if $arena != arenaHeap;            # Non heap  objects continue as normal becuase the number of local variables and subroutines a human can produce in one lifetime are limited,
+
+  my $e = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
+  my $w = $exec->memoryStringMaxElements;                                       # Maximum width of arena
+  my $o = $area * $w * $e;                                                      # Offset into memory of arena is easily calculated
+
+  substr($exec->memoryString, $o, $w)                                           # Memory
+ }
+
+sub stringGetMemoryLocation($$$$)                                               #P Lowest level memory access to an array: get the address of the indicated location in memory.   This method is replacable to model different memory structures
+ {my ($exec, $arena, $area, $address) = @_;                                     # Execution environment, arena, area, address, expected name of area
+  @_ == 4 or confess "Four parameters";
+  return getMemoryLocation($exec, $arena, $area, $address) if $arena != arenaHeap; # Non heap  objects continue as normal becuase the number of local variables and subroutines a human can produce in one lifetime are limited,
+
+  my $e = $exec->memoryStringElementWidth;
+  my $w = $exec->memoryStringMaxElements;                                       # Maximum width of arena
+  $address < $w - 1 or confess "Address $address > $w";                         # Check we are within the area
+  my $o = $area * $w + (1 + $address) * $e;                                     # Offset into memory of elements is easily calculated. We allow one element to hold the current length of this area to allow push/pop to work
+
+  substr($exec->memoryString, $o, $e)                                           # Memory containing one element
+ }
+
+sub stringAllocMemoryArea($$$$)                                                 #P Allocate a memory area
+ {my ($exec, $number, $arena, $area) = @_;                                      # Execution environment, name of allocation to bless result, arena to use, area to use
+  @_ == 4 or confess "Four parameters";
+  $exec->memory->[$arena][$area] = $number ? bless [], $number : [];            # Blessing with 0 is a very bad idea!
+ }
+
+# End of memory implementation
 
 sub getMemory($$$$$)                                                            #P Get from memory.
  {my ($exec, $arena, $area, $address, $name) = @_;                              # Execution environment, arena, area, address, expected name of area
@@ -579,17 +641,13 @@ sub pushArea($$$$$)                                                             
  {my ($exec, $arena, $area, $name, $value) = @_;                                # Execution environment, arena, array, name of allocation, value to assign
   @_ == 5 or confess "Five parameters";
   $exec->checkArrayName($arena, $area, $name);
-  push $exec->GetMemoryArea->($exec, $arena, $area)->@*, $value;
+  $exec->PushMemoryArea->($exec, $arena, $area, $value);
  }
 
 sub popArea($$$$)                                                               # Pop a value from the specified memory area if possible else confess
  {my ($exec, $arena, $area, $name) = @_;                                        # Execution environment, arena, array, name of allocation, value to assign
   $exec->checkArrayName($arena, $area, $name);                                  # Check stack name
-  my $a = $exec->GetMemoryArea->($exec, $arena, $area);
-  if (!defined($a) or !$a->@*)                                                  # Stack not pop-able
-   {$exec->stackTraceAndExit("Cannot pop area: $area, in arena: $arena");
-   }
-  pop @$a;
+  $exec->PopMemoryArea->($exec, $arena, $area);
  }
 
 sub getMemoryType($$$)                                                          #P Get the type of an area
