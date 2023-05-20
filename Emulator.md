@@ -21,7 +21,7 @@ Say "hello world":
 
 # Description
 
-Version 20230515.
+Version 20230519.
 
 The following sections describe the methods in each functional area of this
 module.  For an alphabetic listing of all methods by name see [Index](#index).
@@ -47,7 +47,7 @@ Add the source locations together and store the result in the target area.
       my $a = Add 3, 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out  $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     5
     END
@@ -176,20 +176,26 @@ Dump an array.
     
       ArrayDump $a;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
-      is_deeply $e->out, <<END;
-    bless([1, 22, 333], "aaa")
-    END
+      is_deeply eval($e->out), [1, 22, 333];
     
       #say STDERR $e->block->codeToString;
       #say STDERR dump($e->block->codeToString);
-      is_deeply $e->block->codeToString, <<'END';
+      is_deeply $e->block->codeToString, <<'END' if $testSet == 1;
     0000     array           \0             3
     0001       mov [\0, 0, 3, 0]             1
     0002       mov [\0, 1, 3, 0]            22
     0003       mov [\0, 2, 3, 0]           333
     0004  arrayDump           \0
+    END
+    
+      is_deeply $e->block->codeToString, <<'END' if $testSet == 2;
+    0000     array [undef, \0, 3, 0]  [undef, 3, 3, 0]  [undef, 0, 3, 0]
+    0001       mov [\0, 0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+    0002       mov [\0, 1, 3, 0]  [undef, 22, 3, 0]  [undef, 0, 3, 0]
+    0003       mov [\0, 2, 3, 0]  [undef, 333, 3, 0]  [undef, 0, 3, 0]
+    0004  arrayDump [undef, \0, 3, 0]  [undef, 0, 3, 0]  [undef, 0, 3, 0]
     END
      }
     
@@ -281,7 +287,7 @@ Assert regardless.
     
       Assert;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     
     Assert failed  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -308,7 +314,7 @@ Assert two memory locations are equal.
     
       AssertEq \0, 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     Assert 1 == 2 failed
         1     2 assertEq
@@ -332,7 +338,7 @@ Assert false.
     
       AssertFalse 1;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1, trace=>1);
+      my $e = &$ee(suppressOutput=>1, trace=>1);
     
       is_deeply $e->out, <<END;
         1     0     1    assertTrue
@@ -362,7 +368,7 @@ Assert are greater than or equal.
     
       AssertGe \0, 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     Assert 1 >= 2 failed
         1     2 assertGe
@@ -387,7 +393,7 @@ Assert two memory locations are greater than.
     
       AssertGt \0, 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     Assert 1 >  2 failed
         1     2 assertGt
@@ -412,7 +418,7 @@ Assert two memory locations are less than or equal.
     
       AssertLe \0, 0;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     Assert 1 <= 0 failed
         1     2 assertLe
@@ -437,7 +443,7 @@ Assert two memory locations are less than.
     
       AssertLt \0, 0;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     Assert 1 <  0 failed
         1     2 assertLt
@@ -462,7 +468,7 @@ Assert two memory locations are not equal.
     
       AssertNe \0, 1;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     Assert 1 != 1 failed
         1     2 assertNe
@@ -486,7 +492,7 @@ Assert true.
     
       AssertTrue  0;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1, trace=>1);
+      my $e = &$ee(suppressOutput=>1, trace=>1);
       is_deeply $e->out, <<END;
         1     0     1   assertFalse
     
@@ -523,7 +529,7 @@ A bad ending.
        {Out 3;
        };
       Out 4;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     1
     2
@@ -558,7 +564,7 @@ Block of code that can either be restarted or come to a good or a bad ending.
        {Out 3;
        };
       Out 4;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     1
     2
@@ -582,7 +588,7 @@ Block of code that can either be restarted or come to a good or a bad ending.
        {Out 3;
        };
       Out 4;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     1
     3
@@ -603,15 +609,15 @@ Call the subroutine at the target address.
     if (1)                                                                           
      {Start 1;
       my $w = Procedure 'write', sub
-       {Out 'aaa';
+       {Out 1;
         Return;
        };
     
       Call $w;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    aaa
+    1
     END
      }
     
@@ -622,20 +628,20 @@ Call the subroutine at the target address.
         Out $a;
         Return;
        };
-      ParamsPut 0, 'bbb';
+      ParamsPut 0, 999;
     
       Call $w;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    bbb
+    999
     END
      }
     
     if (1)                                                                            
      {Start 1;
       my $w = Procedure 'write', sub
-       {ReturnPut 0, "ccc";
+       {ReturnPut 0, 999;
         Return;
        };
     
@@ -643,9 +649,9 @@ Call the subroutine at the target address.
 
       ReturnGet \0, 0;
       Out \0;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    ccc
+    999
     END
      }
     
@@ -682,7 +688,7 @@ Call the subroutine at the target address.
       my $V = Mov [$a, \$i, 'aaa'];
       AssertEq $v, $V;
       Out [$a, \$i, 'aaa'];
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     11
     END
@@ -703,7 +709,7 @@ Call the subroutine at the target address.
     
       ParamsPut 0, 3;  Call $set;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     1
     2
@@ -729,7 +735,7 @@ Clear the first bytes of an area.  The area is specified by the first element of
     
       Clear $a, 10, 'aaa';  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->heap(1), [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
      }
     
@@ -748,7 +754,7 @@ Confess with a stack trace showing the location both in the emulated code and in
 
        };
       Call $c;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     
     Confess at:  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -775,7 +781,7 @@ Decrement the target.
       Dec $a;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     2
     END
@@ -820,6 +826,23 @@ Else block.
 
     if (1)                                                                            
      {Start 1;
+      IfFalse 1,
+      Then
+       {Out 1
+       },
+    
+      Else  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+       {Out 0
+       };
+      my $e = &$ee(suppressOutput=>1);
+      is_deeply $e->out, <<END;
+    0
+    END
+     }
+    
+    if (1)                                                                            
+     {Start 1;
       Trace 1;
       IfEq 1, 2,
       Then
@@ -843,7 +866,7 @@ Else block.
        {Mov 3, 3;
         Mov 4, 4;
        };
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     Trace: 1
         1     0     1         trace
@@ -858,7 +881,7 @@ Else block.
        10    12     1           jmp
        11    16     1         label
     END
-      my $E = Execute(suppressOutput=>1);                                           # Repeated execution produces the same result
+      my $E = &$ee(suppressOutput=>1);                                           # Repeated execution produces the same result
       is_deeply $E->out, <<END;
     Trace: 1
         1     0     1         trace
@@ -896,17 +919,6 @@ Execute the current assembly.
     END
      }
     
-    if (1)                                                                            
-     {Start 1;
-      Out "Hello", "World";
-    
-      my $e = Execute(suppressOutput=>1);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-      is_deeply $e->out, <<END;
-    Hello World
-    END
-     }
-    
 
 ## For($block, $range, %options)
 
@@ -927,7 +939,7 @@ For loop 0..range-1 or in reverse.
        {my ($i) = @_;
         Out $i;
        } 10;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     0
     1
@@ -950,7 +962,7 @@ For loop 0..range-1 or in reverse.
        {my ($i) = @_;
         Out $i;
        } 10, reverse=>1;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     9
     8
@@ -973,7 +985,7 @@ For loop 0..range-1 or in reverse.
        {my ($i) = @_;
         Out $i;
        } [2, 10];
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     2
     3
@@ -1121,7 +1133,7 @@ A good ending.
        {Out 3;
        };
       Out 4;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     1
     2
@@ -1223,24 +1235,7 @@ Execute then clause if the specified memory address is zero thus representing fa
       Else
        {Out 0
        };
-      my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    0
-    END
-     }
-    
-    if (1)                                                                            
-     {Start 1;
-    
-      IfFalse 1,  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-      Then
-       {Out 1
-       },
-      Else
-       {Out 0
-       };
-      my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     0
     END
@@ -1628,7 +1623,7 @@ Execute then clause if the specified memory address is not zero thus representin
       Else
        {Out 0
        };
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     1
     END
@@ -1651,7 +1646,7 @@ Increment the target.
       Inc $a;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     4
     END
@@ -1690,7 +1685,7 @@ Jump to a target label if the first source field is equal to the second source f
         Jgt $next, $d, $d;
        } 3;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
       is_deeply $e->heap(1), [2];
@@ -1736,7 +1731,7 @@ Jump to a target label if the first source field is equal to zero.
 
         Out 4;
        };
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     2
     3
@@ -1776,7 +1771,7 @@ Jump to a target label if the first source field is greater than or equal to the
         Jgt $next, $d, $d;
        } 3;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
       is_deeply $e->heap(1), [2];
@@ -1816,7 +1811,7 @@ Jump to a target label if the first source field is greater than the second sour
 
        } 3;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
       is_deeply $e->heap(1), [2];
@@ -1856,7 +1851,7 @@ Jump to a target label if the first source field is less than or equal to the se
         Jgt $next, $d, $d;
        } 3;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
       is_deeply $e->heap(1), [2];
@@ -1896,7 +1891,7 @@ Jump to a target label if the first source field is less than the second source 
         Jgt $next, $d, $d;
        } 3;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
       is_deeply $e->heap(1), [2];
@@ -1925,7 +1920,7 @@ Jump to a label.
       setLabel($a);
         Out  2;
       setLabel($b);
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     2
     END
@@ -1964,7 +1959,7 @@ Jump to a target label if the first source field is not equal to the second sour
         Jgt $next, $d, $d;
        } 3;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
       is_deeply $e->heap(1), [2];
@@ -2010,7 +2005,7 @@ Jump to a target label if the first source field is not equal to zero.
         JFalse $end, $a;
         Out 4;
        };
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     2
     3
@@ -2041,7 +2036,7 @@ Load the address component of an address.
       Mov [$a, \$c, 'array'], 33;
       Mov [$f, \$d, 'array'], 44;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->out, <<END;
     2
@@ -2075,7 +2070,7 @@ Load the area component of an address.
       Mov [$a, \$c, 'array'], 33;
       Mov [$f, \$d, 'array'], 44;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->out, <<END;
     2
@@ -2098,7 +2093,7 @@ Copy a constant or memory address to the target address.
       my $a = Mov 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     2
     END
@@ -2116,7 +2111,7 @@ Copy a constant or memory address to the target address.
       Mov  1, [$a, \1, "aaa"];  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out \1;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     11
     END
@@ -2137,7 +2132,7 @@ Copy a constant or memory address to the target address.
     
       Mov [$c, 1, 'alloc'], 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->heap(1), [99, 2];
      }
     
@@ -2180,7 +2175,7 @@ Copy a constant or memory address to the target address.
 
       AssertEq $v, $V;
       Out [$a, \$i, 'aaa'];
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     11
     END
@@ -2195,7 +2190,7 @@ Copy a constant or memory address to the target address.
       ParamsPut 0, 1;  Call $set;
       ParamsPut 0, 2;  Call $set;
       ParamsPut 0, 3;  Call $set;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     1
     2
@@ -2230,7 +2225,7 @@ Copy a constant or memory address to the target address.
         Jgt $next, $d, $d;
        } 3;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
       is_deeply $e->heap(1), [2];
@@ -2252,7 +2247,7 @@ Copy a constant or memory address to the target address.
         Jeq $next, [$a, \$b, 'aaa'], 1;
        } 3;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       19 instructions executed";
       is_deeply $e->heap(1), [undef, undef, 1];
@@ -2271,20 +2266,26 @@ Copy a constant or memory address to the target address.
       Mov [$a, 2, "aaa"], 333;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       ArrayDump $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
-      is_deeply $e->out, <<END;
-    bless([1, 22, 333], "aaa")
-    END
+      is_deeply eval($e->out), [1, 22, 333];
     
       #say STDERR $e->block->codeToString;
       #say STDERR dump($e->block->codeToString);
-      is_deeply $e->block->codeToString, <<'END';
+      is_deeply $e->block->codeToString, <<'END' if $testSet == 1;
     0000     array           \0             3
     0001       mov [\0, 0, 3, 0]             1
     0002       mov [\0, 1, 3, 0]            22
     0003       mov [\0, 2, 3, 0]           333
     0004  arrayDump           \0
+    END
+    
+      is_deeply $e->block->codeToString, <<'END' if $testSet == 2;
+    0000     array [undef, \0, 3, 0]  [undef, 3, 3, 0]  [undef, 0, 3, 0]
+    0001       mov [\0, 0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+    0002       mov [\0, 1, 3, 0]  [undef, 22, 3, 0]  [undef, 0, 3, 0]
+    0003       mov [\0, 2, 3, 0]  [undef, 333, 3, 0]  [undef, 0, 3, 0]
+    0004  arrayDump [undef, \0, 3, 0]  [undef, 0, 3, 0]  [undef, 0, 3, 0]
     END
      }
     
@@ -2316,7 +2317,7 @@ Copy the number of elements specified by the second source operand from the loca
       MoveLong [$b, \2, 'bbb'], [$a, \4, 'aaa'], 3;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->heap(1), [0 .. 9];
       is_deeply $e->heap(2), [100, 101, 4, 5, 6, 105 .. 109];
      }
@@ -2337,10 +2338,14 @@ Move and not.
     
       my $c = Not $b;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      Out $a, $b, $c;
-      my $e = Execute(suppressOutput=>1);
+      Out $a;
+      Out $b;
+      Out $c;
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    3  1
+    3
+    
+    1
     END
      }
     
@@ -2356,7 +2361,7 @@ Do nothing (but do it well!).
     
       Nop;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute;
+      my $e = &$ee;
       is_deeply $e->out, "";
     
      }
@@ -2416,17 +2421,6 @@ Write memory location contents to out.
     END
      }
     
-    if (1)                                                                            
-     {Start 1;
-    
-      Out "Hello", "World";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-      my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    Hello World
-    END
-     }
-    
 
 ## ParamsGet()
 
@@ -2459,7 +2453,7 @@ Get a word from the parameters in the previous frame and store it in the current
       my $V = Mov [$a, \$i, 'aaa'];
       AssertEq $v, $V;
       Out [$a, \$i, 'aaa'];
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     11
     END
@@ -2501,7 +2495,7 @@ Put a word into the parameters list to make it visible in a called procedure.
       my $V = Mov [$a, \$i, 'aaa'];
       AssertEq $v, $V;
       Out [$a, \$i, 'aaa'];
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     11
     END
@@ -2529,10 +2523,12 @@ Pop the memory area specified by the source operand into the memory address spec
       my $d = Pop $a, "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
-      Out $c, $d;
-      my $e = Execute(suppressOutput=>1);
+      Out $c;
+      Out $d;
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    2 1
+    2
+    1
     END
       is_deeply $e->heap(1), [];
      }
@@ -2544,7 +2540,7 @@ Define a procedure.
 
        Parameter  Description
     1  $name      Name of procedure
-    2  $source    Source code as a subroutine# $assembly->instruction(action=>"procedure"
+    2  $source    Source code as a subroutine
 
 **Example:**
 
@@ -2562,7 +2558,7 @@ Define a procedure.
       Call $add;
       my $c = ReturnGet 0;
       Out $c;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     4
     END
@@ -2577,7 +2573,7 @@ Define a procedure.
       Then
        {Out 99;
        };
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     1
     2
@@ -2617,12 +2613,45 @@ Push the value in the current stack frame specified by the source operand onto t
       my $c = Pop $a, "aaa";
       my $d = Pop $a, "aaa";
     
-      Out $c, $d;
-      my $e = Execute(suppressOutput=>1);
+      Out $c;
+      Out $d;
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    2 1
+    2
+    1
     END
       is_deeply $e->heap(1), [];
+     }
+    
+    if (1)                                                                          
+     {Start 1;
+      my $a = Array "aaa";
+    
+      Push $a, 1, "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+    
+      Push $a, 2, "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+    
+      Push $a, 3, "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      my $b = Array "bbb";
+    
+      Push $b, 11, "bbb";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+    
+      Push $b, 22, "bbb";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+    
+      Push $b, 33, "bbb";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      my $e = &$ee(suppressOutput=>1);
+      is_deeply $e->memory,
+    [ [],
+      [undef, bless([1, 2, 3], "aaa"), bless([11, 22, 33], "bbb")],
+      [],
+      [],
+    ];
      }
     
 
@@ -2647,12 +2676,10 @@ Resize the target area to the source size.
       Resize $a, 2, "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       ArrayDump $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->heap(1), [1, 2];
-      is_deeply $e->out, <<END;
-    bless([1, 2], "aaa")
-    END
+      is_deeply eval($e->out), [1,2];
      }
     
 
@@ -2672,7 +2699,7 @@ Create a random number in a specified range
       my $a = Random 10;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       ok $e->out =~ m(\A\d\Z);
      }
     
@@ -2693,7 +2720,7 @@ Seed the random number generator
 
       my $a = Random 10;
       Out $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       ok $e->out =~ m(\A\d\Z);
      }
     
@@ -2707,15 +2734,15 @@ Return from a procedure via the call stack.
     if (1)                                                                           
      {Start 1;
       my $w = Procedure 'write', sub
-       {Out 'aaa';
+       {Out 1;
     
         Return;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
        };
       Call $w;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    aaa
+    1
     END
      }
     
@@ -2732,7 +2759,7 @@ Get a word from the return area and save it.
     if (1)                                                                            
      {Start 1;
       my $w = Procedure 'write', sub
-       {ReturnPut 0, "ccc";
+       {ReturnPut 0, 999;
         Return;
        };
       Call $w;
@@ -2740,9 +2767,9 @@ Get a word from the return area and save it.
       ReturnGet \0, 0;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out \0;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    ccc
+    999
     END
      }
     
@@ -2761,16 +2788,16 @@ Put a word into the return area.
      {Start 1;
       my $w = Procedure 'write', sub
     
-       {ReturnPut 0, "ccc";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+       {ReturnPut 0, 999;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
         Return;
        };
       Call $w;
       ReturnGet \0, 0;
       Out \0;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    ccc
+    999
     END
      }
     
@@ -2796,7 +2823,7 @@ Shift an element down one in an area.
 
       Out $b;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->heap(1), [0, 2];
       is_deeply $e->out, <<END;
     99
@@ -2821,7 +2848,7 @@ Shift left within an element.
       ShiftLeft $a, $a;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     2
     END
@@ -2845,7 +2872,7 @@ Shift right with an element.
       ShiftRight $a, 1;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     2
     END
@@ -2873,7 +2900,7 @@ Shift an element up one in an area.
       ShiftUp [$a, 0, 'array'], 99;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
-      my $e = Execute(suppressOutput=>0);
+      my $e = &$ee(suppressOutput=>0);
       is_deeply $e->heap(1), [99, 0, 1, 2];
      }
     
@@ -2888,7 +2915,7 @@ Shift an element up one in an area.
       ShiftUp [$a, 1, 'array'], 99;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
-      my $e = Execute(suppressOutput=>0);
+      my $e = &$ee(suppressOutput=>0);
       is_deeply $e->heap(1), [0, 99, 1, 2];
      }
     
@@ -2903,7 +2930,7 @@ Shift an element up one in an area.
       ShiftUp [$a, 2, 'array'], 99;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
-      my $e = Execute(suppressOutput=>0);
+      my $e = &$ee(suppressOutput=>0);
       is_deeply $e->heap(1), [0, 1, 99, 2];
      }
     
@@ -2918,7 +2945,7 @@ Shift an element up one in an area.
       ShiftUp [$a, 3, 'array'], 99;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
-      my $e = Execute(suppressOutput=>0);
+      my $e = &$ee(suppressOutput=>0);
       is_deeply $e->heap(1), [0, 1, 2, 99];
      }
     
@@ -2931,7 +2958,7 @@ Shift an element up one in an area.
       ShiftUp [$a, 2, 'array'], 26;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->heap(1), bless([10, 20, 26, 30, 40, 50, 60, 70], "array");
      }
     
@@ -2945,17 +2972,6 @@ Start the current assembly using the specified version of the Zero language.  At
 
 **Example:**
 
-    if (1)                                                                            
-    
-     {Start 1;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-      Out "Hello", "World";
-      my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    Hello World
-    END
-     }
-    
     if (1)                                                                            
     
      {Start 1;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -2985,7 +3001,7 @@ Subtract the second source operand value from the first source operand value and
       my $a = Subtract 4, 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     2
     END
@@ -3035,6 +3051,23 @@ Then block.
 
     if (1)                                                                            
      {Start 1;
+      IfFalse 1,
+    
+      Then  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+       {Out 1
+       },
+      Else
+       {Out 0
+       };
+      my $e = &$ee(suppressOutput=>1);
+      is_deeply $e->out, <<END;
+    0
+    END
+     }
+    
+    if (1)                                                                            
+     {Start 1;
       Trace 1;
       IfEq 1, 2,
     
@@ -3058,7 +3091,7 @@ Then block.
        {Mov 3, 3;
         Mov 4, 4;
        };
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     Trace: 1
         1     0     1         trace
@@ -3073,7 +3106,7 @@ Then block.
        10    12     1           jmp
        11    16     1         label
     END
-      my $E = Execute(suppressOutput=>1);                                           # Repeated execution produces the same result
+      my $E = &$ee(suppressOutput=>1);                                           # Repeated execution produces the same result
       is_deeply $E->out, <<END;
     Trace: 1
         1     0     1         trace
@@ -3123,7 +3156,7 @@ Start or stop tracing.  Tracing prints each instruction executed and its effect 
        {Mov 3, 3;
         Mov 4, 4;
        };
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     
     Trace: 1  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -3140,7 +3173,7 @@ Start or stop tracing.  Tracing prints each instruction executed and its effect 
        10    12     1           jmp
        11    16     1         label
     END
-      my $E = Execute(suppressOutput=>1);                                           # Repeated execution produces the same result
+      my $E = &$ee(suppressOutput=>1);                                           # Repeated execution produces the same result
       is_deeply $E->out, <<END;
     
     Trace: 1  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -3179,7 +3212,7 @@ Enable or disable label tracing.  If tracing is enabled a stack trace is printed
        {my $a = Mov 1;
         Inc $a;
        } $N;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->out, <<END;
     
@@ -3230,7 +3263,7 @@ Create a variable initialized to the specified value.
       my $a = Var 22;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       AssertEq $a, 22;
-      my $e = Execute(suppressOutput=>0, trace=>0);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, "";
      }
     
@@ -3275,58 +3308,12 @@ Generate a string of machine code from the current block of code.
        Parameter  Description
     1  %options   Generation options
 
-**Example:**
-
-    if (1)                                                                            
-     {Start 1;
-      my $a = Mov 1;
-      my $e = Execute;
-      is_deeply $e->block->code->[0]->source, {address =>  1, area => undef, arena => 0, delta => 0, name => 0 };
-      is_deeply $e->block->code->[0]->target, {address => \0, area => undef, arena => 0, delta => 0, name => 0 };
-     }
-    
-    if (1)                                                                            
-     {Start 1;
-      my $a = Mov 1;
-    
-      my $e = GenerateMachineCode;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-      is_deeply unpack("h*", $e), '000000320000000000000000000010f700000010000000f700000000000000f7';
-    
-      my $E = disAssembleMinusContext $e;
-      is_deeply $E->code->[0]->source, {address =>  1, area => undef, arena => 1, delta => 0};
-      is_deeply $E->code->[0]->target, {address => \0, area => undef, arena => 1, delta => 0};
-     }
-    
-
 ## disAssemble($mc)
 
 Disassemble machine code.
 
        Parameter  Description
     1  $mc        Machine code string
-
-**Example:**
-
-    if (1)                                                                            
-     {Start 1;
-      my $a = Mov 1;
-      my $e = Execute;
-      is_deeply $e->block->code->[0]->source, {address =>  1, area => undef, arena => 0, delta => 0, name => 0 };
-      is_deeply $e->block->code->[0]->target, {address => \0, area => undef, arena => 0, delta => 0, name => 0 };
-     }
-    
-    if (1)                                                                            
-     {Start 1;
-      my $a = Mov 1;
-      my $e = GenerateMachineCode;
-      is_deeply unpack("h*", $e), '000000320000000000000000000010f700000010000000f700000000000000f7';
-    
-      my $E = disAssembleMinusContext $e;
-      is_deeply $E->code->[0]->source, {address =>  1, area => undef, arena => 1, delta => 0};
-      is_deeply $E->code->[0]->target, {address => \0, area => undef, arena => 1, delta => 0};
-     }
-    
 
 ## disAssembleMinusContext($D)
 
@@ -3335,51 +3322,12 @@ Disassemble and remove context information from disassembly to make testing easi
        Parameter  Description
     1  $D         Machine code string
 
-**Example:**
-
-    if (1)                                                                            
-     {Start 1;
-      my $a = Mov 1;
-      my $e = Execute;
-      is_deeply $e->block->code->[0]->source, {address =>  1, area => undef, arena => 0, delta => 0, name => 0 };
-      is_deeply $e->block->code->[0]->target, {address => \0, area => undef, arena => 0, delta => 0, name => 0 };
-     }
-    
-    if (1)                                                                            
-     {Start 1;
-      my $a = Mov 1;
-      my $e = GenerateMachineCode;
-      is_deeply unpack("h*", $e), '000000320000000000000000000010f700000010000000f700000000000000f7';
-    
-    
-      my $E = disAssembleMinusContext $e;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-      is_deeply $E->code->[0]->source, {address =>  1, area => undef, arena => 1, delta => 0};
-      is_deeply $E->code->[0]->target, {address => \0, area => undef, arena => 1, delta => 0};
-     }
-    
-
 ## GenerateMachineCodeDisAssembleExecute(%options)
 
 Round trip: generate machine code and write it onto a string, disassemble the generated machine code string and recreate a block of code from it, then execute the reconstituted code to prove that it works as well as the original code.
 
        Parameter  Description
     1  %options   Options
-
-**Example:**
-
-    if (1)                                                                          
-     {Start 1;
-      my $a = Array "array";
-      Mov [$a, 0, "array"], 10;
-      Mov [$a, 1, "array"], 11;
-      Mov [$a, 2, "array"], 12;
-    
-      my $e = GenerateMachineCodeDisAssembleExecute;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-      is_deeply $e->heap(1), [10, 11, 12];
-     }
-    
 
 # Private Methods
 
@@ -3439,7 +3387,7 @@ Create a label.
       setLabel($c);
         Out  4;
       setLabel($d);
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     2
     3
@@ -3453,7 +3401,7 @@ Create a label.
         Out \0;
         Inc \0;
       Jlt $a, \0, 10;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     0
     1
