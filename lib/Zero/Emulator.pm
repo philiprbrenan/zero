@@ -477,6 +477,16 @@ sub popMemoryArea($$$)                                                          
   pop @$a;                                                                      # Pop
  }
 
+sub setOriginalMemoryTechnique($)                                               #P Set the handlers for the original memory allocation technique
+ {my ($exec) = @_;                                                              # Execution environment
+  $exec->GetMemoryArena    = \&getMemoryArena;                                  # Low level memory access - arena
+  $exec->GetMemoryArea     = \&getMemoryArea;                                   # Low level memory access - area
+  $exec->GetMemoryLocation = \&getMemoryLocation;                               # Low level memory access - location
+  $exec->AllocMemoryArea   = \&allocMemoryArea;                                 # Low level memory access - allocate new area
+  $exec->PushMemoryArea    = \&pushMemoryArea;                                  # Low level memory access - push onto area
+  $exec->PopMemoryArea     = \&popMemoryArea;                                   # Low level memory access - pop from area
+ }
+
 # These methods place the heap arena in a vector string. Each area is up to a prespecified width wide. The current length of each such array is held in the first element.
 
 sub stringGetMemoryArena($$$$)                                                  #P Lowest level memory access to an arena.
@@ -530,6 +540,16 @@ sub stringPopMemoryArea($$$)                                                    
    {$exec->stackTraceAndExit("Cannot pop area: $area, in arena: $arena");
    }
   pop @$a;                                                                      # Pop
+ }
+
+sub setStringMemoryTechnique($)                                                 #P Set the handlers for the string memory allocation technique
+ {my ($exec) = @_;                                                              # Execution environment
+  $exec->GetMemoryArena    = \&stringGetMemoryArena;                            # Low level memory access - arena
+  $exec->GetMemoryArea     = \&stringGetMemoryArea;                             # Low level memory access - area
+  $exec->GetMemoryLocation = \&stringGetMemoryLocation;                         # Low level memory access - location
+  $exec->AllocMemoryArea   = \&stringAllocMemoryArea;                           # Low level memory access - allocate new area
+  $exec->PushMemoryArea    = \&stringPushMemoryArea;                            # Low level memory access - push onto area
+  $exec->PopMemoryArea     = \&stringPopMemoryArea;                             # Low level memory access - pop from area
  }
 
 # End of memory implementation
@@ -2663,7 +2683,7 @@ sub x {exit if $debug}                                                          
 
 =pod
 
-Tests are run using differnt combuinations of execution engine and memory
+Tests are run using different combinations of execution engine and memory
 manager to prove that different implementations produce the same results.
 
 =cut
