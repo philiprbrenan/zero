@@ -15,7 +15,7 @@ use strict;
 use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>189" unless caller;
+eval "use Test::More tests=>191" unless caller;
 
 makeDieConfess;
 my $Debug;
@@ -53,6 +53,7 @@ sub ExecutionEnvironment(%)                                                     
     printDoubleWrite=>      $options{doubleWrite},                              # Double writes: earlier instruction number to later instruction number
     printPointlessAssign=>  $options{pointlessAssign},                          # Pointless assigns {instruction number} to count - address already has the specified value
     watch=>                 [],                                                 # Addresses to watch for changes
+    widestAreaInArena=>     [],                                                 # Track highest array access in each arena
     instructionCounts=>     {},                                                 # The number of times each actual instruction is executed
     lastAssignArena=>       undef,                                              # Last assignment performed - arena
     lastAssignArea=>        undef,                                              # Last assignment performed - area
@@ -187,7 +188,7 @@ sub AreaStructure($@)                                                           
   $d
  }
 
-sub Zero::Emulator::AreaStructure::count($)                                     #P Add a field to a data structure.
+sub Zero::Emulator::AreaStructure::count($)                                     #P Number of fields in a data structure
  {my ($d) = @_;                                                                 # Area structure
   scalar $d->fieldOrder->@*
  }
@@ -549,8 +550,10 @@ sub getMemory($$$$$)                                                            
 sub getMemoryAddress($$$$$)                                                     #P Evaluate an address in the current execution environment
  {my ($exec, $arena, $area, $address, $name) = @_;                              # Execution environment, arena, area, address, expected name of area
   @_ == 5 or confess "Five parameters";
-  $exec->checkArrayName($arena, $area, $name);
-  $exec->GetMemoryLocation->($exec, $arena, $area, $address);
+  $exec->widestAreaInArena->[$arena] =                                          # Track the widest area in each arena
+    max(($exec->widestAreaInArena->[$arena]//0), $address);
+  $exec->checkArrayName($arena, $area, $name);                                  # Check area name
+  $exec->GetMemoryLocation->($exec, $arena, $area, $address);                   # Read from memory
  }
 
 sub getMemoryFromAddress($$)                                                    #P Get a value from memory at a specified address
@@ -984,10 +987,12 @@ sub currentInstruction($)                                                       
 
 sub createInitialStackEntry($)                                                  #P Create the initial stack frame.
  {my ($exec) = @_;                                                              # Execution environment
+  my $variables = $exec->block->variables;
+  my $nVariables = $variables->fieldOrder->@*;                                  # Number of variables in this stack frame
 
   push $exec->calls->@*,                                                        # Variables in initial stack frame
     stackFrame(
-     $exec->block ? (variables=>  $exec->block->variables) : (),
+     $exec->block ? (variables=>  $variables) : (),
      $exec->allocateSystemAreas);
   $exec
  }
@@ -3536,6 +3541,7 @@ if (1)                                                                          
 END
 
   is_deeply $e->heap(1), [undef, undef, 44, undef, undef, 33];
+  is_deeply $e->widestAreaInArena, [4,5];
  }
 
 #latest:;
