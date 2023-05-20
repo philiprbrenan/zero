@@ -2047,6 +2047,7 @@ Load the address component of an address.
     END
     
       is_deeply $e->heap(1), [undef, undef, 44, undef, undef, 33];
+      is_deeply $e->widestAreaInArena, [4,5];
      }
     
 
@@ -2081,6 +2082,7 @@ Load the area component of an address.
     END
     
       is_deeply $e->heap(1), [undef, undef, 44, undef, undef, 33];
+      is_deeply $e->widestAreaInArena, [4,5];
      }
     
 
