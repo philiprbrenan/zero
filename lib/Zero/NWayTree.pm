@@ -6,7 +6,7 @@
 # Key compression in each node by eliminating any common prefix present in each key in each node especially useful if we were to add attributes like userid, process, string position, rwx etc to front of each key.  Data does does not need this additional information.
 use v5.30;
 package Zero::NWayTree;
-our $VERSION = 20230515;                                                        # Version
+our $VERSION = 20230519;                                                        # Version
 use warnings FATAL => qw(all);
 use strict;
 use Carp qw(confess);
