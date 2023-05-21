@@ -15,7 +15,7 @@ use strict;
 use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>283" unless caller;
+eval "use Test::More tests=>387" unless caller;
 
 makeDieConfess;
 our $memoryTechnique;                                                           # Undef or the address of a sub that loads the memory handlers into an execution environment.
@@ -675,7 +675,7 @@ sub setStringMemoryTechnique($)                                                 
   $exec->GetMemoryLocation = \&stringGetMemoryLocation;                         # Low level memory access - location
   $exec->AllocMemoryArea   = \&stringAllocMemoryArea;                           # Low level memory access - allocate new area
   $exec->FreeMemoryArea    = \&stringFreeMemoryArea;                            # Low level memory access - free area
-  $exec->ResizeMemoryArea  = \&stringResizeMemoryArea;                                # Low level memory access - resize a memory area
+  $exec->ResizeMemoryArea  = \&stringResizeMemoryArea;                          # Low level memory access - resize a memory area
   $exec->PushMemoryArea    = \&stringPushMemoryArea;                            # Low level memory access - push onto area
   $exec->PopMemoryArea     = \&stringPopMemoryArea;                             # Low level memory access - pop from area
   $exec->memoryStringElementWidth   = my $e = 4;                                # Each element is 32 bits wide
@@ -936,7 +936,7 @@ sub left($$)                                                                    
     return $a;
    }
   elsif (isScalar($area))
-   {my $a = Address($arena, $area, $M, $ref->name);                              # Specified constant area
+   {my $a = Address($arena, $area, $M, $ref->name);                             # Specified constant area
     return $a;
    }
   elsif (isScalar($$area))
@@ -2803,12 +2803,13 @@ return 1 if caller;
 
 # Tests
 
-Test::More->builder->output("/dev/null");                                       # Reduce number of confirmation messages during testing
+#Test::More->builder->output("/dev/null");                                       # Reduce number of confirmation messages during testing
 
 my $debug = -e q(/home/phil/);                                                  # Assume debugging if testing locally
 sub is_deeply;
 sub ok($;$);
 sub x {exit if $debug}                                                          # Stop if debugging.
+Test::More->builder->output("/dev/null");                                       # Reduce number of confirmation messages during testing
 
 =pod
 
@@ -2818,7 +2819,7 @@ manager to prove that different implementations produce the same results.
 =cut
 
 for my $testSet(1..4) {                                                         # Select various combinations of execution engine and memory handler
-say STDERR "TestSet: $testSet";
+say STDOUT "TestSet: $testSet";
 my $ee = $testSet % 2 ? \&Execute :                                             # Assemble and execute
                         \&GenerateMachineCodeDisAssembleExecute;                # Generate machine code, load code and execute
 
@@ -3155,7 +3156,7 @@ if (1)                                                                          
   is_deeply $e->heap(2), [11, 22, 33];
  }
 
-latest:;
+#latest:;
 if (1)                                                                          ##Alloc ##Mov
  {Start 1;
   my $a = Array "alloc";
