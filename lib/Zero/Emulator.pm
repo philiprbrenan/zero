@@ -15,7 +15,7 @@ use strict;
 use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>392" unless caller;
+eval "use Test::More tests=>402" unless caller;
 
 makeDieConfess;
 our $memoryTechnique;                                                           # Undef or the address of a sub that loads the memory handlers into an execution environment.
@@ -25,70 +25,77 @@ my sub maximumInstructionsToExecute {1e6}                                       
 sub ExecutionEnvironment(%)                                                     # Execution environment for a block of code.
  {my (%options) = @_;                                                           # Execution options
 
+  my $errors = setDifference(\%options, q(checkArrayNames code doubleWrite in maximumArraySize NotRead pointlessAssign stopOnError stringMemory suppressOutput trace));
+  keys %$errors and confess "Invalid options: ".dump($errors);
+
   my $exec=                 genHash("Zero::Emulator",                           # Execution results
-    calls=>                 [],                                                 # Call stack
+    AllocMemoryArea=>      \&allocMemoryArea,                                   # Low level memory access - allocate new area
     block=>                 $options{code},                                     # Block of code to be executed
+    calls=>                 [],                                                 # Call stack
+    checkArrayNames=>      ($options{checkArrayNames} // 1),                    # Check array names to confirm we are accessing the expected data
     count=>                 0,                                                  # Executed instructions count
     counts=>                {},                                                 # Executed instructions by name counts
+    doubleWrite=>           {},                                                 # Source of double writes {instruction number} to count - an existing value was overwritten before it was used
+    freedArrays=>           [],                                                 # Arrays that have been recently freed and can thus be reused
+    freedArrays=>           [],                                                 # Arrays that have been recently freed and can thus be reused
+    FreeMemoryArea=>       \&freeMemoryArea,                                    # Low level memory access - free an area
+    GetMemoryArea=>        \&getMemoryArea,                                     # Low level memory access - area
+    GetMemoryHeaps=>       \&getMemoryHeaps,                                    # Low level memory access - arenas in use
+    GetMemoryLocation=>    \&getMemoryLocation,                                 # Low level memory access - location
+    in=>                    $options{in}//[],                                   # The input chnnel.  the L<In> instruction reads one element at a time from this array.
+    instructionCounts=>     {},                                                 # The number of times each actual instruction is executed
+    instructionPointer=>    0,                                                  # Current instruction
+    lastAssignAddress=>     undef,                                              # Last assignment performed - address
+    lastAssignArea=>        undef,                                              # Last assignment performed - area
+    lastAssignArena=>       undef,                                              # Last assignment performed - arena
+    lastAssignBefore=>      undef,                                              # Prior value of memory area before assignment
+    lastAssignType=>        undef,                                              # Last assignment performed - name of area assigned into
+    lastAssignValue=>       undef,                                              # Last assignment performed - value
+    memory=>                [],                                                 # Memory contents at the end of execution
+    memoryStringElementWidth=>   0,                                             # Width in bytes of a memory area element
+    memoryString=>          '',                                                 # Memory packed into one string
+    memoryStringSystemElements=> 0,                                             # Maximum number of elements in the system area of a heap arena if such is required by the memory allocation technique in play
+    memoryStringTotalElements=>  0,                                             # Maximum number of elements in total in an area in a heap arena if such is required by the memory allocation technique in play
+    memoryStringUserElements=>   0,                                             # Maximum number of elements in the user area of a heap arena if such is required by the memory allocation technique in play
+    memoryType=>            [],                                                 # Memory contents at the end of execution
+    mostArrays=>            [],                                                 # The maximum number of arrays active at any point during the execution in each arena
+    namesOfWidestArrays=>   [],                                                 # The name of the widest arrays in each arena
+    notExecuted=>           [],                                                 # Instructions not executed
+    notReadAddresses=>      [],                                                 # Memory addresses never read
+    out=>                   '',                                                 # The out channel. L<Out> writes an array of items to this followed by a new line.  L<out> does the same but without the new line.
+    pointlessAssign=>       {},                                                 # Location already has the specified value
+    PopMemoryArea=>        \&popMemoryArea,                                     # Low level memory access - pop from area
+    printDoubleWrite=>      $options{doubleWrite},                              # Double writes: earlier instruction number to later instruction number
+    printNotRead=>          $options{NotRead},                                  # Memory locations never read
+    printPointlessAssign=>  $options{pointlessAssign},                          # Pointless assigns {instruction number} to count - address already has the specified value
+    PushMemoryArea=>       \&pushMemoryArea,                                    # Low level memory access - push onto area
+    read=>                  [],                                                 # Records whether a memory address was ever read allowing us to find all the unused locations
+    ResizeMemoryArea=>     \&resizeMemoryArea,                                  # Low level memory access - resize an area
+    rw=>                    [],                                                 # Read / write access to memory
+    stopOnError=>           $options{stopOnError},                              # Stop on non fatal errors if true
+    suppressOutput=>        $options{suppressOutput},                           # If true the Out instruction will only write to the execution out array but not to stdout as well.
     tally=>                 0,                                                  # Tally executed instructions in a bin of this name
     tallyCount=>            0,                                                  # Executed instructions tally count
     tallyCounts=>           {},                                                 # Executed instructions by name tally counts
     tallyTotal=>            {},                                                 # Total instructions executed in each tally
-    instructionPointer=>    0,                                                  # Current instruction
-    memory=>                [],                                                 # Memory contents at the end of execution
-    memoryString=>          '',                                                 # Memory packed into one string
-    memoryType=>            [],                                                 # Memory contents at the end of execution
-    rw=>                    [],                                                 # Read / write access to memory
-    read=>                  [],                                                 # Records whether a memory address was ever read allowing us to find all the unused locations
-    notReadAddresses=>      [],                                                 # Memory addresses never read
-    notExecuted=>           [],                                                 # Instructions not executed
-    out=>                   '',                                                 # The out channel. L<Out> writes an array of items to this followed by a new line.  L<out> does the same but without the new line.
-    doubleWrite=>           {},                                                 # Source of double writes {instruction number} to count - an existing value was overwritten before it was used
-    pointlessAssign=>       {},                                                 # Location already has the specified value
-    suppressOutput=>        $options{suppressOutput},                           # If true the Out instruction will only write to the execution out array but not to stdout as well.
-    stopOnError=>           $options{stopOnError},                              # Stop on non fatal errors if true
     trace=>                 $options{trace},                                    # Trace all statements
     traceLabels=>           undef,                                              # Trace changes in execution flow
-    printNotRead=>          $options{NotRead},                                  # Memory locations never read
-    printDoubleWrite=>      $options{doubleWrite},                              # Double writes: earlier instruction number to later instruction number
-    printPointlessAssign=>  $options{pointlessAssign},                          # Pointless assigns {instruction number} to count - address already has the specified value
     watch=>                 [],                                                 # Addresses to watch for changes
     widestAreaInArena=>     [],                                                 # Track highest array access in each arena
-    instructionCounts=>     {},                                                 # The number of times each actual instruction is executed
-    lastAssignArena=>       undef,                                              # Last assignment performed - arena
-    lastAssignArea=>        undef,                                              # Last assignment performed - area
-    lastAssignAddress=>     undef,                                              # Last assignment performed - address
-    lastAssignType=>        undef,                                              # Last assignment performed - name of area assigned into
-    lastAssignValue=>       undef,                                              # Last assignment performed - value
-    lastAssignBefore=>      undef,                                              # Prior value of memory area before assignment
-    freedArrays=>           [],                                                 # Arrays that have been recently freed and can thus be reused
-    freedArrays=>           [],                                                 # Arrays that have been recently freed and can thus be reused
-    mostArrays=>            [],                                                 # The maximum number of arrays active at any point during the execution in each arena
-    checkArrayNames=>      ($options{checkArrayNames} // 1),                    # Check array names to confirm we are accessing the expected data
-    GetMemoryHeaps=>       \&getMemoryHeaps,                                    # Low level memory access - arenas in use
-    GetMemoryArea=>        \&getMemoryArea,                                     # Low level memory access - area
-    GetMemoryLocation=>    \&getMemoryLocation,                                 # Low level memory access - location
-    AllocMemoryArea=>      \&allocMemoryArea,                                   # Low level memory access - allocate new area
-    FreeMemoryArea=>       \&freeMemoryArea,                                    # Low level memory access - free an area
-    ResizeMemoryArea=>     \&resizeMemoryArea,                                  # Low level memory access - resize an area
-    PushMemoryArea=>       \&pushMemoryArea,                                    # Low level memory access - push onto area
-    PopMemoryArea=>        \&popMemoryArea,                                     # Low level memory access - pop from area
-    memoryStringElementWidth=>   0,                                             # Width in bytes of a memory area element
-    memoryStringUserElements=>   0,                                             # Maximum number of elements in the user area of a heap arena if such is required by the memory allocation technique in play
-    memoryStringSystemElements=> 0,                                             # Maximum number of elements in the system area of a heap arena if such is required by the memory allocation technique in play
-    memoryStringTotalElements=>  0,                                             # Maximum number of elements in total in an area in a heap arena if such is required by the memory allocation technique in play
    );
 
   $memoryTechnique->($exec)       if $memoryTechnique;                          # Load memory handlers if a different memory handling system has been requested
   $exec->setStringMemoryTechnique if $options{stringMemory};                    # Optionally overrLoad memory handlers if a different memory handling system has been requested
 
-  if (defined(my $n = $options{maximumAreaSize}))                               # Override the maximum number of elements in an array from the default setting if requested
+  if (defined(my $n = $options{maximumArraySize}))                               # Override the maximum number of elements in an array from the default setting if requested
    {$exec->memoryStringUserElements  = $n;
     $exec->memoryStringTotalElements = $n + $exec->memoryStringSystemElements;
    }
 
   $exec
  }
+
+
 
 my sub Code(%)                                                                  # A block of code
  {my (%options) = @_;                                                           # Parameters
@@ -709,7 +716,10 @@ sub getMemoryAddress($$$$$)                                                     
  {my ($exec, $arena, $area, $address, $name) = @_;                              # Execution environment, arena, area, address, expected name of area
   @_ == 5 or confess "Five parameters";
   $exec->widestAreaInArena->[$arena] =                                          # Track the widest area in each arena
-    max(($exec->widestAreaInArena->[$arena]//0), $address);
+    max($exec->widestAreaInArena->[$arena]//0, $address);
+  if ($exec->widestAreaInArena->[$arena] == $address)
+   {$exec->namesOfWidestArrays->[$arena] = $exec->block->ArrayNumberToName($name);
+   }
   $exec->checkArrayName($arena, $area, $name);                                  # Check area name
   $exec->GetMemoryLocation->($exec, $arena, $area, $address);                   # Read from memory
  }
@@ -1531,6 +1541,23 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->setMemory($t, defined($t) ? $T-1 : -1);
      },
 
+    in=> sub                                                                    # Read the next value from the input channel
+     {my $i = $exec->currentInstruction;
+      my $t = $exec->left($i->target);
+      if ($exec->in->@*)
+       {$exec->assign($t, shift $exec->in->@*);
+       }
+      else
+       {$exec->stackTraceAndExit("Attempting to read beyond the end of the input channel")
+       }
+     },
+
+    inSize=> sub                                                                # Number of items remining in the input channel
+     {my $i = $exec->currentInstruction;
+      my $t = $exec->left($i->target);
+      $exec->assign($t, scalar $exec->in->@*);
+     },
+
     inc=> sub                                                                   # Increment locations in memory. The first address is incremented by 1, the next by two, etc.
      {my $i = $exec->currentInstruction;
       my $T = $exec->right($i->target);
@@ -1671,12 +1698,13 @@ sub Zero::Emulator::Code::execute($%)                                           
       if (ref($i->source) =~ m(array)i)
        {my @t = map {$exec->right($_)} $i->source->@*;
         my $t = join ' ', @t;
-        say STDERR $t unless $exec->suppressOutput;
+        $exec->lastAssignValue = $t;
         $exec->output("$t\n");
        }
       else
        {my $t = $exec->right($i->source);
-        say STDERR $t unless $exec->suppressOutput;
+        say STDERR $t if !$exec->suppressOutput and !$exec->trace;
+        $exec->lastAssignValue = $t;
         $exec->output("$t\n");
        }
      },
@@ -1836,7 +1864,8 @@ sub traceMemory($$)                                                             
  {my ($exec, $instruction) = @_;                                                # Execution environment, current instruction
   return unless $exec->trace;                                                   # Trace changes to memory if requested
   my $e = $exec->instructionCounts->{$instruction->number};                     # Execution count for this instruction
-  my $f = $exec->formatTrace;
+  my $f = $instruction->action =~ m(\Aout\Z) ? $exec->lastAssignValue
+                                             : $exec->formatTrace;
   my $s = $exec->suppressOutput;
   my $a = $instruction->action;
   my $n = $instruction->number;
@@ -1896,6 +1925,8 @@ my sub xTarget($)                                                               
   (q(target), $assembly->Reference($t))
  }
 
+sub In(;$);
+sub InSize(;$);
 sub Inc($);
 sub Jge($$$);
 sub Jlt($$$);
@@ -2155,6 +2186,25 @@ sub ForArray(&$$%)                                                              
   setLabel($End);                                                               # End
  }
 
+sub ForIn(&%)                                                                   #i For loop to process each element remaining in the input channel
+ {my ($block, %options) = @_;                                                   # Block of code, area, area name, options
+  my $e = InSize;                                                               # End
+  my $s = 0;                                                                    # Start
+
+  my ($Start, $Check, $Next, $End) = (label, label, label, label);
+
+  setLabel($Start);                                                             # Start
+  my $i = Mov $s;
+    setLabel($Check);                                                           # Check
+    Jge  $End, $i, $e;
+      my $a = In;
+      &$block($i, $a, $Check, $Next, $End);                                     # Block
+    setLabel($Next);
+    Inc $i;                                                                     # Next
+    Jmp $Check;
+  setLabel($End);                                                               # End
+ }
+
 sub Free($$)                                                                    #i Free the memory area named by the target operand after confirming that it has the name specified on the source operand.
  {my ($target, $source) = @_;                                                   # Target area yielding the id of the area to be freed, source area yielding the name of the area to be freed
   my $n = $assembly->ArrayNameToNumber($source);
@@ -2226,6 +2276,30 @@ sub IfLt($$%)                                                                   
 sub IfTrue($%)                                                                  #i Execute then clause if the specified memory address is not zero thus representing true.
  {my ($a, %options) = @_;                                                       # Memory address, then block, else block
   Ifx(\&Jeq, $a, 0, %options);
+ }
+
+sub In(;$) {                                                                    #i Read a value from the input channel
+  if (@_ == 0)                                                                  # Create a new stack frame variable to hold the value read from input
+   {my $t = &Var();
+    $assembly->instruction(action=>"in", xTarget($t));
+    return $t;
+   }
+  if (@_ == 1)
+   {my ($target) = @_;                                                          # Target location into which to store the value read
+    $assembly->instruction(action=>"in", xTarget($target))
+   }
+ }
+
+sub InSize(;$) {                                                                #i Number of elements remining in the input channel
+  if (@_ == 0)                                                                  # Create a new stack frame variable to hold the value read from input
+   {my $t = &Var();
+    $assembly->instruction(action=>"inSize", xTarget($t));
+    return $t;
+   }
+  if (@_ == 1)
+   {my ($target) = @_;                                                          # Target location into which to store the value read
+    $assembly->instruction(action=>"inSize", xTarget($target))
+   }
  }
 
 sub Inc($)                                                                      #i Increment the target.
@@ -2805,7 +2879,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 @ISA         = qw(Exporter);
 @EXPORT      = qw();
-@EXPORT_OK   = qw(GenerateMachineCodeDisAssembleExecute Add Array ArrayCountGreater ArrayCountLess ArrayDump ArrayIndex ArraySize Assert AssertEq AssertFalse AssertGe AssertGt AssertLe AssertLt AssertNe AssertTrue Bad Block Call Clear Confess Dec Dump Else Execute For ForArray Free Good IfEq IfFalse IfGe IfGt IfLe IfLt IfNe IfTrue Inc JFalse JTrue Jeq Jge Jgt Jle Jlt Jmp Jne LoadAddress LoadArea Mov MoveLong Nop Not Out ParamsGet ParamsPut Pop Procedure Push Random RandomSeed Resize Return ReturnGet ReturnPut ShiftDown ShiftLeft ShiftRight ShiftUp Start Subtract Tally Then Trace TraceLabels Var Watch);
+@EXPORT_OK   = qw(Add Array ArrayCountGreater ArrayCountLess ArrayDump ArrayIndex ArraySize Assert AssertEq AssertFalse AssertGe AssertGt AssertLe AssertNe AssertTrue Bad Block Call Clear Confess Dec Dump Else Execute For ForArray ForIn Free GenerateMachineCodeDisAssembleExecute Good IfEq IfFalse IfGe IfGt IfLe IfLt IfNe IfTrue In Inc JFalse JTrue Jeq Jge Jgt Jle Jlt Jmp Jne LoadAddress LoadArea Mov MoveLong Nop Not Out ParamsGet ParamsPut Pop Procedure Push Random RandomSeed Resize Return ReturnGet ReturnPut ShiftDown ShiftLeft ShiftRight ShiftUp Start Subtract Tally Then Trace TraceLabels Var Watch);
 %EXPORT_TAGS = (all=>[@EXPORT, @EXPORT_OK]);
 
 return 1 if caller;
@@ -2844,6 +2918,23 @@ if (1)                                                                          
   is_deeply $e->out, <<END;
 Hello World
 END
+ }
+
+#latest:;
+if (1)                                                                          ##In
+ {Start 1;
+  my $i2 = InSize;
+  my $a = In;
+  my $i1 = InSize;
+  my $b = In;
+  my $i0 = InSize;
+  Out $a;
+  Out $b;
+  Out $i2;
+  Out $i1;
+  Out $i0;
+  my $e = Execute(suppressOutput=>1, in=>[88, 44]);
+  is_deeply $e->outLines, [88, 44, 2, 1, 0];
  }
 
 #latest:;
@@ -3551,7 +3642,7 @@ if (1)                                                                          
  {Start 1;
   my $a = Array "aaa";
   Clear $a, 10, 'aaa';
-  my $e = &$ee(suppressOutput=>1, maximumAreaSize=>10);
+  my $e = &$ee(suppressOutput=>1, maximumArraySize=>10);
   is_deeply $e->heap(1), [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
  }
 
@@ -3699,7 +3790,7 @@ if (1)                                                                          
   Mov [$a, \$c, 'array'], 33;
   Mov [$f, \$d, 'array'], 44;
 
-  my $e = &$ee(suppressOutput=>1, maximumAreaSize=>6);
+  my $e = &$ee(suppressOutput=>1, maximumArraySize=>6);
 
   is_deeply $e->out, <<END;
 2
@@ -3709,6 +3800,7 @@ END
   is_deeply $e->heap(1), [undef, undef, 44, undef, undef, 33] if $testSet <= 2;
   is_deeply $e->heap(1), [0,     0,     44, 0,     0,     33] if $testSet  > 2;
   is_deeply $e->widestAreaInArena, [4,5];
+  is_deeply $e->namesOfWidestArrays, ["stackArea", "array"] if $testSet % 2;
  }
 
 #latest:;
@@ -3775,7 +3867,7 @@ if (1)                                                                          
   Mov [$a, $_-1, 'array'], 10*$_ for 1..7;
   ShiftUp [$a, 2, 'array'], 26;
 
-  my $e = &$ee(suppressOutput=>1, maximumAreaSize=>8);
+  my $e = &$ee(suppressOutput=>1, maximumArraySize=>8);
   is_deeply $e->heap(1), bless([10, 20, 26, 30, 40, 50, 60, 70], "array");
  }
 
@@ -4036,13 +4128,26 @@ END
  }
 
 #latest:;
+if (1)                                                                          ##ForIn
+ {Start 1;
+
+  ForIn
+   {my ($i, $e, $check, $next, $end) = @_;
+    Out $i; Out $e;
+   };
+
+  my $e = Execute(suppressOutput=>1, in=>[333, 22, 1]);
+  is_deeply $e->outLines, [0, 333,  1, 22, 2, 1];
+ }
+
+#latest:;
 if (1)                                                                          # Small array
  {Start 1;
   my $a = Array "array";
   my @a = qw(6 8 4 2 1 3 5 7);
   Push $a, $_, "array" for @a;                                                  # Load array
   ArrayDump $a;
-  my $e = &$ee(suppressOutput=>1, maximumAreaSize=>9);
+  my $e = &$ee(suppressOutput=>1, maximumArraySize=>9);
   is_deeply $e->heap(1),  [6, 8, 4, 2, 1, 3, 5, 7];
  }
 
@@ -4091,7 +4196,7 @@ if (1)                                                                          
 
   MoveLong [$b, \2, 'bbb'], [$a, \4, 'aaa'], 3;
 
-  my $e = &$ee(suppressOutput=>1, maximumAreaSize=>11);
+  my $e = &$ee(suppressOutput=>1, maximumArraySize=>11);
   is_deeply $e->heap(1), [0 .. 9];
   is_deeply $e->heap(2), [100, 101, 4, 5, 6, 105 .. 109];
  }
@@ -4206,7 +4311,7 @@ if (1)                                                                          
  {Start 1;
   my $a = Mov 1;
   my $g = GenerateMachineCode;
-  is_deeply dump($g), 'pack("H*","0000002300000000000000000000017f000000010000007f000000000000007f")';
+  is_deeply dump($g), 'pack("H*","0000002500000000000000000000017f000000010000007f000000000000007f")';
 
   my $d = disAssemble $g;
      $d->assemble;
