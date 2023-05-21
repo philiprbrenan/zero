@@ -755,7 +755,7 @@ Clear the first bytes of an area.  The area is specified by the first element of
     
       Clear $a, 10, 'aaa';  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = &$ee(suppressOutput=>1, maximumAreaSize=>10);
+      my $e = &$ee(suppressOutput=>1, maximumArraySize=>10);
       is_deeply $e->heap(1), [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
      }
     
@@ -1100,6 +1100,31 @@ For loop to process each element of the named area.
     2
     333
     END
+     }
+    
+
+## ForIn($block, %options)
+
+For loop to process each element remaining in the input channel
+
+       Parameter  Description
+    1  $block     Block of code
+    2  %options   Area
+
+**Example:**
+
+    if (1)                                                                          
+     {Start 1;
+    
+    
+      ForIn  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+       {my ($i, $e, $check, $next, $end) = @_;
+        Out $i; Out $e;
+       };
+    
+      my $e = Execute(suppressOutput=>1, in=>[333, 22, 1]);
+      is_deeply $e->outLines, [0, 333,  1, 22, 2, 1];
      }
     
 
@@ -1675,6 +1700,43 @@ Execute then clause if the specified memory address is not zero thus representin
      }
     
 
+## In(if (@\_ == 0))
+
+Read a value from the input channel
+
+       Parameter     Description
+    1  if (@_ == 0)  Create a new stack frame variable to hold the value read from input
+
+**Example:**
+
+    if (1)                                                                          
+     {Start 1;
+      my $i2 = InSize;
+    
+      my $a = In;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      my $i1 = InSize;
+    
+      my $b = In;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      my $i0 = InSize;
+      Out $a;
+      Out $b;
+      Out $i2;
+      Out $i1;
+      Out $i0;
+      my $e = Execute(suppressOutput=>1, in=>[88, 44]);
+      is_deeply $e->outLines, [88, 44, 2, 1, 0];
+     }
+    
+
+## InSize(if (@\_ == 0))
+
+Number of elements remining in the input channel
+
+       Parameter     Description
+    1  if (@_ == 0)  Create a new stack frame variable to hold the value read from input
+
 ## Inc($target)
 
 Increment the target.
@@ -2081,7 +2143,7 @@ Load the address component of an address.
       Mov [$a, \$c, 'array'], 33;
       Mov [$f, \$d, 'array'], 44;
     
-      my $e = &$ee(suppressOutput=>1, maximumAreaSize=>6);
+      my $e = &$ee(suppressOutput=>1, maximumArraySize=>6);
     
       is_deeply $e->out, <<END;
     2
@@ -2091,6 +2153,7 @@ Load the address component of an address.
       is_deeply $e->heap(1), [undef, undef, 44, undef, undef, 33] if $testSet <= 2;
       is_deeply $e->heap(1), [0,     0,     44, 0,     0,     33] if $testSet  > 2;
       is_deeply $e->widestAreaInArena, [4,5];
+      is_deeply $e->namesOfWidestArrays, ["stackArea", "array"] if $testSet % 2;
      }
     
 
@@ -2117,7 +2180,7 @@ Load the area component of an address.
       Mov [$a, \$c, 'array'], 33;
       Mov [$f, \$d, 'array'], 44;
     
-      my $e = &$ee(suppressOutput=>1, maximumAreaSize=>6);
+      my $e = &$ee(suppressOutput=>1, maximumArraySize=>6);
     
       is_deeply $e->out, <<END;
     2
@@ -2127,6 +2190,7 @@ Load the area component of an address.
       is_deeply $e->heap(1), [undef, undef, 44, undef, undef, 33] if $testSet <= 2;
       is_deeply $e->heap(1), [0,     0,     44, 0,     0,     33] if $testSet  > 2;
       is_deeply $e->widestAreaInArena, [4,5];
+      is_deeply $e->namesOfWidestArrays, ["stackArea", "array"] if $testSet % 2;
      }
     
 
@@ -2365,7 +2429,7 @@ Copy the number of elements specified by the second source operand from the loca
       MoveLong [$b, \2, 'bbb'], [$a, \4, 'aaa'], 3;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
-      my $e = &$ee(suppressOutput=>1, maximumAreaSize=>11);
+      my $e = &$ee(suppressOutput=>1, maximumArraySize=>11);
       is_deeply $e->heap(1), [0 .. 9];
       is_deeply $e->heap(2), [100, 101, 4, 5, 6, 105 .. 109];
      }
@@ -3013,7 +3077,7 @@ Shift an element up one in an area.
       ShiftUp [$a, 2, 'array'], 26;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
-      my $e = &$ee(suppressOutput=>1, maximumAreaSize=>8);
+      my $e = &$ee(suppressOutput=>1, maximumArraySize=>8);
       is_deeply $e->heap(1), bless([10, 20, 26, 30, 40, 50, 60, 70], "array");
      }
     
@@ -3377,7 +3441,7 @@ Generate a string of machine code from the current block of code.
     
       my $g = GenerateMachineCode;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      is_deeply dump($g), 'pack("H*","0000002300000000000000000000017f000000010000007f000000000000007f")';
+      is_deeply dump($g), 'pack("H*","0000002500000000000000000000017f000000010000007f000000000000007f")';
     
       my $d = disAssemble $g;
          $d->assemble;
@@ -3404,7 +3468,7 @@ Disassemble machine code.
      {Start 1;
       my $a = Mov 1;
       my $g = GenerateMachineCode;
-      is_deeply dump($g), 'pack("H*","0000002300000000000000000000017f000000010000007f000000000000007f")';
+      is_deeply dump($g), 'pack("H*","0000002500000000000000000000017f000000010000007f000000000000007f")';
     
     
       my $d = disAssemble $g;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -3433,7 +3497,7 @@ Round trip: generate machine code and write it onto a string, disassemble the ge
      {Start 1;
       my $a = Mov 1;
       my $g = GenerateMachineCode;
-      is_deeply dump($g), 'pack("H*","0000002300000000000000000000017f000000010000007f000000000000007f")';
+      is_deeply dump($g), 'pack("H*","0000002500000000000000000000017f000000010000007f000000000000007f")';
     
       my $d = disAssemble $g;
          $d->assemble;
@@ -3680,135 +3744,141 @@ Disassemble and remove context information from disassembly to make testing easi
 
 32 [ForArray](#forarray) - For loop to process each element of the named area.
 
-33 [Free](#free) - Free the memory area named by the target operand after confirming that it has the name specified on the source operand.
+33 [ForIn](#forin) - For loop to process each element remaining in the input channel
 
-34 [GenerateMachineCode](#generatemachinecode) - Generate a string of machine code from the current block of code.
+34 [Free](#free) - Free the memory area named by the target operand after confirming that it has the name specified on the source operand.
 
-35 [GenerateMachineCodeDisAssembleExecute](#generatemachinecodedisassembleexecute) - Round trip: generate machine code and write it onto a string, disassemble the generated machine code string and recreate a block of code from it, then execute the reconstituted code to prove that it works as well as the original code.
+35 [GenerateMachineCode](#generatemachinecode) - Generate a string of machine code from the current block of code.
 
-36 [Good](#good) - A good ending.
+36 [GenerateMachineCodeDisAssembleExecute](#generatemachinecodedisassembleexecute) - Round trip: generate machine code and write it onto a string, disassemble the generated machine code string and recreate a block of code from it, then execute the reconstituted code to prove that it works as well as the original code.
 
-37 [IfEq](#ifeq) - Execute then or else clause depending on whether two memory locations are equal.
+37 [Good](#good) - A good ending.
 
-38 [IfFalse](#iffalse) - Execute then clause if the specified memory address is zero thus representing false.
+38 [IfEq](#ifeq) - Execute then or else clause depending on whether two memory locations are equal.
 
-39 [IfGe](#ifge) - Execute then or else clause depending on whether two memory locations are greater than or equal.
+39 [IfFalse](#iffalse) - Execute then clause if the specified memory address is zero thus representing false.
 
-40 [IfGt](#ifgt) - Execute then or else clause depending on whether two memory locations are greater than.
+40 [IfGe](#ifge) - Execute then or else clause depending on whether two memory locations are greater than or equal.
 
-41 [IfLe](#ifle) - Execute then or else clause depending on whether two memory locations are less than or equal.
+41 [IfGt](#ifgt) - Execute then or else clause depending on whether two memory locations are greater than.
 
-42 [IfLt](#iflt) - Execute then or else clause depending on whether two memory locations are less than.
+42 [IfLe](#ifle) - Execute then or else clause depending on whether two memory locations are less than or equal.
 
-43 [IfNe](#ifne) - Execute then or else clause depending on whether two memory locations are not equal.
+43 [IfLt](#iflt) - Execute then or else clause depending on whether two memory locations are less than.
 
-44 [IfTrue](#iftrue) - Execute then clause if the specified memory address is not zero thus representing true.
+44 [IfNe](#ifne) - Execute then or else clause depending on whether two memory locations are not equal.
 
-45 [Ifx](#ifx) - Execute then or else clause depending on whether two memory locations are equal.
+45 [IfTrue](#iftrue) - Execute then clause if the specified memory address is not zero thus representing true.
 
-46 [Inc](#inc) - Increment the target.
+46 [Ifx](#ifx) - Execute then or else clause depending on whether two memory locations are equal.
 
-47 [instructionList](#instructionlist) - Create a list of instructions.
+47 [In](#in) - Read a value from the input channel
 
-48 [instructionListExport](#instructionlistexport) - Create an export statement.
+48 [Inc](#inc) - Increment the target.
 
-49 [instructionListMapping](#instructionlistmapping) - Map instructions to small integers.
+49 [InSize](#insize) - Number of elements remining in the input channel
 
-50 [instructionListReadMe](#instructionlistreadme) - List  instructions for inclusion in read me.
+50 [instructionList](#instructionlist) - Create a list of instructions.
 
-51 [Jeq](#jeq) - Jump to a target label if the first source field is equal to the second source field.
+51 [instructionListExport](#instructionlistexport) - Create an export statement.
 
-52 [JFalse](#jfalse) - Jump to a target label if the first source field is equal to zero.
+52 [instructionListMapping](#instructionlistmapping) - Map instructions to small integers.
 
-53 [Jge](#jge) - Jump to a target label if the first source field is greater than or equal to the second source field.
+53 [instructionListReadMe](#instructionlistreadme) - List  instructions for inclusion in read me.
 
-54 [Jgt](#jgt) - Jump to a target label if the first source field is greater than the second source field.
+54 [Jeq](#jeq) - Jump to a target label if the first source field is equal to the second source field.
 
-55 [Jle](#jle) - Jump to a target label if the first source field is less than or equal to the second source field.
+55 [JFalse](#jfalse) - Jump to a target label if the first source field is equal to zero.
 
-56 [Jlt](#jlt) - Jump to a target label if the first source field is less than the second source field.
+56 [Jge](#jge) - Jump to a target label if the first source field is greater than or equal to the second source field.
 
-57 [Jmp](#jmp) - Jump to a label.
+57 [Jgt](#jgt) - Jump to a target label if the first source field is greater than the second source field.
 
-58 [Jne](#jne) - Jump to a target label if the first source field is not equal to the second source field.
+58 [Jle](#jle) - Jump to a target label if the first source field is less than or equal to the second source field.
 
-59 [JTrue](#jtrue) - Jump to a target label if the first source field is not equal to zero.
+59 [Jlt](#jlt) - Jump to a target label if the first source field is less than the second source field.
 
-60 [Label](#label) - Create a label.
+60 [Jmp](#jmp) - Jump to a label.
 
-61 [LoadAddress](#loadaddress) - Load the address component of an address.
+61 [Jne](#jne) - Jump to a target label if the first source field is not equal to the second source field.
 
-62 [LoadArea](#loadarea) - Load the area component of an address.
+62 [JTrue](#jtrue) - Jump to a target label if the first source field is not equal to zero.
 
-63 [Mov](#mov) - Copy a constant or memory address to the target address.
+63 [Label](#label) - Create a label.
 
-64 [MoveLong](#movelong) - Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand.
+64 [LoadAddress](#loadaddress) - Load the address component of an address.
 
-65 [Nop](#nop) - Do nothing (but do it well!).
+65 [LoadArea](#loadarea) - Load the area component of an address.
 
-66 [Not](#not) - Move and not.
+66 [Mov](#mov) - Copy a constant or memory address to the target address.
 
-67 [Out](#out) - Write memory location contents to out.
+67 [MoveLong](#movelong) - Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand.
 
-68 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
+68 [Nop](#nop) - Do nothing (but do it well!).
 
-69 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
+69 [Not](#not) - Move and not.
 
-70 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
+70 [Out](#out) - Write memory location contents to out.
 
-71 [Procedure](#procedure) - Define a procedure.
+71 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
 
-72 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
+72 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
 
-73 [Random](#random) - Create a random number in a specified range.
+73 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
 
-74 [RandomSeed](#randomseed) - Seed the random number generator.
+74 [Procedure](#procedure) - Define a procedure.
 
-75 [refDepth](#refdepth) - The depth of a reference.
+75 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
 
-76 [refValue](#refvalue) - The value of a reference after dereferencing.
+76 [Random](#random) - Create a random number in a specified range.
 
-77 [rerefValue](#rerefvalue) - Re-reference a value.
+77 [RandomSeed](#randomseed) - Seed the random number generator.
 
-78 [Resize](#resize) - Resize the target area to the source size.
+78 [refDepth](#refdepth) - The depth of a reference.
 
-79 [Return](#return) - Return from a procedure via the call stack.
+79 [refValue](#refvalue) - The value of a reference after dereferencing.
 
-80 [ReturnGet](#returnget) - Get a word from the return area and save it.
+80 [rerefValue](#rerefvalue) - Re-reference a value.
 
-81 [ReturnPut](#returnput) - Put a word into the return area.
+81 [Resize](#resize) - Resize the target area to the source size.
 
-82 [ShiftDown](#shiftdown) - Shift an element down one in an area.
+82 [Return](#return) - Return from a procedure via the call stack.
 
-83 [ShiftLeft](#shiftleft) - Shift left within an element.
+83 [ReturnGet](#returnget) - Get a word from the return area and save it.
 
-84 [ShiftRight](#shiftright) - Shift right with an element.
+84 [ReturnPut](#returnput) - Put a word into the return area.
 
-85 [ShiftUp](#shiftup) - Shift an element up one in an area.
+85 [ShiftDown](#shiftdown) - Shift an element down one in an area.
 
-86 [Start](#start) - Start the current assembly using the specified version of the Zero language.
+86 [ShiftLeft](#shiftleft) - Shift left within an element.
 
-87 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
+87 [ShiftRight](#shiftright) - Shift right with an element.
 
-88 [Tally](#tally) - Counts instructions when enabled.
+88 [ShiftUp](#shiftup) - Shift an element up one in an area.
 
-89 [Then](#then) - Then block.
+89 [Start](#start) - Start the current assembly using the specified version of the Zero language.
 
-90 [Trace](#trace) - Start or stop tracing.
+90 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
 
-91 [TraceLabels](#tracelabels) - Enable or disable label tracing.
+91 [Tally](#tally) - Counts instructions when enabled.
 
-92 [unpackInstruction](#unpackinstruction) - Unpack an instruction.
+92 [Then](#then) - Then block.
 
-93 [Var](#var) - Create a variable initialized to the specified value.
+93 [Trace](#trace) - Start or stop tracing.
 
-94 [Watch](#watch) - Watches for changes to the specified memory location.
+94 [TraceLabels](#tracelabels) - Enable or disable label tracing.
 
-95 [Zero::Emulator::Code::packInstruction](#zero-emulator-code-packinstruction) - Pack an instruction.
+95 [unpackInstruction](#unpackinstruction) - Unpack an instruction.
 
-96 [Zero::Emulator::Code::packRef](#zero-emulator-code-packref) - Pack a reference into 8 bytes.
+96 [Var](#var) - Create a variable initialized to the specified value.
 
-97 [Zero::Emulator::Code::unpackRef](#zero-emulator-code-unpackref) - Unpack a reference.
+97 [Watch](#watch) - Watches for changes to the specified memory location.
+
+98 [Zero::Emulator::Code::packInstruction](#zero-emulator-code-packinstruction) - Pack an instruction.
+
+99 [Zero::Emulator::Code::packRef](#zero-emulator-code-packref) - Pack a reference into 8 bytes.
+
+100 [Zero::Emulator::Code::unpackRef](#zero-emulator-code-unpackref) - Unpack a reference.
 
 # Installation
 
