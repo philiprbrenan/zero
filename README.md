@@ -176,12 +176,69 @@ be captured as macros which can then be called upon as needed to generate the [c
 published and distributed on [CPAN](https://metacpan.org/author/PRBRENAN) as [Perl](http://www.perl.org/) modules.
 
 ## Machine [code](https://en.wikipedia.org/wiki/Computer_program) 
-The [Zero assembler programming language](https://github.com/philiprbrenan/zero) [code](https://en.wikipedia.org/wiki/Computer_program) can be converted to a single [string](https://en.wikipedia.org/wiki/String_(computer_science)) using
+The [Zero assembler programming language](https://github.com/philiprbrenan/zero) [code](https://en.wikipedia.org/wiki/Computer_program) can be converted to a single [string](https://en.wikipedia.org/wiki/String_(computer_science)) using using method:
 **GenerateMachineCode**.  The [string](https://en.wikipedia.org/wiki/String_(computer_science)) of machine [code](https://en.wikipedia.org/wiki/Computer_program) can then be reloaded using
-**disAssemble** to [parse](https://en.wikipedia.org/wiki/Parsing) the machine [code](https://en.wikipedia.org/wiki/Computer_program) [string](https://en.wikipedia.org/wiki/String_(computer_science)) back into [code](https://en.wikipedia.org/wiki/Computer_program) that can be
-executed as usual via **Execute**.  Alternatively, the machine [code](https://en.wikipedia.org/wiki/Computer_program) [string](https://en.wikipedia.org/wiki/String_(computer_science)) can
-be used to [program](https://en.wikipedia.org/wiki/Computer_program) a [Silicon](https://en.wikipedia.org/wiki/Silicon) device such as an [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) to execute the [code](https://en.wikipedia.org/wiki/Computer_program) on a
-chip .
+method: **disAssemble** to [parse](https://en.wikipedia.org/wiki/Parsing) the machine [code](https://en.wikipedia.org/wiki/Computer_program) [string](https://en.wikipedia.org/wiki/String_(computer_science)) back into [code](https://en.wikipedia.org/wiki/Computer_program) that
+can be executed as usual via **Execute**.  Alternatively, the machine [code](https://en.wikipedia.org/wiki/Computer_program) [string](https://en.wikipedia.org/wiki/String_(computer_science)) can be used to [program](https://en.wikipedia.org/wiki/Computer_program) a [Silicon](https://en.wikipedia.org/wiki/Silicon) device such as an [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) to execute the [code](https://en.wikipedia.org/wiki/Computer_program) on a chip .
+
+## Memory Schemes
+
+Two [memory](https://en.wikipedia.org/wiki/Computer_memory) schemes are available for providing [memory](https://en.wikipedia.org/wiki/Computer_memory) to executing [Zero assembler programming language](https://github.com/philiprbrenan/zero) [programs](https://en.wikipedia.org/wiki/Computer_program). 
+### Segmented [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme
+
+This is the default [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme. The segmented [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme places each [array](https://en.wikipedia.org/wiki/Dynamic_array) in a separate [Perl](http://www.perl.org/) [array](https://en.wikipedia.org/wiki/Dynamic_array).  The current stack fram, parameter [list](https://en.wikipedia.org/wiki/Linked_list) and
+return results are all held in such [arrays](https://en.wikipedia.org/wiki/Dynamic_array). Each such [array](https://en.wikipedia.org/wiki/Dynamic_array) is dynamically
+extensible to any reasonable size.
+
+A possible downside of this [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme is that the use of different sized [arrays](https://en.wikipedia.org/wiki/Dynamic_array) might eventually fragment the underlying [memory](https://en.wikipedia.org/wiki/Computer_memory). 
+
+### String [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme
+
+Alternatively, [arrays](https://en.wikipedia.org/wiki/Dynamic_array) are held in fixed size blocks.  This imposes the
+limitation that each [array](https://en.wikipedia.org/wiki/Dynamic_array) can only extend up to a predetermined size. The
+number of such [arrays](https://en.wikipedia.org/wiki/Dynamic_array) is determined by the total size of the available [memory](https://en.wikipedia.org/wiki/Computer_memory). 
+The advantage of the [string](https://en.wikipedia.org/wiki/String_(computer_science)) [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme is that the allocation and freeing of
+such [arrays](https://en.wikipedia.org/wiki/Dynamic_array) is very simple because freed [arrays](https://en.wikipedia.org/wiki/Dynamic_array) can be immediately reused.
+Allocation and freeing is thus a fast operation. Thus [memory](https://en.wikipedia.org/wiki/Computer_memory) can be recyled
+indefinitely which is very convenient for [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) implementations.  The [string](https://en.wikipedia.org/wiki/String_(computer_science)) [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme is useful in the case of N-Way [trees](https://en.wikipedia.org/wiki/Tree_(data_structure)) where each node in the [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)) only extends to a small fixed size.
+
+
+## Input and Output channels
+
+There are two channels: one for input, one for output.
+
+### Input
+
+The input channel is supplied preloaded to the [emulator](https://en.wikipedia.org/wiki/Emulator). The input channel
+**in** can be read using the **In** and  **ForIn** instructions.  The numnber
+of items remaining in the input channel can be discoevered using the **InSize**
+instruction.
+
+### Output
+
+The output channel **out** is written to by the **Out** instruction.  The
+results of such writes can be seen on the terminal command line, in the trace
+output and in the **out** field of the [emulator](https://en.wikipedia.org/wiki/Emulator) execution envoronment data
+structure.
+
+### Segmented [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme
+
+This is the default [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme. The segmented [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme places each [array](https://en.wikipedia.org/wiki/Dynamic_array) in a separate [Perl](http://www.perl.org/) [array](https://en.wikipedia.org/wiki/Dynamic_array).  The current stack fram, paramrter [list](https://en.wikipedia.org/wiki/Linked_list) and
+return results are all held in such [arrays](https://en.wikipedia.org/wiki/Dynamic_array). each such [array](https://en.wikipedia.org/wiki/Dynamic_array) is dynamically
+extensible to any reasonable size.
+
+
+### String [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme
+
+Alternatively, [arrays](https://en.wikipedia.org/wiki/Dynamic_array) are held in fixed size blocks.  This imposes the
+limitation that each [array](https://en.wikipedia.org/wiki/Dynamic_array) can only extend up to a predetermined size. The
+number of such [arrays](https://en.wikipedia.org/wiki/Dynamic_array) is determined by the total size of the available [memory](https://en.wikipedia.org/wiki/Computer_memory). 
+The advantage of the [string](https://en.wikipedia.org/wiki/String_(computer_science)) [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme is that the allocation and freeing of
+such [arrays](https://en.wikipedia.org/wiki/Dynamic_array) is very simple because freed [arrays](https://en.wikipedia.org/wiki/Dynamic_array) can be immediately reused.
+Allocationa nd freeing is thus a fast operation. Thus [memory](https://en.wikipedia.org/wiki/Computer_memory) can be recyled
+indefinitely which is very convenient for [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) implementations.  The [string](https://en.wikipedia.org/wiki/String_(computer_science)) [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme is useful in the case of N-Way [trees](https://en.wikipedia.org/wiki/Tree_(data_structure)) where each node in the [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)) only extends to a small fixed size.
+
+
 
 ## Examples
 
@@ -219,8 +276,8 @@ An implementation of N-Way-Trees in [Zero assembler programming language](https:
 [Code](https://github.com/philiprbrenan/zero/blob/main/lib/Zero/NWayTree.pm)
 
 Can you reduce the number of instructions required to perform ```107``` inserts
-into an N-Way-Tree? Please raise an issue if you can stating your terms for
-your enhancememt.
+into an N-Way-Tree using the instruction set provided? Please raise an issue if
+so stating the licence for your enhancememt.
 
 ```
   add               => 159,
