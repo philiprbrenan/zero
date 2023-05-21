@@ -887,7 +887,7 @@ sub printTreeData($)                                                            
 
 #D1 Utilities                                                                   # Utility functions.
 
-sub randomArray($)                                                              # Create a random array.
+sub randomArray($)                                                              #P Create a random array.
  {my ($N) = @_;                                                                 # Size of array
 
   my @r = 1..$N;
