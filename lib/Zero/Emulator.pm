@@ -15,7 +15,7 @@ use strict;
 use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>191" unless caller;
+eval "use Test::More tests=>283" unless caller;
 
 makeDieConfess;
 our $memoryTechnique;                                                           # Undef or the address of a sub that loads the memory handlers into an execution environment.
@@ -79,7 +79,8 @@ sub ExecutionEnvironment(%)                                                     
 
   $memoryTechnique->($exec) if $memoryTechnique;                                # Load memory handlers if a different memory handling system has been requested
   if (defined(my $n = $options{maximumAreaSize}))                               # override the maximum number of elements in an array from the defualt setting if requested
-   {$exec->memoryStringUserElements = $n;
+   {$exec->memoryStringUserElements  = $n;
+    $exec->memoryStringTotalElements = $n + $exec->memoryStringSystemElements;
    }
 
   $exec
@@ -488,10 +489,7 @@ sub resizeMemoryArea($$$)                                                       
  {my ($exec, $area, $size) = @_;                                                # Execution environment, area to use, new size
   @_ == 3 or confess "Three parameters";
   my $a = $exec->memory->[arenaHeap][$area];
-say STDERR "AAAA11 area=$area size=$size", dump($a);
-  $#$a = $size;
-say STDERR "AAAA22 area=$area size=$size", dump($a);
-exit;
+  $#$a = $size-1;
  }
 
 sub pushMemoryArea($$$)                                                         #P Push a value onto the specified array
@@ -1777,6 +1775,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
       $implementation->($instruction);                                          # Execute instruction
 
+      #say STDERR "AAAA", unpack "h*", $exec->memoryString if $a =~ m(mov);     # Print memory
       $exec->instructionCounts->{$instruction->number}++;                       # Execution count by actual instruction
 
       ++$instruction->executed;
@@ -1850,7 +1849,7 @@ sub formatTrace($)                                                              
   return "" unless defined(my $type  = $exec->block->ArrayNumberToName($exec->lastAssignType));
   return "" unless defined(my $value = $exec->lastAssignValue);
   my $B = $exec->lastAssignBefore;
-  my $b = $B ? " was $B" : "";
+  my $b = defined($B) ? " was $B" : "";
   sprintf "[%d, %d, %s] = %d$b", $area, $addr, $type, $value;
  }
 
@@ -4003,9 +4002,19 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->heap(1), [1, 22, 333];
-  is_deeply $e->out, <<END;
+  is_deeply $e->out, <<END if $testSet <= 2;
 Array size: 3
 bless([1, 22, 333], "aaa")
+0
+1
+1
+22
+2
+333
+END
+  is_deeply $e->out, <<END if $testSet  > 2;
+Array size: 3
+[1, 22, 333]
 0
 1
 1
@@ -4022,14 +4031,8 @@ if (1)                                                                          
   my @a = qw(6 8 4 2 1 3 5 7);
   Push $a, $_, "array" for @a;                                                  # Load array
   ArrayDump $a;
-  my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->memory, [
-  [undef, []],
-  [undef, [6, 8, 4, 2, 1, 3, 5, 7]],
-  [undef, []],
-  [undef, []],
-];
-
+  my $e = &$ee(suppressOutput=>1, maximumAreaSize=>9);
+  is_deeply $e->heap(1),  [6, 8, 4, 2, 1, 3, 5, 7];
  }
 
 #latest:;
@@ -4045,7 +4048,6 @@ if (1)                                                                          
   is_deeply eval($e->out), [1, 22, 333];
 
   #say STDERR $e->block->codeToString;
-  #say STDERR dump($e->block->codeToString);
   is_deeply $e->block->codeToString, <<'END' if $testSet == 1;
 0000     array           \0             3
 0001       mov [\0, 0, 3, 0]             1
@@ -4078,7 +4080,7 @@ if (1)                                                                          
 
   MoveLong [$b, \2, 'bbb'], [$a, \4, 'aaa'], 3;
 
-  my $e = &$ee(suppressOutput=>1);
+  my $e = &$ee(suppressOutput=>1, maximumAreaSize=>11);
   is_deeply $e->heap(1), [0 .. 9];
   is_deeply $e->heap(2), [100, 101, 4, 5, 6, 105 .. 109];
  }
@@ -4253,7 +4255,6 @@ END
 33
 END
  }
-
 
 =pod
 (\A.{80})\s+(#.*\Z) \1\2
