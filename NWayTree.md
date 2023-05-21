@@ -157,7 +157,7 @@ Create a new N-Way tree.
 Create a variable referring to a new tree descriptor.
 
        Parameter  Description
-    1  $n         Maximum number of keys per node in this tree
+    1  $n         Constant indicating the maximum number of keys per node in this tree
 
 **Example:**
 
@@ -237,20 +237,14 @@ Get the number of keys in the tree..
 **Example:**
 
     if (1)                                                                                
-     {my $W = 3; my $N = 107; my @r = randomArray $N;
+     {my $W = 3; my @r = randomArray 107;
     
       Start 1;
       my $t = New($W);                                                              # Create tree at expected location in memory
     
-      my $a = Array "aaa";
-      for my $I(1..$N)                                                              # Load array
-       {my $i = $I-1;
-        Mov [$a, $i, "aaa"], $r[$i];
-       }
+      my $f = FindResult_new;                                                       # Preallocate find result
     
-      my $f = FindResult_new;
-    
-      ForArray                                                                      # Create tree
+      ForIn                                                                         # Create tree
        {my ($i, $k) = @_;
     
         my $n = Keys($t);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -265,7 +259,7 @@ Get the number of keys in the tree..
           rightStart=>          int($W/2)+1,
         );
         Tally 0;
-       } $a, q(aaa);
+       };
     
       Iterate                                                                       # Iterate tree
        {my ($find) = @_;                                                            # Find result
@@ -283,9 +277,11 @@ Get the number of keys in the tree..
       Iterate {} $t;                                                                # Iterate tree without doing anything in the body to see the pure iteration overhead
       Tally 0;
     
-      my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
-    
-      is_deeply $e->outLines, [1..$N];                                              # Expected sequence
+      my $e = Execute(suppressOutput=>1, in=>[@r]);
+      is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
+      is_deeply $e->widestAreaInArena,   [535, 6];
+      is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
+      is_deeply $e->mostArrays,          [1, 250, 1, 1];
     
       #say STDERR dump $e->tallyCount;
       is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
@@ -421,20 +417,14 @@ Get data field from find results.
 **Example:**
 
     if (1)                                                                                
-     {my $W = 3; my $N = 107; my @r = randomArray $N;
+     {my $W = 3; my @r = randomArray 107;
     
       Start 1;
       my $t = New($W);                                                              # Create tree at expected location in memory
     
-      my $a = Array "aaa";
-      for my $I(1..$N)                                                              # Load array
-       {my $i = $I-1;
-        Mov [$a, $i, "aaa"], $r[$i];
-       }
+      my $f = FindResult_new;                                                       # Preallocate find result
     
-      my $f = FindResult_new;
-    
-      ForArray                                                                      # Create tree
+      ForIn                                                                         # Create tree
        {my ($i, $k) = @_;
         my $n = Keys($t);
         AssertEq $n, $i;                                                            # Check tree size
@@ -447,7 +437,7 @@ Get data field from find results.
           rightStart=>          int($W/2)+1,
         );
         Tally 0;
-       } $a, q(aaa);
+       };
     
       Iterate                                                                       # Iterate tree
        {my ($find) = @_;                                                            # Find result
@@ -467,9 +457,11 @@ Get data field from find results.
       Iterate {} $t;                                                                # Iterate tree without doing anything in the body to see the pure iteration overhead
       Tally 0;
     
-      my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
-    
-      is_deeply $e->outLines, [1..$N];                                              # Expected sequence
+      my $e = Execute(suppressOutput=>1, in=>[@r]);
+      is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
+      is_deeply $e->widestAreaInArena,   [535, 6];
+      is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
+      is_deeply $e->mostArrays,          [1, 250, 1, 1];
     
       #say STDERR dump $e->tallyCount;
       is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
@@ -562,20 +554,14 @@ Get key field from find results.
 **Example:**
 
     if (1)                                                                                
-     {my $W = 3; my $N = 107; my @r = randomArray $N;
+     {my $W = 3; my @r = randomArray 107;
     
       Start 1;
       my $t = New($W);                                                              # Create tree at expected location in memory
     
-      my $a = Array "aaa";
-      for my $I(1..$N)                                                              # Load array
-       {my $i = $I-1;
-        Mov [$a, $i, "aaa"], $r[$i];
-       }
+      my $f = FindResult_new;                                                       # Preallocate find result
     
-      my $f = FindResult_new;
-    
-      ForArray                                                                      # Create tree
+      ForIn                                                                         # Create tree
        {my ($i, $k) = @_;
         my $n = Keys($t);
         AssertEq $n, $i;                                                            # Check tree size
@@ -588,7 +574,7 @@ Get key field from find results.
           rightStart=>          int($W/2)+1,
         );
         Tally 0;
-       } $a, q(aaa);
+       };
     
       Iterate                                                                       # Iterate tree
        {my ($find) = @_;                                                            # Find result
@@ -608,9 +594,11 @@ Get key field from find results.
       Iterate {} $t;                                                                # Iterate tree without doing anything in the body to see the pure iteration overhead
       Tally 0;
     
-      my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
-    
-      is_deeply $e->outLines, [1..$N];                                              # Expected sequence
+      my $e = Execute(suppressOutput=>1, in=>[@r]);
+      is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
+      is_deeply $e->widestAreaInArena,   [535, 6];
+      is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
+      is_deeply $e->mostArrays,          [1, 250, 1, 1];
     
       #say STDERR dump $e->tallyCount;
       is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
@@ -738,20 +726,14 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
      }
     
     if (1)                                                                                
-     {my $W = 3; my $N = 107; my @r = randomArray $N;
+     {my $W = 3; my @r = randomArray 107;
     
       Start 1;
       my $t = New($W);                                                              # Create tree at expected location in memory
     
-      my $a = Array "aaa";
-      for my $I(1..$N)                                                              # Load array
-       {my $i = $I-1;
-        Mov [$a, $i, "aaa"], $r[$i];
-       }
+      my $f = FindResult_new;                                                       # Preallocate find result
     
-      my $f = FindResult_new;
-    
-      ForArray                                                                      # Create tree
+      ForIn                                                                         # Create tree
        {my ($i, $k) = @_;
         my $n = Keys($t);
         AssertEq $n, $i;                                                            # Check tree size
@@ -764,7 +746,7 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
           rightStart=>          int($W/2)+1,
         );
         Tally 0;
-       } $a, q(aaa);
+       };
     
       Iterate                                                                       # Iterate tree
     
@@ -786,9 +768,11 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
       Iterate {} $t;                                                                # Iterate tree without doing anything in the body to see the pure iteration overhead
       Tally 0;
     
-      my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
-    
-      is_deeply $e->outLines, [1..$N];                                              # Expected sequence
+      my $e = Execute(suppressOutput=>1, in=>[@r]);
+      is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
+      is_deeply $e->widestAreaInArena,   [535, 6];
+      is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
+      is_deeply $e->mostArrays,          [1, 250, 1, 1];
     
       #say STDERR dump $e->tallyCount;
       is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
@@ -1058,20 +1042,14 @@ Iterate over a tree.
 **Example:**
 
     if (1)                                                                                
-     {my $W = 3; my $N = 107; my @r = randomArray $N;
+     {my $W = 3; my @r = randomArray 107;
     
       Start 1;
       my $t = New($W);                                                              # Create tree at expected location in memory
     
-      my $a = Array "aaa";
-      for my $I(1..$N)                                                              # Load array
-       {my $i = $I-1;
-        Mov [$a, $i, "aaa"], $r[$i];
-       }
+      my $f = FindResult_new;                                                       # Preallocate find result
     
-      my $f = FindResult_new;
-    
-      ForArray                                                                      # Create tree
+      ForIn                                                                         # Create tree
        {my ($i, $k) = @_;
         my $n = Keys($t);
         AssertEq $n, $i;                                                            # Check tree size
@@ -1084,7 +1062,7 @@ Iterate over a tree.
           rightStart=>          int($W/2)+1,
         );
         Tally 0;
-       } $a, q(aaa);
+       };
     
     
       Iterate                                                                       # Iterate tree  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -1106,9 +1084,11 @@ Iterate over a tree.
 
       Tally 0;
     
-      my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
-    
-      is_deeply $e->outLines, [1..$N];                                              # Expected sequence
+      my $e = Execute(suppressOutput=>1, in=>[@r]);
+      is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
+      is_deeply $e->widestAreaInArena,   [535, 6];
+      is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
+      is_deeply $e->mostArrays,          [1, 250, 1, 1];
     
       #say STDERR dump $e->tallyCount;
       is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
@@ -1207,20 +1187,14 @@ Print the keys held in a tree.
 **Example:**
 
     if (1)                                                                                
-     {my $W = 3; my $N = 107; my @r = randomArray $N;
+     {my $W = 3; my @r = randomArray 107;
     
       Start 1;
       my $t = New($W);                                                              # Create tree at expected location in memory
     
-      my $a = Array "aaa";
-      for my $I(1..$N)                                                              # Load array
-       {my $i = $I-1;
-        Mov [$a, $i, "aaa"], $r[$i];
-       }
+      my $f = FindResult_new;                                                       # Preallocate find result
     
-      my $f = FindResult_new;
-    
-      ForArray                                                                      # Create tree
+      ForIn                                                                         # Create tree
        {my ($i, $k) = @_;
         my $n = Keys($t);
         AssertEq $n, $i;                                                            # Check tree size
@@ -1233,7 +1207,7 @@ Print the keys held in a tree.
           rightStart=>          int($W/2)+1,
         );
         Tally 0;
-       } $a, q(aaa);
+       };
     
       Iterate                                                                       # Iterate tree
        {my ($find) = @_;                                                            # Find result
@@ -1251,9 +1225,11 @@ Print the keys held in a tree.
       Iterate {} $t;                                                                # Iterate tree without doing anything in the body to see the pure iteration overhead
       Tally 0;
     
-      my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
-    
-      is_deeply $e->outLines, [1..$N];                                              # Expected sequence
+      my $e = Execute(suppressOutput=>1, in=>[@r]);
+      is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
+      is_deeply $e->widestAreaInArena,   [535, 6];
+      is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
+      is_deeply $e->mostArrays,          [1, 250, 1, 1];
     
       #say STDERR dump $e->tallyCount;
       is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
@@ -1350,20 +1326,14 @@ Print the data held in a tree.
 **Example:**
 
     if (1)                                                                                
-     {my $W = 3; my $N = 107; my @r = randomArray $N;
+     {my $W = 3; my @r = randomArray 107;
     
       Start 1;
       my $t = New($W);                                                              # Create tree at expected location in memory
     
-      my $a = Array "aaa";
-      for my $I(1..$N)                                                              # Load array
-       {my $i = $I-1;
-        Mov [$a, $i, "aaa"], $r[$i];
-       }
+      my $f = FindResult_new;                                                       # Preallocate find result
     
-      my $f = FindResult_new;
-    
-      ForArray                                                                      # Create tree
+      ForIn                                                                         # Create tree
        {my ($i, $k) = @_;
         my $n = Keys($t);
         AssertEq $n, $i;                                                            # Check tree size
@@ -1376,7 +1346,7 @@ Print the data held in a tree.
           rightStart=>          int($W/2)+1,
         );
         Tally 0;
-       } $a, q(aaa);
+       };
     
       Iterate                                                                       # Iterate tree
        {my ($find) = @_;                                                            # Find result
@@ -1394,9 +1364,11 @@ Print the data held in a tree.
       Iterate {} $t;                                                                # Iterate tree without doing anything in the body to see the pure iteration overhead
       Tally 0;
     
-      my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
-    
-      is_deeply $e->outLines, [1..$N];                                              # Expected sequence
+      my $e = Execute(suppressOutput=>1, in=>[@r]);
+      is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
+      is_deeply $e->widestAreaInArena,   [535, 6];
+      is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
+      is_deeply $e->mostArrays,          [1, 250, 1, 1];
     
       #say STDERR dump $e->tallyCount;
       is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
@@ -1493,30 +1465,6 @@ Create a random array.
 
        Parameter  Description
     1  $N         Size of array
-
-**Example:**
-
-    if (0)                                                                          
-    
-     {my $W = 5; my $N = 76; my @r = randomArray $N;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-    
-      Start 1;
-      my $t = New($W);
-      for my $i(0..$N-1)
-       {Insert($t, $r[$i], $r[$i]);
-       }
-    
-      Iterate                                                                       # Iterate tree
-       {my ($find) = @_;                                                            # Find result
-        my $k = FindResult_key($find);
-        Out $k;
-       } $t;
-    
-      my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
-      is_deeply $e->outLines, [1..$N];
-     }
-    
 
 # Attributes
 
