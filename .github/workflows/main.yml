@@ -63,6 +63,8 @@ jobs:
         ref: 'main'
 
     - uses: Vampire/setup-wsl@v2                                                # Install Windows Services For Linux - just: wsl --install -D Ubuntu
+      with:
+        distribution: Ubuntu-22.04
 
     - name: Ubuntu
       run: |
