@@ -76,31 +76,3 @@ jobs:
           perl examples/insertionSort.pl
           perl examples/quickSort.pl
           perl examples/selectionSort.pl
-  testFreeBsd:
-    runs-on: macos-12
-    name: FreeBSD
-    env:
-      MYTOKEN : ${{ secrets.MYTOKEN }}
-      MYTOKEN2: "value2"
-    steps:
-    - uses: actions/checkout@v3
-    - name: Test in OpenBSD
-      id: test
-      uses: vmactions/freebsd-vm@v0
-      with:
-        envs: 'MYTOKEN MYTOKEN2'
-        usesh: true
-        prepare: |
-          cpan install -T Data::Dump Data::Table::Text
-
-        run: |
-          perl lib/Zero/Emulator.pm
-          perl lib/Zero/NWayTree.pm
-          perl lib/Zero/Emulator.pm
-          perl lib/Zero/NWayTree.pm
-          perl examples/testEmulator.pl
-          perl examples/testNWayTree.pl
-          perl examples/bubbleSort.pl
-          perl examples/insertionSort.pl
-          perl examples/quickSort.pl
-          perl examples/selectionSort.pl
