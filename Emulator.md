@@ -2706,6 +2706,7 @@ Push the value in the current stack frame specified by the source operand onto t
       is_deeply $e->GetMemoryHeaps->($e), 3;
       is_deeply $e->heap(1), [1, 2, 3];
       is_deeply $e->heap(2), [11, 22, 33];
+      is_deeply $e->mostArrays, [1, 2, 1, 1];
      }
     
 
