@@ -15,7 +15,7 @@ use strict;
 use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
-eval "use Test::More tests=>387" unless caller;
+eval "use Test::More tests=>392" unless caller;
 
 makeDieConfess;
 our $memoryTechnique;                                                           # Undef or the address of a sub that loads the memory handlers into an execution environment.
@@ -62,6 +62,8 @@ sub ExecutionEnvironment(%)                                                     
     lastAssignValue=>       undef,                                              # Last assignment performed - value
     lastAssignBefore=>      undef,                                              # Prior value of memory area before assignment
     freedArrays=>           [],                                                 # Arrays that have been recently freed and can thus be reused
+    freedArrays=>           [],                                                 # Arrays that have been recently freed and can thus be reused
+    mostArrays=>            [],                                                 # The maximum number of arrays active at any point during the execution in each arena
     checkArrayNames=>      ($options{checkArrayNames} // 1),                    # Check array names to confirm we are accessing the expected data
     GetMemoryHeaps=>       \&getMemoryHeaps,                                    # Low level memory access - arenas in use
     GetMemoryArea=>        \&getMemoryArea,                                     # Low level memory access - area
@@ -77,7 +79,9 @@ sub ExecutionEnvironment(%)                                                     
     memoryStringTotalElements=>  0,                                             # Maximum number of elements in total in an area in a heap arena if such is required by the memory allocation technique in play
    );
 
-  $memoryTechnique->($exec) if $memoryTechnique;                                # Load memory handlers if a different memory handling system has been requested
+  $memoryTechnique->($exec)       if $memoryTechnique;                          # Load memory handlers if a different memory handling system has been requested
+  $exec->setStringMemoryTechnique if $options{stringMemory};                    # Optionally overrLoad memory handlers if a different memory handling system has been requested
+
   if (defined(my $n = $options{maximumAreaSize}))                               # Override the maximum number of elements in an array from the default setting if requested
    {$exec->memoryStringUserElements  = $n;
     $exec->memoryStringTotalElements = $n + $exec->memoryStringSystemElements;
@@ -793,6 +797,9 @@ sub allocMemory($$$)                                                            
   my $n = $exec->block->ArrayNumberToName($number);                             # Convert array name to number if possible
   $exec->AllocMemoryArea->($exec, $n, $arena, $a);                              # Create new area
   $exec->setMemoryType($arena, $a, $number);                                    # Track name of area
+        $exec->mostArrays->[$arena] =                                           # Track maximum size of each arena
+    max $exec->mostArrays->[$arena]//0, scalar $allocs->[$arena];
+
   $a
  }
 
@@ -3156,6 +3163,7 @@ if (1)                                                                          
   is_deeply $e->GetMemoryHeaps->($e), 3;
   is_deeply $e->heap(1), [1, 2, 3];
   is_deeply $e->heap(2), [11, 22, 33];
+  is_deeply $e->mostArrays, [1, 2, 1, 1];
  }
 
 #latest:;
@@ -4236,8 +4244,7 @@ if (1)                                                                          
   Out $b2;
   Out $b3;
 
-  $memoryTechnique = \&setStringMemoryTechnique;
-  my $e = Execute(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1, stringMemory=>1);
 #  say STDERR $e->out;
   is_deeply $e->out, <<END;
 1
@@ -4257,6 +4264,7 @@ END
 22
 33
 END
+  is_deeply $e->mostArrays, [1, 2, 1, 1];
  }
 
 =pod
