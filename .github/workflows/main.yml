@@ -52,7 +52,7 @@ jobs:
 
   testOpenBsd:
     runs-on: macos-12
-    name: A job to run test in OpenBSD
+    name: OpenBSD
     env:
       MYTOKEN : ${{ secrets.MYTOKEN }}
       MYTOKEN2: "value2"
@@ -78,7 +78,7 @@ jobs:
           perl examples/selectionSort.pl
   testFreeBsd:
     runs-on: macos-12
-    name: A job to run test in OpenBSD
+    name: FreeBSD
     env:
       MYTOKEN : ${{ secrets.MYTOKEN }}
       MYTOKEN2: "value2"
