@@ -65,7 +65,7 @@ jobs:
         envs: 'MYTOKEN MYTOKEN2'
         usesh: true
         prepare: |
-          sudo cpan install -T Data::Dump Data::Table::Text
+          cpan install -T Data::Dump Data::Table::Text
 
 
         run: |
