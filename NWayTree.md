@@ -1459,13 +1459,6 @@ Print the data held in a tree.
 
 Utility functions.
 
-## randomArray($N)
-
-Create a random array.
-
-       Parameter  Description
-    1  $N         Size of array
-
 # Attributes
 
 The following is a list of all the attributes in this package.  A method coded
@@ -1480,6 +1473,15 @@ x
 ## x
 
 Stop if debugging.
+
+# Private Methods
+
+## randomArray($N)
+
+Create a random array.
+
+       Parameter  Description
+    1  $N         Size of array
 
 # Index
 
