@@ -374,7 +374,7 @@ Assert false.
 
 ## AssertGe($a, $b, %options)
 
-Assert are greater than or equal.
+Assert that the first value is greater than or equal to the second value.
 
        Parameter  Description
     1  $a         First memory address
@@ -399,7 +399,7 @@ Assert are greater than or equal.
 
 ## AssertGt($a, $b, %options)
 
-Assert two memory locations are greater than.
+Assert that the first value is greater than the second value.
 
        Parameter  Description
     1  $a         First memory address
@@ -424,7 +424,7 @@ Assert two memory locations are greater than.
 
 ## AssertLe($a, $b, %options)
 
-Assert two memory locations are less than or equal.
+Assert that the first value is less than or equal to the second value.
 
        Parameter  Description
     1  $a         First memory address
@@ -449,7 +449,7 @@ Assert two memory locations are less than or equal.
 
 ## AssertLt($a, $b, %options)
 
-Assert two memory locations are less than.
+Assert that the first value is less than  the second value.
 
        Parameter  Description
     1  $a         First memory address
@@ -3641,13 +3641,13 @@ Disassemble and remove context information from disassembly to make testing easi
 
 13 [AssertFalse](#assertfalse) - Assert false.
 
-14 [AssertGe](#assertge) - Assert are greater than or equal.
+14 [AssertGe](#assertge) - Assert that the first value is greater than or equal to the second value.
 
-15 [AssertGt](#assertgt) - Assert two memory locations are greater than.
+15 [AssertGt](#assertgt) - Assert that the first value is greater than the second value.
 
-16 [AssertLe](#assertle) - Assert two memory locations are less than or equal.
+16 [AssertLe](#assertle) - Assert that the first value is less than or equal to the second value.
 
-17 [AssertLt](#assertlt) - Assert two memory locations are less than.
+17 [AssertLt](#assertlt) - Assert that the first value is less than  the second value.
 
 18 [AssertNe](#assertne) - Assert two memory locations are not equal.
 
