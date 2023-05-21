@@ -70,10 +70,6 @@ jobs:
       run: |
         sudo apt-get -y update
 
-    - name: List
-      run: |
-        wsl --list --verbose
-
     - name: Configure Ubuntu
       run: |
         sudo apt-get -y install build-essential
