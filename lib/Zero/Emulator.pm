@@ -22,7 +22,7 @@ our $memoryTechnique;                                                           
 
 my sub maximumInstructionsToExecute {1e6}                                       # Maximum number of subroutines to execute
 
-sub ExecutionEnvironment(%)                                                     # Execution environment for a block of code
+sub ExecutionEnvironment(%)                                                     # Execution environment for a block of code.
  {my (%options) = @_;                                                           # Execution options
 
   my $exec=                 genHash("Zero::Emulator",                           # Execution results
@@ -78,7 +78,7 @@ sub ExecutionEnvironment(%)                                                     
    );
 
   $memoryTechnique->($exec) if $memoryTechnique;                                # Load memory handlers if a different memory handling system has been requested
-  if (defined(my $n = $options{maximumAreaSize}))                               # override the maximum number of elements in an array from the defualt setting if requested
+  if (defined(my $n = $options{maximumAreaSize}))                               # Override the maximum number of elements in an array from the default setting if requested
    {$exec->memoryStringUserElements  = $n;
     $exec->memoryStringTotalElements = $n + $exec->memoryStringSystemElements;
    }
@@ -151,7 +151,7 @@ sub Zero::Emulator::Code::instruction($%)                                       
    }
  }
 
-sub Zero::Emulator::Code::codeToString($)                                       #P Code as a string
+sub Zero::Emulator::Code::codeToString($)                                       #P Code as a string.
  {my ($block) = @_;                                                             # Block of code
   @_ == 1 or confess "One parameter";
   my @T;
@@ -202,7 +202,7 @@ sub AreaStructure($@)                                                           
   $d
  }
 
-sub Zero::Emulator::AreaStructure::count($)                                     #P Number of fields in a data structure
+sub Zero::Emulator::AreaStructure::count($)                                     #P Number of fields in a data structure.
  {my ($d) = @_;                                                                 # Area structure
   scalar $d->fieldOrder->@*
  }
@@ -267,11 +267,11 @@ my sub isScalar($)                                                              
 
 # Memory is subdivided into arenas that hold items of similar types, sizes, access orders
 my sub arenaLocal {0}                                                           # Variables whose location is fixed at compile time
-my sub arenaHeap  {1}                                                           # Allocations whose location is dynamically allocated as the progam run
+my sub arenaHeap  {1}                                                           # Allocations whose location is dynamically allocated as the program runs
 my sub arenaParms {2}                                                           # Parameter areas
 my sub arenaReturn{3}                                                           # Return areas
 
-sub Zero::Emulator::Code::referenceToString($$)                                 #P Reference as a string
+sub Zero::Emulator::Code::referenceToString($$)                                 #P Reference as a string.
  {my ($block, $r) = @_;                                                         # Block of code, reference
   @_ == 2 or confess "Two parameters";
 
@@ -287,7 +287,7 @@ sub Zero::Emulator::Code::referenceToString($$)                                 
    }
  }
 
-sub Zero::Emulator::Code::ArrayNameToNumber($$)                                 #P Generate a unique number for this array name
+sub Zero::Emulator::Code::ArrayNameToNumber($$)                                 #P Generate a unique number for this array name.
  {my ($code, $name) = @_;                                                       # Code block, array name
 
   if (defined(my $n = $code->arrayNames->{$name}))                              # Name already exists
@@ -300,13 +300,13 @@ sub Zero::Emulator::Code::ArrayNameToNumber($$)                                 
  }
 
 
-sub Zero::Emulator::Code::ArrayNumberToName($$)                                 #P Return the array name associated with an array number
+sub Zero::Emulator::Code::ArrayNumberToName($$)                                 #P Return the array name associated with an array number.
  {my ($code, $number) = @_;                                                     # Code block, array name
 
   $code->arrayNumbers->[$number] // $number
  }
 
-sub Zero::Emulator::Code::Reference($$)                                         # Record a reference to a left or right address
+sub Zero::Emulator::Code::Reference($$)                                         # Record a reference to a left or right address.
  {my ($code, $r) = @_;                                                          # Code block, reference
   ref($r) and ref($r) !~ m(\A(array|scalar|ref)\Z)i and confess "Scalar or reference required, not: ".dump($r);
   my $arena = ref($r) =~ m(\Aarray\Z)i ? arenaHeap : arenaLocal;                # Local variables are variables that are not on the heap
@@ -340,7 +340,7 @@ sub Zero::Emulator::Procedure::call($)                                          
   Zero::Emulator::Call($procedure->target);
  }
 
-sub Zero::Emulator::Code::assemble($%)                                          #P Assemble a block of code to prepare it for execution.  This modifies the jump targets and so once assembled we cannot assembled again
+sub Zero::Emulator::Code::assemble($%)                                          #P Assemble a block of code to prepare it for execution.  This modifies the jump targets and so once assembled we cannot assembled again.
  {my ($Block, %options) = @_;                                                   # Code block, assembly options
 
   my $code = $Block->code;                                                      # The code to be assembled
@@ -374,7 +374,7 @@ sub Zero::Emulator::Code::assemble($%)                                          
   $Block
  }
 
-sub heap($$)                                                                    #P Return a heap entry
+sub heap($$)                                                                    #P Return a heap entry.
  {my ($exec, $area) = @_;                                                       # Execution environment, area
   $exec->GetMemoryArea->($exec, arenaHeap, $area);
  }
@@ -396,7 +396,7 @@ sub areaLength($$)                                                              
   scalar @$a
  }
 
-sub currentStackFrame($)                                                        #P Address of current stack frame
+sub currentStackFrame($)                                                        #P Address of current stack frame.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my $calls = $exec->calls;
@@ -404,7 +404,7 @@ sub currentStackFrame($)                                                        
   $$calls[-1]->stackArea;
  }
 
-sub currentParamsGet($)                                                         #P Address of current parameters to get from
+sub currentParamsGet($)                                                         #P Address of current parameters to get from.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my $calls = $exec->calls;
@@ -412,7 +412,7 @@ sub currentParamsGet($)                                                         
   $$calls[-2]->params;
  }
 
-sub currentParamsPut($)                                                         #P Address of current parameters to put to
+sub currentParamsPut($)                                                         #P Address of current parameters to put to.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my $calls = $exec->calls;
@@ -420,7 +420,7 @@ sub currentParamsPut($)                                                         
   $$calls[-1]->params;
  }
 
-sub currentReturnGet($)                                                         #P Address of current return to get from
+sub currentReturnGet($)                                                         #P Address of current return to get from.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my $calls = $exec->calls;
@@ -428,7 +428,7 @@ sub currentReturnGet($)                                                         
   $$calls[-1]->return;
  }
 
-sub currentReturnPut($)                                                         #P Address of current return to put to
+sub currentReturnPut($)                                                         #P Address of current return to put to.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my $calls = $exec->calls;
@@ -455,7 +455,7 @@ sub dumpMemory($)                                                               
 
 # These methods provide the original unlimited memory mechanism using multidimensional arrays
 
-sub getMemoryHeaps($)                                                           #P Heaps
+sub getMemoryHeaps($)                                                           #P Heaps.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   scalar($exec->memory->[arenaHeap]->@*)
@@ -467,47 +467,47 @@ sub getMemoryArea($$$)                                                          
   $exec->memory->[$arena][$area]
  }
 
-sub getMemoryLocation($$$$)                                                     #P Lowest level memory access to an array: get the address of the indicated location in memory.   This method is replacable to model different memory structures
+sub getMemoryLocation($$$$)                                                     #P Lowest level memory access to an array: get the address of the indicated location in memory.   This method is replaceable to model different memory structures.
  {my ($exec, $arena, $area, $address) = @_;                                     # Execution environment, arena, area, address, expected name of area
   @_ == 4 or confess "Four parameters";
   \$exec->memory->[$arena][$area][$address];
  }
 
-sub allocMemoryArea($$$$)                                                       #P Allocate a memory area
+sub allocMemoryArea($$$$)                                                       #P Allocate a memory area.
  {my ($exec, $number, $arena, $area) = @_;                                      # Execution environment, name of allocation to bless result, arena to use, area to use
   @_ == 4 or confess "Four parameters";
   $exec->memory->[$arena][$area] = $number ? bless [], $number : [];            # Blessing with 0 is a very bad idea!
  }
 
-sub freeMemoryArea($$$)                                                         #P Free a memory area
+sub freeMemoryArea($$$)                                                         #P Free a memory area.
  {my ($exec, $arena, $area) = @_;                                               # Execution environment, arena to use, area to use
   @_ == 3 or confess "Three parameters";
   $exec->memory->[$arena][$area] = [];
  }
 
-sub resizeMemoryArea($$$)                                                       #P Resize an area in the heap
+sub resizeMemoryArea($$$)                                                       #P Resize an area in the heap.
  {my ($exec, $area, $size) = @_;                                                # Execution environment, area to use, new size
   @_ == 3 or confess "Three parameters";
   my $a = $exec->memory->[arenaHeap][$area];
   $#$a = $size-1;
  }
 
-sub pushMemoryArea($$$)                                                         #P Push a value onto the specified array
+sub pushMemoryArea($$$)                                                         #P Push a value onto the specified array.
  {my ($exec, $area, $value) = @_;                                               # Execution environment, arena, array, value to assign
   @_ == 3 or confess "Three parameters";
   push $exec->memory->[arenaHeap][$area]->@*, $value;                           # Push
  }
 
-sub popMemoryArea($$$)                                                          #P Pop a value from the specified memory area if possible else confess
+sub popMemoryArea($$$)                                                          #P Pop a value from the specified memory area if possible else confess.
  {my ($exec, $arena, $area) = @_;                                               # Execution environment, arena, array,
   my $a = $exec->memory->[$arena][$area];
-  if (!defined($a) or !$a->@*)                                                  # Area does not exists or has zero elemenets
+  if (!defined($a) or !$a->@*)                                                  # Area does not exists or has zero elements
    {$exec->stackTraceAndExit("Cannot pop area: $area, in arena: $arena");
    }
   pop @$a;                                                                      # Pop
  }
 
-sub setOriginalMemoryTechnique($)                                               #P Set the handlers for the original memory allocation technique
+sub setOriginalMemoryTechnique($)                                               #P Set the handlers for the original memory allocation technique.
  {my ($exec) = @_;                                                              # Execution environment
   $exec->GetMemoryHeaps    = \&getMemoryHeaps;                                  # Low level memory access - arena
   $exec->GetMemoryArea     = \&getMemoryArea;                                   # Low level memory access - area
@@ -521,7 +521,7 @@ sub setOriginalMemoryTechnique($)                                               
 
 # These methods place the heap arena in a vector string. Each area is up to a prespecified width wide. The current length of each such array is held in the first element.
 
-sub stringMemoryAreaLength($$$)                                                 #P Get the current length of a string memory area n area in
+sub stringMemoryAreaLength($$$)                                                 #P Get the current length of a string memory area n area in.
  {my ($exec, $arena, $area) = @_;                                               # Execution environment, arena, array,
 
   my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
@@ -538,7 +538,7 @@ sub stringMemoryAreaLength($$$)                                                 
   $v
  }
 
-sub stringGetMemoryHeaps($)                                                     #P Get number of heaps
+sub stringGetMemoryHeaps($)                                                     #P Get number of heaps.
  {my ($exec) = @_;                                                              # Execution environment, arena
   @_ == 1 or confess "One parameter";
 
@@ -558,7 +558,7 @@ sub stringGetMemoryHeaps($)                                                     
 sub stringGetMemoryArea($$$$)                                                   #P Lowest level memory access to an area.
  {my ($exec, $arena, $area) = @_;                                               # Execution environment, arena, area
   @_ == 3 or confess "Three parameters";
-  return getMemoryArea($exec, $arena, $area) if $arena != arenaHeap;            # Non heap  objects continue as normal becuase the number of local variables and subroutines a human can produce in one lifetime are limited,
+  return getMemoryArea($exec, $arena, $area) if $arena != arenaHeap;            # Non heap objects continue as normal because the number of local variables and subroutines a human can produce in one lifetime are limited,
 
   my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
   my $u = $exec->memoryStringUserElements;                                      # User width of a heap area
@@ -574,10 +574,12 @@ sub stringGetMemoryArea($$$$)                                                   
   [@o]
  }
 
-sub stringGetMemoryLocation($$$$)                                               #P Lowest level memory access to an array: get the address of the indicated location in memory.   This method is replacable to model different memory structures
+sub stringGetMemoryLocation($$$$)                                               #P Lowest level memory access to an array: get the address of the indicated location in memory.   This method is replaceable to model different memory structures.
  {my ($exec, $arena, $area, $address) = @_;                                     # Execution environment, arena, area, address, expected name of area
   @_ == 4 or confess "Four parameters";
-  return getMemoryLocation($exec, $arena, $area, $address) if $arena != arenaHeap; # Non heap  objects continue as normal becuase the number of local variables and subroutines a human can produce in one lifetime are limited,
+  if ($arena != arenaHeap)                                                      # Non heap  objects continue as normal because the number of local variables and subroutines a human can produce in one lifetime are limited,
+   {return getMemoryLocation($exec, $arena, $area, $address);
+   }
 
   my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
   my $u = $exec->memoryStringUserElements;                                      # User width of a heap area
@@ -593,10 +595,10 @@ sub stringGetMemoryLocation($$$$)                                               
   \vec($exec->memoryString, $O, $w * 8)                                         # Memory containing one element
  }
 
-sub stringAllocMemoryArea($$$$)                                                 #P Allocate a memory area
+sub stringAllocMemoryArea($$$$)                                                 #P Allocate a memory area.
  {my ($exec, $number, $arena, $area) = @_;                                      # Execution environment, name of allocation to bless result, arena to use, area to use
   @_ == 4 or confess "Four parameters";
-  return allocMemoryArea($exec, $number, $arena, $area) if $arena != arenaHeap; # Non heap  objects continue as normal becuase the number of local variables and subroutines a human can produce in one lifetime are limited,
+  return allocMemoryArea($exec, $number, $arena, $area) if $arena != arenaHeap; # Non heap  objects continue as normal because the number of local variables and subroutines a human can produce in one lifetime are limited,
 
   my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
   my $u = $exec->memoryStringUserElements;                                      # User width of a heap area
@@ -606,10 +608,10 @@ sub stringAllocMemoryArea($$$$)                                                 
   vec($exec->memoryString, $o, $w * 8) = 0;                                     # Zero current length of area so we can push and pop
  }
 
-sub stringFreeMemoryArea($$$)                                                   #P Free a memory area
+sub stringFreeMemoryArea($$$)                                                   #P Free a memory area.
  {my ($exec, $arena, $area) = @_;                                               # Execution environment, arena to use, area to use
   @_ == 3 or confess "Three parameters";
-  return freeMemoryArea($exec, $arena, $area) if $arena != arenaHeap;           # Non heap  objects continue as normal becuase the number of local variables and subroutines a human can produce in one lifetime are limited,
+  return freeMemoryArea($exec, $arena, $area) if $arena != arenaHeap;           # Non heap  objects continue as normal because the number of local variables and subroutines a human can produce in one lifetime are limited,
 
   my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
   my $u = $exec->memoryStringUserElements;                                      # User width of a heap area
@@ -620,7 +622,7 @@ sub stringFreeMemoryArea($$$)                                                   
   vec($exec->memoryString, $o, $w * 8) = 0;                                     # Zero current length of area so we can push and pop
  }
 
-sub stringResizeMemoryArea($$$)                                                 #P Reize a heap memory area
+sub stringResizeMemoryArea($$$)                                                 #P Resize a heap memory area.
  {my ($exec, $area, $size) = @_;                                                # Execution environment, area to resize, new size
   @_ == 3 or confess "Three parameters";
 
@@ -633,7 +635,7 @@ sub stringResizeMemoryArea($$$)                                                 
   vec($exec->memoryString, $o, $w * 8) = $size;                                 # Set new size
  }
 
-sub stringPushMemoryArea($$$)                                                   #P Push a value onto the specified array
+sub stringPushMemoryArea($$$)                                                   #P Push a value onto the specified array.
  {my ($exec, $area, $value) = @_;                                               # Execution environment, arena, array, value to assign
   @_ == 3 or confess "Three parameters";
 
@@ -651,7 +653,7 @@ sub stringPushMemoryArea($$$)                                                   
   vec($exec->memoryString, $o, $w * 8) = $l + 1;                                # Increase size of area
  }
 
-sub stringPopMemoryArea($$$)                                                    #P Pop a value from the specified memory area if possible else confess
+sub stringPopMemoryArea($$$)                                                    #P Pop a value from the specified memory area if possible else confess.
  {my ($exec, $arena, $area) = @_;                                               # Execution environment, arena, array,
 
   my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
@@ -668,7 +670,7 @@ sub stringPopMemoryArea($$$)                                                    
   $v
  }
 
-sub setStringMemoryTechnique($)                                                 #P Set the handlers for the string memory allocation technique
+sub setStringMemoryTechnique($)                                                 #P Set the handlers for the string memory allocation technique.
  {my ($exec) = @_;                                                              # Execution environment
   $exec->GetMemoryHeaps    = \&stringGetMemoryHeaps;                            # Low level memory access - arena
   $exec->GetMemoryArea     = \&stringGetMemoryArea;                             # Low level memory access - area
@@ -699,7 +701,7 @@ sub getMemory($$$$$)                                                            
   $$v
  }
 
-sub getMemoryAddress($$$$$)                                                     #P Evaluate an address in the current execution environment
+sub getMemoryAddress($$$$$)                                                     #P Evaluate an address in the current execution environment.
  {my ($exec, $arena, $area, $address, $name) = @_;                              # Execution environment, arena, area, address, expected name of area
   @_ == 5 or confess "Five parameters";
   $exec->widestAreaInArena->[$arena] =                                          # Track the widest area in each arena
@@ -708,14 +710,14 @@ sub getMemoryAddress($$$$$)                                                     
   $exec->GetMemoryLocation->($exec, $arena, $area, $address);                   # Read from memory
  }
 
-sub getMemoryFromAddress($$)                                                    #P Get a value from memory at a specified address
+sub getMemoryFromAddress($$)                                                    #P Get a value from memory at a specified address.
  {my ($exec, $left) = @_;                                                       # Execution environment, left address
   @_ == 2 or confess "Two parameters";
   ref($left) =~ m(Address) or confess "Address needed for second parameter, not: ".ref($left);
   $exec->getMemory($left->arena, $left->area, $left->address, $left->name);
  }
 
-sub getMemoryAddressFromAddress($)                                              #P Get address of memory location from an address in the cirrent execution environment
+sub getMemoryAddressFromAddress($)                                              #P Get address of memory location from an address in the current execution environment.
  {my ($exec, $left) = @_;                                                       # Execution environment, address
   @_ == 2 or confess "Two parameters";
   ref($left) =~ m(Address) or confess "Address needed for second parameter, not: ".ref($left);
@@ -774,7 +776,7 @@ sub stackTraceAndExit($$%)                                                      
 
   my $t = $exec->stackTrace($title);
   $exec->output($t);
-  confess $t unless $exec->suppressOutput;                                      # confess if requested - presumably becuase this indicates an error in programming and thus nothing can be done about it within the program
+  confess $t unless $exec->suppressOutput;                                      # Confess if requested - presumably because this indicates an error in programming and thus nothing can be done about it within the program
 
   $exec->instructionPointer = undef;                                            # Execution terminates as soon as undefined instruction is encountered
   $t
@@ -794,7 +796,7 @@ sub allocMemory($$$)                                                            
   $a
  }
 
-sub freeArea($$$$)                                                              #P Free a heap memory area
+sub freeArea($$$$)                                                              #P Free a heap memory area.
  {my ($exec, $arena, $area, $number) = @_;                                      # Execution environment, arena, array, name of allocation
   @_ == 4 or confess "Four parameters";
   $number =~ m(\A\d+\Z) or confess "Array name must be numeric not : $number";
@@ -805,20 +807,20 @@ sub freeArea($$$$)                                                              
   push $exec->freedArrays->[$arena]->@*, $area;                                 # Save array for reuse
  }
 
-sub pushArea($$$$)                                                              #P Push a value onto the specified heap array
+sub pushArea($$$$)                                                              #P Push a value onto the specified heap array.
  {my ($exec, $area, $name, $value) = @_;                                        # Execution environment, array, name of allocation, value to assign
   @_ == 4 or confess "Four parameters";
   $exec->checkArrayName(arenaHeap, $area, $name);
   $exec->PushMemoryArea->($exec, $area, $value);
  }
 
-sub popArea($$$$)                                                               # Pop a value from the specified memory area if possible else confess
+sub popArea($$$$)                                                               # Pop a value from the specified memory area if possible else confess.
  {my ($exec, $arena, $area, $name) = @_;                                        # Execution environment, arena, array, name of allocation, value to assign
   $exec->checkArrayName($arena, $area, $name);                                  # Check stack name
   $exec->PopMemoryArea->($exec, $arena, $area);
  }
 
-sub getMemoryType($$$)                                                          #P Get the type of an area
+sub getMemoryType($$$)                                                          #P Get the type of an area.
  {my ($exec, $arena, $area) = @_;                                               # Execution environment, arena, area
   @_ == 3 or confess "Three parameters";
   $exec->memoryType->[$arena][$area];
@@ -881,13 +883,13 @@ sub rwRead($$$$)                                                                
    }
  }
 
-sub stackAreaNameNumber($)                                                      # Number of name representing stack area
+sub stackAreaNameNumber($)                                                      # Number of name representing stack area.
  {my ($exec) = @_;                                                              # Execution environment
   $exec->block->ArrayNameToNumber("stackArea");
  }
 
 sub left($$)                                                                    #P Address of a location in memory.
- {my ($exec, $ref) = @_;                                                        # Exececution environment, reference
+ {my ($exec, $ref) = @_;                                                        # Execution environment, reference
   @_ == 2 or confess "Two parameters";
   ref($ref) =~ m(Reference)
     or confess "Reference required, not: ".dump($ref);
@@ -1092,19 +1094,19 @@ sub assign($$$)                                                                 
   $exec->setMemory($target, $value);                                            # Actually do the assign
  }
 
-sub stackAreaNumber($)                                                          #P Number for type of stack area array
+sub stackAreaNumber($)                                                          #P Number for type of stack area array.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   $exec->block->ArrayNameToNumber("stackArea")
  }
 
-sub paramsNumber($)                                                             #P Number for type of parameters array
+sub paramsNumber($)                                                             #P Number for type of parameters array.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   $exec->block->ArrayNameToNumber("params")
  }
 
-sub returnNumber($)                                                             #P Number for type of return area array
+sub returnNumber($)                                                             #P Number for type of return area array.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   $exec->block->ArrayNameToNumber("return")
@@ -1207,7 +1209,7 @@ sub output($$)                                                                  
    }
  }
 
-sub outLines($)                                                                 #P Turn the output channel into an array of lines
+sub outLines($)                                                                 #P Turn the output channel into an array of lines.
  {my ($exec) = @_;                                                              # Execution environment
   [split /\n/, $exec->out]
  }
@@ -1763,7 +1765,7 @@ sub Zero::Emulator::Code::execute($%)                                           
     my $instruction = $exec->block->code->[$exec->instructionPointer++];        # Current instruction
     last unless $instruction;                                                   # Current instruction is undefined so we must have reached the end of the program
 
-    $exec->calls->[-1]->instruction = $instruction;                             # Make this instriction the current instruction
+    $exec->calls->[-1]->instruction = $instruction;                             # Make this instruction the current instruction
 
     if (my $a = $instruction->action)                                           # Action
      {$exec->stackTraceAndExit(qq(No implementation for instruction: "$a"))     # Check that there is come code implementing the action for this instruction
@@ -1794,7 +1796,7 @@ sub Zero::Emulator::Code::execute($%)                                           
   $exec
  }                                                                              # Execution results
 
-sub completionStatistics($)                                                     #P Produce various statistics summarizing the execution of the program
+sub completionStatistics($)                                                     #P Produce various statistics summarizing the execution of the program.
  {my ($exec) = @_;                                                              # Execution environment
   my $code = $exec->block->code;                                                # Instructions in code block
   my @n;
@@ -1804,7 +1806,7 @@ sub completionStatistics($)                                                     
   $exec->notExecuted = [@n];
  }
 
-sub tallyInstructionCounts($$)                                                  #P Tally instruction counts
+sub tallyInstructionCounts($$)                                                  #P Tally instruction counts.
  {my ($exec, $instruction) = @_;                                                # Execution environment, instruction being executed
   my $a = $instruction->action;
   if ($a !~ m(\A(assert.*|label|tally|trace(Points?)?)\Z))                      # Omit instructions that are not tally-able
@@ -1817,13 +1819,13 @@ sub tallyInstructionCounts($$)                                                  
    }
  }
 
-sub resetLastAssign($)                                                          #P Reset the last assign trace fields ready for this instruction
+sub resetLastAssign($)                                                          #P Reset the last assign trace fields ready for this instruction.
  {my ($exec) = @_;                                                              # Execution environment
   $exec->lastAssignArena   = $exec->lastAssignArea  =
   $exec->lastAssignAddress = $exec->lastAssignValue = undef;
  }                                                                              # Execution results
 
-sub traceMemory($$)                                                             #P Trace memeory
+sub traceMemory($$)                                                             #P Trace memory.
  {my ($exec, $instruction) = @_;                                                # Execution environment, current instruction
   return unless $exec->trace;                                                   # Trace changes to memory if requested
   my $e = $exec->instructionCounts->{$instruction->number};                     # Execution count for this instruction
@@ -1857,7 +1859,7 @@ sub formatTrace($)                                                              
 
 my $assembly;                                                                   # The current assembly
 
-sub Assembly()                                                                  #P Start some assembly code
+sub Assembly()                                                                  #P Start some assembly code.
  {$assembly = Code;                                                             # The current assembly
  }
 
@@ -2056,8 +2058,8 @@ sub Block(&%)                                                                   
  }
 
 sub Call($)                                                                     #i Call the subroutine at the target address.
- {my ($p) = @_;                                                                 # Procedure description
-  $assembly->instruction(action=>"call", xTarget($p->target));#, procedure=>$p);
+ {my ($p) = @_;                                                                 # Procedure description.
+  $assembly->instruction(action=>"call", xTarget($p->target));
  }
 
 sub Clear($$$)                                                                  #i Clear the first bytes of an area.  The area is specified by the first element of the address, the number of locations to clear is specified by the second element of the target address.
@@ -2441,7 +2443,7 @@ sub Resize($$$)                                                                 
     xSource($source), xSource2($assembly->ArrayNameToNumber($source2)));
  }
 
-sub Random($;$) {                                                               #i Create a random number in a specified range
+sub Random($;$) {                                                               #i Create a random number in a specified range.
   if (@_ == 1)                                                                  # Create a variable
    {my ($source) = @_;                                                          # Memory address to place return value in, return value to get
     my $p = &Var();
@@ -2458,7 +2460,7 @@ sub Random($;$) {                                                               
    }
  }
 
-sub RandomSeed($)                                                               #i Seed the random number generator
+sub RandomSeed($)                                                               #i Seed the random number generator.
  {my ($seed) = @_;                                                              # Parameters
   $assembly->instruction(action=>"randomSeed", xSource($seed));
  }
@@ -2581,7 +2583,7 @@ my $instructions = Zero::Emulator::Code::execute(undef);
 my @instructions = sort keys %$instructions;
 my %instructions = map {$instructions[$_]=>$_} keys @instructions;
 
-sub instructionList()                                                           #P Create a list of instructinos
+sub instructionList()                                                           #P Create a list of instructions.
  {my @i = grep {m(\s+#i)} readFile $0;
   my @j;                                                                        # Description of instruction
   for my $i(@i)
@@ -2594,13 +2596,13 @@ sub instructionList()                                                           
   [sort {$$a[0] cmp $$b[0]} @j]
 }
 
-sub instructionListExport()                                                     #P Create an export statement
+sub instructionListExport()                                                     #P Create an export statement.
  {my $i = instructionList;
   say STDERR '@EXPORT_OK   = qw(', (join ' ', map {$$_[0]} @$i), ");\n";
 }
 #instructionListExport; exit;
 
-sub instructionListReadMe()                                                     #P List  instructions for inclusion in read me
+sub instructionListReadMe()                                                     #P List  instructions for inclusion in read me.
  {my $i = instructionList;
   my $s = '';
   for my $i(@$i)
@@ -2610,7 +2612,7 @@ sub instructionListReadMe()                                                     
   $s
  }
 
-sub instructionListMapping()                                                    #P Map instructions to small integers
+sub instructionListMapping()                                                    #P Map instructions to small integers.
  {my $i = instructionList;
   my @n = map {$$_[0]} @$i;                                                     # Description of instruction
   my $n = join ' ', @n;
@@ -2636,7 +2638,7 @@ sub refValue($)                                                                 
   confess "Reference too deep".dump($ref);
  }
 
-sub rerefValue($$)                                                              #P Rereference a value.
+sub rerefValue($$)                                                              #P Re-reference a value.
  {my ($value, $depth) = @_;                                                     # Value to reference, depth of reference
   return   $value if $depth == 0;
   return  \$value if $depth == 1;
@@ -3626,7 +3628,7 @@ if (0)                                                                          
   Mov 3, 1;
   Mov 1, 1;
   my $e = &$ee(suppressOutput=>0);
-  ok keys($e->doubleWrite->%*) == 2;                                       # In area 0, variable 1 was first written by instruction 0 then again by instruction 1 once.
+  ok keys($e->doubleWrite->%*) == 2;                                            # In area 0, variable 1 was first written by instruction 0 then again by instruction 1 once.
  }
 
 #latest:;
