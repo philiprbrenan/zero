@@ -661,7 +661,6 @@ Call the subroutine at the target address.
       Dump;
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    1=bless([], "aaa")
     Stack trace:
         1     2 dump
     END
@@ -735,7 +734,7 @@ Clear the first bytes of an area.  The area is specified by the first element of
     
       Clear $a, 10, 'aaa';  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = &$ee(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1, maximumAreaSize=>10);
       is_deeply $e->heap(1), [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
      }
     
@@ -806,9 +805,15 @@ Dump all the arrays currently in memory.
 
       Free $a, "node";
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, <<END;
+      is_deeply $e->out, <<END if $testSet <= 2;
     1
     1=bless([undef, 1, 2], "node")
+    Stack trace:
+        1     6 dump
+    END
+      is_deeply $e->out, <<END if $testSet >  2;
+    1
+    1=[0, 1, 2]
     Stack trace:
         1     6 dump
     END
@@ -1102,9 +1107,15 @@ Free the memory area named by the target operand after confirming that it has th
       Free $a, "node";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, <<END;
+      is_deeply $e->out, <<END if $testSet <= 2;
     1
     1=bless([undef, 1, 2], "node")
+    Stack trace:
+        1     6 dump
+    END
+      is_deeply $e->out, <<END if $testSet >  2;
+    1
+    1=[0, 1, 2]
     Stack trace:
         1     6 dump
     END
@@ -2039,14 +2050,15 @@ Load the address component of an address.
       Mov [$a, \$c, 'array'], 33;
       Mov [$f, \$d, 'array'], 44;
     
-      my $e = &$ee(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1, maximumAreaSize=>6);
     
       is_deeply $e->out, <<END;
     2
     1
     END
     
-      is_deeply $e->heap(1), [undef, undef, 44, undef, undef, 33];
+      is_deeply $e->heap(1), [undef, undef, 44, undef, undef, 33] if $testSet <= 2;
+      is_deeply $e->heap(1), [0,     0,     44, 0,     0,     33] if $testSet  > 2;
       is_deeply $e->widestAreaInArena, [4,5];
      }
     
@@ -2074,14 +2086,15 @@ Load the area component of an address.
       Mov [$a, \$c, 'array'], 33;
       Mov [$f, \$d, 'array'], 44;
     
-      my $e = &$ee(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1, maximumAreaSize=>6);
     
       is_deeply $e->out, <<END;
     2
     1
     END
     
-      is_deeply $e->heap(1), [undef, undef, 44, undef, undef, 33];
+      is_deeply $e->heap(1), [undef, undef, 44, undef, undef, 33] if $testSet <= 2;
+      is_deeply $e->heap(1), [0,     0,     44, 0,     0,     33] if $testSet  > 2;
       is_deeply $e->widestAreaInArena, [4,5];
      }
     
@@ -2147,7 +2160,6 @@ Copy a constant or memory address to the target address.
       Dump;
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    1=bless([], "aaa")
     Stack trace:
         1     2 dump
     END
@@ -2255,7 +2267,8 @@ Copy a constant or memory address to the target address.
       my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       19 instructions executed";
-      is_deeply $e->heap(1), [undef, undef, 1];
+      is_deeply $e->heap(1), [undef, undef, 1] if $testSet <= 2;
+      is_deeply $e->heap(1), [0,     0,     1] if $testSet  > 2;
      }
     
     if (1)                                                                           
@@ -2650,12 +2663,9 @@ Push the value in the current stack frame specified by the source operand onto t
       Push $b, 33, "bbb";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->memory,
-    [ [],
-      [undef, bless([1, 2, 3], "aaa"), bless([11, 22, 33], "bbb")],
-      [],
-      [],
-    ];
+      is_deeply $e->GetMemoryHeaps->($e), 3;
+      is_deeply $e->heap(1), [1, 2, 3];
+      is_deeply $e->heap(2), [11, 22, 33];
      }
     
 
@@ -2962,7 +2972,7 @@ Shift an element up one in an area.
       ShiftUp [$a, 2, 'array'], 26;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
-      my $e = &$ee(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1, maximumAreaSize=>8);
       is_deeply $e->heap(1), bless([10, 20, 26, 30, 40, 50, 60, 70], "array");
      }
     
