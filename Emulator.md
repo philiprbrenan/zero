@@ -87,11 +87,23 @@ Create a new memory area and write its number into the address named by the targ
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->heap(1), [1, 22, 333];
-      is_deeply $e->out, <<END;
+      is_deeply $e->out, <<END if $testSet <= 2;
     
     Array size: 3  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     bless([1, 22, 333], "aaa")
+    0
+    1
+    1
+    22
+    2
+    333
+    END
+      is_deeply $e->out, <<END if $testSet  > 2;
+    
+    Array size: 3  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+    [1, 22, 333]
     0
     1
     1
@@ -181,7 +193,6 @@ Dump an array.
       is_deeply eval($e->out), [1, 22, 333];
     
       #say STDERR $e->block->codeToString;
-      #say STDERR dump($e->block->codeToString);
       is_deeply $e->block->codeToString, <<'END' if $testSet == 1;
     0000     array           \0             3
     0001       mov [\0, 0, 3, 0]             1
@@ -260,9 +271,19 @@ The current size of an array.
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->heap(1), [1, 22, 333];
-      is_deeply $e->out, <<END;
+      is_deeply $e->out, <<END if $testSet <= 2;
     Array size: 3
     bless([1, 22, 333], "aaa")
+    0
+    1
+    1
+    22
+    2
+    333
+    END
+      is_deeply $e->out, <<END if $testSet  > 2;
+    Array size: 3
+    [1, 22, 333]
     0
     1
     1
@@ -1059,9 +1080,19 @@ For loop to process each element of the named area.
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->heap(1), [1, 22, 333];
-      is_deeply $e->out, <<END;
+      is_deeply $e->out, <<END if $testSet <= 2;
     Array size: 3
     bless([1, 22, 333], "aaa")
+    0
+    1
+    1
+    22
+    2
+    333
+    END
+      is_deeply $e->out, <<END if $testSet  > 2;
+    Array size: 3
+    [1, 22, 333]
     0
     1
     1
@@ -2289,7 +2320,6 @@ Copy a constant or memory address to the target address.
       is_deeply eval($e->out), [1, 22, 333];
     
       #say STDERR $e->block->codeToString;
-      #say STDERR dump($e->block->codeToString);
       is_deeply $e->block->codeToString, <<'END' if $testSet == 1;
     0000     array           \0             3
     0001       mov [\0, 0, 3, 0]             1
@@ -2335,7 +2365,7 @@ Copy the number of elements specified by the second source operand from the loca
       MoveLong [$b, \2, 'bbb'], [$a, \4, 'aaa'], 3;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
-      my $e = &$ee(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1, maximumAreaSize=>11);
       is_deeply $e->heap(1), [0 .. 9];
       is_deeply $e->heap(2), [100, 101, 4, 5, 6, 105 .. 109];
      }
@@ -2405,9 +2435,19 @@ Do nothing (but do it well!).
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->heap(1), [1, 22, 333];
-      is_deeply $e->out, <<END;
+      is_deeply $e->out, <<END if $testSet <= 2;
     Array size: 3
     bless([1, 22, 333], "aaa")
+    0
+    1
+    1
+    22
+    2
+    333
+    END
+      is_deeply $e->out, <<END if $testSet  > 2;
+    Array size: 3
+    [1, 22, 333]
     0
     1
     1
