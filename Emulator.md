@@ -623,7 +623,7 @@ Block of code that can either be restarted or come to a good or a bad ending.
 Call the subroutine at the target address.
 
        Parameter  Description
-    1  $p         Procedure description
+    1  $p         Procedure description.
 
 **Example:**
 
@@ -2739,7 +2739,7 @@ Resize the target area to the source size.
 
 ## Random(if (@\_ == 1))
 
-Create a random number in a specified range
+Create a random number in a specified range.
 
        Parameter     Description
     1  if (@_ == 1)  Create a variable
@@ -2760,7 +2760,7 @@ Create a random number in a specified range
 
 ## RandomSeed($seed)
 
-Seed the random number generator
+Seed the random number generator.
 
        Parameter  Description
     1  $seed      Parameters
@@ -3452,7 +3452,7 @@ Round trip: generate machine code and write it onto a string, disassemble the ge
 
 ## Assembly()
 
-Start some assembly code
+Start some assembly code.
 
 ## Assert1($op, $a)
 
@@ -3538,19 +3538,19 @@ Create a label.
 
 ## instructionList()
 
-Create a list of instructinos
+Create a list of instructions.
 
 ## instructionListExport()
 
-Create an export statement
+Create an export statement.
 
 ## instructionListReadMe()
 
-List  instructions for inclusion in read me
+List  instructions for inclusion in read me.
 
 ## instructionListMapping()
 
-Map instructions to small integers
+Map instructions to small integers.
 
 ## refDepth($ref)
 
@@ -3568,7 +3568,7 @@ The value of a reference after dereferencing.
 
 ## rerefValue($value, $depth)
 
-Rereference a value.
+Re-reference a value.
 
        Parameter  Description
     1  $value     Value to reference
@@ -3629,7 +3629,7 @@ Disassemble and remove context information from disassembly to make testing easi
 
 7 [ArraySize](#arraysize) - The current size of an array.
 
-8 [Assembly](#assembly) - Start some assembly code
+8 [Assembly](#assembly) - Start some assembly code.
 
 9 [Assert](#assert) - Assert regardless.
 
@@ -3707,13 +3707,13 @@ Disassemble and remove context information from disassembly to make testing easi
 
 46 [Inc](#inc) - Increment the target.
 
-47 [instructionList](#instructionlist) - Create a list of instructinos
+47 [instructionList](#instructionlist) - Create a list of instructions.
 
-48 [instructionListExport](#instructionlistexport) - Create an export statement
+48 [instructionListExport](#instructionlistexport) - Create an export statement.
 
-49 [instructionListMapping](#instructionlistmapping) - Map instructions to small integers
+49 [instructionListMapping](#instructionlistmapping) - Map instructions to small integers.
 
-50 [instructionListReadMe](#instructionlistreadme) - List  instructions for inclusion in read me
+50 [instructionListReadMe](#instructionlistreadme) - List  instructions for inclusion in read me.
 
 51 [Jeq](#jeq) - Jump to a target label if the first source field is equal to the second source field.
 
@@ -3759,15 +3759,15 @@ Disassemble and remove context information from disassembly to make testing easi
 
 72 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
 
-73 [Random](#random) - Create a random number in a specified range
+73 [Random](#random) - Create a random number in a specified range.
 
-74 [RandomSeed](#randomseed) - Seed the random number generator
+74 [RandomSeed](#randomseed) - Seed the random number generator.
 
 75 [refDepth](#refdepth) - The depth of a reference.
 
 76 [refValue](#refvalue) - The value of a reference after dereferencing.
 
-77 [rerefValue](#rerefvalue) - Rereference a value.
+77 [rerefValue](#rerefvalue) - Re-reference a value.
 
 78 [Resize](#resize) - Resize the target area to the source size.
 
