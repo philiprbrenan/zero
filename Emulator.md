@@ -1709,7 +1709,7 @@ Read a value from the input channel
 
 **Example:**
 
-    if (1)                                                                          
+    if (1)                                                                           
      {Start 1;
       my $i2 = InSize;
     
@@ -1736,6 +1736,31 @@ Number of elements remining in the input channel
 
        Parameter     Description
     1  if (@_ == 0)  Create a new stack frame variable to hold the value read from input
+
+**Example:**
+
+    if (1)                                                                           
+     {Start 1;
+    
+      my $i2 = InSize;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      my $a = In;
+    
+      my $i1 = InSize;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      my $b = In;
+    
+      my $i0 = InSize;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      Out $a;
+      Out $b;
+      Out $i2;
+      Out $i1;
+      Out $i0;
+      my $e = Execute(suppressOutput=>1, in=>[88, 44]);
+      is_deeply $e->outLines, [88, 44, 2, 1, 0];
+     }
+    
 
 ## Inc($target)
 
