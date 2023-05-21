@@ -69,10 +69,6 @@ jobs:
 
 
         run: |
-          pwd
-          ls -lah
-          whoami
-          env
           perl lib/Zero/Emulator.pm
           perl lib/Zero/NWayTree.pm
 
