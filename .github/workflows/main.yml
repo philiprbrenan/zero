@@ -94,3 +94,89 @@ jobs:
       run: |
         perl examples/selectionSort.pl
 
+  testWindows:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: wsl-bash {0}                                                     # Use Windows Services For Linux as the command line in subsequent steps
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: 'main'
+
+    - uses: Vampire/setup-wsl@v2                                                # Install Windows Services For Linux - just: wsl --install -D Ubuntu
+      with:
+        distribution: Ubuntu-22.04
+
+    - name: Ubuntu
+      run: |
+        sudo apt-get -y update
+
+    - name: Configure Ubuntu
+      run: |
+        sudo apt-get -y install build-essential
+
+    - name: Cpan
+      run: |
+        sudo cpan install -T Data::Dump Data::Table::Text
+
+    - name: Emulator
+      run: |
+        perl lib/Zero/Emulator.pm
+
+    - name: NWayTree
+      run: |
+        perl lib/Zero/NWayTree.pm
+
+    - name: TestEmulator
+      run: |
+        perl examples/testEmulator.pl
+
+    - name: TestNWayTree
+      run: |
+        perl examples/testNWayTree.pl
+
+    - name: BubbleSort
+      run: |
+        perl examples/bubbleSort.pl
+
+    - name: InsertionSort
+      run: |
+        perl examples/insertionSort.pl
+
+    - name: QuickSort
+      run: |
+        perl examples/quickSort.pl
+
+    - name: SelectionSort
+      run: |
+        perl examples/selectionSort.pl
+
+  testOpenBsd:
+    runs-on: macos-12
+    name: OpenBSD
+    env:
+      MYTOKEN : ${{ secrets.MYTOKEN }}
+      MYTOKEN2: "value2"
+    steps:
+    - uses: actions/checkout@v3
+    - name: Test in OpenBSD
+      id: test
+      uses: vmactions/openbsd-vm@v0
+      with:
+        envs: 'MYTOKEN MYTOKEN2'
+        usesh: true
+        prepare: |
+          cpan install -T Data::Dump Data::Table::Text
+
+        run: |
+          perl lib/Zero/Emulator.pm
+          perl lib/Zero/NWayTree.pm
+          perl examples/testEmulator.pl
+          perl examples/testNWayTree.pl
+          perl examples/bubbleSort.pl
+          perl examples/insertionSort.pl
+          perl examples/quickSort.pl
+          perl examples/selectionSort.pl
