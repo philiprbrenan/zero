@@ -1994,22 +1994,22 @@ sub AssertFalse($%)                                                             
   Assert1("False", $a);
  }
 
-sub AssertGe($$%)                                                               #i Assert are greater than or equal.
+sub AssertGe($$%)                                                               #i Assert that the first value is greater than or equal to the second value.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
   Assert2("Ge", $a, $b);
  }
 
-sub AssertGt($$%)                                                               #i Assert two memory locations are greater than.
+sub AssertGt($$%)                                                               #i Assert that the first value is greater than the second value.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
   Assert2("Gt", $a, $b);
  }
 
-sub AssertLe($$%)                                                               #i Assert two memory locations are less than or equal.
+sub AssertLe($$%)                                                               #i Assert that the first value is less than or equal to the second value.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
   Assert2("Le", $a, $b);
  }
 
-sub AssertLt($$%)                                                               #i Assert two memory locations are less than.
+sub AssertLt($$%)                                                               # Assert that the first value is less than  the second value.
  {my ($a, $b, %options) = @_;                                                   # First memory address, second memory address
   Assert2("Lt", $a, $b);
  }
