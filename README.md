@@ -311,7 +311,7 @@ one with the lowest emulated instruction count was retained as the optimal
 solution.
 
 <table border="0" cellpadding="10">
-<tr><th><th colspan=2><th colspan=2>
+<tr><th><th colspan=2>Sequential<th colspan=2>Parallel
 <tr><th>Method<th>Short<th>Long<th>Short<th>Long
 <tr><td><a href="https://github.com/philiprbrenan/zero/blob/main/examples/bubbleSort.pl"   >bubble   </a>  <td align=right>  245 <td align=right>   4754 <td align=right>
 <tr><td><a href="https://github.com/philiprbrenan/zero/blob/main/examples/insertionSort.pl">insertion</a>  <td align=right>  189 <td align=right>   3788 <td align=right>
