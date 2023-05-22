@@ -8,7 +8,6 @@ use warnings FATAL => qw(all);
 use strict;
 use Zero::Emulator qw(:all);
 use Test::More tests=>2;
-use Data::Dump qw(dump);
 
 if (1)
  {Start 1;
