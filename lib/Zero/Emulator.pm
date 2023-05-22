@@ -28,7 +28,7 @@ sub ExecutionEnvironment(%)                                                     
   my $errors = setDifference(\%options, q(checkArrayNames code doubleWrite in maximumArraySize NotRead pointlessAssign stopOnError stringMemory suppressOutput trace));
   keys %$errors and confess "Invalid options: ".dump($errors);
 
-  my $exec=                 genHash("Zero::Emulator",                           # Execution results
+  my $exec=                 genHash(q(Zero::Emulator),                          # Emulator execution environment
     AllocMemoryArea=>      \&allocMemoryArea,                                   # Low level memory access - allocate new area
     block=>                 $options{code},                                     # Block of code to be executed
     calls=>                 [],                                                 # Call stack
@@ -100,7 +100,7 @@ sub ExecutionEnvironment(%)                                                     
 my sub Code(%)                                                                  # A block of code
  {my (%options) = @_;                                                           # Parameters
 
-  genHash("Zero::Emulator::Code",                                               # Description of a call stack entry
+  genHash(q(Zero::Emulator::Code),                                              # Block of code description.
     code=>          [],                                                         # An array of instructions
     variables=>     AreaStructure("Variables"),                                 # Variables in this block of code
     labels=>        {},                                                         # Label name to instruction
@@ -116,7 +116,7 @@ my sub Code(%)                                                                  
 my sub stackFrame(%)                                                            # Describe an entry on the call stack: the return address, the parameter list length, the parameter list address, the line of code from which the call was made, the file number of the file from which the call was made
  {my (%options) = @_;                                                           # Parameters
 
-  genHash("Zero::Emulator::StackFrame",                                         # Description of a stack frame. A stack frame provides the context in which a method runs.
+  genHash(q(Zero::Emulator::StackFrame),                                        # Description of a stack frame. A stack frame provides the context in which a method runs.
     target=>       $options{target},                                            # The address of the subroutine being called
     instruction=>  $options{call},                                              # The address of the instruction making the call
     stackArea=>    $options{stackArea},                                         # Memory area containing data for this method
@@ -144,19 +144,18 @@ sub Zero::Emulator::Code::instruction($%)                                       
    };
 
   if ($options{action} !~ m(\Avariable\Z)i)                                     # Non variable
-   {push $block->code->@*, my $i = genHash("Zero::Emulator::Code::Instruction", # Instruction details
-      action=>         $options{action   },                                     # Instruction name
-      number=>         $options{number   },                                     # Instruction sequence number
-      source=>         $options{source   },                                     # Source memory address
-      source2=>        $options{source2  },                                     # Secondary source memory address
-      target=>         $options{target   },                                     # Target memory address
-      jump=>           $options{jump     },                                     # Jump target
-#     procedure=>      $options{procedure},                                     # Procedure target
-      line=>           $line,                                                   # Line in source file at which this instruction was encoded
-      file=>           fne $fileName,                                           # Source file in which instruction was encoded
-      context=>        stackTrace(),                                            # The call context in which this instruction was created
-      executed=>       0,                                                       # The number of times this instruction was executed
-      step=>           0,                                                       # The last time (in steps from the start) that this instruction was executed
+   {push $block->code->@*, my $i = genHash(q(Zero::Emulator::Code::Instruction),# Instruction details
+      action=>    $options{action },                                            # Instruction name
+      number=>    $options{number },                                            # Instruction sequence number
+      source=>    $options{source },                                            # Source memory address
+      source2=>   $options{source2},                                            # Secondary source memory address
+      target=>    $options{target },                                            # Target memory address
+      jump=>      $options{jump   },                                            # Jump target
+      line=>      $line,                                                        # Line in source file at which this instruction was encoded
+      file=>      fne $fileName,                                                # Source file in which instruction was encoded
+      context=>   stackTrace(),                                                 # The call context in which this instruction was created
+      executed=>  0,                                                            # The number of times this instruction was executed
+      step=>      0,                                                            # The last time (in steps from the start) that this instruction was executed
     );
     return $i;
    }
@@ -204,7 +203,7 @@ sub Zero::Emulator::Code::Instruction::contextString($)                         
 sub AreaStructure($@)                                                           # Describe a data structure mapping a memory area.
  {my ($structureName, @names) = @_;                                             # Structure name, fields names
 
-  my $d = genHash("Zero::Emulator::AreaStructure",                              # Description of a data structure mapping a memory area
+  my $d = genHash(q(Zero::Emulator::AreaStructure),                             # Description of a data structure mapping a memory area
     structureName=>  $structureName,                                            # Name of the structure
     fieldOrder=>     [],                                                        # Order of the elements in the structure, in effect, giving the offset of each element in the data structure
     fieldNames=>     {},                                                        # Maps the names of the fields to their offsets in the structure
@@ -234,7 +233,7 @@ sub Zero::Emulator::AreaStructure::name($$)                                     
 my sub procedure($%)                                                            # Describe a procedure
  {my ($label, %options) = @_;                                                   # Start label of procedure, options describing procedure
 
-  genHash("Zero::Emulator::Procedure",                                          # Description of a procedure
+  genHash(q(Zero::Emulator::Procedure),                                         # Description of a procedure
     target=>        $label,                                                     # Label to call to call this procedure
     variables=>     AreaStructure("Procedure"),                                 # Registers local to this procedure
   );
@@ -310,11 +309,21 @@ sub Zero::Emulator::Code::ArrayNameToNumber($$)                                 
   $n
  }
 
-
 sub Zero::Emulator::Code::ArrayNumberToName($$)                                 #P Return the array name associated with an array number.
  {my ($code, $number) = @_;                                                     # Code block, array name
 
   $code->arrayNumbers->[$number] // $number
+ }
+
+sub Reference($$$$$)                                                            # Create a new reference
+ {my ($arena, $area, $address, $name, $delta) = @_;                             # Arena, array, address, name of area, delta if any to be applied to address
+  genHash(q(Zero::Emulator::Reference),
+    arena=>     $arena,                                                         # Arrays are allocated in arenas in the hope of facilitating the reuse of freed memory
+    area=>      $area,                                                          # The array number
+    address=>   $address,                                                       # The index with in the array
+    name=>      $name,                                                          # The name of the array. Naming the array allows a check to be performed to ensure that the expected type of array is being manipulated
+    delta=>     $delta,                                                         # An constant increment or decrement to the address which sometimes allows the elimination of extra L<Add> and L<Subtract> instructions.
+   );
  }
 
 sub Zero::Emulator::Code::Reference($$)                                         # Record a reference to a left or right address.
@@ -326,22 +335,11 @@ sub Zero::Emulator::Code::Reference($$)                                         
    {my ($area, $address, $name, $delta) = @$r;                                  # Delta is oddly useful, as illustrated by examples/*Sort, in that it enables us to avoid adding or subtracting one with a separate instruction that does not achieve very much in one clock but that which, is otherwise necessary.
     defined($area) and !defined($name) and confess "Name required for address specification: in [Area, address, name]";
 
-    return genHash("Zero::Emulator::Reference",
-      arena=>     $arena,                                                       # The memory arena being used.
-      area=>      $area,
-      address=>   $address,
-      name=>      $code->ArrayNameToNumber($name),
-      delta=>     $delta//0,
-     );
+    return Reference($arena, $area, $address,
+      $code->ArrayNameToNumber($name), $delta//0)
    }
   else                                                                          # Reference represented as an address
-   {return genHash("Zero::Emulator::Reference",
-      arena=>     $arena,
-      area=>      undef,
-      address=>   $r,
-      name=>      $code->ArrayNameToNumber('stackArea'),
-      delta=>     0,
-     );
+   {return Reference($arena,undef,$r,$code->ArrayNameToNumber('stackArea'), 0);
    }
  }
 
@@ -757,7 +755,7 @@ sub setMemory($$$)                                                              
 
 sub Address($$$$;$)                                                             #P Record a reference to memory.
  {my ($arena, $area, $address, $name, $delta) = @_;                             # Arena, area, address in area, name of area, delta from specified address
-  my $r = genHash("Zero::Emulator::Address",                                    # Address memory
+  my $r = genHash(q(Zero::Emulator::Address),                                    # Address memory
     arena=>     $arena,                                                         # Arena in memory
     area=>      $area,                                                          # Area in memory, either a number or a reference to a number indicating the level of indirection
     address=>   $address,                                                       # Address within area, either a number or a reference to a number indicating the level of indirection
