@@ -8,7 +8,7 @@ use warnings FATAL => qw(all);
 use strict;
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
-use Test::More tests=>7;
+use Test::More tests=>9;
 
 sub selectionSort($$)                                                           # As described at: https://en.wikipedia.org/wiki/Selection_sort
  {my ($array, $name) = @_;                                                      # Array, name of array memory
@@ -82,4 +82,6 @@ if (1)                                                                          
 [1 .. 32]
 END
   is_deeply $e->count, 4356;                                                    # Approximately 4*4== 16 times bigger
+  is_deeply $e->timeParallel,    3860;
+  is_deeply $e->timeSequential,  4356;
  }
