@@ -901,8 +901,6 @@ sub randomArray($)                                                              
   @r
  }
 
-say dump randomArray(121); exit;
-
 use Exporter qw(import);
 use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
