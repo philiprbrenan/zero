@@ -8,7 +8,7 @@ use warnings FATAL => qw(all);
 use strict;
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
-use Test::More tests=>7;
+use Test::More tests=>9;
 
 sub bubbleSort($$)                                                              # As described at: https://en.wikipedia.org/wiki/Bubble_sort
  {my ($array, $name) = @_;                                                      # Array, name of array memory
@@ -87,6 +87,8 @@ if (1)                                                                          
   my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);             # Execute assembler program
 
   is_deeply $e->count, 4753;                                                    # Instructions executed
+  is_deeply $e->timeParallel,   3233;
+  is_deeply $e->timeSequential, 4753;
 
   is_deeply $e->out, <<END;
 [1 .. 32]
