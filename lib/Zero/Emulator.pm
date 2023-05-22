@@ -1020,11 +1020,11 @@ sub right($$)                                                                   
    {$r = $exec->getMemory(arenaLocal, $stackArea, $m, $stackAN);                # Indirect from stack area
     $e = 1; $tArena = arenaLocal; $tArea = $stackArea;  $tAddress = $m;
    }
-  elsif (isScalar($area))
-   {$r = $exec->getMemory($arena, $area, $m, $ref->name);                       # Indirect from stack area
-    $e = 2; $tArena = $arena; $tArea = $stackArea;  $tAddress = $m;
-   }
-  elsif (isScalar($$area))
+# elsif (isScalar($area))                                                       # So far, not used
+#  {$r = $exec->getMemory($arena, $area, $m, $ref->name);                       # Indirect from stack area
+#   $e = 2; $tArena = $arena; $tArea = $stackArea;  $tAddress = $m;
+#  }
+  elsif (isScalar($$area))                                                      # Used in NWayTree
    {$e = 3; $tArena = arenaLocal; $tArea = $stackArea;  $tAddress = $m;
     if (defined(my $j = $exec->getMemory(arenaLocal, $stackArea, $$area, $stackAN)))
      {$r = $exec->getMemory($arena, $j, $m, $ref->name);                        # Indirect from stack area
