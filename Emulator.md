@@ -3538,6 +3538,406 @@ Round trip: generate machine code and write it onto a string, disassemble the ge
      }
     
 
+# Hash Definitions
+
+## Zero::Emulator Definition
+
+Emulator execution environment
+
+### Output fields
+
+#### AllocMemoryArea
+
+Low level memory access - allocate new area
+
+#### FreeMemoryArea
+
+Low level memory access - free an area
+
+#### GetMemoryArea
+
+Low level memory access - area
+
+#### GetMemoryHeaps
+
+Low level memory access - arenas in use
+
+#### GetMemoryLocation
+
+Low level memory access - location
+
+#### PopMemoryArea
+
+Low level memory access - pop from area
+
+#### PushMemoryArea
+
+Low level memory access - push onto area
+
+#### ResizeMemoryArea
+
+Low level memory access - resize an area
+
+#### block
+
+Block of code to be executed
+
+#### calls
+
+Call stack
+
+#### checkArrayNames
+
+Check array names to confirm we are accessing the expected data
+
+#### count
+
+Executed instructions count
+
+#### counts
+
+Executed instructions by name counts
+
+#### doubleWrite
+
+Source of double writes {instruction number} to count - an existing value was overwritten before it was used
+
+#### freedArrays
+
+Arrays that have been recently freed and can thus be reused
+
+#### in
+
+The input chnnel.  the [In](https://metacpan.org/pod/In) instruction reads one element at a time from this array.
+
+#### instructionCounts
+
+The number of times each actual instruction is executed
+
+#### instructionPointer
+
+Current instruction
+
+#### lastAssignAddress
+
+Last assignment performed - address
+
+#### lastAssignArea
+
+Last assignment performed - area
+
+#### lastAssignArena
+
+Last assignment performed - arena
+
+#### lastAssignBefore
+
+Prior value of memory area before assignment
+
+#### lastAssignType
+
+Last assignment performed - name of area assigned into
+
+#### lastAssignValue
+
+Last assignment performed - value
+
+#### memory
+
+Memory contents at the end of execution
+
+#### memoryString
+
+Memory packed into one string
+
+#### memoryStringElementWidth
+
+Width in bytes of a memory area element
+
+#### memoryStringSystemElements
+
+Maximum number of elements in the system area of a heap arena if such is required by the memory allocation technique in play
+
+#### memoryStringTotalElements
+
+Maximum number of elements in total in an area in a heap arena if such is required by the memory allocation technique in play
+
+#### memoryStringUserElements
+
+Maximum number of elements in the user area of a heap arena if such is required by the memory allocation technique in play
+
+#### memoryType
+
+Memory contents at the end of execution
+
+#### mostArrays
+
+The maximum number of arrays active at any point during the execution in each arena
+
+#### namesOfWidestArrays
+
+The name of the widest arrays in each arena
+
+#### notExecuted
+
+Instructions not executed
+
+#### notReadAddresses
+
+Memory addresses never read
+
+#### out
+
+The out channel. [Out](https://metacpan.org/pod/Out) writes an array of items to this followed by a new line.  [out](https://metacpan.org/pod/out) does the same but without the new line.
+
+#### pointlessAssign
+
+Location already has the specified value
+
+#### printDoubleWrite
+
+Double writes: earlier instruction number to later instruction number
+
+#### printNotRead
+
+Memory locations never read
+
+#### printPointlessAssign
+
+Pointless assigns {instruction number} to count - address already has the specified value
+
+#### read
+
+Records whether a memory address was ever read allowing us to find all the unused locations
+
+#### rw
+
+Read / write access to memory
+
+#### stopOnError
+
+Stop on non fatal errors if true
+
+#### suppressOutput
+
+If true the Out instruction will only write to the execution out array but not to stdout as well.
+
+#### tally
+
+Tally executed instructions in a bin of this name
+
+#### tallyCount
+
+Executed instructions tally count
+
+#### tallyCounts
+
+Executed instructions by name tally counts
+
+#### tallyTotal
+
+Total instructions executed in each tally
+
+#### trace
+
+Trace all statements
+
+#### traceLabels
+
+Trace changes in execution flow
+
+#### watch
+
+Addresses to watch for changes
+
+#### widestAreaInArena
+
+Track highest array access in each arena
+
+## Zero::Emulator::Address Definition
+
+Address memory
+
+### Output fields
+
+#### address
+
+Address within area, either a number or a reference to a number indicating the level of indirection
+
+#### area
+
+Area in memory, either a number or a reference to a number indicating the level of indirection
+
+#### arena
+
+Arena in memory
+
+#### delta
+
+Offset from indicated address
+
+#### name
+
+Name of area
+
+## Zero::Emulator::AreaStructure Definition
+
+Description of a data structure mapping a memory area
+
+### Output fields
+
+#### fieldNames
+
+Maps the names of the fields to their offsets in the structure
+
+#### fieldOrder
+
+Order of the elements in the structure, in effect, giving the offset of each element in the data structure
+
+#### structureName
+
+Name of the structure
+
+## Zero::Emulator::Code Definition
+
+Block of code description.
+
+### Output fields
+
+#### arrayNames
+
+Array names as strings to numbers
+
+#### arrayNumbers
+
+Array number to name
+
+#### code
+
+An array of instructions
+
+#### files
+
+File number to file name
+
+#### labelCounter
+
+Label counter used to generate unique labels
+
+#### labels
+
+Label name to instruction
+
+#### procedures
+
+Procedures defined in this block of code
+
+#### variables
+
+Variables in this block of code
+
+## Zero::Emulator::Code::Instruction Definition
+
+Instruction details
+
+### Output fields
+
+#### action
+
+Instruction name
+
+#### context
+
+The call context in which this instruction was created
+
+#### executed
+
+The number of times this instruction was executed
+
+#### file
+
+Source file in which instruction was encoded
+
+#### jump
+
+Jump target
+
+#### line
+
+Line in source file at which this instruction was encoded
+
+#### number
+
+Instruction sequence number
+
+#### source
+
+Source memory address
+
+#### source2
+
+Secondary source memory address
+
+#### step
+
+The last time (in steps from the start) that this instruction was executed
+
+#### target
+
+Target memory address
+
+## Zero::Emulator::Procedure Definition
+
+Description of a procedure
+
+### Output fields
+
+#### target
+
+Label to call to call this procedure
+
+#### variables
+
+Registers local to this procedure
+
+## Zero::Emulator::StackFrame Definition
+
+Description of a stack frame. A stack frame provides the context in which a method runs.
+
+### Output fields
+
+#### file
+
+The file number from which the call was made - this could be folded into the line number but for reasons best known to themselves people who cannot program very well often scatter projects across several files a practice that is completely pointless in this day of git and so can only lead to chaos and confusion
+
+#### instruction
+
+The address of the instruction making the call
+
+#### line
+
+The line number from which the call was made
+
+#### params
+
+Memory area containing parameter list
+
+#### return
+
+Memory area containing returned result
+
+#### stackArea
+
+Memory area containing data for this method
+
+#### target
+
+The address of the subroutine being called
+
+#### variables
+
+Variables local to this stack frame
+
 # Private Methods
 
 ## Assembly()
