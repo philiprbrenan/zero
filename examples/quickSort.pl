@@ -129,11 +129,10 @@ if (1)                                                                          
 [1 .. 8]
 END
 
-  is_deeply $e->count,  285;                                                    # Instructions executed
+  is_deeply $e->count,  284;                                                    # Instructions executed
   is_deeply formatTable($e->counts), <<END;                                     # Counts of each instruction type executed
 add         11
 array        3
-arrayDump    1
 arraySize    8
 dec          1
 inc         28
@@ -165,5 +164,5 @@ if (1)                                                                          
   is_deeply $e->out, <<END;
 [1 .. 32]
 END
-  is_deeply $e->count, 1434;                                                    # Approximately 5 times bigger
+  is_deeply $e->count, 1433;                                                    # Approximately 5 times bigger
  }
