@@ -19,6 +19,11 @@ my $user    = q(philiprbrenan);                                                 
 my $repo    = q(zero);                                                          # Store code here so it can be referenced from a browser
 my $wf      = q(.github/workflows/main.yml);                                    # Work flow on Ubuntu
 my $repoUrl = q(https://github.com/philiprbrenan/zero);
+my $perlXmp = 1;                                                                # Perl examples if true
+my $macos   = 0;                                                                # Macos if true
+my $windows = 0;                                                                # Windows if true
+my $openBsd = 0;                                                                # OpenBsd if true
+my $freeBsd = 0;                                                                # FreeBsd if true - fails
 
 sub pod($$$)                                                                    # Write pod file
  {my ($in, $out, $intro) = @_;                                                  # Input, output file, introduction
@@ -50,7 +55,7 @@ push my @files,
   grep {!/_build/}
   grep {!/Build.PL/}
   grep {!/blib/}
-  grep {!/\.pl\Z/}                                                              # No changes expected
+  grep {$perlXmp or !/\.pl\Z/}                                                  # No changes expected
   searchDirectoryTreesForMatchingFiles($home, qw(.pm .pl .md));                 # Files
 
 for my $s(@files)                                                               # Upload each selected file
@@ -120,7 +125,21 @@ jobs:
 XXXX
 END
 
-my $z = <<'END' =~ s(XXXX) ($t)gsr;
+my $ym = <<'END' =~ s(XXXX) ($t)gsr;
+  testMac:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: 'main'
+
+XXXX
+END
+
+$y .= $ym if $macos;
+
+my $yw = <<'END' =~ s(XXXX) ($t)gsr;
   testWindows:
     runs-on: windows-latest
 
@@ -134,6 +153,8 @@ my $z = <<'END' =~ s(XXXX) ($t)gsr;
         ref: 'main'
 
     - uses: Vampire/setup-wsl@v2                                                # Install Windows Services For Linux - just: wsl --install -D Ubuntu
+      with:
+        distribution: Ubuntu-22.04
 
     - name: Ubuntu
       run: |
@@ -146,7 +167,71 @@ my $z = <<'END' =~ s(XXXX) ($t)gsr;
 XXXX
 END
 
-$y .= $z if rand() < 0.1;                                                         # Testing on windows is slow so only do it now and then: it is the same as doing it on linux because we use Ubuntu on both occasions
+$y .= $yw if $windows;
+
+my $yob = <<'END' =~ s(XXXX) ($t)gsr;
+  testOpenBsd:
+    runs-on: macos-12
+    name: OpenBSD
+    env:
+      MYTOKEN : ${{ secrets.MYTOKEN }}
+      MYTOKEN2: "value2"
+    steps:
+    - uses: actions/checkout@v3
+    - name: Test in OpenBSD
+      id: test
+      uses: vmactions/openbsd-vm@v0
+      with:
+        envs: 'MYTOKEN MYTOKEN2'
+        usesh: true
+        prepare: |
+          cpan install -T Data::Dump Data::Table::Text
+
+        run: |
+          perl lib/Zero/Emulator.pm
+          perl lib/Zero/NWayTree.pm
+          perl examples/testEmulator.pl
+          perl examples/testNWayTree.pl
+          perl examples/bubbleSort.pl
+          perl examples/insertionSort.pl
+          perl examples/quickSort.pl
+          perl examples/selectionSort.pl
+END
+
+$y .= $yob if $openBsd;
+
+my $yfb = <<'END' =~ s(XXXX) ($t)gsr;
+  testFreeBsd:
+    runs-on: macos-12
+    name: FreeBSD
+    env:
+      MYTOKEN : ${{ secrets.MYTOKEN }}
+      MYTOKEN2: "value2"
+    steps:
+    - uses: actions/checkout@v3
+    - name: Test in OpenBSD
+      id: test
+      uses: vmactions/freebsd-vm@v0
+      with:
+        envs: 'MYTOKEN MYTOKEN2'
+        usesh: true
+        prepare: |
+          cpan install -T Data::Dump Data::Table::Text
+
+        run: |
+          perl lib/Zero/Emulator.pm
+          perl lib/Zero/NWayTree.pm
+          perl lib/Zero/Emulator.pm
+          perl lib/Zero/NWayTree.pm
+          perl examples/testEmulator.pl
+          perl examples/testNWayTree.pl
+          perl examples/bubbleSort.pl
+          perl examples/insertionSort.pl
+          perl examples/quickSort.pl
+          perl examples/selectionSort.pl
+END
+
+$y .= $yfb if $freeBsd;
 
 lll "Ubuntu work flow for $repo ", writeFileUsingSavedToken($user, $repo, $wf, $y);
 
@@ -173,11 +258,13 @@ Say "hello world":
 
   Start 1;
 
-  Out "hello World";
+  Out "Hello World";
 
   my $e = Execute;
 
-  is_deeply $e->out, ["hello World"];
+  is_deeply $e->out, <<END;
+Hello World
+END
 END2
 
 sub introNWayTree{&introNWayTree1.&introNWayTree2}
