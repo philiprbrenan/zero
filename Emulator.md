@@ -3041,13 +3041,15 @@ Shift an element up one in an area.
       is_deeply $e->heap(1), [0, 99, 1, 2];
      }
     
-    if (1)                                                                          
+    if (1)                                                                           
      {Start 1;
       my $a = Array "array";
     
-      Mov [$a, 0, 'array'], 0;
-      Mov [$a, 1, 'array'], 1;
-      Mov [$a, 2, 'array'], 2;
+      Sequential
+        sub{Mov [$a, 0, 'array'], 0},
+        sub{Mov [$a, 1, 'array'], 1},
+        sub{Mov [$a, 2, 'array'], 2};
+    
     
       ShiftUp [$a, 2, 'array'], 99;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
@@ -3056,7 +3058,7 @@ Shift an element up one in an area.
       is_deeply $e->heap(1), [0, 1, 99, 2];
      }
     
-    if (1)                                                                          
+    if (1)                                                                           
      {Start 1;
       my $a = Array "array";
     
@@ -3438,12 +3440,52 @@ Runs its sub sections in simulated parallel so that we can prove that the sectio
        Parameter  Description
     1  @subs      Subroutines containing code to be run in simulated parallel
 
+**Example:**
+
+    if (1)                                                                           
+     {Start 1;
+      my $a = Array "array";
+    
+    
+      Parallel  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+        sub{Mov [$a, 0, 'array'], 0},
+        sub{Mov [$a, 1, 'array'], 1},
+        sub{Mov [$a, 2, 'array'], 2};
+    
+      ShiftUp [$a, 3, 'array'], 99;
+    
+      my $e = &$ee(suppressOutput=>0);
+      is_deeply $e->heap(1), [0, 1, 2, 99];
+     }
+    
+
 ## Sequential(@subs)
 
 Runs its sub sections in sequential order
 
        Parameter  Description
     1  @subs      Subroutines containing code to be run sequentially
+
+**Example:**
+
+    if (1)                                                                           
+     {Start 1;
+      my $a = Array "array";
+    
+    
+      Sequential  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+        sub{Mov [$a, 0, 'array'], 0},
+        sub{Mov [$a, 1, 'array'], 1},
+        sub{Mov [$a, 2, 'array'], 2};
+    
+      ShiftUp [$a, 2, 'array'], 99;
+    
+      my $e = &$ee(suppressOutput=>0);
+      is_deeply $e->heap(1), [0, 1, 99, 2];
+     }
+    
 
 # Instruction Set Architecture
 
