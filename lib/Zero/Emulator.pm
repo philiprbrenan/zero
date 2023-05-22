@@ -2060,7 +2060,7 @@ sub AssertTrue($%)                                                              
   Assert1("True", $a);
  }
 
-sub Bad(&)                                                                      #i A bad ending.
+sub Bad(&)                                                                      #i A bad ending to a block of code.
  {my ($bad) = @_;                                                               # What to do on a bad ending
   @_ == 1 or confess "One parameter";
   (bad=>  $bad)
@@ -2209,7 +2209,7 @@ sub Free($$)                                                                    
   $assembly->instruction(action=>"free", xTarget($target), xSource($n));
  }
 
-sub Good(&)                                                                     #i A good ending.
+sub Good(&)                                                                     #i A good ending to a block of code.
  {my ($good) = @_;                                                              # What to do on a good ending
   @_ == 1 or confess "One parameter";
   (good=>  $good)
