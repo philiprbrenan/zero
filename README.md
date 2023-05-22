@@ -310,8 +310,9 @@ below. Various prototype solutions were developed for each [sort](https://en.wik
 one with the lowest emulated instruction count was retained as the optimal
 solution.
 
-| Method  | Short  | Long |
-| ------  | -----:  | ----: |
+| <td colspan=2>Sequential  <td colspan=2>Parallel
+| Method  | Short  | Long | Short  | Long |
+| ------  | -----:  | ----: | -----:  | ----: |
 |[bubble](https://github.com/philiprbrenan/zero/blob/main/examples/bubbleSort.pl)             |  245 |   4754 |
 |[insertion](https://github.com/philiprbrenan/zero/blob/main/examples/insertionSort.pl)       |  189 |   3788 |
 |[quick](https://github.com/philiprbrenan/zero/blob/main/examples/quickSort.pl)               |  285 |   1434 |
