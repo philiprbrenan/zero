@@ -205,7 +205,7 @@ indefinitely which is very convenient for [fpga](https://en.wikipedia.org/wiki/F
 
 ## Input and Output channels
 
-There are two channels: one for input, one for output.
+There are two channels: **in** for input, **out** for output.
 
 ### Input
 
