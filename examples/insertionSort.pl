@@ -58,11 +58,10 @@ if (1)                                                                          
 [1 .. 8]
 END
 
-  is_deeply $e->count, 189;                                                     # Instructions executed
+  is_deeply $e->count, 188;                                                     # Instructions executed
 
   is_deeply formatTable($e->counts), <<END;
 array       1
-arrayDump   1
 arraySize   1
 dec        15
 inc         7
@@ -90,5 +89,5 @@ if (1)                                                                          
   is_deeply $e->out, <<END;
 [1 .. 32]
 END
-  is_deeply $e->count, 3788;                                                    # Approximately 4*4== 16 times bigger
+  is_deeply $e->count, 3787;                                                    # Approximately 4*4== 16 times bigger
  }
