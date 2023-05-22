@@ -8,7 +8,7 @@ use warnings FATAL => qw(all);
 use strict;
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
-use Test::More tests=>5;
+use Test::More tests=>7;
 
 sub selectionSort($$)                                                           # As described at: https://en.wikipedia.org/wiki/Selection_sort
  {my ($array, $name) = @_;                                                      # Array, name of array memory
@@ -25,8 +25,9 @@ sub selectionSort($$)                                                           
 
       IfGt $a, $b,
       Then                                                                      # Swap elements to place smaller element lower in array
-       {Mov [$array, \$i, $name], $b;
-        Mov [$array, \$j, $name], $a;
+       {Parallel
+          sub {Mov [$array, \$i, $name], $b},
+          sub {Mov [$array, \$j, $name], $a};
         Mov $a, $b;
        };
      } [$i, $N];                                                                # Move up through array
@@ -48,11 +49,13 @@ if (1)                                                                          
   is_deeply $e->out, <<END;
 [1 .. 8]
 END
-  is_deeply $e->count,  286;                                                    # Instructions executed
+
+  is_deeply $e->count,           285;                                           # Instructions executed
+  is_deeply $e->timeParallel,    270;
+  is_deeply $e->timeSequential,  285;
 
   is_deeply formatTable($e->counts), <<END;
 array       1
-arrayDump   1
 arraySize   1
 inc        44
 jGe        53
@@ -78,5 +81,5 @@ if (1)                                                                          
   is_deeply $e->out, <<END;
 [1 .. 32]
 END
-  is_deeply $e->count, 4357;                                                    # Approximately 4*4== 16 times bigger
+  is_deeply $e->count, 4356;                                                    # Approximately 4*4== 16 times bigger
  }
