@@ -529,7 +529,7 @@ Assert true.
 
 ## Bad($bad)
 
-A bad ending.
+A bad ending to a block of code.
 
        Parameter  Description
     1  $bad       What to do on a bad ending
@@ -1182,7 +1182,7 @@ Free the memory area named by the target operand after confirming that it has th
 
 ## Good($good)
 
-A good ending.
+A good ending to a block of code.
 
        Parameter  Description
     1  $good      What to do on a good ending
@@ -4145,7 +4145,7 @@ Disassemble and remove context information from disassembly to make testing easi
 
 19 [AssertTrue](#asserttrue) - Assert true.
 
-20 [Bad](#bad) - A bad ending.
+20 [Bad](#bad) - A bad ending to a block of code.
 
 21 [Block](#block) - Block of code that can either be restarted or come to a good or a bad ending.
 
@@ -4179,7 +4179,7 @@ Disassemble and remove context information from disassembly to make testing easi
 
 36 [GenerateMachineCodeDisAssembleExecute](#generatemachinecodedisassembleexecute) - Round trip: generate machine code and write it onto a string, disassemble the generated machine code string and recreate a block of code from it, then execute the reconstituted code to prove that it works as well as the original code.
 
-37 [Good](#good) - A good ending.
+37 [Good](#good) - A good ending to a block of code.
 
 38 [IfEq](#ifeq) - Execute then or else clause depending on whether two memory locations are equal.
 
