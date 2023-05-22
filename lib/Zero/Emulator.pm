@@ -16,7 +16,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Time::HiRes qw(time);
-eval "use Test::More tests=>402" unless caller;
+eval "use Test::More tests=>406" unless caller;
 
 makeDieConfess;
 our $memoryTechnique;                                                           # Undef or the address of a sub that loads the memory handlers into an execution environment.
@@ -26,7 +26,7 @@ my sub maximumInstructionsToExecute {1e6}                                       
 sub ExecutionEnvironment(%)                                                     # Execution environment for a block of code.
  {my (%options) = @_;                                                           # Execution options
 
-  my $errors = setDifference(\%options, q(checkArrayNames code doubleWrite in maximumArraySize NotRead pointlessAssign stopOnError stringMemory suppressOutput trace));
+  my $errors = setDifference(\%options, q(checkArrayNames code doubleWrite in maximumArraySize NotRead pointlessAssign sequentialTime stopOnError stringMemory suppressOutput trace));
   keys %$errors and confess "Invalid options: ".dump($errors);
 
   my $exec=                 genHash(q(Zero::Emulator),                          # Emulator execution environment
@@ -64,6 +64,8 @@ sub ExecutionEnvironment(%)                                                     
     notExecuted=>           [],                                                 # Instructions not executed
     notReadAddresses=>      [],                                                 # Memory addresses never read
     out=>                   '',                                                 # The out channel. L<Out> writes an array of items to this followed by a new line.  L<out> does the same but without the new line.
+    parallelLastStart=>     [],                                                 # Point in time at which last parallel section started
+    parallelLongest=>       [],                                                 # Longest paralle section so far
     pointlessAssign=>       {},                                                 # Location already has the specified value
     PopMemoryArea=>        \&popMemoryArea,                                     # Low level memory access - pop from area
     printDoubleWrite=>      $options{doubleWrite},                              # Double writes: earlier instruction number to later instruction number
@@ -79,6 +81,9 @@ sub ExecutionEnvironment(%)                                                     
     tallyCount=>            0,                                                  # Executed instructions tally count
     tallyCounts=>           {},                                                 # Executed instructions by name tally counts
     tallyTotal=>            {},                                                 # Total instructions executed in each tally
+    timeParallel=>          0,                                                  # Notional time elapsed since start with parallelism taken into account
+    timeSequential=>        0,                                                  # Notional time elapsed since start without parellelism
+    timeDelta=>             undef,                                              # Time for last insytruction if sometyhing other than 1
     trace=>                 $options{trace},                                    # Trace all statements
     traceLabels=>           undef,                                              # Trace changes in execution flow
     watch=>                 [],                                                 # Addresses to watch for changes
@@ -1054,6 +1059,7 @@ sub assert1($$$)                                                                
   unless($sub->($a))
    {$exec->stackTraceAndExit("Assert$test $a failed");
    }
+  $exec->timeDelta = 0;
  }
 
 sub assert2($$$)                                                                #P Assert generically.
@@ -1064,6 +1070,7 @@ sub assert2($$$)                                                                
   unless($sub->($a, $b))
    {$exec->stackTraceAndExit("Assert $a $test $b failed");
    }
+  $exec->timeDelta = 0;
  }
 
 sub assign($$$)                                                                 #P Assign - check for pointless assignments.
@@ -1505,6 +1512,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $m = "Trace: $s";
       say STDERR           $m unless $exec->suppressOutput;
       $exec->output("$m\n");
+      $exec->timeDelta = 0;
      },
 
     traceLabels=> sub                                                           # Start trace points
@@ -1514,6 +1522,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $m = "TraceLabels: $s";
       say STDERR           $m unless $exec->suppressOutput;
       $exec->output("$m\n");
+      $exec->timeDelta = 0;
      },
 
     dump=> sub                                                                  # Dump memory
@@ -1523,6 +1532,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $m = join '', @m;
       say STDERR $m unless $exec->suppressOutput;
       $exec->output($m);
+      $exec->timeDelta = 0;
      },
 
     arrayDump=> sub                                                             # Dump array in memory
@@ -1531,6 +1541,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $m = dump($exec->GetMemoryArea->($exec, arenaHeap, $a)) =~ s(\n) ()gsr;
       say STDERR $m unless $exec->suppressOutput;
       $exec->output("$m\n");
+      $exec->timeDelta = 0;
      },
 
     dec=> sub                                                                   # Decrement locations in memory. The first address is incremented by 1, the next by two, etc.
@@ -1583,6 +1594,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     label=> sub                                                                 # Label - no operation
      {my ($i) = @_;                                                             # Instruction
+      $exec->timeDelta = 0;
       return unless $exec->traceLabels;
       my $s = $exec->stackTrace("Label");
       say STDERR $s unless $exec->suppressOutput;
@@ -1690,6 +1702,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     nop=> sub                                                                   # No operation
      {my ($i) = @_;                                                             # Instruction
+      $exec->timeDelta = 0;
      },
 
     out=> sub                                                                   # Write source as output to an array of words
@@ -1706,6 +1719,7 @@ sub Zero::Emulator::Code::execute($%)                                           
         $exec->lastAssignValue = $t;
         $exec->output("$t\n");
        }
+      $exec->timeDelta = 0;                                                     # Out is used only for diagnostic purposes.
      },
 
     pop=> sub                                                                   # Pop a value from the specified memory area if possible else confess
@@ -1778,12 +1792,34 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = $exec->currentInstruction;
       my $t = $exec->right($i->source);
       $exec->tally = $t;
+      $exec->timeDelta = 0;
      },
 
     watch=> sub                                                                 # Watch a memory location for changes
      {my $i = $exec->currentInstruction;
       my $t = $exec->left($i->target);
       $exec->watch->[$t->area][$t->address]++;
+      $exec->timeDelta = 0;
+     },
+
+    parallelStart=> sub                                                         # Start timing a parallel section
+     {push $exec->parallelLastStart->@*, $exec->timeParallel;
+      push $exec->parallelLongest->@*, 0;                                       # Longest so far
+      $exec->timeDelta = 0;
+     },
+
+    parallelContinue=> sub                                                      # Continue timing a parallel section
+     {my $t = $exec->timeParallel - $exec->parallelLastStart->[-1];
+      push $exec->parallelLongest->@*, max pop($exec->parallelLongest->@*), $t; # Find longest section
+      $exec->timeParallel = $exec->parallelLastStart->[-1];                     # Reset time as if we were starting in parallel
+      $exec->timeDelta = 0;
+     },
+
+    parallelStop=> sub                                                          # Stop timing a parallel section
+     {my $t = $exec->timeParallel - (my $s = pop $exec->parallelLastStart->@*);
+      my $l = max pop($exec->parallelLongest->@*), $t;                          # Find longest section
+      $exec->timeParallel = $s + $l;
+      $exec->timeDelta = 0;
      },
    );
   return {%instructions} unless $block;                                         # Return a list of the instructions
@@ -1805,18 +1841,16 @@ sub Zero::Emulator::Code::execute($%)                                           
      {$exec->stackTraceAndExit(qq(No implementation for instruction: "$a"))     # Check that there is come code implementing the action for this instruction
         unless my $implementation = $instructions{$a};
 
-      $exec->tallyInstructionCounts($instruction);                              # Tally instruction counts
       $exec->resetLastAssign;                                                   # Trace assignments
       $instruction->step = $step;                                               # Execution step number facilitates debugging
+      $exec->timeDelta = undef;                                                 # Record elapsed time for instruction
 
       $implementation->($instruction);                                          # Execute instruction
 
-      #say STDERR "AAAA", unpack "h*", $exec->memoryString if $a =~ m(mov);     # Print memory
-      $exec->instructionCounts->{$instruction->number}++;                       # Execution count by actual instruction
-
-      ++$instruction->executed;
+      $exec->tallyInstructionCounts($instruction);                              # Instruction counts
 
       $exec->traceMemory($instruction);                                         # Trace changes to memory
+#say STDERR "AAAA", dump($a, $exec->timeDelta, $exec->timeParallel, $exec->timeSequential, $exec->count);
      }
     if ($step >= maximumInstructionsToExecute)
      {confess "Out of instructions after $step";
@@ -1843,14 +1877,22 @@ sub completionStatistics($)                                                     
 sub tallyInstructionCounts($$)                                                  #P Tally instruction counts.
  {my ($exec, $instruction) = @_;                                                # Execution environment, instruction being executed
   my $a = $instruction->action;
-  if ($a !~ m(\A(assert.*|label|tally|trace(Points?)?)\Z))                      # Omit instructions that are not tally-able
+# if ($a !~ m(\A(assert.*|label|parallel(Start|Continue|Stop)|tally|trace(Points?)?)\Z))                      # Omit instructions that are not tally-able
+  if (!defined($exec->timeDelta) or $exec->timeDelta > 0)
    {if (my $t = $exec->tally)                                                   # Tally instruction counts
      {$exec->tallyCount++;
       $exec->tallyTotal->{$t}++;
       $exec->tallyCounts->{$t}{$a}++;
      }
     $exec->counts->{$a}++; $exec->count++;                                      # Execution instruction counts
+    $exec->timeParallel   += $exec->timeDelta // 1;                             # Each instruction takes one step in time unless we are told otherwise
+    $exec->timeSequential += $exec->timeDelta // 1;                             # Each instruction takes one step in time unless we are told otherwise
+
+      #say STDERR "AAAA", unpack "h*", $exec->memoryString if $a =~ m(mov);     # Print memory
+    $exec->instructionCounts->{$instruction->number}++;                         # Execution count by actual instruction
+
    }
+  ++$instruction->executed;                                                     # Count number of times this actual instruction was executed
  }
 
 sub resetLastAssign($)                                                          #P Reset the last assign trace fields ready for this instruction.
@@ -1862,7 +1904,7 @@ sub resetLastAssign($)                                                          
 sub traceMemory($$)                                                             #P Trace memory.
  {my ($exec, $instruction) = @_;                                                # Execution environment, current instruction
   return unless $exec->trace;                                                   # Trace changes to memory if requested
-  my $e = $exec->instructionCounts->{$instruction->number};                     # Execution count for this instruction
+  my $e = $exec->instructionCounts->{$instruction->number}//0;                  # Execution count for this instruction
   my $f = $instruction->action =~ m(\Aout\Z) ? $exec->lastAssignValue
                                              : $exec->formatTrace;
   my $s = $exec->suppressOutput;
@@ -2657,6 +2699,18 @@ sub Watch($)                                                                    
   $assembly->instruction(action=>"watch", xTarget($target));
  }
 
+sub ParallelStart()                                                             #i Start recording the elapsed time for parallel sections.
+ {$assembly->instruction(action=>"parallelStart");
+ }
+
+sub ParallelContinue()                                                          #i Continue recording the elapsed time for parallel sections.
+ {$assembly->instruction(action=>"parallelContinue");
+ }
+
+sub ParallelStop()                                                              #i Stop recording the elapsed time for parallel sections.
+ {$assembly->instruction(action=>"parallelStop");
+ }
+
 sub Parallel(@)                                                                 #i Runs its sub sections in simulated parallel so that we can prove that the sections can be run in parallel.
  {my (@subs) = @_;                                                              # Subroutines containing code to be run in simulated parallel
 
@@ -2667,7 +2721,9 @@ sub Parallel(@)                                                                 
    {my $j = int(scalar(@r) * rand());
     ($r[$i], $r[$j]) = ($r[$j], $r[$i]);
    }
-  map {$subs[$_]->()} @r;                                                       # Layout code in randomized order
+  ParallelStart;
+  map {ParallelContinue; $subs[$_]->()} @r;                                     # Layout code in randomized order while timingeach section
+  ParallelStop;
  }
 
 sub Sequential(@)                                                               #i Runs its sub sections in sequential order
@@ -3550,10 +3606,10 @@ if (1)                                                                          
   AssertTrue  0;
   my $e = &$ee(suppressOutput=>1, trace=>1);
   is_deeply $e->out, <<END;
-    1     0     1   assertFalse
+    1     0     0   assertFalse
 AssertTrue 0 failed
     1     2 assertTrue
-    2     1     1    assertTrue
+    2     1     0    assertTrue
 END
  }
 
@@ -3565,10 +3621,10 @@ if (1)                                                                          
   my $e = &$ee(suppressOutput=>1, trace=>1);
 
   is_deeply $e->out, <<END;
-    1     0     1    assertTrue
+    1     0     0    assertTrue
 AssertFalse 1 failed
     1     2 assertFalse
-    2     1     1   assertFalse
+    2     1     0   assertFalse
 END
  }
 
@@ -3848,6 +3904,7 @@ if (1)                                                                          
 
   my $e = &$ee(suppressOutput=>0);
   is_deeply $e->heap(1), [0, 1, 2, 99];
+  is_deeply [$e->timeParallel, $e->timeSequential], [3,5];
  }
 
 #latest:;
@@ -3979,7 +4036,7 @@ if (1)                                                                          
   my $e = &$ee(suppressOutput=>1);
 
   is_deeply $e->counts,                                                         # Several allocations and frees
-   {array=>3, dump=>3, free=>3, inc=>3, jGe=>4, jmp=>3, mov=>4
+   {array=>3, free=>3, inc=>3, jGe=>4, jmp=>3, mov=>4
    };
   is_deeply $e->out, <<END;
 Stack trace:
@@ -4032,32 +4089,32 @@ if (1)                                                                          
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->out, <<END;
 Trace: 1
-    1     0     1         trace
+    1     0     0         trace
     2     1     1           jNe
-    3     5     1         label
+    3     5     0         label
     4     6     1           mov  [1, 3, stackArea] = 3
     5     7     1           mov  [1, 4, stackArea] = 4
-    6     8     1         label
+    6     8     0         label
     7     9     1           jNe
     8    10     1           mov  [1, 1, stackArea] = 1
     9    11     1           mov  [1, 2, stackArea] = 1
    10    12     1           jmp
-   11    16     1         label
+   11    16     0         label
 END
   my $E = &$ee(suppressOutput=>1);
   is_deeply $E->out, <<END;
 Trace: 1
-    1     0     1         trace
+    1     0     0         trace
     2     1     1           jNe
-    3     5     1         label
+    3     5     0         label
     4     6     1           mov  [1, 3, stackArea] = 3
     5     7     1           mov  [1, 4, stackArea] = 4
-    6     8     1         label
+    6     8     0         label
     7     9     1           jNe
     8    10     1           mov  [1, 1, stackArea] = 1
     9    11     1           mov  [1, 2, stackArea] = 1
    10    12     1           jmp
-   11    16     1         label
+   11    16     0         label
 END
 
   is_deeply scalar($e->notExecuted->@*), 6;
