@@ -952,10 +952,10 @@ sub left($$)                                                                    
    {my $a = Address(arenaLocal, $S, $M, $ref->name);                            # Stack frame
     return $a;
    }
-  elsif (isScalar($area))
-   {my $a = Address($arena, $area, $M, $ref->name);                             # Specified constant area
-    return $a;
-   }
+#  elsif (isScalar($area))
+#   {my $a = Address($arena, $area, $M, $ref->name);                             # Specified constant area
+#    return $a;
+#   }
   elsif (isScalar($$area))
    {my $A = $exec->getMemory(arenaLocal, $S, $$area, $stackArea);
     my $a = Address($arena, $A, $M, $ref->name);                                # Indirect area
