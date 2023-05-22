@@ -366,12 +366,12 @@ Assert false.
       my $e = &$ee(suppressOutput=>1, trace=>1);
     
       is_deeply $e->out, <<END;
-        1     0     1    assertTrue
+        1     0     0    assertTrue
     
     AssertFalse 1 failed  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
         1     2 assertFalse
-        2     1     1   assertFalse
+        2     1     0   assertFalse
     END
      }
     
@@ -519,12 +519,12 @@ Assert true.
 
       my $e = &$ee(suppressOutput=>1, trace=>1);
       is_deeply $e->out, <<END;
-        1     0     1   assertFalse
+        1     0     0   assertFalse
     
     AssertTrue 0 failed  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
         1     2 assertTrue
-        2     1     1    assertTrue
+        2     1     0    assertTrue
     END
      }
     
@@ -899,32 +899,32 @@ Else block.
       my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     Trace: 1
-        1     0     1         trace
+        1     0     0         trace
         2     1     1           jNe
-        3     5     1         label
+        3     5     0         label
         4     6     1           mov  [1, 3, stackArea] = 3
         5     7     1           mov  [1, 4, stackArea] = 4
-        6     8     1         label
+        6     8     0         label
         7     9     1           jNe
         8    10     1           mov  [1, 1, stackArea] = 1
         9    11     1           mov  [1, 2, stackArea] = 1
        10    12     1           jmp
-       11    16     1         label
+       11    16     0         label
     END
       my $E = &$ee(suppressOutput=>1);
       is_deeply $E->out, <<END;
     Trace: 1
-        1     0     1         trace
+        1     0     0         trace
         2     1     1           jNe
-        3     5     1         label
+        3     5     0         label
         4     6     1           mov  [1, 3, stackArea] = 3
         5     7     1           mov  [1, 4, stackArea] = 4
-        6     8     1         label
+        6     8     0         label
         7     9     1           jNe
         8    10     1           mov  [1, 1, stackArea] = 1
         9    11     1           mov  [1, 2, stackArea] = 1
        10    12     1           jmp
-       11    16     1         label
+       11    16     0         label
     END
     
       is_deeply scalar($e->notExecuted->@*), 6;
@@ -3073,6 +3073,7 @@ Shift an element up one in an area.
     
       my $e = &$ee(suppressOutput=>0);
       is_deeply $e->heap(1), [0, 1, 2, 99];
+      is_deeply [$e->timeParallel, $e->timeSequential], [3,5];
      }
     
     if (1)                                                                          
@@ -3224,32 +3225,32 @@ Then block.
       my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     Trace: 1
-        1     0     1         trace
+        1     0     0         trace
         2     1     1           jNe
-        3     5     1         label
+        3     5     0         label
         4     6     1           mov  [1, 3, stackArea] = 3
         5     7     1           mov  [1, 4, stackArea] = 4
-        6     8     1         label
+        6     8     0         label
         7     9     1           jNe
         8    10     1           mov  [1, 1, stackArea] = 1
         9    11     1           mov  [1, 2, stackArea] = 1
        10    12     1           jmp
-       11    16     1         label
+       11    16     0         label
     END
       my $E = &$ee(suppressOutput=>1);
       is_deeply $E->out, <<END;
     Trace: 1
-        1     0     1         trace
+        1     0     0         trace
         2     1     1           jNe
-        3     5     1         label
+        3     5     0         label
         4     6     1           mov  [1, 3, stackArea] = 3
         5     7     1           mov  [1, 4, stackArea] = 4
-        6     8     1         label
+        6     8     0         label
         7     9     1           jNe
         8    10     1           mov  [1, 1, stackArea] = 1
         9    11     1           mov  [1, 2, stackArea] = 1
        10    12     1           jmp
-       11    16     1         label
+       11    16     0         label
     END
     
       is_deeply scalar($e->notExecuted->@*), 6;
@@ -3294,34 +3295,34 @@ Start or stop tracing.  Tracing prints each instruction executed and its effect 
     
     Trace: 1  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-        1     0     1         trace
+        1     0     0         trace
         2     1     1           jNe
-        3     5     1         label
+        3     5     0         label
         4     6     1           mov  [1, 3, stackArea] = 3
         5     7     1           mov  [1, 4, stackArea] = 4
-        6     8     1         label
+        6     8     0         label
         7     9     1           jNe
         8    10     1           mov  [1, 1, stackArea] = 1
         9    11     1           mov  [1, 2, stackArea] = 1
        10    12     1           jmp
-       11    16     1         label
+       11    16     0         label
     END
       my $E = &$ee(suppressOutput=>1);
       is_deeply $E->out, <<END;
     
     Trace: 1  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-        1     0     1         trace
+        1     0     0         trace
         2     1     1           jNe
-        3     5     1         label
+        3     5     0         label
         4     6     1           mov  [1, 3, stackArea] = 3
         5     7     1           mov  [1, 4, stackArea] = 4
-        6     8     1         label
+        6     8     0         label
         7     9     1           jNe
         8    10     1           mov  [1, 1, stackArea] = 1
         9    11     1           mov  [1, 2, stackArea] = 1
        10    12     1           jmp
-       11    16     1         label
+       11    16     0         label
     END
     
       is_deeply scalar($e->notExecuted->@*), 6;
@@ -3433,6 +3434,18 @@ Watches for changes to the specified memory location.
      }
     
 
+## ParallelStart()
+
+Start recording the elapsed time for parallel sections.
+
+## ParallelContinue()
+
+Continue recording the elapsed time for parallel sections.
+
+## ParallelStop()
+
+Stop recording the elapsed time for parallel sections.
+
 ## Parallel(@subs)
 
 Runs its sub sections in simulated parallel so that we can prove that the sections can be run in parallel.
@@ -3457,6 +3470,7 @@ Runs its sub sections in simulated parallel so that we can prove that the sectio
     
       my $e = &$ee(suppressOutput=>0);
       is_deeply $e->heap(1), [0, 1, 2, 99];
+      is_deeply [$e->timeParallel, $e->timeSequential], [3,5];
      }
     
 
@@ -3730,6 +3744,14 @@ Memory addresses never read
 
 The out channel. [Out](https://metacpan.org/pod/Out) writes an array of items to this followed by a new line.  [out](https://metacpan.org/pod/out) does the same but without the new line.
 
+#### parallelLastStart
+
+Point in time at which last parallel section started
+
+#### parallelLongest
+
+Longest paralle section so far
+
 #### pointlessAssign
 
 Location already has the specified value
@@ -3777,6 +3799,18 @@ Executed instructions by name tally counts
 #### tallyTotal
 
 Total instructions executed in each tally
+
+#### timeDelta
+
+Time for last insytruction if sometyhing other than 1
+
+#### timeParallel
+
+Notional time elapsed since start with parallelism taken into account
+
+#### timeSequential
+
+Notional time elapsed since start without parellelism
 
 #### trace
 
@@ -4287,67 +4321,73 @@ Disassemble and remove context information from disassembly to make testing easi
 
 71 [Parallel](#parallel) - Runs its sub sections in simulated parallel so that we can prove that the sections can be run in parallel.
 
-72 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
+72 [ParallelContinue](#parallelcontinue) - Continue recording the elapsed time for parallel sections.
 
-73 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
+73 [ParallelStart](#parallelstart) - Start recording the elapsed time for parallel sections.
 
-74 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
+74 [ParallelStop](#parallelstop) - Stop recording the elapsed time for parallel sections.
 
-75 [Procedure](#procedure) - Define a procedure.
+75 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
 
-76 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
+76 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
 
-77 [Random](#random) - Create a random number in a specified range.
+77 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
 
-78 [RandomSeed](#randomseed) - Seed the random number generator.
+78 [Procedure](#procedure) - Define a procedure.
 
-79 [refDepth](#refdepth) - The depth of a reference.
+79 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
 
-80 [refValue](#refvalue) - The value of a reference after dereferencing.
+80 [Random](#random) - Create a random number in a specified range.
 
-81 [rerefValue](#rerefvalue) - Re-reference a value.
+81 [RandomSeed](#randomseed) - Seed the random number generator.
 
-82 [Resize](#resize) - Resize the target area to the source size.
+82 [refDepth](#refdepth) - The depth of a reference.
 
-83 [Return](#return) - Return from a procedure via the call stack.
+83 [refValue](#refvalue) - The value of a reference after dereferencing.
 
-84 [ReturnGet](#returnget) - Get a word from the return area and save it.
+84 [rerefValue](#rerefvalue) - Re-reference a value.
 
-85 [ReturnPut](#returnput) - Put a word into the return area.
+85 [Resize](#resize) - Resize the target area to the source size.
 
-86 [Sequential](#sequential) - Runs its sub sections in sequential order
+86 [Return](#return) - Return from a procedure via the call stack.
 
-87 [ShiftDown](#shiftdown) - Shift an element down one in an area.
+87 [ReturnGet](#returnget) - Get a word from the return area and save it.
 
-88 [ShiftLeft](#shiftleft) - Shift left within an element.
+88 [ReturnPut](#returnput) - Put a word into the return area.
 
-89 [ShiftRight](#shiftright) - Shift right with an element.
+89 [Sequential](#sequential) - Runs its sub sections in sequential order
 
-90 [ShiftUp](#shiftup) - Shift an element up one in an area.
+90 [ShiftDown](#shiftdown) - Shift an element down one in an area.
 
-91 [Start](#start) - Start the current assembly using the specified version of the Zero language.
+91 [ShiftLeft](#shiftleft) - Shift left within an element.
 
-92 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
+92 [ShiftRight](#shiftright) - Shift right with an element.
 
-93 [Tally](#tally) - Counts instructions when enabled.
+93 [ShiftUp](#shiftup) - Shift an element up one in an area.
 
-94 [Then](#then) - Then block.
+94 [Start](#start) - Start the current assembly using the specified version of the Zero language.
 
-95 [Trace](#trace) - Start or stop tracing.
+95 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
 
-96 [TraceLabels](#tracelabels) - Enable or disable label tracing.
+96 [Tally](#tally) - Counts instructions when enabled.
 
-97 [unpackInstruction](#unpackinstruction) - Unpack an instruction.
+97 [Then](#then) - Then block.
 
-98 [Var](#var) - Create a variable initialized to the specified value.
+98 [Trace](#trace) - Start or stop tracing.
 
-99 [Watch](#watch) - Watches for changes to the specified memory location.
+99 [TraceLabels](#tracelabels) - Enable or disable label tracing.
 
-100 [Zero::Emulator::Code::packInstruction](#zero-emulator-code-packinstruction) - Pack an instruction.
+100 [unpackInstruction](#unpackinstruction) - Unpack an instruction.
 
-101 [Zero::Emulator::Code::packRef](#zero-emulator-code-packref) - Pack a reference into 8 bytes.
+101 [Var](#var) - Create a variable initialized to the specified value.
 
-102 [Zero::Emulator::Code::unpackRef](#zero-emulator-code-unpackref) - Unpack a reference.
+102 [Watch](#watch) - Watches for changes to the specified memory location.
+
+103 [Zero::Emulator::Code::packInstruction](#zero-emulator-code-packinstruction) - Pack an instruction.
+
+104 [Zero::Emulator::Code::packRef](#zero-emulator-code-packref) - Pack a reference into 8 bytes.
+
+105 [Zero::Emulator::Code::unpackRef](#zero-emulator-code-unpackref) - Unpack a reference.
 
 # Installation
 
