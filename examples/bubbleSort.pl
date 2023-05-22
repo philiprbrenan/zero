@@ -45,7 +45,7 @@ if (1)                                                                          
  {Start 1;
   my $a = Array 'array';
   my @a = qw(6 8 4 2 1 3 5 7);
-  Push $a, $_, 'array' for @a;                                                    # Load array
+  Push $a, $_, 'array' for @a;                                                  # Load array
 
   bubbleSort $a, 'array';                                                       # Sort
   ArrayDump $a;
