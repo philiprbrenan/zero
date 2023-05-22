@@ -100,6 +100,10 @@ my $t = <<END;
       run: |
         perl examples/quickSort.pl
 
+    - name: QuickSort Parallel
+      run: |
+        perl examples/quickSortParallel.pl
+
     - name: SelectionSort
       run: |
         perl examples/selectionSort.pl
