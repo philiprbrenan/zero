@@ -3819,13 +3819,15 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          ##ShiftUp
+if (1)                                                                          ##ShiftUp ##Sequential
  {Start 1;
   my $a = Array "array";
 
-  Mov [$a, 0, 'array'], 0;
-  Mov [$a, 1, 'array'], 1;
-  Mov [$a, 2, 'array'], 2;
+  Sequential
+    sub{Mov [$a, 0, 'array'], 0},
+    sub{Mov [$a, 1, 'array'], 1},
+    sub{Mov [$a, 2, 'array'], 2};
+
   ShiftUp [$a, 2, 'array'], 99;
 
   my $e = &$ee(suppressOutput=>0);
@@ -3833,7 +3835,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          ##ShiftUp
+if (1)                                                                          ##ShiftUp ##Parallel
  {Start 1;
   my $a = Array "array";
 
