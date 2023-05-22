@@ -2699,15 +2699,15 @@ sub Watch($)                                                                    
   $assembly->instruction(action=>"watch", xTarget($target));
  }
 
-sub ParallelStart()                                                             #i Start recording the elapsed time for parallel sections.
+sub ParallelStart()                                                             #iP Start recording the elapsed time for parallel sections.
  {$assembly->instruction(action=>"parallelStart");
  }
 
-sub ParallelContinue()                                                          #i Continue recording the elapsed time for parallel sections.
+sub ParallelContinue()                                                          #iP Continue recording the elapsed time for parallel sections.
  {$assembly->instruction(action=>"parallelContinue");
  }
 
-sub ParallelStop()                                                              #i Stop recording the elapsed time for parallel sections.
+sub ParallelStop()                                                              #iP Stop recording the elapsed time for parallel sections.
  {$assembly->instruction(action=>"parallelStop");
  }
 
