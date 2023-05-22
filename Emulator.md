@@ -3434,18 +3434,6 @@ Watches for changes to the specified memory location.
      }
     
 
-## ParallelStart()
-
-Start recording the elapsed time for parallel sections.
-
-## ParallelContinue()
-
-Continue recording the elapsed time for parallel sections.
-
-## ParallelStop()
-
-Stop recording the elapsed time for parallel sections.
-
 ## Parallel(@subs)
 
 Runs its sub sections in simulated parallel so that we can prove that the sections can be run in parallel.
@@ -4099,6 +4087,18 @@ Create a label.
     END
      }
     
+
+## ParallelStart()
+
+Start recording the elapsed time for parallel sections.
+
+## ParallelContinue()
+
+Continue recording the elapsed time for parallel sections.
+
+## ParallelStop()
+
+Stop recording the elapsed time for parallel sections.
 
 ## instructionList()
 
