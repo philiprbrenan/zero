@@ -194,9 +194,10 @@ A possible downside of this [memory](https://en.wikipedia.org/wiki/Computer_memo
 
 ### String [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme
 
-Alternatively, [arrays](https://en.wikipedia.org/wiki/Dynamic_array) are held in fixed size blocks.  This imposes the
-limitation that each [array](https://en.wikipedia.org/wiki/Dynamic_array) can only extend up to a predetermined size. The
-number of such [arrays](https://en.wikipedia.org/wiki/Dynamic_array) is determined by the total size of the available [memory](https://en.wikipedia.org/wiki/Computer_memory). 
+Alternatively, in the stringmemory scheme, [arrays](https://en.wikipedia.org/wiki/Dynamic_array) are held in fixed size
+blocks.  This imposes the limitation that each [array](https://en.wikipedia.org/wiki/Dynamic_array) can only extend up to a
+predetermined size. The number of such [arrays](https://en.wikipedia.org/wiki/Dynamic_array) is determined by the total size
+of the available [memory](https://en.wikipedia.org/wiki/Computer_memory). 
 The advantage of the [string](https://en.wikipedia.org/wiki/String_(computer_science)) [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme is that the allocation and freeing of
 such [arrays](https://en.wikipedia.org/wiki/Dynamic_array) is very simple because freed [arrays](https://en.wikipedia.org/wiki/Dynamic_array) can be immediately reused.
 Allocation and freeing is thus a fast operation. Thus [memory](https://en.wikipedia.org/wiki/Computer_memory) can be recyled
