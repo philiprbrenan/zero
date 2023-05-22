@@ -8,7 +8,7 @@ use warnings FATAL => qw(all);
 use strict;
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
-use Test::More tests=>5;
+use Test::More tests=>7;
 
 sub bubbleSort($$)                                                              # As described at: https://en.wikipedia.org/wiki/Bubble_sort
  {my ($array, $name) = @_;                                                      # Array, name of array memory
@@ -17,19 +17,24 @@ sub bubbleSort($$)                                                              
 
   For                                                                           # Outer loop
    {my ($i, $start, $check, $end) = @_;                                         # Loop labels
-    my  $l  = Subtract $N, $i;                                                   # An array of one element is already sorted
-    my  $c  = Mov 0;                                                            # Count number of swaps
+    my $l; my $c;
+    Parallel
+      sub{$l = Subtract $N, $i},                                                # An array of one element is already sorted
+      sub{$c = Mov 0};                                                          # Count number of swaps
 
     For                                                                         # Inner loop
      {my ($j) = @_;
-      my $a = Mov [$array, \$j, $name];
-      my $b = Mov [$array, \$j, $name, -1];
+      my $a; my $b;
+      Parallel
+        sub{$a = Mov [$array, \$j, $name]},
+        sub{$b = Mov [$array, \$j, $name, -1]};
 
       IfLt $a, $b,
       Then                                                                      # Swap elements to place smaller element lower in array
-       {Mov [$array, \$j, $name, -1], $a;
-        Mov [$array, \$j, $name],    $b;
-        Inc $c;
+       {Parallel
+          sub{Mov [$array, \$j, $name, -1], $a},
+          sub{Mov [$array, \$j, $name],     $b},
+          sub{Inc $c};
        };
      } [1, $l];
     JFalse $end, $c;                                                            # Stop if the array is now sorted
@@ -51,12 +56,13 @@ if (1)                                                                          
 [1 .. 8]
 END
 
-  is_deeply $e->count,  245;                                                    # Instructions executed
+  is_deeply $e->count,  244;                                                    # Instructions executed
+  is_deeply $e->timeParallel,   184;
+  is_deeply $e->timeSequential, 244;
 
   #say STDERR formatTable($e->counts);
   is_deeply formatTable($e->counts), <<END;
 array       1
-arrayDump   1
 arraySize   1
 inc        44
 jFalse      5
@@ -80,7 +86,7 @@ if (1)                                                                          
 
   my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);             # Execute assembler program
 
-  is_deeply $e->count, 4754;                                                    # Instructions executed
+  is_deeply $e->count, 4753;                                                    # Instructions executed
 
   is_deeply $e->out, <<END;
 [1 .. 32]
