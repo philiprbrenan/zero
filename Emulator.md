@@ -70,9 +70,10 @@ Create a new memory area and write its number into the address named by the targ
     
       my $a = Array "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-        Mov [$a, 0, "aaa"], 1;
-        Mov [$a, 1, "aaa"], 22;
-        Mov [$a, 2, "aaa"], 333;
+      Parallel
+        sub{Mov [$a, 0, "aaa"], 1},
+        sub{Mov [$a, 1, "aaa"], 22},
+        sub{Mov [$a, 2, "aaa"], 333};
     
       my $n = ArraySize $a, "aaa";
     
@@ -254,9 +255,10 @@ The current size of an array.
     if (1)                                                                             
      {Start 1;
       my $a = Array "aaa";
-        Mov [$a, 0, "aaa"], 1;
-        Mov [$a, 1, "aaa"], 22;
-        Mov [$a, 2, "aaa"], 333;
+      Parallel
+        sub{Mov [$a, 0, "aaa"], 1},
+        sub{Mov [$a, 1, "aaa"], 22},
+        sub{Mov [$a, 2, "aaa"], 333};
     
     
       my $n = ArraySize $a, "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -971,18 +973,7 @@ For loop 0..range-1 or in reverse.
         Out $i;
        } 10;
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    0
-    1
-    2
-    3
-    4
-    5
-    6
-    7
-    8
-    9
-    END
+      is_deeply $e->outLines, [0..9];
      }
     
     if (1)                                                                          
@@ -994,18 +985,7 @@ For loop 0..range-1 or in reverse.
         Out $i;
        } 10, reverse=>1;
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    9
-    8
-    7
-    6
-    5
-    4
-    3
-    2
-    1
-    0
-    END
+      is_deeply $e->outLines, [reverse 0..9];
      }
     
     if (1)                                                                          
@@ -1017,16 +997,7 @@ For loop 0..range-1 or in reverse.
         Out $i;
        } [2, 10];
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    2
-    3
-    4
-    5
-    6
-    7
-    8
-    9
-    END
+      is_deeply $e->outLines, [2..9];
      }
     
     if (1)                                                                           
@@ -1063,9 +1034,10 @@ For loop to process each element of the named area.
     if (1)                                                                             
      {Start 1;
       my $a = Array "aaa";
-        Mov [$a, 0, "aaa"], 1;
-        Mov [$a, 1, "aaa"], 22;
-        Mov [$a, 2, "aaa"], 333;
+      Parallel
+        sub{Mov [$a, 0, "aaa"], 1},
+        sub{Mov [$a, 1, "aaa"], 22},
+        sub{Mov [$a, 2, "aaa"], 333};
     
       my $n = ArraySize $a, "aaa";
       Out "Array size:", $n;
@@ -2507,9 +2479,10 @@ Do nothing (but do it well!).
     if (1)                                                                             
      {Start 1;
       my $a = Array "aaa";
-        Mov [$a, 0, "aaa"], 1;
-        Mov [$a, 1, "aaa"], 22;
-        Mov [$a, 2, "aaa"], 333;
+      Parallel
+        sub{Mov [$a, 0, "aaa"], 1},
+        sub{Mov [$a, 1, "aaa"], 22},
+        sub{Mov [$a, 2, "aaa"], 333};
     
       my $n = ArraySize $a, "aaa";
       Out "Array size:", $n;
@@ -2815,9 +2788,10 @@ Resize the target area to the source size.
     if (1)                                                                          
      {Start 1;
       my $a = Array 'aaa';
-      Mov [$a, 0, 'aaa'], 1;
-      Mov [$a, 1, 'aaa'], 2;
-      Mov [$a, 2, 'aaa'], 3;
+      Parallel
+        sub{Mov [$a, 0, 'aaa'], 1},
+        sub{Mov [$a, 1, 'aaa'], 2},
+        sub{Mov [$a, 2, 'aaa'], 3};
     
       Resize $a, 2, "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
@@ -2960,9 +2934,11 @@ Shift an element down one in an area.
     if (1)                                                                          
      {Start 1;
       my $a = Array "array";
-      Mov [$a, 0, 'array'], 0;
-      Mov [$a, 1, 'array'], 99;
-      Mov [$a, 2, 'array'], 2;
+    
+      Parallel
+        sub{Mov [$a, 0, 'array'], 0},
+        sub{Mov [$a, 1, 'array'], 99},
+        sub{Mov [$a, 2, 'array'], 2};
     
     
       my $b = ShiftDown [$a, \1, 'array'];  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -3084,9 +3060,11 @@ Shift an element up one in an area.
      {Start 1;
       my $a = Array "array";
     
-      Mov [$a, 0, 'array'], 0;
-      Mov [$a, 1, 'array'], 1;
-      Mov [$a, 2, 'array'], 2;
+      Parallel
+        sub{Mov [$a, 0, 'array'], 0},
+        sub{Mov [$a, 1, 'array'], 1},
+        sub{Mov [$a, 2, 'array'], 2};
+    
     
       ShiftUp [$a, 3, 'array'], 99;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
@@ -3099,11 +3077,15 @@ Shift an element up one in an area.
      {Start 1;
       my $a = Array "array";
     
-      Mov [$a, $_-1, 'array'], 10*$_ for 1..7;
+      my @i;
+      for my $i(1..7)
+       {push @i, sub{Mov [$a, $i-1, 'array'], 10*$i};
+       }
+      Parallel @i;
+    
     
       ShiftUp [$a, 2, 'array'], 26;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-    
       my $e = &$ee(suppressOutput=>1, maximumArraySize=>8);
       is_deeply $e->heap(1), bless([10, 20, 26, 30, 40, 50, 60, 70], "array");
      }
@@ -3448,6 +3430,20 @@ Watches for changes to the specified memory location.
     END
      }
     
+
+## Parallel(@subs)
+
+Runs its sub sections in simulated parallel so that we can prove that the sections can be run in parallel.
+
+       Parameter  Description
+    1  @subs      Subroutines containing code to be run in simulated parallel
+
+## Sequential(@subs)
+
+Runs its sub sections in sequential order
+
+       Parameter  Description
+    1  @subs      Subroutines containing code to be run sequentially
 
 # Instruction Set Architecture
 
@@ -4247,65 +4243,69 @@ Disassemble and remove context information from disassembly to make testing easi
 
 70 [Out](#out) - Write memory location contents to out.
 
-71 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
+71 [Parallel](#parallel) - Runs its sub sections in simulated parallel so that we can prove that the sections can be run in parallel.
 
-72 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
+72 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
 
-73 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
+73 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
 
-74 [Procedure](#procedure) - Define a procedure.
+74 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
 
-75 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
+75 [Procedure](#procedure) - Define a procedure.
 
-76 [Random](#random) - Create a random number in a specified range.
+76 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
 
-77 [RandomSeed](#randomseed) - Seed the random number generator.
+77 [Random](#random) - Create a random number in a specified range.
 
-78 [refDepth](#refdepth) - The depth of a reference.
+78 [RandomSeed](#randomseed) - Seed the random number generator.
 
-79 [refValue](#refvalue) - The value of a reference after dereferencing.
+79 [refDepth](#refdepth) - The depth of a reference.
 
-80 [rerefValue](#rerefvalue) - Re-reference a value.
+80 [refValue](#refvalue) - The value of a reference after dereferencing.
 
-81 [Resize](#resize) - Resize the target area to the source size.
+81 [rerefValue](#rerefvalue) - Re-reference a value.
 
-82 [Return](#return) - Return from a procedure via the call stack.
+82 [Resize](#resize) - Resize the target area to the source size.
 
-83 [ReturnGet](#returnget) - Get a word from the return area and save it.
+83 [Return](#return) - Return from a procedure via the call stack.
 
-84 [ReturnPut](#returnput) - Put a word into the return area.
+84 [ReturnGet](#returnget) - Get a word from the return area and save it.
 
-85 [ShiftDown](#shiftdown) - Shift an element down one in an area.
+85 [ReturnPut](#returnput) - Put a word into the return area.
 
-86 [ShiftLeft](#shiftleft) - Shift left within an element.
+86 [Sequential](#sequential) - Runs its sub sections in sequential order
 
-87 [ShiftRight](#shiftright) - Shift right with an element.
+87 [ShiftDown](#shiftdown) - Shift an element down one in an area.
 
-88 [ShiftUp](#shiftup) - Shift an element up one in an area.
+88 [ShiftLeft](#shiftleft) - Shift left within an element.
 
-89 [Start](#start) - Start the current assembly using the specified version of the Zero language.
+89 [ShiftRight](#shiftright) - Shift right with an element.
 
-90 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
+90 [ShiftUp](#shiftup) - Shift an element up one in an area.
 
-91 [Tally](#tally) - Counts instructions when enabled.
+91 [Start](#start) - Start the current assembly using the specified version of the Zero language.
 
-92 [Then](#then) - Then block.
+92 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
 
-93 [Trace](#trace) - Start or stop tracing.
+93 [Tally](#tally) - Counts instructions when enabled.
 
-94 [TraceLabels](#tracelabels) - Enable or disable label tracing.
+94 [Then](#then) - Then block.
 
-95 [unpackInstruction](#unpackinstruction) - Unpack an instruction.
+95 [Trace](#trace) - Start or stop tracing.
 
-96 [Var](#var) - Create a variable initialized to the specified value.
+96 [TraceLabels](#tracelabels) - Enable or disable label tracing.
 
-97 [Watch](#watch) - Watches for changes to the specified memory location.
+97 [unpackInstruction](#unpackinstruction) - Unpack an instruction.
 
-98 [Zero::Emulator::Code::packInstruction](#zero-emulator-code-packinstruction) - Pack an instruction.
+98 [Var](#var) - Create a variable initialized to the specified value.
 
-99 [Zero::Emulator::Code::packRef](#zero-emulator-code-packref) - Pack a reference into 8 bytes.
+99 [Watch](#watch) - Watches for changes to the specified memory location.
 
-100 [Zero::Emulator::Code::unpackRef](#zero-emulator-code-unpackref) - Unpack a reference.
+100 [Zero::Emulator::Code::packInstruction](#zero-emulator-code-packinstruction) - Pack an instruction.
+
+101 [Zero::Emulator::Code::packRef](#zero-emulator-code-packref) - Pack a reference into 8 bytes.
+
+102 [Zero::Emulator::Code::unpackRef](#zero-emulator-code-unpackref) - Unpack a reference.
 
 # Installation
 
