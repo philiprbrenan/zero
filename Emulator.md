@@ -13,11 +13,13 @@ Say "hello world":
 
     Start 1;
 
-    Out "hello World";
+    Out "Hello World";
 
     my $e = Execute;
 
-    is_deeply $e->out, ["hello World"];
+    is_deeply $e->out, <<END;
+  Hello World
+  END
 
 # Description
 
