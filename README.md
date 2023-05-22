@@ -315,6 +315,6 @@ solution.
 <tr><th>Method<th>Short<th>Long<th>Short<th>Long
 <tr><td><a href="https://github.com/philiprbrenan/zero/blob/main/examples/bubbleSort.pl"   >bubble   </a>  <td align=right>  244 <td align=right>   4753 <td align=right>184  <td align=right>3233
 <tr><td><a href="https://github.com/philiprbrenan/zero/blob/main/examples/insertionSort.pl">insertion</a>  <td align=right>  188 <td align=right>   3787 <td align=right>188  <td align=right>3787
-<tr><td><a href="https://github.com/philiprbrenan/zero/blob/main/examples/quickSort.pl"    >quickSort</a>  <td align=right>  285 <td align=right>   1434 <td align=right>     <td align=right>
+<tr><td><a href="https://github.com/philiprbrenan/zero/blob/main/examples/quickSort.pl"    >quickSort</a>  <td align=right>  284 <td align=right>   1433 <td align=right>1471 <td align=right>1289
 <tr><td><a href="https://github.com/philiprbrenan/zero/blob/main/examples/selectionSort.pl">selection</a>  <td align=right>  285 <td align=right>   4356 <td align=right>270  <td align=right>3860
 </table>
