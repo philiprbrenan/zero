@@ -15,6 +15,7 @@ use strict;
 use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
+use Time::HiRes qw(time);
 eval "use Test::More tests=>402" unless caller;
 
 makeDieConfess;
@@ -952,8 +953,8 @@ sub left($$)                                                                    
    {my $a = Address(arenaLocal, $S, $M, $ref->name);                            # Stack frame
     return $a;
    }
-#  elsif (isScalar($area))
-#   {my $a = Address($arena, $area, $M, $ref->name);                             # Specified constant area
+#  elsif (isScalar($area))                                                      # Not used so far
+#   {my $a = Address($arena, $area, $M, $ref->name);                            # Specified constant area
 #    return $a;
 #   }
   elsif (isScalar($$area))
@@ -2656,6 +2657,25 @@ sub Watch($)                                                                    
   $assembly->instruction(action=>"watch", xTarget($target));
  }
 
+sub Parallel(@)                                                                 #i Runs its sub sections in simulated parallel so that we can prove that the sections can be run in parallel.
+ {my (@subs) = @_;                                                              # Subroutines containing code to be run in simulated parallel
+
+  my @r = keys @subs;
+  my $s = reverse time();                                                       # Create a somewhat random seed
+  srand($s);                                                                    # Seed the random number generator
+  for my $i((keys @r) x 2)                                                       # Randomize execution order
+   {my $j = int(scalar(@r) * rand());
+    ($r[$i], $r[$j]) = ($r[$j], $r[$i]);
+   }
+  map {$subs[$_]->()} @r;                                                       # Layout code in randomized order
+ }
+
+sub Sequential(@)                                                               #i Runs its sub sections in sequential order
+ {my (@subs) = @_;                                                              # Subroutines containing code to be run sequentially
+
+  map {$_->()} @subs;                                                           # Layout code sequentially
+ }
+
 #D1 Instruction Set Architecture                                                # Map the instruction set into a machine architecture.
 
 my $instructions = Zero::Emulator::Code::execute(undef);
@@ -3415,18 +3435,7 @@ if (1)                                                                          
     Out $i;
    } 10;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-0
-1
-2
-3
-4
-5
-6
-7
-8
-9
-END
+  is_deeply $e->outLines, [0..9];
  }
 
 #latest:;
@@ -3437,18 +3446,7 @@ if (1)                                                                          
     Out $i;
    } 10, reverse=>1;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-9
-8
-7
-6
-5
-4
-3
-2
-1
-0
-END
+  is_deeply $e->outLines, [reverse 0..9];
  }
 
 #latest:;
@@ -3459,16 +3457,7 @@ if (1)                                                                          
     Out $i;
    } [2, 10];
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-2
-3
-4
-5
-6
-7
-8
-9
-END
+  is_deeply $e->outLines, [2..9];
  }
 
 #latest:;
@@ -3848,9 +3837,11 @@ if (1)                                                                          
  {Start 1;
   my $a = Array "array";
 
-  Mov [$a, 0, 'array'], 0;
-  Mov [$a, 1, 'array'], 1;
-  Mov [$a, 2, 'array'], 2;
+  Parallel
+    sub{Mov [$a, 0, 'array'], 0},
+    sub{Mov [$a, 1, 'array'], 1},
+    sub{Mov [$a, 2, 'array'], 2};
+
   ShiftUp [$a, 3, 'array'], 99;
 
   my $e = &$ee(suppressOutput=>0);
@@ -3862,9 +3853,13 @@ if (1)                                                                          
  {Start 1;
   my $a = Array "array";
 
-  Mov [$a, $_-1, 'array'], 10*$_ for 1..7;
-  ShiftUp [$a, 2, 'array'], 26;
+  my @i;
+  for my $i(1..7)
+   {push @i, sub{Mov [$a, $i-1, 'array'], 10*$i};
+   }
+  Parallel @i;
 
+  ShiftUp [$a, 2, 'array'], 26;
   my $e = &$ee(suppressOutput=>1, maximumArraySize=>8);
   is_deeply $e->heap(1), bless([10, 20, 26, 30, 40, 50, 60, 70], "array");
  }
@@ -3873,9 +3868,11 @@ if (1)                                                                          
 if (1)                                                                          ##ShiftDown
  {Start 1;
   my $a = Array "array";
-  Mov [$a, 0, 'array'], 0;
-  Mov [$a, 1, 'array'], 99;
-  Mov [$a, 2, 'array'], 2;
+
+  Parallel
+    sub{Mov [$a, 0, 'array'], 0},
+    sub{Mov [$a, 1, 'array'], 99},
+    sub{Mov [$a, 2, 'array'], 2};
 
   my $b = ShiftDown [$a, \1, 'array'];
   Out $b;
@@ -3996,9 +3993,10 @@ END
 if (1)                                                                          ##Resize
  {Start 1;
   my $a = Array 'aaa';
-  Mov [$a, 0, 'aaa'], 1;
-  Mov [$a, 1, 'aaa'], 2;
-  Mov [$a, 2, 'aaa'], 3;
+  Parallel
+    sub{Mov [$a, 0, 'aaa'], 1},
+    sub{Mov [$a, 1, 'aaa'], 2},
+    sub{Mov [$a, 2, 'aaa'], 3};
   Resize $a, 2, "aaa";
   ArrayDump $a;
   my $e = &$ee(suppressOutput=>1);
@@ -4086,9 +4084,10 @@ END
 if (1)                                                                          ##ArraySize ##ForArray ##Array ##Nop
  {Start 1;
   my $a = Array "aaa";
-    Mov [$a, 0, "aaa"], 1;
-    Mov [$a, 1, "aaa"], 22;
-    Mov [$a, 2, "aaa"], 333;
+  Parallel
+    sub{Mov [$a, 0, "aaa"], 1},
+    sub{Mov [$a, 1, "aaa"], 22},
+    sub{Mov [$a, 2, "aaa"], 333};
 
   my $n = ArraySize $a, "aaa";
   Out "Array size:", $n;
@@ -4326,13 +4325,18 @@ END
 if (1)                                                                          # String memory
  {Start 1;
   my $a = Array "aaa";
-  Push $a,  1,  "aaa";
-  Push $a,  2,  "aaa";
-  Push $a,  3,  "aaa";
   my $b = Array "bbb";
-  Push $b, 11,  "bbb";
-  Push $b, 22,  "bbb";
-  Push $b, 33,  "bbb";
+  Parallel
+    sub
+     {Push $a,  1,  "aaa";
+      Push $a,  2,  "aaa";
+      Push $a,  3,  "aaa";
+     },
+    sub
+     {Push $b, 11,  "bbb";
+      Push $b, 22,  "bbb";
+      Push $b, 33,  "bbb";
+     };
   my $b3 = Pop $b, "bbb";
   my $b2 = Pop $b, "bbb";
   my $b1 = Pop $b, "bbb";
@@ -4349,24 +4353,10 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1, stringMemory=>1);
 #  say STDERR $e->out;
-  is_deeply $e->out, <<END;
-1
-2
-3
-11
-22
-33
-END
+  is_deeply $e->outLines, [qw(1 2 3 11 22 33)];
 
   my $E = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
-  is_deeply $E->out, <<END;
-1
-2
-3
-11
-22
-33
-END
+  is_deeply $e->outLines, [qw(1 2 3 11 22 33)];
   is_deeply $e->mostArrays, [1, 2, 1, 1];
  }
 
