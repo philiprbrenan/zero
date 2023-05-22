@@ -310,10 +310,11 @@ below. Various prototype solutions were developed for each [sort](https://en.wik
 one with the lowest emulated instruction count was retained as the optimal
 solution.
 
-| <td colspan=2>Sequential  <td colspan=2>Parallel
-| Method  | Short  | Long | Short  | Long |
-| ------  | -----:  | ----: | -----:  | ----: |
-|[bubble](https://github.com/philiprbrenan/zero/blob/main/examples/bubbleSort.pl)             |  245 |   4754 |
-|[insertion](https://github.com/philiprbrenan/zero/blob/main/examples/insertionSort.pl)       |  189 |   3788 |
-|[quick](https://github.com/philiprbrenan/zero/blob/main/examples/quickSort.pl)               |  285 |   1434 |
-|[selection](https://github.com/philiprbrenan/zero/blob/main/examples/selectionSort.pl)       |  286 |   4357 |
+<table border="0" cellpadding="10">
+<tr><th><th colspan=2><th colspan=2>
+<tr><th>Method<th>Short<th>Long<th>Short<th>Long
+<tr><td><a href="https://github.com/philiprbrenan/zero/blob/main/examples/bubbleSort.pl"   >bubble   </a>  <td align=right>  245 <td align=right>   4754 <td align=right>
+<tr><td><a href="https://github.com/philiprbrenan/zero/blob/main/examples/insertionSort.pl">insertion</a>  <td align=right>  189 <td align=right>   3788 <td align=right>
+<tr><td><a href="https://github.com/philiprbrenan/zero/blob/main/examples/quickSort.pl"    >quickSort</a>  <td align=right>  285 <td align=right>   1434 <td align=right>
+<tr><td><a href="https://github.com/philiprbrenan/zero/blob/main/examples/selectionSort.pl">insertion</a>  <td align=right>  286 <td align=right>   4357 <td align=right>
+</table>
