@@ -354,3 +354,25 @@ solution.
  [Bubble Sort](https://en.wikipedia.org/wiki/Bubble_sort) is easy to optimize by overlapping instruction execution across
 three channels. Doing so gives it the best performance of the **O(n**2)** [sort](https://en.wikipedia.org/wiki/Sorting) algorithms implemented in [Zero assembler programming language](https://github.com/philiprbrenan/zero) so far. Of course, with unlimited parallism,
 bubble [sort](https://en.wikipedia.org/wiki/Sorting) can [sort](https://en.wikipedia.org/wiki/Sorting) an [array](https://en.wikipedia.org/wiki/Dynamic_array) in **O(N)** time: just let each of **N** [processes](https://en.wikipedia.org/wiki/Process_management_(computing)) perform one pass each on the [array](https://en.wikipedia.org/wiki/Dynamic_array) of length **N** to be sorted.
+
+# Optimization space
+
+In producing [code](https://en.wikipedia.org/wiki/Computer_program) or an [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) we might want to optimize use of the following resources:
+
+<table border="0" cellpadding="10">
+
+<tr><th>Time<td>The amount of elapsed time it takes to execute the [code](https://en.wikipedia.org/wiki/Computer_program) as this
+bears upon the utility of the solution.
+
+<tr><th>Code Space<td>The amount of [code](https://en.wikipedia.org/wiki/Computer_program) required to implement the solution.
+The more [code](https://en.wikipedia.org/wiki/Computer_program) required, the more [memory](https://en.wikipedia.org/wiki/Computer_memory), and thus [Silicon](https://en.wikipedia.org/wiki/Silicon), is required to store
+the [code](https://en.wikipedia.org/wiki/Computer_program). 
+<tr><th>Heap Space<td>The amount of [memory](https://en.wikipedia.org/wiki/Computer_memory) required to store the data used by the [code](https://en.wikipedia.org/wiki/Computer_program). 
+<tr><th>Energy<td>The amount of energy required to execute the [code](https://en.wikipedia.org/wiki/Computer_program) .
+Parallism can speed up [code](https://en.wikipedia.org/wiki/Computer_program) execuition often at the cost of increased power
+consumption. This does not necessarily translate into greater energy
+consumption for one execution, but, faster executions lead to more frequent
+executions, which means more energy per unit time, in essence, higher power
+levels.
+
+</table>
