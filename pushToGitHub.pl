@@ -109,7 +109,7 @@ my $t = <<END;
         perl examples/selectionSort.pl
 END
 
-my $y = <<'END' =~ s(XXXX) ($t)gsr;
+my $y = <<"END" =~ s(XXXX) ($t)gsr;
 # Test $d
 
 name: Test
@@ -122,7 +122,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout\@v2
       with:
         ref: 'main'
 
