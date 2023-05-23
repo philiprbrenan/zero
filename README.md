@@ -243,7 +243,10 @@ indefinitely which is very convenient for [fpga](https://en.wikipedia.org/wiki/F
 ### Parallelism
 
 Parallelism typically obtains increased performance through increased power
-consumption.
+consumption. Programmers typcially think of trading performance for [memory](https://en.wikipedia.org/wiki/Computer_memory): the
+time space dilemma.  But in designing for [Silicon](https://en.wikipedia.org/wiki/Silicon) we must also consider power
+to get a trilemma of: time, space and power that has to be resolved to produce
+the optimal solution.
 
 #### Code level parallelism
 
@@ -348,5 +351,6 @@ solution.
 <tr><td><a href="https://github.com/philiprbrenan/zero/blob/main/examples/quickSort.pl"    >quickSort</a>  <td align=right>  284 <td align=right>   1433 <td align=right>278  <td align=right>1289
 <tr><td><a href="https://github.com/philiprbrenan/zero/blob/main/examples/selectionSort.pl">selection</a>  <td align=right>  285 <td align=right>   4356 <td align=right>270  <td align=right>3860
 </table>
- [Bubble Sort](https://en.wikipedia.org/wiki/Bubble_sort) is easy to optimize by overlapping  instruction execution across
-three channels. Doing so gives it the best performance of the **O(n**2)** [sort](https://en.wikipedia.org/wiki/Sorting) algorithms implemnted in [Zero assembler programming language](https://github.com/philiprbrenan/zero) so far.
+ [Bubble Sort](https://en.wikipedia.org/wiki/Bubble_sort) is easy to optimize by overlapping instruction execution across
+three channels. Doing so gives it the best performance of the **O(n**2)** [sort](https://en.wikipedia.org/wiki/Sorting) algorithms implemented in [Zero assembler programming language](https://github.com/philiprbrenan/zero) so far. Of course, with unlimited parallism,
+bubble [sort](https://en.wikipedia.org/wiki/Sorting) can [sort](https://en.wikipedia.org/wiki/Sorting) an [array](https://en.wikipedia.org/wiki/Dynamic_array) in **O(N)** time: just let each of **N** [processes](https://en.wikipedia.org/wiki/Process_management_(computing)) perform one pass each on the [array](https://en.wikipedia.org/wiki/Dynamic_array) of length **N** to be sorted.
