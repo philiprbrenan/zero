@@ -240,6 +240,33 @@ Allocationa nd freeing is thus a fast operation. Thus [memory](https://en.wikipe
 indefinitely which is very convenient for [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) implementations.  The [string](https://en.wikipedia.org/wiki/String_(computer_science)) [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme is useful in the case of N-Way [trees](https://en.wikipedia.org/wiki/Tree_(data_structure)) where each node in the [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)) only extends to a small fixed size.
 
 
+### Parallelism
+
+#### Code level parallelism
+
+The **Parallel** instruction enables parallel [sub](https://perldoc.perl.org/perlsub.html) sections to be run,
+figuratively, in parallel. In reality all that happens is that the [emulator](https://en.wikipedia.org/wiki/Emulator) chooses a random order to run reach parallel section in and then records the
+time taken by the longest section as the time for the entire block. This
+technique allows us to conform that the specified sections can be run in any
+order and thus can also be run in parallel on a target [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) .  The difference
+between the figurative parallel time and sequential time in [code](https://en.wikipedia.org/wiki/Computer_program) execution can
+be seen in the following fields maintained by the [emulator](https://en.wikipedia.org/wiki/Emulator): 
+```
+  is_deeply $e->timeParallel,   184;
+  is_deeply $e->timeSequential, 244;
+```
+
+
+#### Instruction level parallelism
+
+Each instruction can contain up to 3 addresses. Each address contains two
+components which can access [memory](https://en.wikipedia.org/wiki/Computer_memory) either directly or indirectly. This gives a
+maximum of 2**2**3 = 64 possibile addressing configurations for each
+instruction.  In reality, most applications will only use a small number of
+these possible configurations.  To assist in choosing the most useful
+combinations  to implement in [Silicon](https://en.wikipedia.org/wiki/Silicon), the [emulator](https://en.wikipedia.org/wiki/Emulator) tracks the number of timeds
+each variant of each instruction has been executed.
+
 
 ## Examples
 
