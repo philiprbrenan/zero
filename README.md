@@ -242,12 +242,15 @@ indefinitely which is very convenient for [fpga](https://en.wikipedia.org/wiki/F
 
 ### Parallelism
 
+Parallelism typically obtains increased performance through increased power
+consumption.
+
 #### Code level parallelism
 
 The **Parallel** instruction enables parallel [sub](https://perldoc.perl.org/perlsub.html) sections to be run,
 figuratively, in parallel. In reality all that happens is that the [emulator](https://en.wikipedia.org/wiki/Emulator) chooses a random order to run reach parallel section in and then records the
 time taken by the longest section as the time for the entire block. This
-technique allows us to conform that the specified sections can be run in any
+technique allows us to confirm that the specified sections can be run in any
 order and thus can also be run in parallel on a target [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) .  The difference
 between the figurative parallel time and sequential time in [code](https://en.wikipedia.org/wiki/Computer_program) execution can
 be seen in the following fields maintained by the [emulator](https://en.wikipedia.org/wiki/Emulator): 
@@ -264,8 +267,8 @@ components which can access [memory](https://en.wikipedia.org/wiki/Computer_memo
 maximum of 2**2**3 = 64 possibile addressing configurations for each
 instruction.  In reality, most applications will only use a small number of
 these possible configurations.  To assist in choosing the most useful
-combinations  to implement in [Silicon](https://en.wikipedia.org/wiki/Silicon), the [emulator](https://en.wikipedia.org/wiki/Emulator) tracks the number of timeds
-each variant of each instruction has been executed.
+combinations  to implement in the [Silicon](https://en.wikipedia.org/wiki/Silicon) realization of an application, the [emulator](https://en.wikipedia.org/wiki/Emulator) tracks the number of times each variant of each instruction is
+executed.
 
 
 ## Examples
@@ -342,6 +345,8 @@ solution.
 <tr><th>Method<th>Short<th>Long<th>Short<th>Long
 <tr><td><a href="https://github.com/philiprbrenan/zero/blob/main/examples/bubbleSort.pl"   >bubble   </a>  <td align=right>  244 <td align=right>   4753 <td align=right>184  <td align=right>3233
 <tr><td><a href="https://github.com/philiprbrenan/zero/blob/main/examples/insertionSort.pl">insertion</a>  <td align=right>  188 <td align=right>   3787 <td align=right>188  <td align=right>3787
-<tr><td><a href="https://github.com/philiprbrenan/zero/blob/main/examples/quickSort.pl"    >quickSort</a>  <td align=right>  284 <td align=right>   1433 <td align=right>1471 <td align=right>1289
+<tr><td><a href="https://github.com/philiprbrenan/zero/blob/main/examples/quickSort.pl"    >quickSort</a>  <td align=right>  284 <td align=right>   1433 <td align=right>278  <td align=right>1289
 <tr><td><a href="https://github.com/philiprbrenan/zero/blob/main/examples/selectionSort.pl">selection</a>  <td align=right>  285 <td align=right>   4356 <td align=right>270  <td align=right>3860
 </table>
+ [Bubble Sort](https://en.wikipedia.org/wiki/Bubble_sort) is easy to optimize by overlapping  instruction execution across
+three channels. Doing so gives it the best performance of the **O(n**2)** [sort](https://en.wikipedia.org/wiki/Sorting) algorithms implemnted in [Zero assembler programming language](https://github.com/philiprbrenan/zero) so far.
