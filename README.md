@@ -352,7 +352,7 @@ solution.
 <tr><td><a href="https://github.com/philiprbrenan/zero/blob/main/examples/selectionSort.pl">selection</a>  <td align=right>  285 <td align=right>   4356 <td align=right>270  <td align=right>3860
 </table>
  [Bubble Sort](https://en.wikipedia.org/wiki/Bubble_sort) is easy to optimize by overlapping instruction execution across
-three channels. Doing so gives it the best performance of the **O(n**2)** [sort](https://en.wikipedia.org/wiki/Sorting) algorithms implemented in [Zero assembler programming language](https://github.com/philiprbrenan/zero) so far. Of course, with unlimited parallism,
+three channels. Doing so gives it the best performance of the **O(n^2)** [sort](https://en.wikipedia.org/wiki/Sorting) algorithms implemented in [Zero assembler programming language](https://github.com/philiprbrenan/zero) so far. Of course, with unlimited parallism,
 bubble [sort](https://en.wikipedia.org/wiki/Sorting) can [sort](https://en.wikipedia.org/wiki/Sorting) an [array](https://en.wikipedia.org/wiki/Dynamic_array) in **O(N)** time: just let each of **N** [processes](https://en.wikipedia.org/wiki/Process_management_(computing)) perform one pass each on the [array](https://en.wikipedia.org/wiki/Dynamic_array) of length **N** to be sorted.
 
 # Optimization space
