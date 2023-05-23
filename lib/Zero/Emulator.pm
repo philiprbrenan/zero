@@ -281,6 +281,22 @@ my sub isScalar($)                                                              
   ! ref $value;
  }
 
+sub refDepth($)                                                                 #P The depth of a reference.
+ {my ($ref) = @_;                                                               # Reference to pack
+  return 0 if isScalar(  $ref);
+  return 1 if isScalar( $$ref);
+  return 2 if isScalar($$$ref);
+  confess "Reference too deep".dump($ref);
+ }
+
+sub refValue($)                                                                 #P The value of a reference after dereferencing.
+ {my ($ref) = @_;                                                               # Reference to pack
+  return   $ref if isScalar($ref);
+  return  $$ref if isScalar($$ref);
+  return $$$ref if isScalar($$$ref);
+  confess "Reference too deep".dump($ref);
+ }
+
 # Memory is subdivided into arenas that hold items of similar types, sizes, access orders
 my sub arenaLocal {0}                                                           # Variables whose location is fixed at compile time
 my sub arenaHeap  {1}                                                           # Allocations whose location is dynamically allocated as the program runs
@@ -321,31 +337,37 @@ sub Zero::Emulator::Code::ArrayNumberToName($$)                                 
   $code->arrayNumbers->[$number] // $number
  }
 
-sub Reference($$$$$)                                                            # Create a new reference
- {my ($arena, $area, $address, $name, $delta) = @_;                             # Arena, array, address, name of area, delta if any to be applied to address
+sub Reference($$$$$$)                                                           # Create a new reference
+ {my ($arena, $area, $address, $name, $delta, $operand) = @_;                   # Arena, array, address, name of area, delta if any to be applied to address. operand: 0-target 1-source 2-source2
   genHash(q(Zero::Emulator::Reference),
     arena=>     $arena,                                                         # Arrays are allocated in arenas in the hope of facilitating the reuse of freed memory
     area=>      $area,                                                          # The array number
     address=>   $address,                                                       # The index with in the array
     name=>      $name,                                                          # The name of the array. Naming the array allows a check to be performed to ensure that the expected type of array is being manipulated
     delta=>     $delta,                                                         # An constant increment or decrement to the address which sometimes allows the elimination of extra L<Add> and L<Subtract> instructions.
+    dArea=>     refDepth($area),                                                # Depth of area reference
+    dAddress=>  refDepth($address),                                             # Depth of address reference
+    operand=>   $operand,                                                       # Operand 0-Target, 1-Source, 2-Source2
    );
  }
 
-sub Zero::Emulator::Code::Reference($$)                                         # Record a reference to a left or right address.
- {my ($code, $r) = @_;                                                          # Code block, reference
+sub Zero::Emulator::Code::Reference($$$)                                        # Record a reference to a left or right address.
+ {my ($code, $r, $operand) = @_;                                                # Code block, reference, type of refence: 0-Target 1-Source 2-Source2
+  @_ == 3 or confess "Three parameters";
   ref($r) and ref($r) !~ m(\A(array|scalar|ref)\Z)i and confess "Scalar or reference required, not: ".dump($r);
   my $arena = ref($r) =~ m(\Aarray\Z)i ? arenaHeap : arenaLocal;                # Local variables are variables that are not on the heap
 
   if (ref($r) =~ m(array)i)                                                     # Reference represented as [area, address, name, delta]
-   {my ($area, $address, $name, $delta) = @$r;                                  # Delta is oddly useful, as illustrated by examples/*Sort, in that it enables us to avoid adding or subtracting one with a separate instruction that does not achieve very much in one clock but that which, is otherwise necessary.
+   {my ($area, $Address, $name, $delta) = @$r;                                  # Delta is oddly useful, as illustrated by examples/*Sort, in that it enables us to avoid adding or subtracting one with a separate instruction that does not achieve very much in one clock but that which, is otherwise necessary.
     defined($area) and !defined($name) and confess "Name required for address specification: in [Area, address, name]";
-
+    my $address = $operand == 0 && isScalar($Address) ? \$Address : $Address;
     return Reference($arena, $area, $address,
-      $code->ArrayNameToNumber($name), $delta//0)
+      $code->ArrayNameToNumber($name), $delta//0, $operand)
    }
   else                                                                          # Reference represented as an address
-   {return Reference($arena,undef,$r,$code->ArrayNameToNumber('stackArea'), 0);
+   {my $R = $operand == 0 && isScalar($r) ? \$r : $r;
+    return Reference($arena, undef, $R, $code->ArrayNameToNumber('stackArea'),
+      0, $operand);
    }
  }
 
@@ -375,12 +397,12 @@ sub Zero::Emulator::Code::assemble($%)                                          
    {my $i = $$code[$c];
     next unless $i->action =~ m(\A(j|call))i;
     if (my $l = $i->target->address)                                            # Label
-     {if (my $t = $labels{$l})                                                  # Found label
-       {$i->jump = $Block->Reference($t - $c);                                  # Relative jump
+     {if (my $t = $labels{$$l})                                                 # Found label
+       {$i->jump = $Block->Reference($t - $c, 1);                               # Relative jump
        }
       else
        {my $a = $i->action;
-        confess "No target for $a to label: $l";
+        confess "No target for $a to label: $$l";
        }
      }
    }
@@ -768,7 +790,6 @@ sub Address($$$$;$)                                                             
     name=>      $name // 'stackArea',                                           # Name of area
     delta=>     ($delta//0),                                                    # Offset from indicated address
    );
-  confess "AAAA" unless defined $name;
   $r
  }
 
@@ -938,33 +959,23 @@ sub left($$)                                                                    
    };
 
   my $M;                                                                        # Memory address
-  if (isScalar $$address)
+  if ($ref->dAddress == 1)                                                      # Direct address
    {$M = $$address + $delta;
    }
-  elsif (isScalar $$$address)
+  elsif ($ref->dAddress == 2)                                                   # Indirect address
    {$M = $exec->getMemory(arenaLocal, $S, $$$address, $stackArea) + $delta;
    }
   else
    {invalid(1)
    }
 
-  if ($M < 0)                                                                   # Disallow negative addresses because they mean something special to Perl
-   {$exec->stackTraceAndExit("Negative address: $M, "
-     ." for arena: ".dump($arena)
-     ." for area: " .dump($area)
-     .", address: " .dump($address));
-   }
-  elsif (!defined($area))                                                       # Current stack frame
+  if (!$ref->dArea)                                                             # Current stack frame
    {my $a = Address(arenaLocal, $S, $M, $ref->name);                            # Stack frame
     return $a;
    }
-#  elsif (isScalar($area))                                                      # Not used so far
-#   {my $a = Address($arena, $area, $M, $ref->name);                            # Specified constant area
-#    return $a;
-#   }
-  elsif (isScalar($$area))
+  else                                                                          # Indirect area
    {my $A = $exec->getMemory(arenaLocal, $S, $$area, $stackArea);
-    my $a = Address($arena, $A, $M, $ref->name);                                # Indirect area
+    my $a = Address($arena, $A, $M, $ref->name);
     return $a;
    }
   invalid(2);
@@ -1665,8 +1676,8 @@ sub Zero::Emulator::Code::execute($%)                                           
     paramsPut=> sub                                                             # Place a parameter in the current parameter block
      {my $i = $exec->currentInstruction;
       my $s = $exec->right($i->source);
-      my $t = $exec->right($i->target);
-      my $T = Address(arenaParms, $exec->currentParamsPut, $t, $exec->paramsNumber);
+      my $t = $exec->left($i->target);
+      my $T = Address(arenaParms, $exec->currentParamsPut, $t->address, $exec->paramsNumber);
       $exec->assign($T, $s);
      },
 
@@ -1695,8 +1706,8 @@ sub Zero::Emulator::Code::execute($%)                                           
     returnPut=> sub                                                             # Place a value to be returned
      {my $i = $exec->currentInstruction;
       my $s = $exec->right($i->source);
-      my $t = $exec->right($i->target);
-      my $T = Address(arenaReturn, $exec->currentReturnPut, $t, $exec->returnNumber);
+      my $t = $exec->left($i->target);
+      my $T = Address(arenaReturn, $exec->currentReturnPut, $t->address, $exec->returnNumber);
       $exec->assign($T, $s);
      },
 
@@ -1953,17 +1964,17 @@ my sub setLabel(;$)                                                             
 
 my sub xSource($)                                                               # Record a source argument
  {my ($s) = @_;                                                                 # Source expression
-  (q(source), $assembly->Reference($s))
+  (q(source), $assembly->Reference($s, 1))
  }
 
 my sub xSource2($)                                                              # Record a source argument
  {my ($s) = @_;                                                                 # Source expression
-  (q(source2), $assembly->Reference($s))
+  (q(source2), $assembly->Reference($s, 2))
  }
 
 my sub xTarget($)                                                               # Record a target argument
  {my ($t) = @_;                                                                 # Target expression
-  (q(target), $assembly->Reference($t))
+  (q(target), $assembly->Reference($t, 0))
  }
 
 sub In(;$);
@@ -2484,7 +2495,7 @@ sub Nop()                                                                       
 sub Out(@)                                                                      #i Write memory location contents to out.
  {my (@source) = @_;                                                            # Either a scalar constant or memory address to output
   if (@source > 1)
-   {my @a = map {$assembly->Reference($_)} @source;
+   {my @a = map {$assembly->Reference($_, 1)} @source;
     $assembly->instruction(action=>"out",  source=>[@a]);
    }
   else
@@ -2777,22 +2788,6 @@ END
 }
 #instructionListMapping(); exit;
 
-sub refDepth($)                                                                 #P The depth of a reference.
- {my ($ref) = @_;                                                               # Reference to pack
-  return 0 if isScalar($ref);
-  return 1 if isScalar($$ref);
-  return 2 if isScalar($$$ref);
-  confess "Reference too deep".dump($ref);
- }
-
-sub refValue($)                                                                 #P The value of a reference after dereferencing.
- {my ($ref) = @_;                                                               # Reference to pack
-  return $ref if isScalar($ref);
-  return $$ref if isScalar($$ref);
-  return $$$ref if isScalar($$$ref);
-  confess "Reference too deep".dump($ref);
- }
-
 sub rerefValue($$)                                                              #P Re-reference a value.
  {my ($value, $depth) = @_;                                                     # Value to reference, depth of reference
   return   $value if $depth == 0;
@@ -2861,8 +2856,8 @@ END
   $a
  }
 
-sub Zero::Emulator::Code::unpackRef($$)                                         #P Unpack a reference.
- {my ($code, $a) = @_;                                                          # Code block being packed, instruction being packed, reference being packed
+sub Zero::Emulator::Code::unpackRef($$$)                                        #P Unpack a reference.
+ {my ($code, $a, $operand) = @_;                                                # Code block being packed, instruction being packed, reference being packed, operand type 0-target 1-source 2-source2
 
   my $vAddress = vec($a,  0, 32);
   my $vArea    = vec($a,  2, 16);
@@ -2873,7 +2868,7 @@ sub Zero::Emulator::Code::unpackRef($$)                                         
 
   my $area     = rerefValue($vArea,    $rArea);
   my $address  = rerefValue($vAddress, $rAddress);
-  $code->Reference([$arena  != arenaHeap ? undef : $area, $address, 0, $delta]);
+  $code->Reference([$arena  != arenaHeap ? undef : $area, $address, 0, $delta], $operand);
  }
 
 sub Zero::Emulator::Code::packInstruction($$)                                   #P Pack an instruction.
@@ -2881,9 +2876,9 @@ sub Zero::Emulator::Code::packInstruction($$)                                   
   my  $a = '';
   vec($a, 0, 32) = $instructions{$i->action};
   vec($a, 1, 32) = 0;
-  $a .= $code->packRef($i, $i->target);
-  $a .= $code->packRef($i, $i->source);
-  $a .= $code->packRef($i, $i->source2);
+  $a .= $code->packRef($i, $i->target,  0);
+  $a .= $code->packRef($i, $i->source,  1);
+  $a .= $code->packRef($i, $i->source2, 2);
   $a
  }
 
@@ -2917,9 +2912,9 @@ sub disAssemble($)                                                              
    {my $c = substr($mc, ($i-1)*32, 32);
     my $i = $C->instruction
      (action=>  unpackInstruction(substr($c,  0, 8)),
-      target=>  $C->unpackRef    (substr($c,  8, 8)),
-      source=>  $C->unpackRef    (substr($c, 16, 8)),
-      source2=> $C->unpackRef    (substr($c, 24, 8)));
+      target=>  $C->unpackRef    (substr($c,  8, 8), 0),
+      source=>  $C->unpackRef    (substr($c, 16, 8), 1),
+      source2=> $C->unpackRef    (substr($c, 24, 8), 2));
    }
   $C
  }
@@ -3152,6 +3147,13 @@ if (1)                                                                          
   is_deeply $e->out, <<END;
 2
 END
+ }
+
+#latest:;
+if (1)                                                                          ##JLt ##Label
+ {Start 1;
+  Mov 0, 1;
+  my $e = &$ee(suppressOutput=>1);
  }
 
 #latest:;
@@ -4219,20 +4221,19 @@ if (1)                                                                          
 
   is_deeply eval($e->out), [1, 22, 333];
 
-  #say STDERR $e->block->codeToString;
   is_deeply $e->block->codeToString, <<'END' if $testSet == 1;
 0000     array           \0             3
-0001       mov [\0, 0, 3, 0]             1
-0002       mov [\0, 1, 3, 0]            22
-0003       mov [\0, 2, 3, 0]           333
+0001       mov [\0, \0, 3, 0]             1
+0002       mov [\0, \1, 3, 0]            22
+0003       mov [\0, \2, 3, 0]           333
 0004  arrayDump           \0
 END
 
   is_deeply $e->block->codeToString, <<'END' if $testSet == 2;
 0000     array [undef, \0, 3, 0]  [undef, 3, 3, 0]  [undef, 0, 3, 0]
-0001       mov [\0, 0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
-0002       mov [\0, 1, 3, 0]  [undef, 22, 3, 0]  [undef, 0, 3, 0]
-0003       mov [\0, 2, 3, 0]  [undef, 333, 3, 0]  [undef, 0, 3, 0]
+0001       mov [\0, \0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+0002       mov [\0, \1, 3, 0]  [undef, 22, 3, 0]  [undef, 0, 3, 0]
+0003       mov [\0, \2, 3, 0]  [undef, 333, 3, 0]  [undef, 0, 3, 0]
 0004  arrayDump [undef, \0, 3, 0]  [undef, 0, 3, 0]  [undef, 0, 3, 0]
 END
  }
