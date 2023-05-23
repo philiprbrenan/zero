@@ -512,9 +512,9 @@ my sub Node_SplitIfFull($%)                                                     
 
         Parallel
           sub {$K  = Node_fieldKeys $node; Resize $K, $n, "Keys"},
-          sub {$D  = Node_fieldData $node; Resize $D, $n, "Data"};
+          sub {$D  = Node_fieldData $node; Resize $D, $n, "Data"},
+          sub {Node_open($p, $i, $pk, $pd, $r)};
 
-        Node_open($p, $i, $pk, $pd, $r);
         Jmp $good;
        };
      };
@@ -534,18 +534,16 @@ my sub Node_SplitIfFull($%)                                                     
         sub {ReUp($r) unless $options{test}};
      },
     Else
-     {Node_allocDown $node;                                                     # Add down area
-      Parallel
+     {Parallel
+        sub {Node_allocDown $node},                                             # Add down area
         sub {Node_copy_leaf($l, $node, 0,  $n)},                                # New left  leaf
         sub {Node_copy_leaf($r, $node, $R, $n)};                                # New right leaf
      };
 
-    Parallel
-      sub {Node_setUp($l, $node)},                                              # Root node with single key after split
-      sub {Node_setUp($r, $node)};                                              # Connect children to parent
-
     my $pk; my $pd;
     Parallel
+      sub {Node_setUp($l, $node)},                                              # Root node with single key after split
+      sub {Node_setUp($r, $node)},                                              # Connect children to parent
       sub {$pk = Node_keys($node, $n)},                                         # Single key
       sub {$pd = Node_data($node, $n)};                                         # Data associated with single key
 
@@ -1511,7 +1509,7 @@ if (1)                                                                          
   is_deeply $e->tallyTotal->{2},  6294;
   is_deeply $e->tallyTotal->{3},  2860;
 
-  is_deeply $e->timeParallel,   24755;
+  is_deeply $e->timeParallel,   24689;
   is_deeply $e->timeSequential, 29084;
  }
 
