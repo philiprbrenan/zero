@@ -330,7 +330,7 @@ my sub FindResult_getField($$)                                                  
 
 sub FindResult_copy($$)                                                         #P Copy a find result
  {my ($F, $f) = @_;                                                             # Target find result, source find result
-  MoveLong [$F, 0, "FindResult"], [$f, 0, "FindResult"], $FindResult->count;
+  MoveLong [$F, \0, "FindResult"], [$f, \0, "FindResult"], $FindResult->count;
  }
 
 sub FindResult_cmp($)                                                           # Get comparison from find result.
@@ -1292,7 +1292,7 @@ if (1)
     Out $k;
    } $t;
 
-  my $e = Execute(suppressOutput=>1, trace=>0, in=>[10, 1,8,5,6,3,4,7,2,9,0]);
+  my $e = Execute(suppressOutput=>1, in=>[10, 1,8,5,6,3,4,7,2,9,0]);
   is_deeply $e->outLines, [0..9];
  }
 
