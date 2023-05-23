@@ -347,7 +347,7 @@ sub Reference($$$$$$)                                                           
     delta=>     $delta,                                                         # An constant increment or decrement to the address which sometimes allows the elimination of extra L<Add> and L<Subtract> instructions.
     dArea=>     refDepth($area),                                                # Depth of area reference
     dAddress=>  refDepth($address),                                             # Depth of address reference
-    operand=>   $operand,                                                       # Operand 0-Target, 1-Source, 2-Source2
+    operand=>   $operand,                                                       # Operand 0-Target, 1-Source, 2-Source2. In effect, if this field is flase then e should interpret a constant as an address.
    );
  }
 
@@ -1967,6 +1967,15 @@ my sub xSource($)                                                               
   (q(source), $assembly->Reference($s, 1))
  }
 
+my sub xxSource($)                                                              # Record a source argument that cannot be a constant
+ {my ($s) = @_;                                                                 # Source expression
+  if (ref($s) =~ m(\Aarray\Z)i && isScalar($$s[1]) or isScalar($s))
+   {confess "Constant not allowed for source operand of this instruction: "
+    .dump($s);
+   }
+  (q(source), $assembly->Reference($s, 1))
+ }
+
 my sub xSource2($)                                                              # Record a source argument
  {my ($s) = @_;                                                                 # Source expression
   (q(source2), $assembly->Reference($s, 2))
@@ -2469,7 +2478,7 @@ sub Mov($;$) {                                                                  
 sub MoveLong($$$)                                                               #i Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand.
  {my ($target, $source, $source2) = @_;                                         # Target of move, source of move, length of move
   $assembly->instruction(action=>"moveLong", xTarget($target),
-    xSource($source), xSource2($source2));
+    xxSource($source), xSource2($source2));
  }
 
 sub Not($) {                                                                    #i Move and not.
