@@ -125,6 +125,10 @@ An address can also be specified as just as ```n``` meaning at location ```n```
 in the current stack frame, or ```\n``` indicating an indirect location in the
 current stack frame.
 
+Scalars on the left hand side are are assumed to be addresses not constants
+because we cannot assign to a constant. The target address of an instruction is
+always a left hand address and is thus never treated as a constant.
+
 ### Right hand addresses
 
 #### Right hand addresses as constants
@@ -138,6 +142,10 @@ current stack frame.
 
 The example above moves the **right hand** constant ```99``` to the location
 ```3``` in the current stack frame.
+
+Right hand addresses can normally be scalars if a constant is required except
+in the case of the **MoveLong** instruction which always requires that its
+first source operand represent an address.
 
 #### Right hand addresses as variables
 
