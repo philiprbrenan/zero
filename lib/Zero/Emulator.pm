@@ -347,7 +347,6 @@ sub Reference($$$$$$)                                                           
     delta=>     $delta,                                                         # An constant increment or decrement to the address which sometimes allows the elimination of extra L<Add> and L<Subtract> instructions.
     dArea=>     refDepth($area),                                                # Depth of area reference
     dAddress=>  refDepth($address),                                             # Depth of address reference
-    operand=>   $operand,                                                       # Operand 0-Target, 1-Source, 2-Source2. In effect, if this field is flase then e should interpret a constant as an address.
    );
  }
 
