@@ -276,7 +276,7 @@ my sub Node_open($$$$$)                                                         
   Node_incLength $node;
  }
 
-my sub Node_copy_leaf($$$$)                                                     #P Copy part of one leaf node into another node.
+my sub Node_copy_leaf($$$$)                                                     # Copy part of one leaf node into another node.
  {my ($t, $s, $so, $length) = @_;                                               # Target node, source node, source offset, length
 
   Parallel
@@ -328,7 +328,7 @@ my sub FindResult_getField($$)                                                  
   Mov [$findResult, $FindResult->address($field), q(FindResult)];               # Fields
  }
 
-sub FindResult_copy($$)                                                         # Copy a find result
+sub FindResult_copy($$)                                                         #P Copy a find result
  {my ($F, $f) = @_;                                                             # Target find result, source find result
   MoveLong [$F, 0, "FindResult"], [$f, 0, "FindResult"], $FindResult->count;
  }
