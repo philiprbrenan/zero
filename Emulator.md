@@ -195,20 +195,19 @@ Dump an array.
     
       is_deeply eval($e->out), [1, 22, 333];
     
-      #say STDERR $e->block->codeToString;
       is_deeply $e->block->codeToString, <<'END' if $testSet == 1;
     0000     array           \0             3
-    0001       mov [\0, 0, 3, 0]             1
-    0002       mov [\0, 1, 3, 0]            22
-    0003       mov [\0, 2, 3, 0]           333
+    0001       mov [\0, \0, 3, 0]             1
+    0002       mov [\0, \1, 3, 0]            22
+    0003       mov [\0, \2, 3, 0]           333
     0004  arrayDump           \0
     END
     
       is_deeply $e->block->codeToString, <<'END' if $testSet == 2;
     0000     array [undef, \0, 3, 0]  [undef, 3, 3, 0]  [undef, 0, 3, 0]
-    0001       mov [\0, 0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
-    0002       mov [\0, 1, 3, 0]  [undef, 22, 3, 0]  [undef, 0, 3, 0]
-    0003       mov [\0, 2, 3, 0]  [undef, 333, 3, 0]  [undef, 0, 3, 0]
+    0001       mov [\0, \0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+    0002       mov [\0, \1, 3, 0]  [undef, 22, 3, 0]  [undef, 0, 3, 0]
+    0003       mov [\0, \2, 3, 0]  [undef, 333, 3, 0]  [undef, 0, 3, 0]
     0004  arrayDump [undef, \0, 3, 0]  [undef, 0, 3, 0]  [undef, 0, 3, 0]
     END
      }
@@ -2382,20 +2381,19 @@ Copy a constant or memory address to the target address.
     
       is_deeply eval($e->out), [1, 22, 333];
     
-      #say STDERR $e->block->codeToString;
       is_deeply $e->block->codeToString, <<'END' if $testSet == 1;
     0000     array           \0             3
-    0001       mov [\0, 0, 3, 0]             1
-    0002       mov [\0, 1, 3, 0]            22
-    0003       mov [\0, 2, 3, 0]           333
+    0001       mov [\0, \0, 3, 0]             1
+    0002       mov [\0, \1, 3, 0]            22
+    0003       mov [\0, \2, 3, 0]           333
     0004  arrayDump           \0
     END
     
       is_deeply $e->block->codeToString, <<'END' if $testSet == 2;
     0000     array [undef, \0, 3, 0]  [undef, 3, 3, 0]  [undef, 0, 3, 0]
-    0001       mov [\0, 0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
-    0002       mov [\0, 1, 3, 0]  [undef, 22, 3, 0]  [undef, 0, 3, 0]
-    0003       mov [\0, 2, 3, 0]  [undef, 333, 3, 0]  [undef, 0, 3, 0]
+    0001       mov [\0, \0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+    0002       mov [\0, \1, 3, 0]  [undef, 22, 3, 0]  [undef, 0, 3, 0]
+    0003       mov [\0, \2, 3, 0]  [undef, 333, 3, 0]  [undef, 0, 3, 0]
     0004  arrayDump [undef, \0, 3, 0]  [undef, 0, 3, 0]  [undef, 0, 3, 0]
     END
      }
@@ -4139,13 +4137,14 @@ Pack a reference into 8 bytes.
     2  $instruction  Instruction being packed
     3  $ref          Reference being packed
 
-## Zero::Emulator::Code::unpackRef($code, $a)
+## Zero::Emulator::Code::unpackRef($code, $a, $operand)
 
 Unpack a reference.
 
        Parameter  Description
     1  $code      Code block being packed
     2  $a         Instruction being packed
+    3  $operand   Reference being packed
 
 ## Zero::Emulator::Code::packInstruction($code, $i)
 
