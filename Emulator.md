@@ -4045,6 +4045,12 @@ Create a label.
     if (1)                                                                           
      {Start 1;
       Mov 0, 1;
+      my $e = &$ee(suppressOutput=>1);
+     }
+    
+    if (1)                                                                           
+     {Start 1;
+      Mov 0, 1;
       Jlt ((my $a = label), \0, 2);
         Out  1;
         Jmp (my $b = label);
@@ -4115,20 +4121,6 @@ List  instructions for inclusion in read me.
 ## instructionListMapping()
 
 Map instructions to small integers.
-
-## refDepth($ref)
-
-The depth of a reference.
-
-       Parameter  Description
-    1  $ref       Reference to pack
-
-## refValue($ref)
-
-The value of a reference after dereferencing.
-
-       Parameter  Description
-    1  $ref       Reference to pack
 
 ## rerefValue($value, $depth)
 
@@ -4341,53 +4333,49 @@ Disassemble and remove context information from disassembly to make testing easi
 
 81 [RandomSeed](#randomseed) - Seed the random number generator.
 
-82 [refDepth](#refdepth) - The depth of a reference.
+82 [rerefValue](#rerefvalue) - Re-reference a value.
 
-83 [refValue](#refvalue) - The value of a reference after dereferencing.
+83 [Resize](#resize) - Resize the target area to the source size.
 
-84 [rerefValue](#rerefvalue) - Re-reference a value.
+84 [Return](#return) - Return from a procedure via the call stack.
 
-85 [Resize](#resize) - Resize the target area to the source size.
+85 [ReturnGet](#returnget) - Get a word from the return area and save it.
 
-86 [Return](#return) - Return from a procedure via the call stack.
+86 [ReturnPut](#returnput) - Put a word into the return area.
 
-87 [ReturnGet](#returnget) - Get a word from the return area and save it.
+87 [Sequential](#sequential) - Runs its sub sections in sequential order
 
-88 [ReturnPut](#returnput) - Put a word into the return area.
+88 [ShiftDown](#shiftdown) - Shift an element down one in an area.
 
-89 [Sequential](#sequential) - Runs its sub sections in sequential order
+89 [ShiftLeft](#shiftleft) - Shift left within an element.
 
-90 [ShiftDown](#shiftdown) - Shift an element down one in an area.
+90 [ShiftRight](#shiftright) - Shift right with an element.
 
-91 [ShiftLeft](#shiftleft) - Shift left within an element.
+91 [ShiftUp](#shiftup) - Shift an element up one in an area.
 
-92 [ShiftRight](#shiftright) - Shift right with an element.
+92 [Start](#start) - Start the current assembly using the specified version of the Zero language.
 
-93 [ShiftUp](#shiftup) - Shift an element up one in an area.
+93 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
 
-94 [Start](#start) - Start the current assembly using the specified version of the Zero language.
+94 [Tally](#tally) - Counts instructions when enabled.
 
-95 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
+95 [Then](#then) - Then block.
 
-96 [Tally](#tally) - Counts instructions when enabled.
+96 [Trace](#trace) - Start or stop tracing.
 
-97 [Then](#then) - Then block.
+97 [TraceLabels](#tracelabels) - Enable or disable label tracing.
 
-98 [Trace](#trace) - Start or stop tracing.
+98 [unpackInstruction](#unpackinstruction) - Unpack an instruction.
 
-99 [TraceLabels](#tracelabels) - Enable or disable label tracing.
+99 [Var](#var) - Create a variable initialized to the specified value.
 
-100 [unpackInstruction](#unpackinstruction) - Unpack an instruction.
+100 [Watch](#watch) - Watches for changes to the specified memory location.
 
-101 [Var](#var) - Create a variable initialized to the specified value.
+101 [Zero::Emulator::Code::packInstruction](#zero-emulator-code-packinstruction) - Pack an instruction.
 
-102 [Watch](#watch) - Watches for changes to the specified memory location.
+102 [Zero::Emulator::Code::packRef](#zero-emulator-code-packref) - Pack a reference into 8 bytes.
 
-103 [Zero::Emulator::Code::packInstruction](#zero-emulator-code-packinstruction) - Pack an instruction.
-
-104 [Zero::Emulator::Code::packRef](#zero-emulator-code-packref) - Pack a reference into 8 bytes.
-
-105 [Zero::Emulator::Code::unpackRef](#zero-emulator-code-unpackref) - Unpack a reference.
+103 [Zero::Emulator::Code::unpackRef](#zero-emulator-code-unpackref) - Unpack a reference.
 
 # Installation
 
