@@ -374,14 +374,6 @@ Get the number of keys in the tree..
 
 Find a key in a tree.
 
-## FindResult\_copy($F, $f)
-
-Copy a find result
-
-       Parameter  Description
-    1  $F         Target find result
-    2  $f         Source find result
-
 ## FindResult\_cmp($f)
 
 Get comparison from find result.
@@ -1525,6 +1517,14 @@ x
 Stop if debugging.
 
 # Private Methods
+
+## FindResult\_copy($F, $f)
+
+Copy a find result
+
+       Parameter  Description
+    1  $F         Target find result
+    2  $f         Source find result
 
 ## randomArray($N)
 
