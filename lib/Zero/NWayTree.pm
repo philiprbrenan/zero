@@ -13,7 +13,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
-eval "use Test::More tests=>107" unless caller;
+eval "use Test::More tests=>113" unless caller;
 
 makeDieConfess;
 
@@ -61,10 +61,12 @@ sub New($)                                                                      
   $n > 2 && $n % 2 or confess "Number of key/data elements per node must be > 2 and odd";
 
   my $t = Array "Tree";                                                         # Allocate tree descriptor
-  Mov [$t, $Tree->address(q(MaximumNumberOfKeys)), 'Tree'], $n;                 # Save maximum number of keys per node
-  Mov [$t, $Tree->address(q(root)),                'Tree'],  0;                 # Clear root
-  Mov [$t, $Tree->address(q(keys)),                'Tree'],  0;                 # Clear keys
-  Mov [$t, $Tree->address(q(nodes)),               'Tree'],  0;                 # Clear nodes
+
+  Parallel
+    sub {Mov [$t, $Tree->address(q(MaximumNumberOfKeys)), 'Tree'], $n},         # Save maximum number of keys per node
+    sub {Mov [$t, $Tree->address(q(root)),                'Tree'],  0},         # Clear root
+    sub {Mov [$t, $Tree->address(q(keys)),                'Tree'],  0},         # Clear keys
+    sub {Mov [$t, $Tree->address(q(nodes)),               'Tree'],  0};         # Clear nodes
   $t
  }
 
@@ -223,20 +225,24 @@ my sub Node_setDown($$$)                                                        
 my sub Node_new($%)                                                             # Create a variable referring to a new node descriptor.
  {my ($tree, %options) = @_;                                                    # Tree node is being created in, options
   my $n = Array "Node";                                                         # Allocate node
-  my $k = Array "Keys";                                                         # Allocate keys
-  my $d = Array "Data";                                                         # Allocate data
 
   Node_setLength $n, $options{length} // 0;                                     # Length
-
   Node_setUp $n, 0;                                                             # Parent
 
+  my $k = Array "Keys";                                                         # Allocate keys
   Mov [$n, $Node->address(q(keys)), 'Node'], $k;                                # Keys area
+
+  my $d = Array "Data";                                                         # Allocate data
   Mov [$n, $Node->address(q(data)), 'Node'], $d;                                # Data area
+
   Mov [$n, $Node->address(q(down)), 'Node'], 0;                                 # Down area
+
   Mov [$n, $Node->address(q(tree)), 'Node'], $tree;                             # Containing tree
+
   incNodes($tree);
   Mov [$n,    $Node->address(q(id)),    'Node'],                                # Assign an id to this node within the tree
       [$tree, $Tree->address(q(nodes)), 'Tree'];
+
   $n                                                                            # Return reference to new node
  }
 
@@ -249,62 +255,68 @@ my sub Node_allocDown($%)                                                       
 my sub Node_openLeaf($$$$)                                                      # Open a gap in a leaf node
  {my ($node, $offset, $K, $D) = @_;                                             # Node
 
-  my $k = Node_fieldKeys $node;
-  my $d = Node_fieldData $node;
-
-  ShiftUp [$k, \$offset, 'Keys'], $K;
-  ShiftUp [$d, \$offset, 'Data'], $D;
+  Parallel
+    sub {my $k = Node_fieldKeys $node; ShiftUp [$k, \$offset, 'Keys'], $K},
+    sub {my $d = Node_fieldData $node; ShiftUp [$d, \$offset, 'Data'], $D};
   Node_incLength $node;
  }
 
 my sub Node_open($$$$$)                                                         # Open a gap in an interior node
  {my ($node, $offset, $K, $D, $N) = @_;                                         # Node, offset of open, new key, new data, new right node
 
-  my $k = Node_fieldKeys $node;
-  my $d = Node_fieldData $node;
-  my $n = Node_fieldDown $node;
+  Parallel
+    sub {my $k = Node_fieldKeys $node; ShiftUp [$k, \$offset, 'Keys'], $K},
+    sub {my $d = Node_fieldData $node; ShiftUp [$d, \$offset, 'Data'], $D},
+    sub
+     {my $n = Node_fieldDown $node;
+      my $o1 = Add $offset, 1;
+      ShiftUp [$n, \$o1,     'Down'], $N;
+     };
 
-  ShiftUp [$k, \$offset, 'Keys'], $K;
-  ShiftUp [$d, \$offset, 'Data'], $D;
-  my $o1 = Add $offset, 1;
-  ShiftUp [$n, \$o1,     'Down'], $N;
   Node_incLength $node;
  }
 
-my sub Node_copy_leaf($$$$)                                                     # Copy part of one leaf node into another node.
+my sub Node_copy_leaf($$$$)                                                     #P Copy part of one leaf node into another node.
  {my ($t, $s, $so, $length) = @_;                                               # Target node, source node, source offset, length
 
-  my $sk = Node_fieldKeys $s;
-  my $sd = Node_fieldData $s;
-
-  my $tk = Node_fieldKeys $t;
-  my $td = Node_fieldData $t;
-
-  MoveLong [$tk, \0, "Keys"], [$sk, \$so, "Keys"], $length;                     # Each key, data, down
-  MoveLong [$td, \0, "Data"], [$sd, \$so, "Data"], $length;                     # Each key, data, down
+  Parallel
+    sub
+     {my $sk = Node_fieldKeys $s;
+      my $tk = Node_fieldKeys $t;
+      MoveLong [$tk, \0, "Keys"], [$sk, \$so, "Keys"], $length;                 # Each key, data, down
+     },
+    sub
+     {my $sd = Node_fieldData $s;
+      my $td = Node_fieldData $t;
+      MoveLong [$td, \0, "Data"], [$sd, \$so, "Data"], $length;                 # Each key, data, down
+     };
  }
 
 my sub Node_copy($$$$)                                                          # Copy part of one interior node into another node.
  {my ($t, $s, $so, $length) = @_;                                               # Target node, source node, source offset, length
 
-  &Node_copy_leaf(@_);                                                          # Keys and data
-
-  my $sn = Node_fieldDown $s;                                                   # Child nodes
-  my $tn = Node_fieldDown $t;
-  my $L  = Add $length, 1;
-  MoveLong [$tn, \0, "Down"], [$sn, \$so, "Down"], $L;
+  Parallel
+    sub {&Node_copy_leaf($t, $s, $so, $length)},                                # Keys and data
+    sub
+     {my $sn = Node_fieldDown $s;                                               # Child nodes
+      my $tn = Node_fieldDown $t;
+      my $L  = Add $length, 1;
+      MoveLong [$tn, \0, "Down"], [$sn, \$so, "Down"], $L;
+     };
  }
 
 my sub Node_free($)                                                             # Free a node
  {my ($node) = @_;                                                              # Node to free
 
-  my $K = Node_fieldKeys $node; Free $K, "Keys";
-  my $D = Node_fieldData $node; Free $D, "Data";
-
-  IfFalse Node_isLeaf($node),
-  Then
-   {my $N = Node_fieldDown $node; Free $N, "Down";
-   };
+  Parallel
+    sub {my $K = Node_fieldKeys $node; Free $K, "Keys"},
+    sub {my $D = Node_fieldData $node; Free $D, "Data"},
+    sub
+     {IfFalse Node_isLeaf($node),
+      Then
+       {my $N = Node_fieldDown $node; Free $N, "Down";
+       };
+     };
 
   Free $node, "Node";
  }
@@ -314,6 +326,11 @@ my sub Node_free($)                                                             
 my sub FindResult_getField($$)                                                  # Get a field from a find result.
  {my ($findResult, $field) = @_;                                                # Find result, name of field
   Mov [$findResult, $FindResult->address($field), q(FindResult)];               # Fields
+ }
+
+sub FindResult_copy($$)                                                         # Copy a find result
+ {my ($F, $f) = @_;                                                             # Target find result, source find result
+  MoveLong [$F, 0, "FindResult"], [$f, 0, "FindResult"], $FindResult->count;
  }
 
 sub FindResult_cmp($)                                                           # Get comparison from find result.
@@ -339,8 +356,10 @@ my sub FindResult_node($)                                                       
 sub FindResult_data($)                                                          # Get data field from find results.
  {my ($f) = @_;                                                                 # Find result
 
-  my $n = FindResult_node ($f);
-  my $i = FindResult_index($f);
+  my $n; my $i;
+  Parallel
+    sub {$n = FindResult_node ($f)},
+    sub {$i = FindResult_index($f)};
   my $d = Node_data($n, $i);
   $d
  }
@@ -348,8 +367,10 @@ sub FindResult_data($)                                                          
 sub FindResult_key($)                                                           # Get key field from find results.
  {my ($f) = @_;                                                                 # Find result
 
-  my $n = FindResult_node ($f);
-  my $i = FindResult_index($f);
+  my $n; my $i;
+  Parallel
+    sub {$n = FindResult_node ($f)},
+    sub {$i = FindResult_index($f)};
   my $k = Node_keys($n, $i);
   $k
  }
@@ -365,8 +386,9 @@ my sub FindResult($$)                                                           
 my sub FindResult_renew($$$$%)                                                  # Reuse an existing find result
  {my ($find, $node, $cmp, $index, %options) = @_;                               # Find result, node, comparison result, index, options
 
-  Mov        [$find, $FindResult->address(q(node)) , 'FindResult'], $node;
-  Mov        [$find, $FindResult->address(q(cmp))  , 'FindResult'], $cmp;
+  Parallel
+    sub {Mov [$find, $FindResult->address(q(node)) , 'FindResult'], $node},
+    sub {Mov [$find, $FindResult->address(q(cmp))  , 'FindResult'], $cmp};
 
   if (my $d = $options{subtract})                                               # Adjust index if necessary
    {Subtract [$find, $FindResult->address(q(index)), 'FindResult'], $index, $d;
@@ -459,29 +481,40 @@ my sub Node_SplitIfFull($%)                                                     
       Else
        {Node_copy_leaf($r, $node, $R, $n);                                      # New right leaf
        };
-      Node_setLength($node, $n);
 
-      Node_setUp($r, $p);
-      my $pl = Node_length($p);
+      my $pl;
+      Parallel
+        sub {Node_setLength($node, $n)},
+        sub {Node_setUp($r, $p)},
+        sub {$pl = Node_length($p)};
 
       IfEq Node_down($p, $pl), $node,                                           # Splitting the last child - just add it on the end
       Then
-       {my $pk = Node_keys($node, $n); Node_setKeys($p, $pl, $pk);
-        my $nd = Node_data($node, $n); Node_setData($p, $pl, $nd);
-        my $pl1 = Add $pl, 1;
-        Node_setLength($p, $pl1);
-        Node_setDown  ($p, $pl1, $r);
-        my $K = Node_fieldKeys $node; Resize $K, $n, "Keys";
-        my $D = Node_fieldData $node; Resize $D, $n, "Data";
+       {Parallel
+          sub {my $pk = Node_keys($node, $n); Node_setKeys($p, $pl, $pk)},
+          sub {my $nd = Node_data($node, $n); Node_setData($p, $pl, $nd)};
+
+        Parallel
+          sub {my $K = Node_fieldKeys $node; Resize $K, $n, "Keys"},
+          sub {my $D = Node_fieldData $node; Resize $D, $n, "Data"},
+          sub {my $pl1 = Add $pl, 1;
+               Node_setLength($p, $pl1);
+               Node_setDown  ($p, $pl1, $r);
+              };
         Jmp $good;
        },
       Else                                                                      # Splitting elsewhere in the node
-       {my $i = Node_indexInParent($node, parent=>$p, children=>$pl);           # Index of the node being split in its parent
-        my $pk = Node_keys($node, $n);
-        my $pd = Node_data($node, $n);
+       {my $i; my $pk; my $pd; my $K; my $D;
+        Parallel
+          sub {$i  = Node_indexInParent($node, parent=>$p, children=>$pl)},     # Index of the node being split in its parent
+          sub {$pk = Node_keys($node, $n)},
+          sub {$pd = Node_data($node, $n)};
+
+        Parallel
+          sub {$K  = Node_fieldKeys $node; Resize $K, $n, "Keys"},
+          sub {$D  = Node_fieldData $node; Resize $D, $n, "Data"};
+
         Node_open($p, $i, $pk, $pd, $r);
-        my $K = Node_fieldKeys $node; Resize $K, $n, "Keys";
-        my $D = Node_fieldData $node; Resize $D, $n, "Data";
         Jmp $good;
        };
      };
@@ -493,33 +526,38 @@ my sub Node_SplitIfFull($%)                                                     
     Then
      {Node_allocDown $l;                                                        # Add down area on left
       Node_allocDown $r;                                                        # Add down area on right
-      Node_copy($l, $node, 0,  $n);                                             # New left  node
-      Node_copy($r, $node, $R, $n);                                             # New right node
-      ReUp($l) unless $options{test};                                           # Simplify testing
-      ReUp($r) unless $options{test};
+      Parallel
+        sub {Node_copy($l, $node, 0,  $n)},                                     # New left  node
+        sub {Node_copy($r, $node, $R, $n)};                                     # New right node
+      Parallel
+        sub {ReUp($l) unless $options{test}},                                   # Simplify testing
+        sub {ReUp($r) unless $options{test}};
      },
     Else
      {Node_allocDown $node;                                                     # Add down area
-      Node_copy_leaf($l, $node, 0,  $n);                                        # New left  leaf
-      Node_copy_leaf($r, $node, $R, $n);                                        # New right leaf
+      Parallel
+        sub {Node_copy_leaf($l, $node, 0,  $n)},                                # New left  leaf
+        sub {Node_copy_leaf($r, $node, $R, $n)};                                # New right leaf
      };
 
-    Node_setUp($l, $node);                                                      # Root node with single key after split
-    Node_setUp($r, $node);                                                      # Connect children to parent
+    Parallel
+      sub {Node_setUp($l, $node)},                                              # Root node with single key after split
+      sub {Node_setUp($r, $node)};                                              # Connect children to parent
 
-    my $pk = Node_keys($node, $n);                                              # Single key
-    my $pd = Node_data($node, $n);                                              # Data associated with single key
-    Node_setKeys  ($node, 0, $pk);
-    Node_setData  ($node, 0, $pd);
-    Node_setDown  ($node, 0, $l);
-    Node_setDown  ($node, 1, $r);
-    Node_setLength($node, 1);
+    my $pk; my $pd;
+    Parallel
+      sub {$pk = Node_keys($node, $n)},                                         # Single key
+      sub {$pd = Node_data($node, $n)};                                         # Data associated with single key
 
-    if (1)                                                                      # Resize split root node
-     {my $K = Node_fieldKeys $node; Resize $K, 1,  "Keys";
-      my $D = Node_fieldData $node; Resize $D, 1,  "Data";
-      my $N = Node_fieldDown $node; Resize $N, 2,  "Down";
-     }
+    Parallel
+      sub {Node_setKeys  ($node, 0, $pk)},
+      sub {Node_setData  ($node, 0, $pd)},
+      sub {Node_setDown  ($node, 0, $l)},
+      sub {Node_setDown  ($node, 1, $r)},
+      sub {Node_setLength($node, 1)},
+      sub {my $K = Node_fieldKeys $node; Resize $K, 1,  "Keys"},                # Resize split root node
+      sub {my $D = Node_fieldData $node; Resize $D, 1,  "Data"},
+      sub {my $W = Node_fieldDown $node; Resize $W, 2,  "Down"};
 
     Jmp $good;
    }
@@ -656,15 +694,20 @@ sub Insert($$$%)                                                                
     IfFalse $n,                                                                 # Empty tree
     Then
      {my $n = Node_new($tree, length=>1);
-      Node_setKeys  ($n, 0, $key);
-      Node_setData  ($n, 0, $data);
-      incKeys($tree);
-      setRoot($tree, $n);
+      Parallel
+        sub {Node_setKeys  ($n, 0, $key)},
+        sub {Node_setData  ($n, 0, $data)},
+        sub {incKeys($tree)},
+        sub {setRoot($tree, $n)};
       Jmp $Finish;
      };
 
-    my $nl = Node_length($n);                                                   # Current length of node
-    IfLt $nl, maximumNumberOfKeys($tree),                                       # Node has room for another key
+    my $nl; my $mk;
+    Parallel
+      sub {$nl = Node_length($n)},                                              # Current length of node
+      sub {$mk = maximumNumberOfKeys($tree)};                                   # Node has room for another key
+
+    IfLt $nl, $mk,                                                              # Node has room for another key
     Then
      {IfFalse Node_up($n),                                                      # Root node
       Then
@@ -682,25 +725,32 @@ sub Insert($$$%)                                                                
           my $I = ArrayCountGreater $K, $key;                                   # Greater than all keys in leaf root node
           IfFalse $I,
           Then
-           {Node_setKeys($n, $nl, $key);                                        # Append the key at the end of the leaf root node because it is greater than all the other keys in the block and there is room for it
-            Node_setData($n, $nl, $data);
-            Node_setLength($n, $nl, add=>1);
-            incKeys($tree);
+           {Parallel
+              sub {Node_setKeys($n, $nl, $key)},                                # Append the key at the end of the leaf root node because it is greater than all the other keys in the block and there is room for it
+              sub {Node_setData($n, $nl, $data)},
+              sub {Node_setLength($n, $nl, add=>1)},
+              sub {incKeys($tree)};
             Jmp $Finish;
            };
 
-          my $i = ArrayCountLess $K, $key;                                      # Insert position
-          Node_openLeaf($n, $i, $key, $data);                                   # Insert into the root leaf node
-          incKeys($tree);
+          Parallel
+            sub
+              {my $i = ArrayCountLess $K, $key;                                 # Insert position
+               Node_openLeaf($n, $i, $key, $data);                              # Insert into the root leaf node
+              },
+            sub {incKeys($tree)};
           Jmp $Finish;
          };
        };
      };
                                                                                 # Insert node
     my $r = FindAndSplit($tree, $key, %options, findResult=>$find);             # Check for existing key
-    my $N = FindResult_node($r);
-    my $c = FindResult_cmp($r);
-    my $i = FindResult_index($r);
+
+    my $N; my $c; my $i;
+    Parallel
+      sub {$N = FindResult_node($r)},
+      sub {$c = FindResult_cmp($r)},
+      sub {$i = FindResult_index($r)};
 
     IfEq $c, FindResult_found,                                                  # Found an equal key whose data we can update
     Then
@@ -793,16 +843,24 @@ my sub GoUpAndAround($)                                                         
 
 sub Iterate(&$)                                                                 # Iterate over a tree.
  {my ($block, $tree) = @_;                                                      # Block of code to execute for each key in tree, tree
-  my $n = root($tree);
-  my $f = FindResult_new;
+
+  my $n; my $f; my $F;
+  Parallel
+    sub {$n = root($tree)},
+    sub {$f = FindResult_new},
+    sub {$F = FindResult_new};
+
   GoAllTheWayLeft($f, $n);
 
   For
    {my ($i, $check, $next, $end) = @_;                                          # Parameters
     Jeq $end, FindResult_cmp($f), FindResult_notFound;
-    &$block($f);
 
-    GoUpAndAround($f);
+    FindResult_copy($F, $f);                                                    # Copying the find result allows for parallel processing
+
+    Parallel
+      sub {&$block($F)},
+      sub {GoUpAndAround($f)};
    } 2**32-1;
   FindResult_free($f);
  }
@@ -1308,15 +1366,18 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1, in=>[@r]);
   is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-  is_deeply $e->widestAreaInArena,   [535, 6];
+  is_deeply $e->widestAreaInArena,   [537, 6];
   is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
-  is_deeply $e->mostArrays,          [1, 250, 1, 1];
+  is_deeply $e->mostArrays,          [1, 252, 1, 1];
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  24610;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
+  is_deeply $e->tallyTotal->{1}, 15456;
+  is_deeply $e->tallyTotal->{2},  6294;
+  is_deeply $e->tallyTotal->{3},  2860;
+#  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
 
   #say STDERR dump $e->tallyCounts->{1};
   is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -1356,21 +1417,24 @@ if (1)                                                                          
   subtract => 574};
 
   #say STDERR dump $e->tallyCounts->{3};
-  is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally
-  add        => 107,
-  array      => 1,
-  arrayIndex => 72,
-  dec        => 72,
-  free       => 1,
-  inc        => 162,
-  jEq        => 260,
-  jFalse     => 28,
-  jGe        => 316,
-  jmp        => 252,
-  jNe        => 117,
-  jTrue      => 73,
-  mov        => 1111,
-  not        => 180};
+  #say STDERR formatTable($e->tallyCounts->{3}); exit;
+  is_deeply formatTable($e->tallyCounts->{3}), <<END;                           # Iterate tally
+add          107
+array          2
+arrayIndex    72
+dec           72
+free           1
+inc          162
+jEq          260
+jFalse        28
+jGe          316
+jNe          117
+jTrue         73
+jmp          252
+mov         1111
+moveLong     107
+not          180
+END
 
   #say STDERR printTreeKeys($e); x;
   is_deeply printTreeKeys($e), <<END;
@@ -1392,6 +1456,7 @@ END
 
  }
 
+#latest:;
 if (1)                                                                          # Generate machine code and use string memory to emulate execution on an FPGA
  {my $W = 3; my @r = randomArray 107;
 
@@ -1434,15 +1499,20 @@ if (1)                                                                          
   my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1, in=>[@r],
     stringMemory=>1, maximumArraySize=>7);
   is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-  is_deeply $e->widestAreaInArena,   [535, 6];
+  is_deeply $e->widestAreaInArena,   [537, 6];
   is_deeply $e->namesOfWidestArrays, [0, 0];
-  is_deeply $e->mostArrays,          [1, 250, 1, 1];
+  is_deeply $e->mostArrays,          [1, 252, 1, 1];
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  24610;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
+  is_deeply $e->tallyTotal->{1}, 15456;
+  is_deeply $e->tallyTotal->{2},  6294;
+  is_deeply $e->tallyTotal->{3},  2860;
+
+  is_deeply $e->timeParallel,   24755;
+  is_deeply $e->timeSequential, 29084;
  }
 
 # (\A.{80})\s+(#.*\Z) \1\2
