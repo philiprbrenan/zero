@@ -279,15 +279,18 @@ Get the number of keys in the tree..
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [535, 6];
+      is_deeply $e->widestAreaInArena,   [537, 6];
       is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
-      is_deeply $e->mostArrays,          [1, 250, 1, 1];
+      is_deeply $e->mostArrays,          [1, 252, 1, 1];
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  24610;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
+      is_deeply $e->tallyTotal->{1}, 15456;
+      is_deeply $e->tallyTotal->{2},  6294;
+      is_deeply $e->tallyTotal->{3},  2860;
+    #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
     
       #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -327,21 +330,24 @@ Get the number of keys in the tree..
       subtract => 574};
     
       #say STDERR dump $e->tallyCounts->{3};
-      is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally
-      add        => 107,
-      array      => 1,
-      arrayIndex => 72,
-      dec        => 72,
-      free       => 1,
-      inc        => 162,
-      jEq        => 260,
-      jFalse     => 28,
-      jGe        => 316,
-      jmp        => 252,
-      jNe        => 117,
-      jTrue      => 73,
-      mov        => 1111,
-      not        => 180};
+      #say STDERR formatTable($e->tallyCounts->{3}); exit;
+      is_deeply formatTable($e->tallyCounts->{3}), <<END;                           # Iterate tally
+    add          107
+    array          2
+    arrayIndex    72
+    dec           72
+    free           1
+    inc          162
+    jEq          260
+    jFalse        28
+    jGe          316
+    jNe          117
+    jTrue         73
+    jmp          252
+    mov         1111
+    moveLong     107
+    not          180
+    END
     
       #say STDERR printTreeKeys($e); x;
       is_deeply printTreeKeys($e), <<END;
@@ -367,6 +373,14 @@ Get the number of keys in the tree..
 # Find
 
 Find a key in a tree.
+
+## FindResult\_copy($F, $f)
+
+Copy a find result
+
+       Parameter  Description
+    1  $F         Target find result
+    2  $f         Source find result
 
 ## FindResult\_cmp($f)
 
@@ -459,15 +473,18 @@ Get data field from find results.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [535, 6];
+      is_deeply $e->widestAreaInArena,   [537, 6];
       is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
-      is_deeply $e->mostArrays,          [1, 250, 1, 1];
+      is_deeply $e->mostArrays,          [1, 252, 1, 1];
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  24610;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
+      is_deeply $e->tallyTotal->{1}, 15456;
+      is_deeply $e->tallyTotal->{2},  6294;
+      is_deeply $e->tallyTotal->{3},  2860;
+    #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
     
       #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -507,21 +524,24 @@ Get data field from find results.
       subtract => 574};
     
       #say STDERR dump $e->tallyCounts->{3};
-      is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally
-      add        => 107,
-      array      => 1,
-      arrayIndex => 72,
-      dec        => 72,
-      free       => 1,
-      inc        => 162,
-      jEq        => 260,
-      jFalse     => 28,
-      jGe        => 316,
-      jmp        => 252,
-      jNe        => 117,
-      jTrue      => 73,
-      mov        => 1111,
-      not        => 180};
+      #say STDERR formatTable($e->tallyCounts->{3}); exit;
+      is_deeply formatTable($e->tallyCounts->{3}), <<END;                           # Iterate tally
+    add          107
+    array          2
+    arrayIndex    72
+    dec           72
+    free           1
+    inc          162
+    jEq          260
+    jFalse        28
+    jGe          316
+    jNe          117
+    jTrue         73
+    jmp          252
+    mov         1111
+    moveLong     107
+    not          180
+    END
     
       #say STDERR printTreeKeys($e); x;
       is_deeply printTreeKeys($e), <<END;
@@ -596,15 +616,18 @@ Get key field from find results.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [535, 6];
+      is_deeply $e->widestAreaInArena,   [537, 6];
       is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
-      is_deeply $e->mostArrays,          [1, 250, 1, 1];
+      is_deeply $e->mostArrays,          [1, 252, 1, 1];
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  24610;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
+      is_deeply $e->tallyTotal->{1}, 15456;
+      is_deeply $e->tallyTotal->{2},  6294;
+      is_deeply $e->tallyTotal->{3},  2860;
+    #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
     
       #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -644,21 +667,24 @@ Get key field from find results.
       subtract => 574};
     
       #say STDERR dump $e->tallyCounts->{3};
-      is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally
-      add        => 107,
-      array      => 1,
-      arrayIndex => 72,
-      dec        => 72,
-      free       => 1,
-      inc        => 162,
-      jEq        => 260,
-      jFalse     => 28,
-      jGe        => 316,
-      jmp        => 252,
-      jNe        => 117,
-      jTrue      => 73,
-      mov        => 1111,
-      not        => 180};
+      #say STDERR formatTable($e->tallyCounts->{3}); exit;
+      is_deeply formatTable($e->tallyCounts->{3}), <<END;                           # Iterate tally
+    add          107
+    array          2
+    arrayIndex    72
+    dec           72
+    free           1
+    inc          162
+    jEq          260
+    jFalse        28
+    jGe          316
+    jNe          117
+    jTrue         73
+    jmp          252
+    mov         1111
+    moveLong     107
+    not          180
+    END
     
       #say STDERR printTreeKeys($e); x;
       is_deeply printTreeKeys($e), <<END;
@@ -770,15 +796,18 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [535, 6];
+      is_deeply $e->widestAreaInArena,   [537, 6];
       is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
-      is_deeply $e->mostArrays,          [1, 250, 1, 1];
+      is_deeply $e->mostArrays,          [1, 252, 1, 1];
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  24610;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
+      is_deeply $e->tallyTotal->{1}, 15456;
+      is_deeply $e->tallyTotal->{2},  6294;
+      is_deeply $e->tallyTotal->{3},  2860;
+    #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
     
       #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -820,21 +849,24 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
       subtract => 574};
     
       #say STDERR dump $e->tallyCounts->{3};
-      is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally
-      add        => 107,
-      array      => 1,
-      arrayIndex => 72,
-      dec        => 72,
-      free       => 1,
-      inc        => 162,
-      jEq        => 260,
-      jFalse     => 28,
-      jGe        => 316,
-      jmp        => 252,
-      jNe        => 117,
-      jTrue      => 73,
-      mov        => 1111,
-      not        => 180};
+      #say STDERR formatTable($e->tallyCounts->{3}); exit;
+      is_deeply formatTable($e->tallyCounts->{3}), <<END;                           # Iterate tally
+    add          107
+    array          2
+    arrayIndex    72
+    dec           72
+    free           1
+    inc          162
+    jEq          260
+    jFalse        28
+    jGe          316
+    jNe          117
+    jTrue         73
+    jmp          252
+    mov         1111
+    moveLong     107
+    not          180
+    END
     
       #say STDERR printTreeKeys($e); x;
       is_deeply printTreeKeys($e), <<END;
@@ -1086,15 +1118,18 @@ Iterate over a tree.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [535, 6];
+      is_deeply $e->widestAreaInArena,   [537, 6];
       is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
-      is_deeply $e->mostArrays,          [1, 250, 1, 1];
+      is_deeply $e->mostArrays,          [1, 252, 1, 1];
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  24610;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
+      is_deeply $e->tallyTotal->{1}, 15456;
+      is_deeply $e->tallyTotal->{2},  6294;
+      is_deeply $e->tallyTotal->{3},  2860;
+    #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
     
       #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -1134,23 +1169,26 @@ Iterate over a tree.
       subtract => 574};
     
       #say STDERR dump $e->tallyCounts->{3};
+      #say STDERR formatTable($e->tallyCounts->{3}); exit;
     
-      is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      is_deeply formatTable($e->tallyCounts->{3}), <<END;                           # Iterate tally  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      add        => 107,
-      array      => 1,
-      arrayIndex => 72,
-      dec        => 72,
-      free       => 1,
-      inc        => 162,
-      jEq        => 260,
-      jFalse     => 28,
-      jGe        => 316,
-      jmp        => 252,
-      jNe        => 117,
-      jTrue      => 73,
-      mov        => 1111,
-      not        => 180};
+    add          107
+    array          2
+    arrayIndex    72
+    dec           72
+    free           1
+    inc          162
+    jEq          260
+    jFalse        28
+    jGe          316
+    jNe          117
+    jTrue         73
+    jmp          252
+    mov         1111
+    moveLong     107
+    not          180
+    END
     
       #say STDERR printTreeKeys($e); x;
       is_deeply printTreeKeys($e), <<END;
@@ -1227,15 +1265,18 @@ Print the keys held in a tree.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [535, 6];
+      is_deeply $e->widestAreaInArena,   [537, 6];
       is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
-      is_deeply $e->mostArrays,          [1, 250, 1, 1];
+      is_deeply $e->mostArrays,          [1, 252, 1, 1];
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  24610;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
+      is_deeply $e->tallyTotal->{1}, 15456;
+      is_deeply $e->tallyTotal->{2},  6294;
+      is_deeply $e->tallyTotal->{3},  2860;
+    #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
     
       #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -1275,21 +1316,24 @@ Print the keys held in a tree.
       subtract => 574};
     
       #say STDERR dump $e->tallyCounts->{3};
-      is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally
-      add        => 107,
-      array      => 1,
-      arrayIndex => 72,
-      dec        => 72,
-      free       => 1,
-      inc        => 162,
-      jEq        => 260,
-      jFalse     => 28,
-      jGe        => 316,
-      jmp        => 252,
-      jNe        => 117,
-      jTrue      => 73,
-      mov        => 1111,
-      not        => 180};
+      #say STDERR formatTable($e->tallyCounts->{3}); exit;
+      is_deeply formatTable($e->tallyCounts->{3}), <<END;                           # Iterate tally
+    add          107
+    array          2
+    arrayIndex    72
+    dec           72
+    free           1
+    inc          162
+    jEq          260
+    jFalse        28
+    jGe          316
+    jNe          117
+    jTrue         73
+    jmp          252
+    mov         1111
+    moveLong     107
+    not          180
+    END
     
     
       #say STDERR printTreeKeys($e); x;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -1366,15 +1410,18 @@ Print the data held in a tree.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [535, 6];
+      is_deeply $e->widestAreaInArena,   [537, 6];
       is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
-      is_deeply $e->mostArrays,          [1, 250, 1, 1];
+      is_deeply $e->mostArrays,          [1, 252, 1, 1];
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  24502;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  24610;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
-      is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
+      is_deeply $e->tallyTotal->{1}, 15456;
+      is_deeply $e->tallyTotal->{2},  6294;
+      is_deeply $e->tallyTotal->{3},  2860;
+    #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
     
       #say STDERR dump $e->tallyCounts->{1};
       is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
@@ -1414,21 +1461,24 @@ Print the data held in a tree.
       subtract => 574};
     
       #say STDERR dump $e->tallyCounts->{3};
-      is_deeply $e->tallyCounts->{3}, {                                             # Iterate tally
-      add        => 107,
-      array      => 1,
-      arrayIndex => 72,
-      dec        => 72,
-      free       => 1,
-      inc        => 162,
-      jEq        => 260,
-      jFalse     => 28,
-      jGe        => 316,
-      jmp        => 252,
-      jNe        => 117,
-      jTrue      => 73,
-      mov        => 1111,
-      not        => 180};
+      #say STDERR formatTable($e->tallyCounts->{3}); exit;
+      is_deeply formatTable($e->tallyCounts->{3}), <<END;                           # Iterate tally
+    add          107
+    array          2
+    arrayIndex    72
+    dec           72
+    free           1
+    inc          162
+    jEq          260
+    jFalse        28
+    jGe          316
+    jNe          117
+    jTrue         73
+    jmp          252
+    mov         1111
+    moveLong     107
+    not          180
+    END
     
       #say STDERR printTreeKeys($e); x;
       is_deeply printTreeKeys($e), <<END;
@@ -1489,23 +1539,25 @@ Create a random array.
 
 2 [FindResult\_cmp](#findresult_cmp) - Get comparison from find result.
 
-3 [FindResult\_data](#findresult_data) - Get data field from find results.
+3 [FindResult\_copy](#findresult_copy) - Copy a find result
 
-4 [FindResult\_key](#findresult_key) - Get key field from find results.
+4 [FindResult\_data](#findresult_data) - Get data field from find results.
 
-5 [Insert](#insert) - Insert a key and its associated data into a tree.
+5 [FindResult\_key](#findresult_key) - Get key field from find results.
 
-6 [Iterate](#iterate) - Iterate over a tree.
+6 [Insert](#insert) - Insert a key and its associated data into a tree.
 
-7 [Keys](#keys) - Get the number of keys in the tree.
+7 [Iterate](#iterate) - Iterate over a tree.
 
-8 [New](#new) - Create a variable referring to a new tree descriptor.
+8 [Keys](#keys) - Get the number of keys in the tree.
 
-9 [printTreeData](#printtreedata) - Print the data held in a tree.
+9 [New](#new) - Create a variable referring to a new tree descriptor.
 
-10 [printTreeKeys](#printtreekeys) - Print the keys held in a tree.
+10 [printTreeData](#printtreedata) - Print the data held in a tree.
 
-11 [randomArray](#randomarray) - Create a random array.
+11 [printTreeKeys](#printtreekeys) - Print the keys held in a tree.
+
+12 [randomArray](#randomarray) - Create a random array.
 
 # Installation
 
