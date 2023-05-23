@@ -357,7 +357,8 @@ bubble [sort](https://en.wikipedia.org/wiki/Sorting) can [sort](https://en.wikip
 
 # Optimization space
 
-In producing [code](https://en.wikipedia.org/wiki/Computer_program) or an [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) we might want to optimize use of the following resources:
+In producing [code](https://en.wikipedia.org/wiki/Computer_program) or an [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) we might want to optimize use of the following
+resources:
 
 <table border="0" cellpadding="10">
 
@@ -368,11 +369,10 @@ bears upon the utility of the solution.
 The more [code](https://en.wikipedia.org/wiki/Computer_program) required, the more [memory](https://en.wikipedia.org/wiki/Computer_memory), and thus [Silicon](https://en.wikipedia.org/wiki/Silicon), is required to store
 the [code](https://en.wikipedia.org/wiki/Computer_program). 
 <tr><th>Heap Space<td>The amount of [memory](https://en.wikipedia.org/wiki/Computer_memory) required to store the data used by the [code](https://en.wikipedia.org/wiki/Computer_program). 
-<tr><th>Energy<td>The amount of energy required to execute the [code](https://en.wikipedia.org/wiki/Computer_program) .
-Parallism can speed up [code](https://en.wikipedia.org/wiki/Computer_program) execuition often at the cost of increased power
-consumption. This does not necessarily translate into greater energy
-consumption for one execution, but, faster executions lead to more frequent
-executions, which means more energy per unit time, in essence, higher power
-levels.
+<tr><th>Energy<td>The amount of energy required to execute the [code](https://en.wikipedia.org/wiki/Computer_program) . Parallism
+can speed up [code](https://en.wikipedia.org/wiki/Computer_program) execuition often at the cost of increased power consumption.
+This does not necessarily translate into greater energy consumption for one
+execution, but, faster executions lead to more frequent executions, which means
+more energy per unit time, in essence, higher power levels.
 
 </table>
