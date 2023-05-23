@@ -215,7 +215,7 @@ if (1)                                                                          
   is_deeply $e->out, <<END;
 [1 .. $N]
 END
-  is_deeply $e->count, 9066;                                                    # Approximately 5 times bigger
+  is_deeply $e->count, 9066;
   is_deeply $e->timeParallel,    7616;
   is_deeply $e->timeSequential,  9066;
  }
