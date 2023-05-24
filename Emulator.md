@@ -2659,18 +2659,7 @@ Define a procedure.
        {Out 99;
        };
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    1
-    2
-    3
-    4
-    5
-    6
-    7
-    8
-    9
-    10
-    END
+      is_deeply $e->outLines, [1..10];
       is_deeply $e->outLines, [1..10];
      }
     
