@@ -53,9 +53,6 @@ area and return results area. Each area can grow as much as is needed to hold
 data.  Additional [user](https://en.wikipedia.org/wiki/User_(computing)) [memory](https://en.wikipedia.org/wiki/Computer_memory) areas can be allocated and freed as necessary.
 Communication with other systems can be achieved by reading and writing to [arrays](https://en.wikipedia.org/wiki/Dynamic_array) with predetermined names.
 
-Well known locations are represented by character == non numeric area ids.
-Stack frames, parameters and return areas are represented by negative area ids.
-
 References can represent constants via a scalar with zero levels of
 dereferencing; direct addresses by scalars with one level of dereferencing, and
 indirect addresses by scalars with two levels of dereferencing.  A reference
@@ -165,12 +162,12 @@ frame to location ```3``` in the current stack frame.
 
 ```
 
-The example above moves the contents of location ```4``` in the current stack frame
-to location 3 in the [array](https://en.wikipedia.org/wiki/Dynamic_array) whose identifying number is located at location
-**$a** in the current stack frame.  The [array](https://en.wikipedia.org/wiki/Dynamic_array) is created with an identifying
-name of **keys**.  The [string](https://en.wikipedia.org/wiki/String_(computer_science)) **keys** must be presented on each subsequent
-access to this [array](https://en.wikipedia.org/wiki/Dynamic_array) to confirm that the correct type of [memory](https://en.wikipedia.org/wiki/Computer_memory) is being
-accessed.
+The example above moves the contents of location ```4``` in the current stack
+frame to location ```3``` in the [array](https://en.wikipedia.org/wiki/Dynamic_array) whose identifying number is located at
+location **$a** in the current stack frame.  The [array](https://en.wikipedia.org/wiki/Dynamic_array) is created with an
+identifying name of **keys**.  The [string](https://en.wikipedia.org/wiki/String_(computer_science)) **keys** must be presented on each
+subsequent access to this [array](https://en.wikipedia.org/wiki/Dynamic_array) to confirm that the correct type of [memory](https://en.wikipedia.org/wiki/Computer_memory) is
+being accessed.
 
 ## Instructions
 
