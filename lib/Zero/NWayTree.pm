@@ -1377,52 +1377,48 @@ if (1)                                                                          
   is_deeply $e->tallyTotal->{3},  2860;
 #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
 
-  #say STDERR dump $e->tallyCounts->{1};
-  is_deeply $e->tallyCounts->{1}, {                                             # Insert tally
-  add               => 159,
-  array             => 247,
-  arrayCountGreater => 2,
-  arrayCountLess    => 262,
-  arrayIndex        => 293,
-  dec               => 30,
-  inc               => 726,
-  jEq               => 894,
-  jGe               => 648,
-  jLe               => 461,
-  jLt               => 565,
-  jmp               => 878,
-  jNe               => 908,
-  mov               => 7619,
-  moveLong          => 171,
-  not               => 631,
-  resize            => 161,
-  shiftUp           => 300,
-  subtract          => 501};
+  #say STDERR formatTable $e->tallyCounts->{1};   exit;
+  is_deeply formatTable($e->tallyCounts->{1}), <<END;                            # Insert tally
+add                 885
+array               247
+arrayCountGreater     2
+arrayCountLess      262
+arrayIndex          293
+jEq                 894
+jGe                 648
+jLe                 461
+jLt                 565
+jNe                 908
+jmp                 878
+mov                7619
+moveLong            171
+not                 631
+resize              161
+shiftUp             300
+subtract            531
+END
 
-  #say STDERR dump $e->tallyCounts->{2};
-  is_deeply $e->tallyCounts->{2}, {                                             # Find tally
-  add => 137,
-  arrayCountLess => 223,
-  arrayIndex => 330,
-  inc => 360,
-  jEq => 690,
-  jGe => 467,
-  jLe => 467,
-  jmp => 604,
-  jNe => 107,
-  mov => 1975,
-  not => 360,
-  subtract => 574};
+  #say STDERR formatTable $e->tallyCounts->{2}; ewxit;
+  is_deeply formatTable($e->tallyCounts->{2}), <<END;                            # Find tally
+add              497
+arrayCountLess   223
+arrayIndex       330
+jEq              690
+jGe              467
+jLe              467
+jNe              107
+jmp              604
+mov             1975
+not              360
+subtract         574
+END
 
-  #say STDERR dump $e->tallyCounts->{3};
   #say STDERR formatTable($e->tallyCounts->{3}); exit;
   is_deeply formatTable($e->tallyCounts->{3}), <<END;                           # Iterate tally
-add          107
+add          269
 array          2
 arrayIndex    72
-dec           72
 free           1
-inc          162
 jEq          260
 jFalse        28
 jGe          316
@@ -1432,6 +1428,7 @@ jmp          252
 mov         1111
 moveLong     107
 not          180
+subtract      72
 END
 
   #say STDERR printTreeKeys($e); x;
