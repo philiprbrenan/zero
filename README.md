@@ -225,7 +225,7 @@ instruction.
 
 The output channel **out** is written to by the **Out** instruction.  The
 results of such writes can be seen on the terminal command line, in the trace
-output and in the **out** field of the [emulator](https://en.wikipedia.org/wiki/Emulator) execution envoronment data
+output and in the **out** field of the [emulator](https://en.wikipedia.org/wiki/Emulator) execution environment data
 structure.
 
 ## Parallelism
@@ -262,13 +262,13 @@ maintained by the [emulator](https://en.wikipedia.org/wiki/Emulator):
 
 ### Instruction level parallelism
 
-Each instruction can contain up to 3 addresses. Each address contains two
-components which can access [memory](https://en.wikipedia.org/wiki/Computer_memory) either directly or indirectly. This gives a
-maximum of 2**2**3 = 64 possibile addressing configurations for each
-instruction.  In reality, most applications will only use a small number of
-these possible configurations.  To assist in choosing the most useful
-combinations  to implement in the [Silicon](https://en.wikipedia.org/wiki/Silicon) realization of an application, the [emulator](https://en.wikipedia.org/wiki/Emulator) tracks the number of times each variant of each instruction is
-executed.
+Each instruction can contain up to 3 addresses: two source operands and one
+target operand. Each address contains two components which can access [memory](https://en.wikipedia.org/wiki/Computer_memory) either directly or indirectly. This gives a maximum of 2**2**3 = 64 possibile
+addressing configurations for each instruction.  In reality, most applications
+will only use a small number of these possible configurations.  To assist in
+choosing the most useful combinations  to implement in the [Silicon](https://en.wikipedia.org/wiki/Silicon) realization
+of an application, the [emulator](https://en.wikipedia.org/wiki/Emulator) tracks the number of times each variant of each
+instruction is executed.
 
 ## Examples
 
