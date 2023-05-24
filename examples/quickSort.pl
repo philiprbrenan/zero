@@ -130,12 +130,12 @@ if (1)                                                                          
 END
 
   is_deeply $e->count,  284;                                                    # Instructions executed
+
+  #say STDERR formatTable($e->counts); exit;
   is_deeply formatTable($e->counts), <<END;                                     # Counts of each instruction type executed
-add         11
+add         39
 array        3
 arraySize    8
-dec          1
-inc         28
 jGe         57
 jLt         12
 jNe          5
@@ -145,7 +145,7 @@ mov         58
 pop         14
 push        22
 shiftRight   3
-subtract    18
+subtract    19
 END
  }
 
