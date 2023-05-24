@@ -1,7 +1,7 @@
 # [Zero assembler programming language](https://github.com/philiprbrenan/zero) 
 ![Test](https://github.com/philiprbrenan/zero/workflows/Test/badge.svg)
 
-A minimal [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) and [emulator](https://en.wikipedia.org/wiki/Emulator) for the [Zero assembler programming language](https://github.com/philiprbrenan/zero) .
+A minimal [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) and [emulator](https://en.wikipedia.org/wiki/Emulator) for the [Zero assembler programming language](https://github.com/philiprbrenan/zero) &#9410;.
 
 Open the __Actions__ [tab](https://en.wikipedia.org/wiki/Tab_key) to see the [code](https://en.wikipedia.org/wiki/Computer_program) in action on [Ubuntu](https://ubuntu.com/download/desktop) and [Windows Services for Linux](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux) for [Ubuntu](https://ubuntu.com/download/desktop) on windows.
 
