@@ -359,16 +359,18 @@ resources:
 
 <table border="0" cellpadding="10">
 
-<tr><th>Time<td>The amount of elapsed time it takes to execute the [code](https://en.wikipedia.org/wiki/Computer_program) as this
+<tr><th>Time<td>The amount of elapsed time it takes to execute the code as this
 bears upon the utility of the solution.
 
-<tr><th>Code Space<td>The amount of [code](https://en.wikipedia.org/wiki/Computer_program) required to implement the solution.
-The more [code](https://en.wikipedia.org/wiki/Computer_program) required, the more [memory](https://en.wikipedia.org/wiki/Computer_memory), and thus [Silicon](https://en.wikipedia.org/wiki/Silicon), is required to store
-the [code](https://en.wikipedia.org/wiki/Computer_program). 
-<tr><th>Heap Space<td>The amount of [memory](https://en.wikipedia.org/wiki/Computer_memory) required to store the data used by
-the [code](https://en.wikipedia.org/wiki/Computer_program). 
-<tr><th>Energy<td>The amount of energy required to execute the [code](https://en.wikipedia.org/wiki/Computer_program) .
-Parallelism can speed up [code](https://en.wikipedia.org/wiki/Computer_program) execution often at the cost of increased power
+<tr><th>code Space<td>The amount of code required to implement the solution.
+The more code required, the more memory, and thus Silicon, is required to store
+the code.
+
+<tr><th>Heap Space<td>The amount of memory required to store the data used by
+the code.
+
+<tr><th>Energy<td>The amount of energy required to execute the code .
+Parallelism can speed up code execution often at the cost of increased power
 consumption. This does not necessarily translate into greater energy
 consumption for one execution, but, faster executions lead to more frequent
 executions, which means more energy per unit time, in essence, higher power
