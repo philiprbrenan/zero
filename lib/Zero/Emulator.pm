@@ -935,7 +935,7 @@ sub left($$)                                                                    
     or confess "Reference required, not: ".dump($ref);
   my $r       =  $ref->address;
   my $address =  $r;
-     $address = \$r if isScalar $address;                                       # Interpret constants as direct memory locations
+#    $address = \$r if isScalar $address;                                       # Interpret constants as direct memory locations
   my $arena   = $ref->arena;
   my $area    = $ref->area;
   my $delta   = $ref->delta;
@@ -957,6 +957,7 @@ sub left($$)                                                                    
    };
 
   my $M;                                                                        # Memory address
+say STDERR  "AAAAA" if $ref->dAddress == 0;                                                      # Direct address
   if ($ref->dAddress == 1)                                                      # Direct address
    {$M = $$address + $delta;
    }
