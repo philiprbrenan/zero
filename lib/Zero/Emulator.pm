@@ -1020,14 +1020,12 @@ sub right($$)                                                                   
   my $m;
   my $memory = $exec->memory;
 
-  if (isScalar($$address))                                                      # Direct
+  if ($ref->dAddress == 1)                                                      # Direct
    {$m = $$address + $delta;
-confess "AAAA" unless $ref->dAddress == 1;
    }
-  elsif (isScalar($$$a))                                                        # Indirect
+  elsif ($ref->dAddress == 2)                                                   # Indirect
    {$m = $exec->getMemory(arenaLocal, $stackArea, $$$address, $stackAN) + $delta;
    }
-confess "AAAA" unless $ref->dAddress == 2;
   else
    {invalid(2);
    }
