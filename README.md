@@ -105,7 +105,7 @@ stack frame identified by location ```1``` in the current stack frame.
 
 ```
 
-A **left hand** address can specifys the address of a location in an [array](https://en.wikipedia.org/wiki/Dynamic_array) in [memory](https://en.wikipedia.org/wiki/Computer_memory). Left hand addresses always occur first in the written specification of
+A **left hand** address can specify the address of a location in an [array](https://en.wikipedia.org/wiki/Dynamic_array) in [memory](https://en.wikipedia.org/wiki/Computer_memory). Left hand addresses always occur first in the written specification of
 an instruction.  In the example above, the value ```99``` is being moved to
 location ```2``` in [array](https://en.wikipedia.org/wiki/Dynamic_array) ```1``` operating under the name of 'array name'.
 
@@ -125,9 +125,9 @@ An address can also be specified as just as ```n``` meaning at location ```n```
 in the current stack frame, or ```\n``` indicating an indirect location in the
 current stack frame.
 
-Scalars on the left hand side are are assumed to be addresses not constants
-because we cannot assign to a constant. The target address of an instruction is
-always a left hand address and is thus never treated as a constant.
+Scalars on the left hand side are assumed to be addresses not constants because
+we cannot assign to a constant. The target address of an instruction is always
+a left hand address and is thus never treated as a constant.
 
 ### Right hand addresses
 
@@ -178,13 +178,13 @@ accessed.
 
 ## Macro Preprocessor
 
-Every [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) needs a macro preocessor to generate [code](https://en.wikipedia.org/wiki/Computer_program) from macro
+Every [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) needs a macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) to generate [code](https://en.wikipedia.org/wiki/Computer_program) from macro
 specifications as writing each instruction by hand is hard work. Using a [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) saves programmer time by allowing common instruction sequences to
 be captured as macros which can then be called upon as needed to generate the [code](https://en.wikipedia.org/wiki/Computer_program) for an application. The [Zero assembler programming language](https://github.com/philiprbrenan/zero) uses [Perl](http://www.perl.org/) as its macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor). Using [Perl](http://www.perl.org/) as the macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) for [Zero assembler programming language](https://github.com/philiprbrenan/zero) enables macro libraries to be
 published and distributed on [CPAN](https://metacpan.org/author/PRBRENAN) as [Perl](http://www.perl.org/) modules.
 
 ## Machine [code](https://en.wikipedia.org/wiki/Computer_program) 
-The [Zero assembler programming language](https://github.com/philiprbrenan/zero) [code](https://en.wikipedia.org/wiki/Computer_program) can be converted to a single [string](https://en.wikipedia.org/wiki/String_(computer_science)) using using method:
+The [Zero assembler programming language](https://github.com/philiprbrenan/zero) [code](https://en.wikipedia.org/wiki/Computer_program) can be converted to a single [string](https://en.wikipedia.org/wiki/String_(computer_science)) using method:
 **GenerateMachineCode**.  The [string](https://en.wikipedia.org/wiki/String_(computer_science)) of machine [code](https://en.wikipedia.org/wiki/Computer_program) can then be reloaded using
 method: **disAssemble** to [parse](https://en.wikipedia.org/wiki/Parsing) the machine [code](https://en.wikipedia.org/wiki/Computer_program) [string](https://en.wikipedia.org/wiki/String_(computer_science)) back into [code](https://en.wikipedia.org/wiki/Computer_program) that
 can be executed as usual via **Execute**.  Alternatively, the machine [code](https://en.wikipedia.org/wiki/Computer_program) [string](https://en.wikipedia.org/wiki/String_(computer_science)) can be used to [program](https://en.wikipedia.org/wiki/Computer_program) a [Silicon](https://en.wikipedia.org/wiki/Silicon) device such as an [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) to execute the [code](https://en.wikipedia.org/wiki/Computer_program) on a chip .
@@ -194,7 +194,7 @@ can be executed as usual via **Execute**.  Alternatively, the machine [code](htt
 Two [memory](https://en.wikipedia.org/wiki/Computer_memory) schemes are available for providing [memory](https://en.wikipedia.org/wiki/Computer_memory) to executing [Zero assembler programming language](https://github.com/philiprbrenan/zero) [programs](https://en.wikipedia.org/wiki/Computer_program). 
 ### Segmented [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme
 
-This is the default [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme. The segmented [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme places each [array](https://en.wikipedia.org/wiki/Dynamic_array) in a separate [Perl](http://www.perl.org/) [array](https://en.wikipedia.org/wiki/Dynamic_array).  The current stack fram, parameter [list](https://en.wikipedia.org/wiki/Linked_list) and
+This is the default [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme. The segmented [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme places each [array](https://en.wikipedia.org/wiki/Dynamic_array) in a separate [Perl](http://www.perl.org/) [array](https://en.wikipedia.org/wiki/Dynamic_array).  The current stack frame, parameter [list](https://en.wikipedia.org/wiki/Linked_list) and
 return results are all held in such [arrays](https://en.wikipedia.org/wiki/Dynamic_array). Each such [array](https://en.wikipedia.org/wiki/Dynamic_array) is dynamically
 extensible to any reasonable size.
 
@@ -206,7 +206,7 @@ Alternatively, in the [string](https://en.wikipedia.org/wiki/String_(computer_sc
 each [array](https://en.wikipedia.org/wiki/Dynamic_array) can only extend up to a predetermined size. The number of such [arrays](https://en.wikipedia.org/wiki/Dynamic_array) is determined by the total size of the available [memory](https://en.wikipedia.org/wiki/Computer_memory). 
 The advantage of the [string](https://en.wikipedia.org/wiki/String_(computer_science)) [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme is that the allocation and freeing of
 such [arrays](https://en.wikipedia.org/wiki/Dynamic_array) is very simple because freed [arrays](https://en.wikipedia.org/wiki/Dynamic_array) can be immediately reused.
-Allocation and freeing is thus a fast operation. Thus [memory](https://en.wikipedia.org/wiki/Computer_memory) can be recyled
+Allocation and freeing is thus a fast operation. Thus [memory](https://en.wikipedia.org/wiki/Computer_memory) can be recycled
 indefinitely which is very convenient for [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) implementations.  The [string](https://en.wikipedia.org/wiki/String_(computer_science)) [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme is useful in the case of N-Way [trees](https://en.wikipedia.org/wiki/Tree_(data_structure)) where each node in the [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)) only extends to a small fixed size.
 
 
@@ -231,7 +231,7 @@ structure.
 ## Parallelism
 
 Parallelism typically obtains increased performance through increased power
-consumption. Programmers typcially think of trading performance for [memory](https://en.wikipedia.org/wiki/Computer_memory): the
+consumption. Programmers typically think of trading performance for [memory](https://en.wikipedia.org/wiki/Computer_memory): the
 time space dilemma.  But in designing for [Silicon](https://en.wikipedia.org/wiki/Silicon) we must also consider power
 to get a trilemma of: time, space and power that has to be resolved to produce
 the optimal solution.
@@ -263,12 +263,11 @@ maintained by the [emulator](https://en.wikipedia.org/wiki/Emulator):
 ### Instruction level parallelism
 
 Each instruction can contain up to 3 addresses: two source operands and one
-target operand. Each address contains two components which can access [memory](https://en.wikipedia.org/wiki/Computer_memory) either directly or indirectly. This gives a maximum of 2**2**3 = 64 possibile
-addressing configurations for each instruction.  In reality, most applications
-will only use a small number of these possible configurations.  To assist in
-choosing the most useful combinations  to implement in the [Silicon](https://en.wikipedia.org/wiki/Silicon) realization
-of an application, the [emulator](https://en.wikipedia.org/wiki/Emulator) tracks the number of times each variant of each
-instruction is executed.
+target operand. Each address contains two components which can access [memory](https://en.wikipedia.org/wiki/Computer_memory) either directly or indirectly. This gives a maximum of ```2**2**3 = 64```
+possible addressing configurations for each instruction.  In reality, most
+applications will only use a small number of these possible configurations.  To
+assist in choosing the most useful combinations  to implement in the [Silicon](https://en.wikipedia.org/wiki/Silicon) realization of an application, the [emulator](https://en.wikipedia.org/wiki/Emulator) tracks the number of times each
+variant of each instruction is executed.
 
 ## Examples
 
@@ -307,7 +306,7 @@ An implementation of N-Way-Trees in [Zero assembler programming language](https:
 
 Can you reduce the number of instructions required to perform ```107``` inserts
 into an N-Way-Tree using the instruction set provided? Please raise an issue if
-so stating the licence for your enhancememt.
+so stating the licence for your enhancement.
 
 ```
   add               => 159,
@@ -348,7 +347,7 @@ solution.
 <tr><td><a href="https://github.com/philiprbrenan/zero/blob/main/examples/selectionSort.pl">selection</a>  <td align=right>  285 <td align=right>   4356 <td align=right>270  <td align=right>3860
 </table>
  [Bubble Sort](https://en.wikipedia.org/wiki/Bubble_sort) is easy to optimize by overlapping instruction execution across
-three channels. Doing so gives it the best performance of the **O(n^2)** [sort](https://en.wikipedia.org/wiki/Sorting) algorithms implemented in [Zero assembler programming language](https://github.com/philiprbrenan/zero) so far. Of course, with unlimited parallism,
+three channels. Doing so gives it the best performance of the **O(n^2)** [sort](https://en.wikipedia.org/wiki/Sorting) algorithms implemented in [Zero assembler programming language](https://github.com/philiprbrenan/zero) so far. Of course, with unlimited parallelism,
 bubble [sort](https://en.wikipedia.org/wiki/Sorting) can [sort](https://en.wikipedia.org/wiki/Sorting) an [array](https://en.wikipedia.org/wiki/Dynamic_array) in **O(N)** time: just let each of **N** [processes](https://en.wikipedia.org/wiki/Process_management_(computing)) perform one pass each on the [array](https://en.wikipedia.org/wiki/Dynamic_array) of length **N** to be sorted.
 
 # Optimization space
@@ -364,11 +363,13 @@ bears upon the utility of the solution.
 <tr><th>Code Space<td>The amount of [code](https://en.wikipedia.org/wiki/Computer_program) required to implement the solution.
 The more [code](https://en.wikipedia.org/wiki/Computer_program) required, the more [memory](https://en.wikipedia.org/wiki/Computer_memory), and thus [Silicon](https://en.wikipedia.org/wiki/Silicon), is required to store
 the [code](https://en.wikipedia.org/wiki/Computer_program). 
-<tr><th>Heap Space<td>The amount of [memory](https://en.wikipedia.org/wiki/Computer_memory) required to store the data used by the [code](https://en.wikipedia.org/wiki/Computer_program). 
-<tr><th>Energy<td>The amount of energy required to execute the [code](https://en.wikipedia.org/wiki/Computer_program) . Parallism
-can speed up [code](https://en.wikipedia.org/wiki/Computer_program) execuition often at the cost of increased power consumption.
-This does not necessarily translate into greater energy consumption for one
-execution, but, faster executions lead to more frequent executions, which means
-more energy per unit time, in essence, higher power levels.
+<tr><th>Heap Space<td>The amount of [memory](https://en.wikipedia.org/wiki/Computer_memory) required to store the data used by
+the [code](https://en.wikipedia.org/wiki/Computer_program). 
+<tr><th>Energy<td>The amount of energy required to execute the [code](https://en.wikipedia.org/wiki/Computer_program) .
+Parallelism can speed up [code](https://en.wikipedia.org/wiki/Computer_program) execution often at the cost of increased power
+consumption. This does not necessarily translate into greater energy
+consumption for one execution, but, faster executions lead to more frequent
+executions, which means more energy per unit time, in essence, higher power
+levels.
 
 </table>
