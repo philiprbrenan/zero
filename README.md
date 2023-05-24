@@ -239,12 +239,22 @@ the optimal solution.
 ### Code level parallelism
 
 The **Parallel** instruction enables parallel [sub](https://perldoc.perl.org/perlsub.html) sections to be run,
-figuratively, in parallel. In reality all that happens is that the [emulator](https://en.wikipedia.org/wiki/Emulator) chooses a random order to run reach parallel section in and then records the
-time taken by the longest section as the time for the entire block. This
-technique allows us to confirm that the specified sections can be run in any
-order and thus can also be run in parallel on a target [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) .  The difference
-between the figurative parallel time and sequential time in [code](https://en.wikipedia.org/wiki/Computer_program) execution can
-be seen in the following fields maintained by the [emulator](https://en.wikipedia.org/wiki/Emulator): 
+figuratively, in parallel.
+
+```
+  Parallel
+    sub{Mov [$a, 0, 'array'], 0},
+    sub{Mov [$a, 1, 'array'], 1},
+    sub{Mov [$a, 2, 'array'], 2};
+```
+
+In reality all that happens is that the [emulator](https://en.wikipedia.org/wiki/Emulator) chooses a random order to run
+reach parallel section in and then records the time taken by the longest
+section as the time for the entire block. This technique allows us to confirm
+that the specified sections can be run in any order and thus can also be run in
+parallel on a target [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) .  The difference between the figurative parallel
+time and sequential time in [code](https://en.wikipedia.org/wiki/Computer_program) execution can be seen in the following fields
+maintained by the [emulator](https://en.wikipedia.org/wiki/Emulator): 
 ```
   is_deeply $e->timeParallel,   184;
   is_deeply $e->timeSequential, 244;
