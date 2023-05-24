@@ -1011,7 +1011,7 @@ sub right($$)                                                                   
      ." delta: "      .dump($tDelta));
    }
 
-  if (isScalar($address))                                                       # Constant
+  if ($ref->dAddress == 0)                                                      # Constant
    {#rwRead($area//&stackArea, $a) if $a =~ m(\A\-?\d+\Z);
     return $address if defined $address;                                        # Attempting to read a address that has never been set is an error
     invalid(1);
