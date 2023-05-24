@@ -78,9 +78,9 @@ executable instructions and then executes these instructions.
 
 ## Addresses
 
-Each [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) instruction can potentially affect a target [memory](https://en.wikipedia.org/wiki/Computer_memory) location specified by
-the target operand known as the **left hand** address.  Each [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) instruction can potentially read zero, one or two source operands to locate the
-data to be processed by the instruction.
+Each [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) instruction can potentially affect a target [memory](https://en.wikipedia.org/wiki/Computer_memory) location
+specified by the target operand known as the **left hand** address.  Each [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) instruction can potentially read zero, one or two source operands to
+locate the data to be processed by the instruction.
 
 Each address indexes an [array](https://en.wikipedia.org/wiki/Dynamic_array) in [memory](https://en.wikipedia.org/wiki/Computer_memory). Each [array](https://en.wikipedia.org/wiki/Dynamic_array) has a non unique name to
 confirm that we are reading or writing to the right kind of [memory](https://en.wikipedia.org/wiki/Computer_memory). 
@@ -202,10 +202,8 @@ A possible downside of this [memory](https://en.wikipedia.org/wiki/Computer_memo
 
 ### String [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme
 
-Alternatively, in the stringmemory scheme, [arrays](https://en.wikipedia.org/wiki/Dynamic_array) are held in fixed size
-blocks.  This imposes the limitation that each [array](https://en.wikipedia.org/wiki/Dynamic_array) can only extend up to a
-predetermined size. The number of such [arrays](https://en.wikipedia.org/wiki/Dynamic_array) is determined by the total size
-of the available [memory](https://en.wikipedia.org/wiki/Computer_memory). 
+Alternatively, in the [string](https://en.wikipedia.org/wiki/String_(computer_science)) [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme, [arrays](https://en.wikipedia.org/wiki/Dynamic_array) are held as a [string](https://en.wikipedia.org/wiki/String_(computer_science)) concatenated together in fixed size blocks.  This imposes the limitation that
+each [array](https://en.wikipedia.org/wiki/Dynamic_array) can only extend up to a predetermined size. The number of such [arrays](https://en.wikipedia.org/wiki/Dynamic_array) is determined by the total size of the available [memory](https://en.wikipedia.org/wiki/Computer_memory). 
 The advantage of the [string](https://en.wikipedia.org/wiki/String_(computer_science)) [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme is that the allocation and freeing of
 such [arrays](https://en.wikipedia.org/wiki/Dynamic_array) is very simple because freed [arrays](https://en.wikipedia.org/wiki/Dynamic_array) can be immediately reused.
 Allocation and freeing is thus a fast operation. Thus [memory](https://en.wikipedia.org/wiki/Computer_memory) can be recyled
@@ -230,25 +228,7 @@ results of such writes can be seen on the terminal command line, in the trace
 output and in the **out** field of the [emulator](https://en.wikipedia.org/wiki/Emulator) execution envoronment data
 structure.
 
-### Segmented [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme
-
-This is the default [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme. The segmented [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme places each [array](https://en.wikipedia.org/wiki/Dynamic_array) in a separate [Perl](http://www.perl.org/) [array](https://en.wikipedia.org/wiki/Dynamic_array).  The current stack fram, paramrter [list](https://en.wikipedia.org/wiki/Linked_list) and
-return results are all held in such [arrays](https://en.wikipedia.org/wiki/Dynamic_array). each such [array](https://en.wikipedia.org/wiki/Dynamic_array) is dynamically
-extensible to any reasonable size.
-
-
-### String [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme
-
-Alternatively, [arrays](https://en.wikipedia.org/wiki/Dynamic_array) are held in fixed size blocks.  This imposes the
-limitation that each [array](https://en.wikipedia.org/wiki/Dynamic_array) can only extend up to a predetermined size. The
-number of such [arrays](https://en.wikipedia.org/wiki/Dynamic_array) is determined by the total size of the available [memory](https://en.wikipedia.org/wiki/Computer_memory). 
-The advantage of the [string](https://en.wikipedia.org/wiki/String_(computer_science)) [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme is that the allocation and freeing of
-such [arrays](https://en.wikipedia.org/wiki/Dynamic_array) is very simple because freed [arrays](https://en.wikipedia.org/wiki/Dynamic_array) can be immediately reused.
-Allocationa nd freeing is thus a fast operation. Thus [memory](https://en.wikipedia.org/wiki/Computer_memory) can be recyled
-indefinitely which is very convenient for [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) implementations.  The [string](https://en.wikipedia.org/wiki/String_(computer_science)) [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme is useful in the case of N-Way [trees](https://en.wikipedia.org/wiki/Tree_(data_structure)) where each node in the [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)) only extends to a small fixed size.
-
-
-### Parallelism
+## Parallelism
 
 Parallelism typically obtains increased performance through increased power
 consumption. Programmers typcially think of trading performance for [memory](https://en.wikipedia.org/wiki/Computer_memory): the
@@ -256,7 +236,7 @@ time space dilemma.  But in designing for [Silicon](https://en.wikipedia.org/wik
 to get a trilemma of: time, space and power that has to be resolved to produce
 the optimal solution.
 
-#### Code level parallelism
+### Code level parallelism
 
 The **Parallel** instruction enables parallel [sub](https://perldoc.perl.org/perlsub.html) sections to be run,
 figuratively, in parallel. In reality all that happens is that the [emulator](https://en.wikipedia.org/wiki/Emulator) chooses a random order to run reach parallel section in and then records the
@@ -270,8 +250,7 @@ be seen in the following fields maintained by the [emulator](https://en.wikipedi
   is_deeply $e->timeSequential, 244;
 ```
 
-
-#### Instruction level parallelism
+### Instruction level parallelism
 
 Each instruction can contain up to 3 addresses. Each address contains two
 components which can access [memory](https://en.wikipedia.org/wiki/Computer_memory) either directly or indirectly. This gives a
@@ -280,7 +259,6 @@ instruction.  In reality, most applications will only use a small number of
 these possible configurations.  To assist in choosing the most useful
 combinations  to implement in the [Silicon](https://en.wikipedia.org/wiki/Silicon) realization of an application, the [emulator](https://en.wikipedia.org/wiki/Emulator) tracks the number of times each variant of each instruction is
 executed.
-
 
 ## Examples
 
