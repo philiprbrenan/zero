@@ -1,4 +1,4 @@
-# Test 2023-05-24 at 03:32:16
+# Test 2023-05-24 at 03:33:50
 
 name: Test
 
@@ -20,9 +20,6 @@ jobs:
     - name: Emulator
       run:  perl lib/Zero/Emulator.pm
 
-    - name: TestNWayTree
-      run:  perl examples/testNWayTree.pl
-
     - name: BubbleSort
       run:  perl examples/bubbleSort.pl
 
@@ -43,4 +40,7 @@ jobs:
 
     - name: NWayTree
       run:  perl lib/Zero/NWayTree.pm
+
+    - name: TestNWayTree
+      run:  perl examples/testNWayTree.pl
 
