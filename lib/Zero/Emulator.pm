@@ -1022,10 +1022,12 @@ sub right($$)                                                                   
 
   if (isScalar($$address))                                                      # Direct
    {$m = $$address + $delta;
+confess "AAAA" unless $ref->dAddress == 1;
    }
   elsif (isScalar($$$a))                                                        # Indirect
    {$m = $exec->getMemory(arenaLocal, $stackArea, $$$address, $stackAN) + $delta;
    }
+confess "AAAA" unless $ref->dAddress == 2;
   else
    {invalid(2);
    }
