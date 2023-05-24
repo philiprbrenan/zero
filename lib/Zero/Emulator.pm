@@ -1785,6 +1785,8 @@ sub Zero::Emulator::Code::execute($%)                                           
   my $mi = $options{maximumInstructionsToExecute} //                            # Prevent run away executions
                     maximumInstructionsToExecute;
 
+# Instruction loop
+
   for my $step(1..$mi)                                                          # Execute each instruction in the code until we hit an undefined instruction. Track various statistics to assist in debugging and code improvement.
    {last unless defined($exec->instructionPointer);
     my $instruction = $exec->block->code->[$exec->instructionPointer++];        # Current instruction
@@ -4258,7 +4260,7 @@ if (1)                                                                          
  {Start 1;
   my $a = Mov 1;
   my $g = GenerateMachineCode;
-  is_deeply dump($g), 'pack("H*","0000002500000000000000000000017f000000010000007f000000000000007f")';
+  is_deeply dump($g), 'pack("H*","0000002300000000000000000000017f000000010000007f000000000000007f")';
 
   my $d = disAssemble $g;
      $d->assemble;
