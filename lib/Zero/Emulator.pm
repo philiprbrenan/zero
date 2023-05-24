@@ -2131,7 +2131,7 @@ sub Confess()                                                                   
 
 sub Dec($)                                                                      #i Decrement the target.
  {my ($target) = @_;                                                            # Target address
-  $assembly->instruction(action=>"dec", xTarget($target))
+  $assembly->instruction(action=>"subtract", xTarget($target), xSource($target), xSource2(1))
  }
 
 sub Dump()                                                                      #i Dump all the arrays currently in memory.
@@ -2323,7 +2323,7 @@ sub InSize(;$) {                                                                
 
 sub Inc($)                                                                      #i Increment the target.
  {my ($target) = @_;                                                            # Target address
-  $assembly->instruction(action=>"inc", xTarget($target))
+  $assembly->instruction(action=>"add", xTarget($target), xSource($target), xSource2(1))
  }
 
 sub Jeq($$$)                                                                    #i Jump to a target label if the first source field is equal to the second source field.
@@ -3944,7 +3944,7 @@ if (1)                                                                          
   my $e = &$ee(suppressOutput=>1);
 
   is_deeply $e->counts,                                                         # Several allocations and frees
-   {array=>3, free=>3, inc=>3, jGe=>4, jmp=>3, mov=>4
+   {array=>3, free=>3, add=>3, jGe=>4, jmp=>3, mov=>4
    };
   is_deeply $e->out, <<END;
 Stack trace:
@@ -4202,7 +4202,7 @@ if (1)                                                                          
   my $e = Execute;
 
   is_deeply $e->tallyCount, 2 * $N;
-  is_deeply $e->tallyCounts, { 1 => {mov => $N}, 2 => {inc => $N}};
+  is_deeply $e->tallyCounts, { 1 => {mov => $N}, 2 => {add => $N}};
  }
 
 #latest:;
