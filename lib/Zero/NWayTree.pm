@@ -843,6 +843,7 @@ sub Iterate(&$)                                                                 
  {my ($block, $tree) = @_;                                                      # Block of code to execute for each key in tree, tree
 
   my $n; my $f; my $F;
+
   Parallel
     sub {$n = root($tree)},
     sub {$f = FindResult_new},
@@ -860,7 +861,10 @@ sub Iterate(&$)                                                                 
       sub {&$block($F)},
       sub {GoUpAndAround($f)};
    } 2**32-1;
-  FindResult_free($f);
+
+  Parallel
+    sub{FindResult_free($f)},
+    sub{FindResult_free($F)};
  }
 
 #D1 Print                                                                       # Print trees horizontally.
@@ -1366,15 +1370,15 @@ if (1)                                                                          
   is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
   is_deeply $e->widestAreaInArena,   [537, 6];
   is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
-  is_deeply $e->mostArrays,          [1, 252, 1, 1];
+  is_deeply $e->mostArrays,          [1, 251, 1, 1];
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  24610;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  24611;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
   is_deeply $e->tallyTotal->{1}, 15456;
   is_deeply $e->tallyTotal->{2},  6294;
-  is_deeply $e->tallyTotal->{3},  2860;
+  is_deeply $e->tallyTotal->{3},  2861;
 #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
 
   #say STDERR formatTable $e->tallyCounts->{1};   exit;
@@ -1418,7 +1422,7 @@ END
 add          269
 array          2
 arrayIndex    72
-free           1
+free           2
 jEq          260
 jFalse        28
 jGe          316
@@ -1496,18 +1500,18 @@ if (1)                                                                          
   is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
   is_deeply $e->widestAreaInArena,   [537, 6];
   is_deeply $e->namesOfWidestArrays, [0, 0];
-  is_deeply $e->mostArrays,          [1, 252, 1, 1];
+  is_deeply $e->mostArrays,          [1, 251, 1, 1];
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  24610;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  24611;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
   is_deeply $e->tallyTotal->{1}, 15456;
   is_deeply $e->tallyTotal->{2},  6294;
-  is_deeply $e->tallyTotal->{3},  2860;
+  is_deeply $e->tallyTotal->{3},  2861;
 
   is_deeply $e->timeParallel,   24689;
-  is_deeply $e->timeSequential, 29084;
+  is_deeply $e->timeSequential, 29086;
  }
 
 # (\A.{80})\s+(#.*\Z) \1\2
