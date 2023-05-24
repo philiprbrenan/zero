@@ -54,10 +54,11 @@ END
   is_deeply $e->timeParallel,    270;
   is_deeply $e->timeSequential,  285;
 
+  #say STDERR formatTable($e->counts); exit;
   is_deeply formatTable($e->counts), <<END;
+add        44
 array       1
 arraySize   1
-inc        44
 jGe        53
 jLe        36
 jmp        44
