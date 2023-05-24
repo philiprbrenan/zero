@@ -1000,7 +1000,7 @@ For loop 0..range-1 or in reverse.
       my $e = Execute;
     
       is_deeply $e->tallyCount, 2 * $N;
-      is_deeply $e->tallyCounts, { 1 => {mov => $N}, 2 => {inc => $N}};
+      is_deeply $e->tallyCounts, { 1 => {mov => $N}, 2 => {add => $N}};
      }
     
 
@@ -3106,7 +3106,7 @@ Counts instructions when enabled.
       my $e = Execute;
     
       is_deeply $e->tallyCount, 2 * $N;
-      is_deeply $e->tallyCounts, { 1 => {mov => $N}, 2 => {inc => $N}};
+      is_deeply $e->tallyCounts, { 1 => {mov => $N}, 2 => {add => $N}};
      }
     
 
