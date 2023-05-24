@@ -144,8 +144,8 @@ The example above moves the **right hand** constant ```99``` to the location
 ```3``` in the current stack frame.
 
 Right hand addresses can normally be scalars if a constant is required except
-in the case of the **MoveLong** instruction which always requires that its
-first source operand represent an address.
+in the case of the **MoveLong** instruction which requires that both its target
+operand and its first source operand represent addresses.
 
 #### Right hand addresses as variables
 
