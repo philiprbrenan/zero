@@ -1378,7 +1378,7 @@ if (1)                                                                          
 #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
 
   #say STDERR formatTable $e->tallyCounts->{1};   exit;
-  is_deeply formatTable($e->tallyCounts->{1}), <<END;                            # Insert tally
+  is_deeply formatTable($e->tallyCounts->{1}), <<END;                           # Insert tally
 add                 885
 array               247
 arrayCountGreater     2
@@ -1398,8 +1398,8 @@ shiftUp             300
 subtract            531
 END
 
-  #say STDERR formatTable $e->tallyCounts->{2}; ewxit;
-  is_deeply formatTable($e->tallyCounts->{2}), <<END;                            # Find tally
+  #say STDERR formatTable $e->tallyCounts->{2}; exit;
+  is_deeply formatTable($e->tallyCounts->{2}), <<END;                           # Find tally
 add              497
 arrayCountLess   223
 arrayIndex       330
