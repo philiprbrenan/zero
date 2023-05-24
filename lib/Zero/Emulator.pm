@@ -101,8 +101,6 @@ sub ExecutionEnvironment(%)                                                     
   $exec
  }
 
-
-
 my sub Code(%)                                                                  # A block of code
  {my (%options) = @_;                                                           # Parameters
 
@@ -297,7 +295,7 @@ sub refValue($)                                                                 
   confess "Reference too deep".dump($ref);
  }
 
-# Memory is subdivided into arenas that hold items of similar types, sizes, access orders
+# Memory is subdivided into arenas that hold items of similar types, sizes, access orders etc. in an attempt to minimize memory fragmentation
 my sub arenaLocal {0}                                                           # Variables whose location is fixed at compile time
 my sub arenaHeap  {1}                                                           # Allocations whose location is dynamically allocated as the program runs
 my sub arenaParms {2}                                                           # Parameter areas
@@ -989,8 +987,7 @@ sub right($$)                                                                   
    }
 
   if ($ref->dAddress == 0)                                                      # Constant
-   {#rwRead($area//&stackArea, $a) if $a =~ m(\A\-?\d+\Z);
-    return $address if defined $address;                                        # Attempting to read a address that has never been set is an error
+   {return $address if defined $address;                                        # Attempting to read a address that has never been set is an error
     invalid;
    }
 
@@ -2999,9 +2996,7 @@ if (1)                                                                          
   my $a = Mov 2;
   Out $a;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-2
-END
+  is_deeply $e->outLines, [2];
  }
 
 #latest:;
@@ -3012,9 +3007,7 @@ if (1)
   my $c = Mov  \$b;
   Out $c;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-3
-END
+  is_deeply $e->outLines, [3];
  }
 
 #latest:;
@@ -3023,9 +3016,7 @@ if (1)                                                                          
   my $a = Add 3, 2;
   Out  $a;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-5
-END
+  is_deeply $e->outLines, [5];
  }
 
 #latest:;
@@ -3034,9 +3025,7 @@ if (1)                                                                          
   my $a = Subtract 4, 2;
   Out $a;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-2
-END
+  is_deeply $e->outLines, [2];
  }
 
 #latest:;
@@ -3046,9 +3035,7 @@ if (1)                                                                          
   Dec $a;
   Out $a;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-2
-END
+  is_deeply $e->outLines, [2];
  }
 
 #latest:;
@@ -3058,9 +3045,7 @@ if (1)                                                                          
   Inc $a;
   Out $a;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-4
-END
+  is_deeply $e->outLines, [4];
  }
 
 #latest:;
@@ -3087,9 +3072,7 @@ if (1)                                                                          
   ShiftLeft $a, $a;
   Out $a;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-2
-END
+  is_deeply $e->outLines, [2];
  }
 
 #latest:;
@@ -3099,9 +3082,7 @@ if (1)                                                                          
   ShiftRight $a, 1;
   Out $a;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-2
-END
+  is_deeply $e->outLines, [2];
  }
 
 #latest:;
@@ -3114,9 +3095,7 @@ if (1)                                                                          
     Out  2;
   setLabel($b);
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-2
-END
+  is_deeply $e->outLines, [2];
  }
 
 #latest:;
@@ -3144,10 +3123,7 @@ if (1)                                                                          
     Out  4;
   setLabel($d);
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-2
-3
-END
+  is_deeply $e->outLines, [2..3];
  }
 
 #latest:;
@@ -3159,18 +3135,7 @@ if (1)                                                                          
     Inc \0;
   Jlt $a, \0, 10;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-0
-1
-2
-3
-4
-5
-6
-7
-8
-9
-END
+  is_deeply $e->outLines, [0..9];
  }
 
 #latest:;
@@ -3181,9 +3146,7 @@ if (1)                                                                          
   Mov  1, [$a, \1, "aaa"];
   Out \1;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-11
-END
+  is_deeply $e->outLines, [11];
  }
 
 #latest:;
@@ -3195,9 +3158,7 @@ if (1)                                                                          
    };
   Call $w;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-1
-END
+  is_deeply $e->outLines, [1];
  }
 
 #latest:;
@@ -3211,9 +3172,7 @@ if (1)                                                                          
   ParamsPut 0, 999;
   Call $w;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-999
-END
+  is_deeply $e->outLines, [999];
  }
 
 #latest:;
@@ -3227,9 +3186,7 @@ if (1)                                                                          
   ReturnGet \0, 0;
   Out \0;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-999
-END
+  is_deeply $e->outLines, [999];
  }
 
 #latest:;
@@ -3246,9 +3203,7 @@ if (1)                                                                          
   my $c = ReturnGet 0;
   Out $c;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-4
-END
+  is_deeply $e->outLines, [4];
  }
 
 #latest:;
@@ -3433,9 +3388,7 @@ if (1)                                                                          
    {Out 0
    };
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-1
-END
+  is_deeply $e->outLines, [1];
  }
 
 #latest:;
@@ -3449,9 +3402,7 @@ if (1)                                                                          
    {Out 0
    };
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-0
-END
+  is_deeply $e->outLines, [0];
  }
 
 
@@ -3647,9 +3598,7 @@ if (1)                                                                          
   AssertEq $v, $V;
   Out [$a, \$i, 'aaa'];
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-11
-END
+  is_deeply $e->outLines, [11];
  }
 
 #latest:;
@@ -3910,9 +3859,7 @@ if (1)                                                                          
 
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->heap(1), [0, 2];
-  is_deeply $e->out, <<END;
-99
-END
+  is_deeply $e->outLines, [99];
  }
 
 #latest:;
@@ -4327,9 +4274,7 @@ if (1)                                                                          
   my $a = Mov 1;
   Out $a;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-1
-END
+  is_deeply $e->outLines, [1];
  }
 }
 
