@@ -74,9 +74,6 @@ my $t = <<END;
     - name: Emulator
       run:  perl lib/Zero/Emulator.pm
 
-    - name: TestNWayTree
-      run:  perl examples/testNWayTree.pl
-
     - name: BubbleSort
       run:  perl examples/bubbleSort.pl
 
@@ -97,6 +94,9 @@ my $t = <<END;
 
     - name: NWayTree
       run:  perl lib/Zero/NWayTree.pm
+
+    - name: TestNWayTree
+      run:  perl examples/testNWayTree.pl
 END
 
 my $y = <<"END" =~ s(XXXX) ($t)gsr;
