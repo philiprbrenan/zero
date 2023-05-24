@@ -1031,23 +1031,16 @@ sub right($$)                                                                   
    }
   invalid(3) unless defined $m;
 
-  if (!defined($area))                                                          # Stack frame
-   {$r = $exec->getMemory(arenaLocal, $stackArea, $m, $stackAN);                # Indirect from stack area
+  if (!$ref->dArea)                                                             # Stack frame
+   {$r = $exec->getMemory(arenaLocal, $stackArea, $m, $stackAN);                # Direct from stack area
     $e = 1; $tArena = arenaLocal; $tArea = $stackArea;  $tAddress = $m;
    }
-# elsif (isScalar($area))                                                       # So far, not used
-#  {$r = $exec->getMemory($arena, $area, $m, $ref->name);                       # Indirect from stack area
-#   $e = 2; $tArena = $arena; $tArea = $stackArea;  $tAddress = $m;
-#  }
-  elsif (isScalar($$area))                                                      # Used in NWayTree
+  else                                                                          # Indirect from stack area
    {$e = 3; $tArena = arenaLocal; $tArea = $stackArea;  $tAddress = $m;
     if (defined(my $j = $exec->getMemory(arenaLocal, $stackArea, $$area, $stackAN)))
-     {$r = $exec->getMemory($arena, $j, $m, $ref->name);                        # Indirect from stack area
+     {$r = $exec->getMemory($arena, $j, $m, $ref->name);
       $e = 4; $tArena = $arena; $tArea = $j;  $tAddress = $m;
      }
-   }
-  else
-   {invalid(4);
    }
 
   invalid(5) unless defined $r;
