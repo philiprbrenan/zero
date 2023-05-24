@@ -339,6 +339,9 @@ sub Zero::Emulator::Code::ArrayNumberToName($$)                                 
 
 sub Reference($$$$$)                                                            # Create a new reference
  {my ($arena, $area, $address, $name, $delta) = @_;                             # Arena, array, address, name of area, delta if any to be applied to address.
+  confess "Area too deep: ".    dump($area)    if refDepth($area)    > 1;       # Areas that are too deep represent programmer error
+  confess "Address too deep: ". dump($address) if refDepth($address) > 2;       # Addresses that are too deep represent programmer error
+
   genHash(q(Zero::Emulator::Reference),
     arena=>     $arena,                                                         # Arrays are allocated in arenas in the hope of facilitating the reuse of freed memory
     area=>      $area,                                                          # The array number
@@ -931,41 +934,21 @@ sub stackAreaNameNumber($)                                                      
 sub left($$)                                                                    #P Address of a location in memory.
  {my ($exec, $ref) = @_;                                                        # Execution environment, reference
   @_ == 2 or confess "Two parameters";
-  ref($ref) =~ m(Reference)
-    or confess "Reference required, not: ".dump($ref);
+  ref($ref)   =~ m(Reference) or confess "Reference required, not: ".dump($ref);
   my $r       =  $ref->address;
   my $address =  $r;
-#    $address = \$r if isScalar $address;                                       # Interpret constants as direct memory locations
   my $arena   = $ref->arena;
   my $area    = $ref->area;
   my $delta   = $ref->delta;
   my $S       = $exec->currentStackFrame;                                       # Current stack frame
   my $stackArea = $exec->stackAreaNameNumber;
 
-  my sub invalid($)
-   {my ($e) = @_;                                                               # Parameters
-    my $i   = $exec->currentInstruction;
-    my $l   = $i->line;
-    my $f   = $i->file;
-    $exec->stackTraceAndExit(
-     "Invalid left address,"
-     ." arena: ".dump($arena)
-     ." area: ".dump($area)
-     ." address: ".dump($address)
-     ." e: ".dump($e)
-     , confess=>1)
-   };
-
   my $M;                                                                        # Memory address
-say STDERR  "AAAAA" if $ref->dAddress == 0;                                                      # Direct address
   if ($ref->dAddress == 1)                                                      # Direct address
    {$M = $$address + $delta;
    }
   elsif ($ref->dAddress == 2)                                                   # Indirect address
    {$M = $exec->getMemory(arenaLocal, $S, $$$address, $stackArea) + $delta;
-   }
-  else
-   {invalid(1)
    }
 
   if (!$ref->dArea)                                                             # Current stack frame
@@ -977,7 +960,6 @@ say STDERR  "AAAAA" if $ref->dAddress == 0;                                     
     my $a = Address($arena, $A, $M, $ref->name);
     return $a;
    }
-  invalid(2);
  }
 
 sub right($$)                                                                   #P Get a constant or a value from memory.
@@ -992,30 +974,24 @@ sub right($$)                                                                   
   my $delta     = $ref->delta;
   my $stackAN   = $exec->stackAreaNameNumber;
 
-  my $r; my $e = 0; my $tArena = $arena; my $tArea = $area; my $tAddress = $address; my $tDelta = $delta;
+  my $r;
 
-  my sub invalid($)                                                             # Invalid address
-   {my ($error) = @_;
-    my $i = $exec->currentInstruction;
+  my sub invalid()                                                              # Invalid address
+   {my $i = $exec->currentInstruction;
     my $l = $i->line;
     my $f = $i->file;
     $exec->stackTraceAndExit(
-     "Invalid "
-     ." error: "      .dump($error)
-     ." right arena: ".dump($arena)
-     ." right area: " .dump($area)
-     ." address: "    .dump($a)
-     ." stack: "      .$exec->currentStackFrame
-     ." error: "      .dump($e)
-     ." target Area: ".dump($tArea)
-     ." address: "    .dump($tAddress)
-     ." delta: "      .dump($tDelta));
+     "Undefined right hand value"
+     ." arena: "  .dump($arena)
+     ." area: "   .dump($area)
+     ." address: ".dump($a)
+     ." stack: ".$exec->currentStackFrame);
    }
 
   if ($ref->dAddress == 0)                                                      # Constant
    {#rwRead($area//&stackArea, $a) if $a =~ m(\A\-?\d+\Z);
     return $address if defined $address;                                        # Attempting to read a address that has never been set is an error
-    invalid(1);
+    invalid;
    }
 
   my $m;
@@ -1024,27 +1000,20 @@ sub right($$)                                                                   
   if ($ref->dAddress == 1)                                                      # Direct
    {$m = $$address + $delta;
    }
-  elsif ($ref->dAddress == 2)                                                   # Indirect
+  else                                                                          # Indirect
    {$m = $exec->getMemory(arenaLocal, $stackArea, $$$address, $stackAN) + $delta;
    }
-  else
-   {invalid(2);
-   }
-  invalid(3) unless defined $m;
 
   if (!$ref->dArea)                                                             # Stack frame
    {$r = $exec->getMemory(arenaLocal, $stackArea, $m, $stackAN);                # Direct from stack area
-    $e = 1; $tArena = arenaLocal; $tArea = $stackArea;  $tAddress = $m;
    }
   else                                                                          # Indirect from stack area
-   {$e = 3; $tArena = arenaLocal; $tArea = $stackArea;  $tAddress = $m;
-    if (defined(my $j = $exec->getMemory(arenaLocal, $stackArea, $$area, $stackAN)))
+   {if (defined(my $j = $exec->getMemory(arenaLocal, $stackArea, $$area, $stackAN)))
      {$r = $exec->getMemory($arena, $j, $m, $ref->name);
-      $e = 4; $tArena = $arena; $tArea = $j;  $tAddress = $m;
      }
    }
 
-  invalid(5) unless defined $r;
+  invalid() unless defined $r;
   $r
  }
 
