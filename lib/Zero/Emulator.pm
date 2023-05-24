@@ -1513,13 +1513,6 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->timeDelta = 0;
      },
 
-    dec=> sub                                                                   # Decrement locations in memory. The first address is incremented by 1, the next by two, etc.
-     {my $i = $exec->currentInstruction;
-      my $T = $exec->right($i->target);
-      my $t = $exec->left($i->target);
-      $exec->setMemory($t, defined($t) ? $T-1 : -1);
-     },
-
     in=> sub                                                                    # Read the next value from the input channel
      {my $i = $exec->currentInstruction;
       my $t = $exec->left($i->target);
@@ -1535,13 +1528,6 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = $exec->currentInstruction;
       my $t = $exec->left($i->target);
       $exec->assign($t, scalar $exec->in->@*);
-     },
-
-    inc=> sub                                                                   # Increment locations in memory. The first address is incremented by 1, the next by two, etc.
-     {my $i = $exec->currentInstruction;
-      my $T = $exec->right($i->target);
-      my $t = $exec->left($i->target);
-      $exec->setMemory($t, defined($t) ? $T+1 : 1);
      },
 
     jmp=> sub                                                                   # Jump to the target address
