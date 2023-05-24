@@ -362,7 +362,7 @@ resources:
 <tr><th>Time<td>The amount of elapsed time it takes to execute the code as this
 bears upon the utility of the solution.
 
-<tr><th>code Space<td>The amount of code required to implement the solution.
+<tr><th>Code Space<td>The amount of code required to implement the solution.
 The more code required, the more memory, and thus Silicon, is required to store
 the code.
 
