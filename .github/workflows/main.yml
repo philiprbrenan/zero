@@ -1,4 +1,4 @@
-# Test 2023-05-24 at 03:31:26
+# Test 2023-05-24 at 03:32:16
 
 name: Test
 
@@ -15,42 +15,32 @@ jobs:
         ref: 'main'
 
     - name: Cpan
-      run: |
-        sudo cpan install -T Data::Dump Data::Table::Text
+      run:  sudo cpan install -T Data::Dump Data::Table::Text
 
     - name: Emulator
-      run: |
-        perl lib/Zero/Emulator.pm
+      run:  perl lib/Zero/Emulator.pm
 
     - name: TestNWayTree
-      run: |
-        perl examples/testNWayTree.pl
+      run:  perl examples/testNWayTree.pl
 
     - name: BubbleSort
-      run: |
-        perl examples/bubbleSort.pl
+      run:  perl examples/bubbleSort.pl
 
     - name: InsertionSort
-      run: |
-        perl examples/insertionSort.pl
+      run:  perl examples/insertionSort.pl
 
     - name: QuickSort
-      run: |
-        perl examples/quickSort.pl
+      run:  perl examples/quickSort.pl
 
     - name: QuickSort Parallel
-      run: |
-        perl examples/quickSortParallel.pl
+      run:  perl examples/quickSortParallel.pl
 
     - name: SelectionSort
-      run: |
-        perl examples/selectionSort.pl
+      run:  perl examples/selectionSort.pl
 
     - name: TestEmulator
-      run: |
-        perl examples/testEmulator.pl
+      run:  perl examples/testEmulator.pl
 
     - name: NWayTree
-      run: |
-        perl lib/Zero/NWayTree.pm
+      run:  perl lib/Zero/NWayTree.pm
 
