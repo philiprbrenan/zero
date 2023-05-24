@@ -50,9 +50,7 @@ Add the source locations together and store the result in the target area.
 
       Out  $a;
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    5
-    END
+      is_deeply $e->outLines, [5];
      }
     
 
@@ -640,9 +638,7 @@ Call the subroutine at the target address.
       Call $w;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    1
-    END
+      is_deeply $e->outLines, [1];
      }
     
     if (1)                                                                          
@@ -657,9 +653,7 @@ Call the subroutine at the target address.
       Call $w;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    999
-    END
+      is_deeply $e->outLines, [999];
      }
     
     if (1)                                                                            
@@ -674,9 +668,7 @@ Call the subroutine at the target address.
       ReturnGet \0, 0;
       Out \0;
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    999
-    END
+      is_deeply $e->outLines, [999];
      }
     
     if (1)                                                                            
@@ -712,9 +704,7 @@ Call the subroutine at the target address.
       AssertEq $v, $V;
       Out [$a, \$i, 'aaa'];
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    11
-    END
+      is_deeply $e->outLines, [11];
      }
     
     if (1)                                                                            
@@ -805,9 +795,7 @@ Decrement the target.
 
       Out $a;
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    2
-    END
+      is_deeply $e->outLines, [2];
      }
     
 
@@ -865,9 +853,7 @@ Else block.
        {Out 0
        };
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    0
-    END
+      is_deeply $e->outLines, [0];
      }
     
     if (1)                                                                            
@@ -1279,9 +1265,7 @@ Execute then clause if the specified memory address is zero thus representing fa
        {Out 0
        };
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    0
-    END
+      is_deeply $e->outLines, [0];
      }
     
 
@@ -1667,9 +1651,7 @@ Execute then clause if the specified memory address is not zero thus representin
        {Out 0
        };
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    1
-    END
+      is_deeply $e->outLines, [1];
      }
     
 
@@ -1752,9 +1734,7 @@ Increment the target.
 
       Out $a;
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    4
-    END
+      is_deeply $e->outLines, [4];
      }
     
 
@@ -2026,9 +2006,7 @@ Jump to a label.
         Out  2;
       setLabel($b);
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    2
-    END
+      is_deeply $e->outLines, [2];
      }
     
 
@@ -2205,9 +2183,7 @@ Copy a constant or memory address to the target address.
 
       Out $a;
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    2
-    END
+      is_deeply $e->outLines, [2];
      }
     
      {Start 1;                                                                      
@@ -2223,9 +2199,7 @@ Copy a constant or memory address to the target address.
 
       Out \1;
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    11
-    END
+      is_deeply $e->outLines, [11];
      }
     
     if (1)                                                                           
@@ -2286,9 +2260,7 @@ Copy a constant or memory address to the target address.
       AssertEq $v, $V;
       Out [$a, \$i, 'aaa'];
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    11
-    END
+      is_deeply $e->outLines, [11];
      }
     
     if (1)                                                                            
@@ -2573,9 +2545,7 @@ Get a word from the parameters in the previous frame and store it in the current
       AssertEq $v, $V;
       Out [$a, \$i, 'aaa'];
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    11
-    END
+      is_deeply $e->outLines, [11];
      }
     
 
@@ -2615,9 +2585,7 @@ Put a word into the parameters list to make it visible in a called procedure.
       AssertEq $v, $V;
       Out [$a, \$i, 'aaa'];
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    11
-    END
+      is_deeply $e->outLines, [11];
      }
     
 
@@ -2678,9 +2646,7 @@ Define a procedure.
       my $c = ReturnGet 0;
       Out $c;
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    4
-    END
+      is_deeply $e->outLines, [4];
      }
     
     if (1)                                                                          
@@ -2859,9 +2825,7 @@ Return from a procedure via the call stack.
        };
       Call $w;
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    1
-    END
+      is_deeply $e->outLines, [1];
      }
     
 
@@ -2886,9 +2850,7 @@ Get a word from the return area and save it.
 
       Out \0;
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    999
-    END
+      is_deeply $e->outLines, [999];
      }
     
 
@@ -2914,9 +2876,7 @@ Put a word into the return area.
       ReturnGet \0, 0;
       Out \0;
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    999
-    END
+      is_deeply $e->outLines, [999];
      }
     
 
@@ -2945,9 +2905,7 @@ Shift an element down one in an area.
     
       my $e = &$ee(suppressOutput=>1);
       is_deeply $e->heap(1), [0, 2];
-      is_deeply $e->out, <<END;
-    99
-    END
+      is_deeply $e->outLines, [99];
      }
     
 
@@ -2969,9 +2927,7 @@ Shift left within an element.
 
       Out $a;
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    2
-    END
+      is_deeply $e->outLines, [2];
      }
     
 
@@ -2993,9 +2949,7 @@ Shift right with an element.
 
       Out $a;
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    2
-    END
+      is_deeply $e->outLines, [2];
      }
     
 
@@ -3131,9 +3085,7 @@ Subtract the second source operand value from the first source operand value and
 
       Out $a;
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    2
-    END
+      is_deeply $e->outLines, [2];
      }
     
 
@@ -3190,9 +3142,7 @@ Then block.
        {Out 0
        };
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    0
-    END
+      is_deeply $e->outLines, [0];
      }
     
     if (1)                                                                            
@@ -4063,10 +4013,7 @@ Create a label.
         Out  4;
       setLabel($d);
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    2
-    3
-    END
+      is_deeply $e->outLines, [2..3];
      }
     
     if (1)                                                                          
@@ -4077,18 +4024,7 @@ Create a label.
         Inc \0;
       Jlt $a, \0, 10;
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    0
-    1
-    2
-    3
-    4
-    5
-    6
-    7
-    8
-    9
-    END
+      is_deeply $e->outLines, [0..9];
      }
     
 
