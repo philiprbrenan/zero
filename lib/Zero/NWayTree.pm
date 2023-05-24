@@ -852,7 +852,7 @@ sub Iterate(&$)                                                                 
   GoAllTheWayLeft($f, $n);
 
   For
-   {my ($i, $check, $next, $end) = @_;                                          # Parameters
+   {my ($i, $check, $next, $end) = @_;                                          # Iteration number
     Jeq $end, FindResult_cmp($f), FindResult_notFound;
 
     FindResult_copy($F, $f);                                                    # Copying the find result allows for parallel processing
@@ -860,7 +860,7 @@ sub Iterate(&$)                                                                 
     Parallel
       sub {&$block($F)},
       sub {GoUpAndAround($f)};
-   } 2**32-1;
+   } 2**32-1;                                                                   # A reasonabley high number being the largest we can represent in vec() without annoying messages
 
   Parallel
     sub{FindResult_free($f)},
