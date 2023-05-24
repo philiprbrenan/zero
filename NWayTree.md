@@ -293,7 +293,7 @@ Get the number of keys in the tree..
     #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
     
       #say STDERR formatTable $e->tallyCounts->{1};   exit;
-      is_deeply formatTable($e->tallyCounts->{1}), <<END;                            # Insert tally
+      is_deeply formatTable($e->tallyCounts->{1}), <<END;                           # Insert tally
     add                 885
     array               247
     arrayCountGreater     2
@@ -313,8 +313,8 @@ Get the number of keys in the tree..
     subtract            531
     END
     
-      #say STDERR formatTable $e->tallyCounts->{2}; ewxit;
-      is_deeply formatTable($e->tallyCounts->{2}), <<END;                            # Find tally
+      #say STDERR formatTable $e->tallyCounts->{2}; exit;
+      is_deeply formatTable($e->tallyCounts->{2}), <<END;                           # Find tally
     add              497
     arrayCountLess   223
     arrayIndex       330
@@ -476,7 +476,7 @@ Get data field from find results.
     #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
     
       #say STDERR formatTable $e->tallyCounts->{1};   exit;
-      is_deeply formatTable($e->tallyCounts->{1}), <<END;                            # Insert tally
+      is_deeply formatTable($e->tallyCounts->{1}), <<END;                           # Insert tally
     add                 885
     array               247
     arrayCountGreater     2
@@ -496,8 +496,8 @@ Get data field from find results.
     subtract            531
     END
     
-      #say STDERR formatTable $e->tallyCounts->{2}; ewxit;
-      is_deeply formatTable($e->tallyCounts->{2}), <<END;                            # Find tally
+      #say STDERR formatTable $e->tallyCounts->{2}; exit;
+      is_deeply formatTable($e->tallyCounts->{2}), <<END;                           # Find tally
     add              497
     arrayCountLess   223
     arrayIndex       330
@@ -616,7 +616,7 @@ Get key field from find results.
     #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
     
       #say STDERR formatTable $e->tallyCounts->{1};   exit;
-      is_deeply formatTable($e->tallyCounts->{1}), <<END;                            # Insert tally
+      is_deeply formatTable($e->tallyCounts->{1}), <<END;                           # Insert tally
     add                 885
     array               247
     arrayCountGreater     2
@@ -636,8 +636,8 @@ Get key field from find results.
     subtract            531
     END
     
-      #say STDERR formatTable $e->tallyCounts->{2}; ewxit;
-      is_deeply formatTable($e->tallyCounts->{2}), <<END;                            # Find tally
+      #say STDERR formatTable $e->tallyCounts->{2}; exit;
+      is_deeply formatTable($e->tallyCounts->{2}), <<END;                           # Find tally
     add              497
     arrayCountLess   223
     arrayIndex       330
@@ -793,7 +793,7 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
     #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
     
       #say STDERR formatTable $e->tallyCounts->{1};   exit;
-      is_deeply formatTable($e->tallyCounts->{1}), <<END;                            # Insert tally
+      is_deeply formatTable($e->tallyCounts->{1}), <<END;                           # Insert tally
     add                 885
     array               247
     arrayCountGreater     2
@@ -813,9 +813,9 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
     subtract            531
     END
     
-      #say STDERR formatTable $e->tallyCounts->{2}; ewxit;
+      #say STDERR formatTable $e->tallyCounts->{2}; exit;
     
-      is_deeply formatTable($e->tallyCounts->{2}), <<END;                            # Find tally  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      is_deeply formatTable($e->tallyCounts->{2}), <<END;                           # Find tally  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     add              497
     arrayCountLess   223
@@ -1112,7 +1112,7 @@ Iterate over a tree.
     #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
     
       #say STDERR formatTable $e->tallyCounts->{1};   exit;
-      is_deeply formatTable($e->tallyCounts->{1}), <<END;                            # Insert tally
+      is_deeply formatTable($e->tallyCounts->{1}), <<END;                           # Insert tally
     add                 885
     array               247
     arrayCountGreater     2
@@ -1132,8 +1132,8 @@ Iterate over a tree.
     subtract            531
     END
     
-      #say STDERR formatTable $e->tallyCounts->{2}; ewxit;
-      is_deeply formatTable($e->tallyCounts->{2}), <<END;                            # Find tally
+      #say STDERR formatTable $e->tallyCounts->{2}; exit;
+      is_deeply formatTable($e->tallyCounts->{2}), <<END;                           # Find tally
     add              497
     arrayCountLess   223
     arrayIndex       330
@@ -1256,7 +1256,7 @@ Print the keys held in a tree.
     #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
     
       #say STDERR formatTable $e->tallyCounts->{1};   exit;
-      is_deeply formatTable($e->tallyCounts->{1}), <<END;                            # Insert tally
+      is_deeply formatTable($e->tallyCounts->{1}), <<END;                           # Insert tally
     add                 885
     array               247
     arrayCountGreater     2
@@ -1276,8 +1276,8 @@ Print the keys held in a tree.
     subtract            531
     END
     
-      #say STDERR formatTable $e->tallyCounts->{2}; ewxit;
-      is_deeply formatTable($e->tallyCounts->{2}), <<END;                            # Find tally
+      #say STDERR formatTable $e->tallyCounts->{2}; exit;
+      is_deeply formatTable($e->tallyCounts->{2}), <<END;                           # Find tally
     add              497
     arrayCountLess   223
     arrayIndex       330
@@ -1398,7 +1398,7 @@ Print the data held in a tree.
     #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
     
       #say STDERR formatTable $e->tallyCounts->{1};   exit;
-      is_deeply formatTable($e->tallyCounts->{1}), <<END;                            # Insert tally
+      is_deeply formatTable($e->tallyCounts->{1}), <<END;                           # Insert tally
     add                 885
     array               247
     arrayCountGreater     2
@@ -1418,8 +1418,8 @@ Print the data held in a tree.
     subtract            531
     END
     
-      #say STDERR formatTable $e->tallyCounts->{2}; ewxit;
-      is_deeply formatTable($e->tallyCounts->{2}), <<END;                            # Find tally
+      #say STDERR formatTable $e->tallyCounts->{2}; exit;
+      is_deeply formatTable($e->tallyCounts->{2}), <<END;                           # Find tally
     add              497
     arrayCountLess   223
     arrayIndex       330
