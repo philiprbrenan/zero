@@ -337,8 +337,8 @@ sub Zero::Emulator::Code::ArrayNumberToName($$)                                 
   $code->arrayNumbers->[$number] // $number
  }
 
-sub Reference($$$$$$)                                                           # Create a new reference
- {my ($arena, $area, $address, $name, $delta, $operand) = @_;                   # Arena, array, address, name of area, delta if any to be applied to address. operand: 0-target 1-source 2-source2
+sub Reference($$$$$)                                                            # Create a new reference
+ {my ($arena, $area, $address, $name, $delta) = @_;                             # Arena, array, address, name of area, delta if any to be applied to address.
   genHash(q(Zero::Emulator::Reference),
     arena=>     $arena,                                                         # Arrays are allocated in arenas in the hope of facilitating the reuse of freed memory
     area=>      $area,                                                          # The array number
@@ -361,12 +361,11 @@ sub Zero::Emulator::Code::Reference($$$)                                        
     defined($area) and !defined($name) and confess "Name required for address specification: in [Area, address, name]";
     my $address = $operand == 0 && isScalar($Address) ? \$Address : $Address;
     return Reference($arena, $area, $address,
-      $code->ArrayNameToNumber($name), $delta//0, $operand)
+      $code->ArrayNameToNumber($name), $delta//0)
    }
   else                                                                          # Reference represented as an address
    {my $R = $operand == 0 && isScalar($r) ? \$r : $r;
-    return Reference($arena, undef, $R, $code->ArrayNameToNumber('stackArea'),
-      0, $operand);
+    return Reference($arena, undef, $R, $code->ArrayNameToNumber('stackArea'),0);
    }
  }
 
