@@ -60,17 +60,17 @@ END
 
   is_deeply $e->count, 188;                                                     # Instructions executed
 
+  #say STDERR formatTable($e->counts); exit;
   is_deeply formatTable($e->counts), <<END;
+add         7
 array       1
 arraySize   1
-dec        15
-inc         7
 jGe        27
 jLt        22
 jmp        44
 mov        49
 push        8
-subtract   14
+subtract   29
 END
  }
 
