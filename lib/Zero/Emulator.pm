@@ -1137,7 +1137,7 @@ my sub freeSystemAreas($$)                                                      
   $exec->freeArea(arenaReturn, $c->return,    returnNumber($exec));
  }
 
-sub createInitialStackEntry($)                                                  #P Create the initial stack frame.
+my sub createInitialStackEntry($)                                                  #P Create the initial stack frame.
  {my ($exec) = @_;                                                              # Execution environment
   my $variables = $exec->block->variables;
   my $nVariables = $variables->fieldOrder->@*;                                  # Number of variables in this stack frame
@@ -1175,7 +1175,7 @@ sub checkArrayName($$$$)                                                        
   1
  }
 
-sub areaContent($$)                                                             #P Content of an area containing a specified address in memory in the specified execution.
+my sub areaContent($$)                                                          #P Content of an area containing a specified address in memory in the specified execution.
  {my ($exec, $ref) = @_;                                                        # Execution environment, reference to array
   @_ == 2 or confess "Two parameters";
   my $array = right($exec, $ref);
@@ -1184,7 +1184,7 @@ sub areaContent($$)                                                             
   @$a
  }
 
-sub areaLength($$)                                                              #P Content of an area containing a specified address in memory in the specified execution.
+my sub areaLength($$)                                                           #P Content of an area containing a specified address in memory in the specified execution.
  {my ($exec, $array) = @_;                                                      # Execution environment, reference to array
   @_ == 2 or confess "Two parameters";
   my $a = $exec->heap($array);
@@ -1192,10 +1192,10 @@ sub areaLength($$)                                                              
   scalar @$a
  }
 
-sub locateAreaElement($$$)                                                      #P Locate an element in an array.
+my sub locateAreaElement($$$)                                                   #P Locate an element in an array.
  {my ($exec, $ref, $op) = @_;                                                   # Execution environment, reference naming the array, operation
 
-  my @a = $exec->areaContent($ref);
+  my @a = areaContent($exec, $ref);
   for my $a(keys @a)                                                            # Check each element of the array
    {if ($op->($a[$a]))
      {return $a + 1;
@@ -1204,9 +1204,9 @@ sub locateAreaElement($$$)                                                      
   0
  }
 
-sub countAreaElement($$$)                                                       #P Count the number of elements in array that meet some specification.
+my sub countAreaElement($$$)                                                    #P Count the number of elements in array that meet some specification.
  {my ($exec, $ref, $op) = @_;                                                   # Execution environment, reference naming the array, operation
-  my @a = $exec->areaContent($ref);
+  my @a = areaContent($exec, $ref);
   my $n = 0;
 
   for my $a(keys @a)                                                            # Check each element of the array
@@ -1432,7 +1432,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
       $exec->checkArrayName(arenaHeap, $area, $name);                           # Check that the supplied array name matches what is actually in memory
 
-      assign($exec, $size, $exec->areaLength($area))                            # Size of area
+      assign($exec, $size, areaLength($exec, $area))                            # Size of area
      },
 
     arrayIndex=> sub                                                            # Place the 1 based index of the second source operand in the array referenced by the first source operand in the target location
@@ -1440,7 +1440,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $x = left  $exec, $i->target;                                          # Location to store index in
       my $e = right $exec, $i->source2;                                         # Location of element
 
-      assign($exec, $x, $exec->locateAreaElement($i->source, sub{$_[0] == $e})) # Index of element
+      assign($exec, $x, locateAreaElement($exec, $i->source, sub{$_[0] == $e})) # Index of element
      },
 
     arrayCountGreater=> sub                                                     # Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result in the target location
@@ -1448,7 +1448,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $x = left $exec, $i->target;                                           # Location to store index in
       my $e = right $exec, $i->source2;                                         # Location of element
 
-      assign($exec, $x, $exec->countAreaElement($i->source, sub{$_[0] > $e}))   # Index of element
+      assign($exec, $x, countAreaElement($exec, $i->source, sub{$_[0] > $e}))   # Index of element
      },
 
     arrayCountLess=> sub                                                        # Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result in the target location
@@ -1456,7 +1456,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $x = left $exec, $i->target;                                           # Location to store index in
       my $e = right $exec, $i->source2;                                         # Location of element
 
-      assign($exec, $x, $exec->countAreaElement($i->source, sub{$_[0] < $e}))   # Index of element
+      assign($exec, $x, countAreaElement($exec, $i->source, sub{$_[0] < $e}))   # Index of element
      },
 
     resize=> sub                                                                # Resize an array
@@ -1741,7 +1741,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = currentInstruction $exec;
       my $s = right $exec, $i->source;
       my $t = left $exec, $i->target;
-      my $L = $exec->areaLength($t->area);                                      # Length of target array
+      my $L = areaLength($exec, $t->area);                                      # Length of target array
       my $l = $t->address;
       for my $j(reverse $l..$L)
        {my $S = Address($t->arena, $t->area, $j-1,   $t->name, 0);
@@ -1756,7 +1756,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = currentInstruction $exec;
       my $s = left $exec, $i->source;
       my $t = left $exec, $i->target;
-      my $L = $exec->areaLength($s->area);                                      # Length of source array
+      my $L = areaLength($exec, $s->area);                                      # Length of source array
       my $l = $s->address;
       my $v = getMemoryFromAddress($exec, $s);
       for my $j($l..$L-2)                                                       # Each element in specified range
@@ -1807,7 +1807,7 @@ sub Zero::Emulator::Code::execute($%)                                           
   return {%instructions} unless $block;                                         # Return a list of the instructions
 
   $allocs = [];                                                                 # Reset all allocations
-  $exec->createInitialStackEntry;                                               # Variables in initial stack frame
+  createInitialStackEntry($exec);                                               # Variables in initial stack frame
 
   my $mi = $options{maximumInstructionsToExecute} //                            # Prevent run away executions
                     maximumInstructionsToExecute;
@@ -2742,7 +2742,7 @@ my $instructions = Zero::Emulator::Code::execute(undef);
 my @instructions = sort keys %$instructions;
 my %instructions = map {$instructions[$_]=>$_} keys @instructions;
 
-sub instructionList()                                                           #P Create a list of instructions.
+my sub instructionList()                                                           #P Create a list of instructions.
  {my @i = grep {m(\s+#i)} readFile $0;
   my @j;                                                                        # Description of instruction
   for my $i(@i)
@@ -2755,13 +2755,13 @@ sub instructionList()                                                           
   [sort {$$a[0] cmp $$b[0]} @j]
 }
 
-sub instructionListExport()                                                     #P Create an export statement.
+my sub instructionListExport()                                                     #P Create an export statement.
  {my $i = instructionList;
   say STDERR '@EXPORT_OK   = qw(', (join ' ', map {$$_[0]} @$i), ");\n";
 }
 #instructionListExport; exit;
 
-sub instructionListReadMe()                                                     #P List  instructions for inclusion in read me.
+my sub instructionListReadMe()                                                     #P List  instructions for inclusion in read me.
  {my $i = instructionList;
   my $s = '';
   for my $i(@$i)
