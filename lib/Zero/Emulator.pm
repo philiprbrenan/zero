@@ -1366,9 +1366,9 @@ sub Zero::Emulator::Code::execute($%)                                           
   my %instructions =                                                            # Instruction definitions
    (add=> sub                                                                   # Add the two source operands and store the result in the target
      {my $i = currentInstruction $exec;
-      my $t = $exec->left ($i->target);
-      my $a = $exec->right($i->source);
-      my $b = $exec->right($i->source2);
+      my $t = left  $exec, $i->target;
+      my $a = right $exec, $i->source;
+      my $b = right $exec, $i->source2;
       $exec->assign($t, $a + $b);
      },
 
