@@ -763,14 +763,14 @@ my sub getMemoryFromAddress($$)                                                 
   getMemory($exec, $left->arena, $left->area, $left->address, $left->name);
  }
 
-sub getMemoryAddressFromAddress($)                                              #P Get address of memory location from an address in the current execution environment.
+my sub getMemoryAddressFromAddress($$)                                             #P Get address of memory location from an address in the current execution environment.
  {my ($exec, $left) = @_;                                                       # Execution environment, address
   @_ == 2 or confess "Two parameters";
   ref($left) =~ m(Address) or confess "Address needed for second parameter, not: ".ref($left);
   getMemoryAddress($exec, $left->arena, $left->area, $left->address, $left->name);
  }
 
-sub setMemory($$$)                                                              #P Set the value of an address at the specified address in memory in the current execution environment.
+my sub setMemory($$$)                                                              #P Set the value of an address at the specified address in memory in the current execution environment.
  {my ($exec, $ref, $value) = @_;                                                # Execution environment, address specification, value
   @_ == 3 or confess "Three parameters";
   my $arena   = $ref->arena;
@@ -781,13 +781,13 @@ sub setMemory($$$)                                                              
   $exec->lastAssignAddress = $address;
   $exec->lastAssignType    = $exec->getMemoryType($arena, $area);
   $exec->lastAssignValue   = $value;
-  $exec->lastAssignBefore  = $exec->getMemoryAddressFromAddress($ref)->$*;
+  $exec->lastAssignBefore  = getMemoryAddressFromAddress($exec, $ref)->$*;
 
   my $a = $exec->GetMemoryLocation->($exec, $arena, $area, $address);
   $$a = $value;
  }
 
-sub Address($$$$;$)                                                             #P Record a reference to memory.
+my sub Address($$$$;$)                                                          #P Record a reference to memory.
  {my ($arena, $area, $address, $name, $delta) = @_;                             # Arena, area, address in area, name of area, delta from specified address
   my $r = genHash(q(Zero::Emulator::Address),                                   # Address memory
     arena=>     $arena,                                                         # Arena in memory
@@ -799,13 +799,13 @@ sub Address($$$$;$)                                                             
   $r
  }
 
-my sub currentInstruction($)                                                       #P Locate current instruction.
+my sub currentInstruction($)                                                    #P Locate current instruction.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   $exec->calls->[-1]->instruction;
  }
 
-sub stackTrace($;$)                                                             #P Create a stack trace.
+my sub stackTrace($;$)                                                             #P Create a stack trace.
  {my ($exec, $title) = @_;                                                      # Execution environment, title
   my $i = currentInstruction $exec;
   my $s = $exec->suppressOutput;                                                # Suppress file and line numbers in dump to facilitate automated testing
@@ -825,7 +825,7 @@ sub stackTraceAndExit($$%)                                                      
  {my ($exec, $title, %options) = @_;                                            # Execution environment, title, options
   @_ >= 2 or confess "At least two parameters";
 
-  my $t = $exec->stackTrace($title);
+  my $t = stackTrace($exec, $title);
   $exec->output($t);
   confess $t unless $exec->suppressOutput;                                      # Confess if requested - presumably because this indicates an error in programming and thus nothing can be done about it within the program
 
@@ -1076,7 +1076,7 @@ sub assign($$$)                                                                 
      ." address: $address");
    }
   else
-   {my $currently = $exec->getMemoryAddressFromAddress($target);
+   {my $currently = getMemoryAddressFromAddress($exec, $target);
     if (defined $$currently)
      {if ($$currently == $value)
        {$exec->pointlessAssign->{currentInstruction($exec)->number}++;          # Record the pointless assign
@@ -1090,7 +1090,7 @@ sub assign($$$)                                                                 
 
   if (defined $exec->watch->[$area][$address])                                  # Watch for specified changes
    {my $n = $exec->block->ArrayNumberToName($name) // "unknown";
-    my @s = $exec->stackTrace("Change at watched "
+    my @s = stackTrace($exec, "Change at watched "
      ."arena: $arena, area: $area($n), address: $address");
     $s[-1] .= join ' ', "Current value:", getMemory($exec, $arena, $area, $address, $name),
                         "New value:", $value;
@@ -1099,7 +1099,7 @@ sub assign($$$)                                                                 
     $exec->output("$s\n");
    }
 
-  $exec->setMemory($target, $value);                                            # Actually do the assign
+  setMemory($exec, $target, $value);                                            # Actually do the assign
  }
 
 sub stackAreaNumber($)                                                          #P Number for type of stack area array.
@@ -1524,7 +1524,7 @@ sub Zero::Emulator::Code::execute($%)                                           
     dump=> sub                                                                  # Dump memory
      {my $i = currentInstruction $exec;
       my   @m= dumpMemory $exec;
-      push @m, $exec->stackTrace;
+      push @m, stackTrace($exec);
       my $m = join '', @m;
       say STDERR $m unless $exec->suppressOutput;
       $exec->output($m);
@@ -1578,7 +1578,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my ($i) = @_;                                                             # Instruction
       $exec->timeDelta = 0;
       return unless $exec->traceLabels;
-      my $s = $exec->stackTrace("Label");
+      my $s = stackTrace($exec, "Label");
       say STDERR $s unless $exec->suppressOutput;
       $exec->output($s);
      },
