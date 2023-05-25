@@ -182,7 +182,7 @@ sub Zero::Emulator::Code::codeToString($)                                       
   join "\n", @T, '';
  }
 
-sub contextString($$$)                                                          #P Stack trace back for this instruction.
+my sub contextString($$$)                                                       #P Stack trace back for this instruction.
  {my ($exec, $i, $title) = @_;                                                  # Execution environment, Instruction, title
   @_ == 3 or confess "Three parameters";
   my @s = $title;
@@ -232,15 +232,6 @@ sub Zero::Emulator::AreaStructure::name($$)                                     
    {confess "Duplicate name: $name in structure: ".$d->name;
    }
   \($d->fieldNames->{$name})
- }
-
-my sub procedure($%)                                                            # Describe a procedure
- {my ($label, %options) = @_;                                                   # Start label of procedure, options describing procedure
-
-  genHash(q(Zero::Emulator::Procedure),                                         # Description of a procedure
-    target=>        $label,                                                     # Label to call to call this procedure
-    variables=>     AreaStructure("Procedure"),                                 # Registers local to this procedure
-  );
  }
 
 sub Zero::Emulator::AreaStructure::registers($)                                 #P Create one or more temporary variables. Need to reuse registers no longer in use.
@@ -818,7 +809,7 @@ sub stackTrace($;$)                                                             
  {my ($exec, $title) = @_;                                                      # Execution environment, title
   my $i = currentInstruction $exec;
   my $s = $exec->suppressOutput;                                                # Suppress file and line numbers in dump to facilitate automated testing
-  my @t = $exec->contextString($i, $title//"Stack trace:");
+  my @t = contextString($exec, $i, $title//"Stack trace:");
 
   for my $j(reverse keys $exec->calls->@*)
    {my $c = $exec->calls->[$j];
@@ -923,8 +914,8 @@ sub rwWrite($$$$)                                                               
     my $M = $exec->getMemoryAddress($arena, $area, $address, $T);
     if ($$M)
      {my $Q = currentInstruction $exec;
-      my $p = $exec->contextString($P, "Previous write");
-      my $q = $exec->contextString($Q, "Current  write");
+      my $p = contextString($exec, $P, "Previous write");
+      my $q = contextString($exec, $Q, "Current  write");
       $exec->doubleWrite->{$p}{$q}++;
      }
    }
@@ -1290,7 +1281,7 @@ sub analyzeExecutionNotRead($%)                                                 
    {my $area = $$n{$areaK};
     for my $addressK(sort keys %$area)
      {my $address = $$area{$addressK};
-      push @t, $exec->contextString(block->code->[$addressK],
+      push @t, contextString($exec, block->code->[$addressK],
        "Not read from area: $areaK, address: $addressK in context:");
      }
    }
@@ -2535,6 +2526,15 @@ sub Pop(;$$) {                                                                  
   else
    {confess "Two or three parameters required";
    }
+ }
+
+my sub procedure($%)                                                            # Describe a procedure
+ {my ($label, %options) = @_;                                                   # Start label of procedure, options describing procedure
+
+  genHash(q(Zero::Emulator::Procedure),                                         # Description of a procedure
+    target=>        $label,                                                     # Label to call to call this procedure
+    variables=>     AreaStructure("Procedure"),                                 # Registers local to this procedure
+  );
  }
 
 sub Procedure($$)                                                               #i Define a procedure.
