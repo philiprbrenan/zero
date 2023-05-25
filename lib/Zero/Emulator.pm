@@ -270,7 +270,7 @@ my sub isScalar($)                                                              
   ! ref $value;
  }
 
-sub refDepth($)                                                                 #P The depth of a reference.
+my sub refDepth($)                                                                 #P The depth of a reference.
  {my ($ref) = @_;                                                               # Reference to pack
   return 0 if isScalar(  $ref);
   return 1 if isScalar( $$ref);
@@ -278,7 +278,7 @@ sub refDepth($)                                                                 
   confess "Reference too deep".dump($ref);
  }
 
-sub refValue($)                                                                 #P The value of a reference after dereferencing.
+my sub refValue($)                                                                 #P The value of a reference after dereferencing.
  {my ($ref) = @_;                                                               # Reference to pack
   return   $ref if isScalar($ref);
   return  $$ref if isScalar($$ref);
@@ -359,7 +359,7 @@ sub Zero::Emulator::Code::ArrayNumberToName($$)                                 
   $code->arrayNumbers->[$number] // $number
  }
 
-sub Reference($$$$$)                                                            # Create a new reference
+my sub Reference($$$$$)                                                            # Create a new reference
  {my ($arena, $area, $address, $name, $delta) = @_;                             # Arena, array, address, name of area, delta if any to be applied to address.
   confess "Area too deep: ".    dump($area)    if refDepth($area)    > 1;       # Areas that are too deep represent programmer error
   confess "Address too deep: ". dump($address) if refDepth($address) > 2;       # Addresses that are too deep represent programmer error
@@ -439,7 +439,7 @@ sub heap($$)                                                                    
   $exec->GetMemoryArea->($exec, arenaHeap, $area);
  }
 
-sub currentStackFrame($)                                                        #P Address of current stack frame.
+my sub currentStackFrame($)                                                        #P Address of current stack frame.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my $calls = $exec->calls;
@@ -447,7 +447,7 @@ sub currentStackFrame($)                                                        
   $$calls[-1]->stackArea;
  }
 
-sub currentParamsGet($)                                                         #P Address of current parameters to get from.
+my sub currentParamsGet($)                                                         #P Address of current parameters to get from.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my $calls = $exec->calls;
@@ -455,7 +455,7 @@ sub currentParamsGet($)                                                         
   $$calls[-2]->params;
  }
 
-sub currentParamsPut($)                                                         #P Address of current parameters to put to.
+my sub currentParamsPut($)                                                         #P Address of current parameters to put to.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my $calls = $exec->calls;
@@ -463,7 +463,7 @@ sub currentParamsPut($)                                                         
   $$calls[-1]->params;
  }
 
-sub currentReturnGet($)                                                         #P Address of current return to get from.
+my sub currentReturnGet($)                                                         #P Address of current return to get from.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my $calls = $exec->calls;
@@ -471,7 +471,7 @@ sub currentReturnGet($)                                                         
   $$calls[-1]->return;
  }
 
-sub currentReturnPut($)                                                         #P Address of current return to put to.
+my sub currentReturnPut($)                                                         #P Address of current return to put to.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my $calls = $exec->calls;
@@ -479,7 +479,7 @@ sub currentReturnPut($)                                                         
   $$calls[-2]->return;
  }
 
-sub dumpMemory($)                                                               #P Dump heap memory.
+my sub dumpMemory($)                                                               #P Dump heap memory.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my @m;
@@ -731,7 +731,7 @@ sub setStringMemoryTechnique($)                                                 
 
 # End of memory implementation
 
-sub getMemory($$$$$)                                                            #P Get from memory.
+my sub getMemory($$$$$)                                                            #P Get from memory.
  {my ($exec, $arena, $area, $address, $name) = @_;                              # Execution environment, arena, area, address, expected name of area
   @_ == 5 or confess "Five parameters";
   $exec->checkArrayName($arena, $area, $name);
@@ -744,7 +744,7 @@ sub getMemory($$$$$)                                                            
   $$v
  }
 
-sub getMemoryAddress($$$$$)                                                     #P Evaluate an address in the current execution environment.
+my sub getMemoryAddress($$$$$)                                                     #P Evaluate an address in the current execution environment.
  {my ($exec, $arena, $area, $address, $name) = @_;                              # Execution environment, arena, area, address, expected name of area
   @_ == 5 or confess "Five parameters";
   $exec->widestAreaInArena->[$arena] =                                          # Track the widest area in each arena
@@ -760,14 +760,14 @@ sub getMemoryFromAddress($$)                                                    
  {my ($exec, $left) = @_;                                                       # Execution environment, left address
   @_ == 2 or confess "Two parameters";
   ref($left) =~ m(Address) or confess "Address needed for second parameter, not: ".ref($left);
-  $exec->getMemory($left->arena, $left->area, $left->address, $left->name);
+  getMemory($exec, $left->arena, $left->area, $left->address, $left->name);
  }
 
 sub getMemoryAddressFromAddress($)                                              #P Get address of memory location from an address in the current execution environment.
  {my ($exec, $left) = @_;                                                       # Execution environment, address
   @_ == 2 or confess "Two parameters";
   ref($left) =~ m(Address) or confess "Address needed for second parameter, not: ".ref($left);
-  $exec->getMemoryAddress($left->arena, $left->area, $left->address, $left->name);
+  getMemoryAddress($exec, $left->arena, $left->area, $left->address, $left->name);
  }
 
 sub setMemory($$$)                                                              #P Set the value of an address at the specified address in memory in the current execution environment.
@@ -889,7 +889,7 @@ sub setMemoryType($$$$)                                                         
 
 sub notRead()                                                                   #P Record the unused memory locations in the current stack frame.
  {my ($exec) = @_;                                                              # Parameters
-  my $area = $exec->currentStackFrame;
+  my $area = currentStackFrame($exec);
 #    my @area = $memory{$area}->@*;                                             # Memory in area
 #    my %r;                                                                     # Location in stack frame=>  instruction defining vasriable
 #    for my $a(keys @area)
@@ -911,7 +911,7 @@ sub rwWrite($$$$)                                                               
   my $P = $exec->rw->[$arena][$area][$address];
   if (defined($P))
    {my $T = $exec->getMemoryType($arena, $area);
-    my $M = $exec->getMemoryAddress($arena, $area, $address, $T);
+    my $M = getMemoryAddress($exec, $arena, $area, $address, $T);
     if ($$M)
      {my $Q = currentInstruction $exec;
       my $p = contextString($exec, $P, "Previous write");
@@ -942,7 +942,7 @@ sub stackAreaNameNumber($)                                                      
   $exec->block->ArrayNameToNumber("stackArea");
  }
 
-my sub left($$)                                                                    #P Address of a location in memory.
+my sub left($$)                                                                 #P Address of a location in memory.
  {my ($exec, $ref) = @_;                                                        # Execution environment, reference
   @_ == 2 or confess "Two parameters";
   ref($ref)   =~ m(Reference) or confess "Reference required, not: ".dump($ref);
@@ -951,7 +951,7 @@ my sub left($$)                                                                 
   my $arena   = $ref->arena;
   my $area    = $ref->area;
   my $delta   = $ref->delta;
-  my $S       = $exec->currentStackFrame;                                       # Current stack frame
+  my $S       = currentStackFrame($exec);                                       # Current stack frame
   my $stackArea = $exec->stackAreaNameNumber;
 
   my $M;                                                                        # Memory address
@@ -959,7 +959,7 @@ my sub left($$)                                                                 
    {$M = $address + $delta;
    }
   elsif ($ref->dAddress == 2)                                                   # Indirect address
-   {$M = $exec->getMemory(arenaLocal, $S, $address, $stackArea) + $delta;
+   {$M = getMemory($exec, arenaLocal, $S, $address, $stackArea) + $delta;
    }
 
   if (!$ref->dArea)                                                             # Current stack frame
@@ -967,7 +967,7 @@ my sub left($$)                                                                 
     return $a;
    }
   else                                                                          # Indirect area
-   {my $A = $exec->getMemory(arenaLocal, $S, $area, $stackArea);
+   {my $A = getMemory($exec, arenaLocal, $S, $area, $stackArea);
     my $a = Address($arena, $A, $M, $ref->name);
     return $a;
    }
@@ -980,7 +980,7 @@ my sub right($$)                                                                
   my $address   = $ref->address;
   my $arena     = $ref->arena;
   my $area      = $ref->area;
-  my $stackArea = $exec->currentStackFrame;
+  my $stackArea = currentStackFrame($exec);
   my $name      = $ref->name;
   my $delta     = $ref->delta;
   my $stackAN   = $exec->stackAreaNameNumber;
@@ -996,7 +996,7 @@ my sub right($$)                                                                
      ." arena: "  .dump($arena)
      ." area: "   .dump($area)
      ." address: ".dump($a)
-     ." stack: ".$exec->currentStackFrame);
+     ." stack: ".currentStackFrame($exec));
    }
 
   if ($ref->dAddress == 0)                                                      # Constant
@@ -1012,17 +1012,17 @@ my sub right($$)                                                                
    }
   else                                                                          # Indirect
    {#say STDERR "AAAA", dump(arenaLocal, $stackArea, $address, $stackAN);
-    my $d = $exec->getMemory(arenaLocal, $stackArea, $address, $stackAN);
+    my $d = getMemory($exec, arenaLocal, $stackArea, $address, $stackAN);
        $m = $d + $delta;
    }
 
   if (!$ref->dArea)                                                             # Stack frame
-   {$r = $exec->getMemory(arenaLocal, $stackArea, $m, $stackAN);                # Direct from stack area
+   {$r = getMemory($exec, arenaLocal, $stackArea, $m, $stackAN);                # Direct from stack area
    }
   else                                                                          # Indirect from stack area
-   {my $j = $exec->getMemory(arenaLocal, $stackArea, $area, $stackAN);
+   {my $j = getMemory($exec, arenaLocal, $stackArea, $area, $stackAN);
     if (defined $j)
-     {$r = $exec->getMemory($arena, $j, $m, $ref->name);
+     {$r = getMemory($exec, $arena, $j, $m, $ref->name);
      }
    }
 
@@ -1092,7 +1092,7 @@ sub assign($$$)                                                                 
    {my $n = $exec->block->ArrayNumberToName($name) // "unknown";
     my @s = $exec->stackTrace("Change at watched "
      ."arena: $arena, area: $area($n), address: $address");
-    $s[-1] .= join ' ', "Current value:", $exec->getMemory($arena, $area, $address, $name),
+    $s[-1] .= join ' ', "Current value:", getMemory($exec, $arena, $area, $address, $name),
                         "New value:", $value;
     my $s = join "", @s;
     say STDERR $s unless $exec->suppressOutput;
@@ -1523,7 +1523,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     dump=> sub                                                                  # Dump memory
      {my $i = currentInstruction $exec;
-      my   @m= $exec->dumpMemory;
+      my   @m= dumpMemory $exec;
       push @m, $exec->stackTrace;
       my $m = join '', @m;
       say STDERR $m unless $exec->suppressOutput;
@@ -1639,7 +1639,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = currentInstruction $exec;
       my $t = left $exec, $i->target;
       my $s = right $exec, $i->source;
-      my $S = Address(arenaParms, $exec->currentParamsGet, $s, $exec->paramsNumber);
+      my $S = Address(arenaParms, currentParamsGet($exec), $s, $exec->paramsNumber);
       my $v = $exec->getMemoryFromAddress($S);
       $exec->assign($t, $v);
      },
@@ -1648,7 +1648,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = currentInstruction $exec;
       my $s = right $exec, $i->source;
       my $t = left $exec, $i->target;
-      my $T = Address(arenaParms, $exec->currentParamsPut, $t->address, $exec->paramsNumber);
+      my $T = Address(arenaParms, currentParamsPut($exec), $t->address, $exec->paramsNumber);
       $exec->assign($T, $s);
      },
 
@@ -1669,7 +1669,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = currentInstruction $exec;
       my $t = left $exec, $i->target;
       my $s = right $exec, $i->source;
-      my $S = Address(arenaReturn, $exec->currentReturnGet, $s, $exec->returnNumber);
+      my $S = Address(arenaReturn, currentReturnGet($exec), $s, $exec->returnNumber);
       my $v = $exec->getMemoryFromAddress($S);
       $exec->assign($t, $v);
      },
@@ -1678,7 +1678,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = currentInstruction $exec;
       my $s = right $exec, $i->source;
       my $t = left $exec, $i->target;
-      my $T = Address(arenaReturn, $exec->currentReturnPut, $t->address, $exec->returnNumber);
+      my $T = Address(arenaReturn, currentReturnPut($exec), $t->address, $exec->returnNumber);
       $exec->assign($T, $s);
      },
 
