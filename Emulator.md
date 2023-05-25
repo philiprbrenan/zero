@@ -3757,6 +3757,10 @@ Arena in memory
 
 Offset from indicated address
 
+#### exec
+
+Execution environment for address
+
 #### name
 
 Name of area
