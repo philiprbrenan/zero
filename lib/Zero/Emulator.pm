@@ -1120,7 +1120,7 @@ my sub returnNumber($)                                                          
   $exec->block->ArrayNameToNumber("return")
  }
 
-sub allocateSystemAreas($)                                                      #P Allocate system areas for a new stack frame.
+my sub allocateSystemAreas($)                                                      #P Allocate system areas for a new stack frame.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   (stackArea=> allocMemory($exec, $exec->stackAreaNameNumber, arenaLocal),
@@ -1145,7 +1145,7 @@ sub createInitialStackEntry($)                                                  
   push $exec->calls->@*,                                                        # Variables in initial stack frame
     stackFrame(
      $exec->block ? (variables=>  $variables) : (),
-     $exec->allocateSystemAreas);
+     allocateSystemAreas($exec));
   $exec
  }
 
@@ -1481,7 +1481,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       push $exec->calls->@*,
         stackFrame(target=>$block->code->[$exec->instructionPointer],           # Create a new call stack entry
         instruction=>$i, #variables=>$i->procedure->variables,
-        $exec->allocateSystemAreas());
+        allocateSystemAreas($exec));
      },
 
     return=> sub                                                                # Return from a subroutine call via the call stack
