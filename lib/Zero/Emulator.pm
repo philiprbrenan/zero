@@ -1102,19 +1102,19 @@ my sub assign($$$)                                                              
   setMemory($exec, $target, $value);                                            # Actually do the assign
  }
 
-sub stackAreaNumber($)                                                          #P Number for type of stack area array.
+my sub stackAreaNumber($)                                                       #P Number for type of stack area array.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   $exec->block->ArrayNameToNumber("stackArea")
  }
 
-sub paramsNumber($)                                                             #P Number for type of parameters array.
+my sub paramsNumber($)                                                          #P Number for type of parameters array.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   $exec->block->ArrayNameToNumber("params")
  }
 
-sub returnNumber($)                                                             #P Number for type of return area array.
+my sub returnNumber($)                                                          #P Number for type of return area array.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   $exec->block->ArrayNameToNumber("return")
@@ -1124,17 +1124,17 @@ sub allocateSystemAreas($)                                                      
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   (stackArea=> allocMemory($exec, $exec->stackAreaNameNumber, arenaLocal),
-   params=>    allocMemory($exec, $exec->paramsNumber,        arenaParms),
-   return=>    allocMemory($exec, $exec->returnNumber,        arenaReturn));
+   params=>    allocMemory($exec, paramsNumber($exec),        arenaParms),
+   return=>    allocMemory($exec, returnNumber($exec),        arenaReturn));
  }
 
 sub freeSystemAreas($$)                                                         #P Free system areas for the specified stack frame.
  {my ($exec, $c) = @_;                                                          # Execution environment, stack frame
   @_ == 2 or confess "Two parameters";
   $exec->notRead;                                                               # Record unread memory locations in the current stack frame
-  $exec->freeArea(arenaLocal,  $c->stackArea, $exec->stackAreaNumber);
-  $exec->freeArea(arenaParms,  $c->params,    $exec->paramsNumber);
-  $exec->freeArea(arenaReturn, $c->return,    $exec->returnNumber);
+  $exec->freeArea(arenaLocal,  $c->stackArea, stackAreaNumber($exec));
+  $exec->freeArea(arenaParms,  $c->params,    paramsNumber($exec));
+  $exec->freeArea(arenaReturn, $c->return,    returnNumber($exec));
  }
 
 sub createInitialStackEntry($)                                                  #P Create the initial stack frame.
@@ -1639,7 +1639,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = currentInstruction $exec;
       my $t = left $exec, $i->target;
       my $s = right $exec, $i->source;
-      my $S = Address(arenaParms, currentParamsGet($exec), $s, $exec->paramsNumber);
+      my $S = Address(arenaParms, currentParamsGet($exec), $s, paramsNumber($exec));
       my $v = getMemoryFromAddress($exec, $S);
       assign($exec, $t, $v);
      },
@@ -1648,7 +1648,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = currentInstruction $exec;
       my $s = right $exec, $i->source;
       my $t = left $exec, $i->target;
-      my $T = Address(arenaParms, currentParamsPut($exec), $t->address, $exec->paramsNumber);
+      my $T = Address(arenaParms, currentParamsPut($exec), $t->address, paramsNumber($exec));
       assign($exec, $T, $s);
      },
 
@@ -1669,7 +1669,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = currentInstruction $exec;
       my $t = left $exec, $i->target;
       my $s = right $exec, $i->source;
-      my $S = Address(arenaReturn, currentReturnGet($exec), $s, $exec->returnNumber);
+      my $S = Address(arenaReturn, currentReturnGet($exec), $s, returnNumber($exec));
       my $v = getMemoryFromAddress($exec, $S);
       assign($exec, $t, $v);
      },
@@ -1678,7 +1678,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = currentInstruction $exec;
       my $s = right $exec, $i->source;
       my $t = left $exec, $i->target;
-      my $T = Address(arenaReturn, currentReturnPut($exec), $t->address, $exec->returnNumber);
+      my $T = Address(arenaReturn, currentReturnPut($exec), $t->address, returnNumber($exec));
       assign($exec, $T, $s);
      },
 
