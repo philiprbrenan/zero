@@ -471,7 +471,7 @@ my sub currentReturnGet($)                                                      
   $$calls[-1]->return;
  }
 
-my sub currentReturnPut($)                                                         #P Address of current return to put to.
+my sub currentReturnPut($)                                                      #P Address of current return to put to.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my $calls = $exec->calls;
@@ -479,7 +479,7 @@ my sub currentReturnPut($)                                                      
   $$calls[-2]->return;
  }
 
-my sub dumpMemory($)                                                               #P Dump heap memory.
+my sub dumpMemory($)                                                            #P Dump heap memory.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my @m;
@@ -744,7 +744,7 @@ my sub getMemory($$$$$)                                                         
   $$v
  }
 
-my sub getMemoryAddress($$$$$)                                                     #P Evaluate an address in the current execution environment.
+my sub getMemoryAddress($$$$$)                                                  #P Evaluate an address in the current execution environment.
  {my ($exec, $arena, $area, $address, $name) = @_;                              # Execution environment, arena, area, address, expected name of area
   @_ == 5 or confess "Five parameters";
   $exec->widestAreaInArena->[$arena] =                                          # Track the widest area in each arena
@@ -756,21 +756,21 @@ my sub getMemoryAddress($$$$$)                                                  
   $exec->GetMemoryLocation->($exec, $arena, $area, $address);                   # Read from memory
  }
 
-my sub getMemoryFromAddress($$)                                                    #P Get a value from memory at a specified address.
+my sub getMemoryFromAddress($$)                                                 #P Get a value from memory at a specified address.
  {my ($exec, $left) = @_;                                                       # Execution environment, left address
   @_ == 2 or confess "Two parameters";
   ref($left) =~ m(Address) or confess "Address needed for second parameter, not: ".ref($left);
   getMemory($exec, $left->arena, $left->area, $left->address, $left->name);
  }
 
-my sub getMemoryAddressFromAddress($$)                                             #P Get address of memory location from an address in the current execution environment.
+my sub getMemoryAddressFromAddress($$)                                          #P Get address of memory location from an address in the current execution environment.
  {my ($exec, $left) = @_;                                                       # Execution environment, address
   @_ == 2 or confess "Two parameters";
   ref($left) =~ m(Address) or confess "Address needed for second parameter, not: ".ref($left);
   getMemoryAddress($exec, $left->arena, $left->area, $left->address, $left->name);
  }
 
-my sub setMemory($$$)                                                              #P Set the value of an address at the specified address in memory in the current execution environment.
+my sub setMemory($$$)                                                           #P Set the value of an address at the specified address in memory in the current execution environment.
  {my ($exec, $ref, $value) = @_;                                                # Execution environment, address specification, value
   @_ == 3 or confess "Three parameters";
   my $arena   = $ref->arena;
@@ -835,7 +835,7 @@ sub stackTraceAndExit($$%)                                                      
 
 my $allocs = [];                                                                # Allocations
 
-sub allocMemory($$$)                                                            #P Create the name of a new memory area.
+my sub allocMemory($$$)                                                            #P Create the name of a new memory area.
  {my ($exec, $number, $arena) = @_;                                             # Execution environment, name of allocation, arena to use
   @_ == 3 or confess "Three parameters";
   $number =~ m(\A\d+\Z) or confess "Array name must be numeric not : $number";
@@ -1071,9 +1071,9 @@ sub assign($$$)                                                                 
   $exec->checkArrayName($arena, $area, $name);
 
   if (!defined($value))                                                         # Check that the assign is not pointless
-   {$exec->stackTraceAndExit
-     ("Cannot assign an undefined value to arena: $arena, area: $area($name),"
-     ." address: $address");
+   {$exec->stackTraceAndExit(
+    "Cannot assign an undefined value to arena: $arena, area: $area($name),"
+    ." address: $address");
    }
   else
    {my $currently = getMemoryAddressFromAddress($exec, $target);
@@ -1123,9 +1123,9 @@ sub returnNumber($)                                                             
 sub allocateSystemAreas($)                                                      #P Allocate system areas for a new stack frame.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
-  (stackArea=>   $exec->allocMemory($exec->stackAreaNameNumber, arenaLocal),
-   params=>      $exec->allocMemory($exec->paramsNumber,        arenaParms),
-   return=>      $exec->allocMemory($exec->returnNumber,        arenaReturn));
+  (stackArea=> allocMemory($exec, $exec->stackAreaNameNumber, arenaLocal),
+   params=>    allocMemory($exec, $exec->paramsNumber,        arenaParms),
+   return=>    allocMemory($exec, $exec->returnNumber,        arenaReturn));
  }
 
 sub freeSystemAreas($$)                                                         #P Free system areas for the specified stack frame.
@@ -1410,9 +1410,9 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     array=> sub                                                                 # Create a new memory area and write its number into the address named by the target operand
      {my $i = currentInstruction $exec;
-      my $s = right $exec, $i->source;                                         # The reason for this allocation
-      my $a = $exec->allocMemory($s, arenaHeap);                                # Allocate
-      my $t = left $exec, $i->target;                                          # Target in which to save array number
+      my $s = right $exec, $i->source;                                          # The reason for this allocation
+      my $a = allocMemory($exec, $s, arenaHeap);                                # Allocate
+      my $t = left $exec, $i->target;                                           # Target in which to save array number
       $exec->assign($t, $a);                                                    # Save array number in target#
       $a
      },
@@ -1426,8 +1426,8 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     arraySize=> sub                                                             # Get the size of the specified area
      {my $i = currentInstruction $exec;
-      my $size = left $exec, $i->target;                                      # Location to store size in
-      my $area = right $exec, $i->source;                                      # Location of area
+      my $size = left $exec, $i->target;                                        # Location to store size in
+      my $area = right $exec, $i->source;                                       # Location of area
       my $name = $i->source2;                                                   # Name of area
 
       $exec->checkArrayName(arenaHeap, $area, $name);                           # Check that the supplied array name matches what is actually in memory
@@ -1445,25 +1445,25 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     arrayCountGreater=> sub                                                     # Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result in the target location
      {my $i = currentInstruction $exec;
-      my $x = left $exec, $i->target;                                         # Location to store index in
-      my $e = right $exec, $i->source2;                                        # Location of element
+      my $x = left $exec, $i->target;                                           # Location to store index in
+      my $e = right $exec, $i->source2;                                         # Location of element
 
       $exec->assign($x, $exec->countAreaElement($i->source, sub{$_[0] > $e}))   # Index of element
      },
 
     arrayCountLess=> sub                                                        # Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result in the target location
      {my $i = currentInstruction $exec;
-      my $x = left $exec, $i->target;                                         # Location to store index in
-      my $e = right $exec, $i->source2;                                        # Location of element
+      my $x = left $exec, $i->target;                                           # Location to store index in
+      my $e = right $exec, $i->source2;                                         # Location of element
 
       $exec->assign($x, $exec->countAreaElement($i->source, sub{$_[0] < $e}))   # Index of element
      },
 
     resize=> sub                                                                # Resize an array
      {my $i = currentInstruction $exec;
-      my $size =  right $exec, $i->source;                                     # New size
-      my $name =  right $exec, $i->source2;                                    # Array name
-      my $area =  right $exec, $i->target;                                     # Array to resize
+      my $size =  right $exec, $i->source;                                      # New size
+      my $name =  right $exec, $i->source2;                                     # Array name
+      my $area =  right $exec, $i->target;                                      # Array to resize
       $exec->checkArrayName(arenaHeap, $area, $name);
       $exec->ResizeMemoryArea->($exec, $area, $size);
      },
@@ -1979,7 +1979,7 @@ sub Array($)                                                                    
  {my ($source) = @_;                                                            # Name of allocation
   my $t = &Var();
   my $n = $assembly->ArrayNameToNumber($source);
-  my $i = $assembly->instruction(action=>"array", xTarget($t), xSource($n));            # Encode array name as a number
+  my $i = $assembly->instruction(action=>"array", xTarget($t), xSource($n));    # Encode array name as a number
 
   $t;
  }
