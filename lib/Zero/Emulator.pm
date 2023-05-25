@@ -756,7 +756,7 @@ my sub getMemoryAddress($$$$$)                                                  
   $exec->GetMemoryLocation->($exec, $arena, $area, $address);                   # Read from memory
  }
 
-sub getMemoryFromAddress($$)                                                    #P Get a value from memory at a specified address.
+my sub getMemoryFromAddress($$)                                                    #P Get a value from memory at a specified address.
  {my ($exec, $left) = @_;                                                       # Execution environment, left address
   @_ == 2 or confess "Two parameters";
   ref($left) =~ m(Address) or confess "Address needed for second parameter, not: ".ref($left);
@@ -1623,7 +1623,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       for my $j(0..$l-1)
        {my $S = Address($s->arena, $s->area, $s->address+$j, $s->name, 0);
         my $T = Address($t->arena, $t->area, $t->address+$j, $t->name, 0);
-        my $v = $exec->getMemoryFromAddress($S);
+        my $v = getMemoryFromAddress($exec, $S);
         $exec->assign($T, $v);
        }
      },
@@ -1640,7 +1640,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $t = left $exec, $i->target;
       my $s = right $exec, $i->source;
       my $S = Address(arenaParms, currentParamsGet($exec), $s, $exec->paramsNumber);
-      my $v = $exec->getMemoryFromAddress($S);
+      my $v = getMemoryFromAddress($exec, $S);
       $exec->assign($t, $v);
      },
 
@@ -1670,7 +1670,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $t = left $exec, $i->target;
       my $s = right $exec, $i->source;
       my $S = Address(arenaReturn, currentReturnGet($exec), $s, $exec->returnNumber);
-      my $v = $exec->getMemoryFromAddress($S);
+      my $v = getMemoryFromAddress($exec, $S);
       $exec->assign($t, $v);
      },
 
@@ -1725,7 +1725,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = currentInstruction $exec;
       my $t = left $exec, $i->target;
       my $s = right $exec, $i->source;
-      my $v = $exec->getMemoryFromAddress($t) << $s;
+      my $v = getMemoryFromAddress($exec, $t) << $s;
       $exec->assign($t, $v);
      },
 
@@ -1733,7 +1733,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = currentInstruction $exec;
       my $t = left $exec, $i->target;
       my $s = right $exec, $i->source;
-      my $v = $exec->getMemoryFromAddress($t) >> $s;
+      my $v = getMemoryFromAddress($exec, $t) >> $s;
       $exec->assign($t, $v);
      },
 
@@ -1746,7 +1746,7 @@ sub Zero::Emulator::Code::execute($%)                                           
       for my $j(reverse $l..$L)
        {my $S = Address($t->arena, $t->area, $j-1,   $t->name, 0);
         my $T = Address($t->arena, $t->area, $j,     $t->name, 0);
-        my $v = $exec->getMemoryFromAddress($S);
+        my $v = getMemoryFromAddress($exec, $S);
         $exec->assign($T, $v);
        }
       $exec->assign($t, $s);
@@ -1758,11 +1758,11 @@ sub Zero::Emulator::Code::execute($%)                                           
       my $t = left $exec, $i->target;
       my $L = $exec->areaLength($s->area);                                      # Length of source array
       my $l = $s->address;
-      my $v = $exec->getMemoryFromAddress($s);
+      my $v = getMemoryFromAddress($exec, $s);
       for my $j($l..$L-2)                                                       # Each element in specified range
        {my $S = Address($s->arena, $s->area, $j+1,   $s->name, 0);
         my $T = Address($s->arena, $s->area, $j,     $s->name, 0);
-        my $v = $exec->getMemoryFromAddress($S);
+        my $v = getMemoryFromAddress($exec, $S);
         $exec->assign($T, $v);
        }
       $exec->popArea(arenaHeap, $s->area, $s->name);
