@@ -1120,7 +1120,7 @@ my sub returnNumber($)                                                          
   $exec->block->ArrayNameToNumber("return")
  }
 
-my sub allocateSystemAreas($)                                                      #P Allocate system areas for a new stack frame.
+my sub allocateSystemAreas($)                                                   #P Allocate system areas for a new stack frame.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   (stackArea=> allocMemory($exec, $exec->stackAreaNameNumber, arenaLocal),
@@ -1128,7 +1128,7 @@ my sub allocateSystemAreas($)                                                   
    return=>    allocMemory($exec, returnNumber($exec),        arenaReturn));
  }
 
-sub freeSystemAreas($$)                                                         #P Free system areas for the specified stack frame.
+my sub freeSystemAreas($$)                                                      #P Free system areas for the specified stack frame.
  {my ($exec, $c) = @_;                                                          # Execution environment, stack frame
   @_ == 2 or confess "Two parameters";
   $exec->notRead;                                                               # Record unread memory locations in the current stack frame
@@ -1487,7 +1487,7 @@ sub Zero::Emulator::Code::execute($%)                                           
     return=> sub                                                                # Return from a subroutine call via the call stack
      {my $i = currentInstruction $exec;
       $exec->calls or $exec->stackTraceAndExit("The call stack is empty so I do not know where to return to");
-      $exec->freeSystemAreas(pop $exec->calls->@* );
+      freeSystemAreas($exec, pop $exec->calls->@* );
       if ($exec->calls)
        {my $c = $exec->calls->[-1];
         $exec->instructionPointer = $c->instruction->number+1;
@@ -1841,7 +1841,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      }
    }
 
-  $exec->freeSystemAreas($exec->calls->[0]);                                    # Free first stack frame
+  freeSystemAreas($exec, $exec->calls->[0]);                                    # Free first stack frame
 
   $exec->completionStatistics;
 
