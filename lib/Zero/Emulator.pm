@@ -937,7 +937,7 @@ sub rwRead($$$$)                                                                
    }
  }
 
-sub stackAreaNameNumber($)                                                      # Number of name representing stack area.
+my sub stackAreaNameNumber($)                                                   # Number of name representing stack area.
  {my ($exec) = @_;                                                              # Execution environment
   $exec->block->ArrayNameToNumber("stackArea");
  }
@@ -945,14 +945,14 @@ sub stackAreaNameNumber($)                                                      
 my sub left($$)                                                                 #P Address of a location in memory.
  {my ($exec, $ref) = @_;                                                        # Execution environment, reference
   @_ == 2 or confess "Two parameters";
-  ref($ref)   =~ m(Reference) or confess "Reference required, not: ".dump($ref);
-  my $r       = $ref->address;
-  my $address = $r;
-  my $arena   = $ref->arena;
-  my $area    = $ref->area;
-  my $delta   = $ref->delta;
-  my $S       = currentStackFrame($exec);                                       # Current stack frame
-  my $stackArea = $exec->stackAreaNameNumber;
+  ref($ref)     =~ m(Reference) or confess "Reference required, not: ".dump($ref);
+  my $r         = $ref->address;
+  my $address   = $r;
+  my $arena     = $ref->arena;
+  my $area      = $ref->area;
+  my $delta     = $ref->delta;
+  my $S         = currentStackFrame($exec);                                     # Current stack frame
+  my $stackArea = stackAreaNameNumber($exec);
 
   my $M;                                                                        # Memory address
   if ($ref->dAddress == 1)                                                      # Direct address
@@ -983,7 +983,7 @@ my sub right($$)                                                                
   my $stackArea = currentStackFrame($exec);
   my $name      = $ref->name;
   my $delta     = $ref->delta;
-  my $stackAN   = $exec->stackAreaNameNumber;
+  my $stackAN   = stackAreaNameNumber($exec);
 
   my $r;
 
@@ -1123,7 +1123,7 @@ my sub returnNumber($)                                                          
 my sub allocateSystemAreas($)                                                   #P Allocate system areas for a new stack frame.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
-  (stackArea=> allocMemory($exec, $exec->stackAreaNameNumber, arenaLocal),
+  (stackArea=> allocMemory($exec, stackAreaNameNumber($exec), arenaLocal),
    params=>    allocMemory($exec, paramsNumber($exec),        arenaParms),
    return=>    allocMemory($exec, returnNumber($exec),        arenaReturn));
  }
