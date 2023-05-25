@@ -93,7 +93,7 @@ sub ExecutionEnvironment(%)                                                     
   $memoryTechnique->($exec)       if $memoryTechnique;                          # Load memory handlers if a different memory handling system has been requested
   $exec->setStringMemoryTechnique if $options{stringMemory};                    # Optionally overrLoad memory handlers if a different memory handling system has been requested
 
-  if (defined(my $n = $options{maximumArraySize}))                               # Override the maximum number of elements in an array from the default setting if requested
+  if (defined(my $n = $options{maximumArraySize}))                              # Override the maximum number of elements in an array from the default setting if requested
    {$exec->memoryStringUserElements  = $n;
     $exec->memoryStringTotalElements = $n + $exec->memoryStringSystemElements;
    }
@@ -270,7 +270,7 @@ my sub isScalar($)                                                              
   ! ref $value;
  }
 
-my sub refDepth($)                                                                 #P The depth of a reference.
+my sub refDepth($)                                                              #P The depth of a reference.
  {my ($ref) = @_;                                                               # Reference to pack
   return 0 if isScalar(  $ref);
   return 1 if isScalar( $$ref);
@@ -278,7 +278,7 @@ my sub refDepth($)                                                              
   confess "Reference too deep".dump($ref);
  }
 
-my sub refValue($)                                                                 #P The value of a reference after dereferencing.
+my sub refValue($)                                                              #P The value of a reference after dereferencing.
  {my ($ref) = @_;                                                               # Reference to pack
   return   $ref if isScalar($ref);
   return  $$ref if isScalar($$ref);
@@ -359,7 +359,7 @@ sub Zero::Emulator::Code::ArrayNumberToName($$)                                 
   $code->arrayNumbers->[$number] // $number
  }
 
-my sub Reference($$$$$)                                                            # Create a new reference
+my sub Reference($$$$$)                                                         # Create a new reference
  {my ($arena, $area, $address, $name, $delta) = @_;                             # Arena, array, address, name of area, delta if any to be applied to address.
   confess "Area too deep: ".    dump($area)    if refDepth($area)    > 1;       # Areas that are too deep represent programmer error
   confess "Address too deep: ". dump($address) if refDepth($address) > 2;       # Addresses that are too deep represent programmer error
@@ -439,7 +439,7 @@ sub heap($$)                                                                    
   $exec->GetMemoryArea->($exec, arenaHeap, $area);
  }
 
-my sub currentStackFrame($)                                                        #P Address of current stack frame.
+my sub currentStackFrame($)                                                     #P Address of current stack frame.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my $calls = $exec->calls;
@@ -447,7 +447,7 @@ my sub currentStackFrame($)                                                     
   $$calls[-1]->stackArea;
  }
 
-my sub currentParamsGet($)                                                         #P Address of current parameters to get from.
+my sub currentParamsGet($)                                                      #P Address of current parameters to get from.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my $calls = $exec->calls;
@@ -455,7 +455,7 @@ my sub currentParamsGet($)                                                      
   $$calls[-2]->params;
  }
 
-my sub currentParamsPut($)                                                         #P Address of current parameters to put to.
+my sub currentParamsPut($)                                                      #P Address of current parameters to put to.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my $calls = $exec->calls;
@@ -463,7 +463,7 @@ my sub currentParamsPut($)                                                      
   $$calls[-1]->params;
  }
 
-my sub currentReturnGet($)                                                         #P Address of current return to get from.
+my sub currentReturnGet($)                                                      #P Address of current return to get from.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my $calls = $exec->calls;
@@ -731,7 +731,7 @@ sub setStringMemoryTechnique($)                                                 
 
 # End of memory implementation
 
-my sub getMemory($$$$$)                                                            #P Get from memory.
+my sub getMemory($$$$$)                                                         #P Get from memory.
  {my ($exec, $arena, $area, $address, $name) = @_;                              # Execution environment, arena, area, address, expected name of area
   @_ == 5 or confess "Five parameters";
   $exec->checkArrayName($arena, $area, $name);
@@ -805,7 +805,7 @@ my sub currentInstruction($)                                                    
   $exec->calls->[-1]->instruction;
  }
 
-my sub stackTrace($;$)                                                             #P Create a stack trace.
+my sub stackTrace($;$)                                                          #P Create a stack trace.
  {my ($exec, $title) = @_;                                                      # Execution environment, title
   my $i = currentInstruction $exec;
   my $s = $exec->suppressOutput;                                                # Suppress file and line numbers in dump to facilitate automated testing
@@ -835,7 +835,7 @@ sub stackTraceAndExit($$%)                                                      
 
 my $allocs = [];                                                                # Allocations
 
-my sub allocMemory($$$)                                                            #P Create the name of a new memory area.
+my sub allocMemory($$$)                                                         #P Create the name of a new memory area.
  {my ($exec, $number, $arena) = @_;                                             # Execution environment, name of allocation, arena to use
   @_ == 3 or confess "Three parameters";
   $number =~ m(\A\d+\Z) or confess "Array name must be numeric not : $number";
@@ -973,7 +973,7 @@ my sub left($$)                                                                 
    }
  }
 
-my sub right($$)                                                                   #P Get a constant or a value from memory.
+my sub right($$)                                                                #P Get a constant or a value from memory.
  {my ($exec, $ref) = @_;                                                        # Location, optional area
   @_ == 2 or confess "Two parameters";
   ref($ref) =~ m(Reference) or confess "Reference required";
@@ -1137,7 +1137,7 @@ my sub freeSystemAreas($$)                                                      
   $exec->freeArea(arenaReturn, $c->return,    returnNumber($exec));
  }
 
-my sub createInitialStackEntry($)                                                  #P Create the initial stack frame.
+my sub createInitialStackEntry($)                                               #P Create the initial stack frame.
  {my ($exec) = @_;                                                              # Execution environment
   my $variables = $exec->block->variables;
   my $nVariables = $variables->fieldOrder->@*;                                  # Number of variables in this stack frame
@@ -2721,7 +2721,7 @@ sub Parallel(@)                                                                 
   my @r = keys @subs;
   my $s = reverse time();                                                       # Create a somewhat random seed
   srand($s);                                                                    # Seed the random number generator
-  for my $i((keys @r) x 2)                                                       # Randomize execution order
+  for my $i((keys @r) x 2)                                                      # Randomize execution order
    {my $j = int(scalar(@r) * rand());
     ($r[$i], $r[$j]) = ($r[$j], $r[$i]);
    }
@@ -2742,7 +2742,7 @@ my $instructions = Zero::Emulator::Code::execute(undef);
 my @instructions = sort keys %$instructions;
 my %instructions = map {$instructions[$_]=>$_} keys @instructions;
 
-my sub instructionList()                                                           #P Create a list of instructions.
+my sub instructionList()                                                        #P Create a list of instructions.
  {my @i = grep {m(\s+#i)} readFile $0;
   my @j;                                                                        # Description of instruction
   for my $i(@i)
@@ -2755,13 +2755,13 @@ my sub instructionList()                                                        
   [sort {$$a[0] cmp $$b[0]} @j]
 }
 
-my sub instructionListExport()                                                     #P Create an export statement.
+my sub instructionListExport()                                                  #P Create an export statement.
  {my $i = instructionList;
   say STDERR '@EXPORT_OK   = qw(', (join ' ', map {$$_[0]} @$i), ");\n";
 }
 #instructionListExport; exit;
 
-my sub instructionListReadMe()                                                     #P List  instructions for inclusion in read me.
+my sub instructionListReadMe()                                                  #P List  instructions for inclusion in read me.
  {my $i = instructionList;
   my $s = '';
   for my $i(@$i)
@@ -2771,7 +2771,7 @@ my sub instructionListReadMe()                                                  
   $s
  }
 
-sub instructionListMapping()                                                    #P Map instructions to small integers.
+my sub instructionListMapping()                                                 #P Map instructions to small integers.
  {my $i = instructionList;
   my @n = map {$$_[0]} @$i;                                                     # Description of instruction
   my $n = join ' ', @n;
@@ -2781,7 +2781,7 @@ END
 }
 #instructionListMapping(); exit;
 
-sub rerefValue($$)                                                              #P Re-reference a value.
+my sub rerefValue($$)                                                           #P Re-reference a value.
  {my ($value, $depth) = @_;                                                     # Value to reference, depth of reference
   return   $value if $depth == 0;
   return  \$value if $depth == 1;
@@ -2874,7 +2874,7 @@ sub Zero::Emulator::Code::packInstruction($$)                                   
   $a
  }
 
-sub unpackInstruction($)                                                        #P Unpack an instruction.
+my sub unpackInstruction($)                                                     #P Unpack an instruction.
  {my ($I) = @_;                                                                 # Instruction numbers, instruction to pack
 
   my $i = vec($I, 0, 32);
@@ -2948,7 +2948,7 @@ return 1 if caller;
 
 # Tests
 
-#Test::More->builder->output("/dev/null");                                       # Reduce number of confirmation messages during testing
+#Test::More->builder->output("/dev/null");                                      # Reduce number of confirmation messages during testing
 
 my $debug = -e q(/home/phil/);                                                  # Assume debugging if testing locally
 sub is_deeply;
