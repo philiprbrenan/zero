@@ -1030,13 +1030,13 @@ my sub right($$)                                                                
   $r
  }
 
-sub jumpOp($$$)                                                                 #P Jump to the target address if the tested memory area if the condition is matched.
+my sub jumpOp($$$)                                                              #P Jump to the target address if the tested memory area if the condition is matched.
  {my ($exec, $i, $check) = @_;                                                  # Execution environment, Instruction, check
   @_ == 3 or confess "Three parameters";
   $exec->instructionPointer = $i->number + right($exec, $i->jump) if &$check;   # Check if condition is met
  }
 
-sub assert1($$$)                                                                #P Assert true or false.
+my sub assert1($$$)                                                             #P Assert true or false.
  {my ($exec, $test, $sub) = @_;                                                 # Execution environment, Text of test, subroutine of test
   @_ == 3 or confess "Three parameters";
   my $i = currentInstruction $exec;
@@ -1047,7 +1047,7 @@ sub assert1($$$)                                                                
   $exec->timeDelta = 0;
  }
 
-sub assert2($$$)                                                                #P Assert generically.
+my sub assert2($$$)                                                             #P Assert generically.
  {my ($exec, $test, $sub) = @_;                                                 # Execution environment, Text of test, subroutine of test
   @_ == 3 or confess "Three parameters";
   my $i = currentInstruction $exec;
@@ -1377,35 +1377,35 @@ sub Zero::Emulator::Code::execute($%)                                           
      },
 
     assertEq=> sub                                                              # Assert equals
-     {$exec->assert2("==", sub {my ($a, $b) = @_; $a == $b})
+     {assert2($exec, "==", sub {my ($a, $b) = @_; $a == $b})
      },
 
     assertNe=> sub                                                              # Assert not equals
-     {$exec->assert2("!=", sub {my ($a, $b) = @_; $a != $b})
+     {assert2($exec, "!=", sub {my ($a, $b) = @_; $a != $b})
      },
 
     assertLt=> sub                                                              # Assert less than
-     {$exec->assert2("< ", sub {my ($a, $b) = @_; $a <  $b})
+     {assert2($exec, "< ", sub {my ($a, $b) = @_; $a <  $b})
      },
 
     assertLe=> sub                                                              # Assert less than or equal
-     {$exec->assert2("<=", sub {my ($a, $b) = @_; $a <= $b})
+     {assert2($exec, "<=", sub {my ($a, $b) = @_; $a <= $b})
      },
 
     assertGt=> sub                                                              # Assert greater than
-     {$exec->assert2("> ", sub {my ($a, $b) = @_; $a >  $b})
+     {assert2($exec, "> ", sub {my ($a, $b) = @_; $a >  $b})
      },
 
     assertGe=> sub                                                              # Assert greater
-     {$exec->assert2(">=", sub {my ($a, $b) = @_; $a >= $b})
+     {assert2($exec, ">=", sub {my ($a, $b) = @_; $a >= $b})
      },
 
     assertFalse=> sub                                                           # Assert false
-     {$exec->assert1("False", sub {my ($a) = @_; $a == 0})
+     {assert1($exec, "False", sub {my ($a) = @_; $a == 0})
      },
 
     assertTrue=> sub                                                            # Assert true
-     {$exec->assert1("True", sub {my ($a) = @_; $a != 0})
+     {assert1($exec, "True", sub {my ($a) = @_; $a != 0})
      },
 
     array=> sub                                                                 # Create a new memory area and write its number into the address named by the target operand
@@ -1565,14 +1565,14 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->instructionPointer = $n + $r;
      },
                                                                                 # Conditional jumps
-    jEq=>    sub {my $i = currentInstruction $exec; $exec->jumpOp($i, sub{right($exec, $i->source) == right($exec, $i->source2)})},
-    jNe=>    sub {my $i = currentInstruction $exec; $exec->jumpOp($i, sub{right($exec, $i->source) != right($exec, $i->source2)})},
-    jLe=>    sub {my $i = currentInstruction $exec; $exec->jumpOp($i, sub{right($exec, $i->source) <= right($exec, $i->source2)})},
-    jLt=>    sub {my $i = currentInstruction $exec; $exec->jumpOp($i, sub{right($exec, $i->source) <  right($exec, $i->source2)})},
-    jGe=>    sub {my $i = currentInstruction $exec; $exec->jumpOp($i, sub{right($exec, $i->source) >= right($exec, $i->source2)})},
-    jGt=>    sub {my $i = currentInstruction $exec; $exec->jumpOp($i, sub{right($exec, $i->source) >  right($exec, $i->source2)})},
-    jFalse=> sub {my $i = currentInstruction $exec; $exec->jumpOp($i, sub{right($exec, $i->source) == 0})},
-    jTrue=>  sub {my $i = currentInstruction $exec; $exec->jumpOp($i, sub{right($exec, $i->source) != 0})},
+    jEq=>    sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{right($exec, $i->source) == right($exec, $i->source2)})},
+    jNe=>    sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{right($exec, $i->source) != right($exec, $i->source2)})},
+    jLe=>    sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{right($exec, $i->source) <= right($exec, $i->source2)})},
+    jLt=>    sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{right($exec, $i->source) <  right($exec, $i->source2)})},
+    jGe=>    sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{right($exec, $i->source) >= right($exec, $i->source2)})},
+    jGt=>    sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{right($exec, $i->source) >  right($exec, $i->source2)})},
+    jFalse=> sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{right($exec, $i->source) == 0})},
+    jTrue=>  sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{right($exec, $i->source) != 0})},
 
     label=> sub                                                                 # Label - no operation
      {my ($i) = @_;                                                             # Instruction
