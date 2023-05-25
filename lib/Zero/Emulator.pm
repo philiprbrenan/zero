@@ -815,7 +815,7 @@ sub setMemory($$$)                                                              
 
 sub Address($$$$;$)                                                             #P Record a reference to memory.
  {my ($arena, $area, $address, $name, $delta) = @_;                             # Arena, area, address in area, name of area, delta from specified address
-  my $r = genHash(q(Zero::Emulator::Address),                                    # Address memory
+  my $r = genHash(q(Zero::Emulator::Address),                                   # Address memory
     arena=>     $arena,                                                         # Arena in memory
     area=>      $area,                                                          # Area in memory, either a number or a reference to a number indicating the level of indirection
     address=>   $address,                                                       # Address within area, either a number or a reference to a number indicating the level of indirection
@@ -1428,7 +1428,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     free=> sub                                                                  # Free the memory area named by the source operand
      {my $i = $exec->currentInstruction;
-      my $area = $exec->right($i->target);                                      # Area
+      my $area = $exec->right($i->target);   ## Right applied to target         # Area
       my $name = $exec->right($i->source);
       $exec->freeArea(arenaHeap, $area, $name);                                 # Free the area
      },
