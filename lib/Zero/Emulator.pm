@@ -16,7 +16,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Time::HiRes qw(time);
-eval "use Test::More tests=>406" unless caller;
+eval "use Test::More tests=>404" unless caller;
 
 makeDieConfess;
 our $memoryTechnique;                                                           # Undef or the address of a sub that loads the memory handlers into an execution environment.
@@ -173,9 +173,9 @@ sub Zero::Emulator::Code::codeToString($)                                       
   for my $i(@code)
    {my $n = $i->number;
     my $a = $i->action;
-    my $t = $block->referenceToString($i->{target});
-    my $s = $block->referenceToString($i->{source});
-    my $S = $block->referenceToString($i->{source2});
+    my $t = $block->referenceToString($i->{target},  0);
+    my $s = $block->referenceToString($i->{source},  1);
+    my $S = $block->referenceToString($i->{source2}, 2);
     my $T = sprintf "%04d  %8s %12s  %12s  %12s", $n, $a, $t, $s, $S;
     push @T, $T =~ s(\s+\Z) ()sr;
    }
@@ -301,20 +301,53 @@ my sub arenaHeap  {1}                                                           
 my sub arenaParms {2}                                                           # Parameter areas
 my sub arenaReturn{3}                                                           # Return areas
 
-sub Zero::Emulator::Code::referenceToString($$)                                 #P Reference as a string.
- {my ($block, $r) = @_;                                                         # Block of code, reference
-  @_ == 2 or confess "Two parameters";
+sub Zero::Emulator::Code::referenceToString($$$)                                #P Reference as a string.
+ {my ($block, $r, $operand) = @_;                                               # Block of code, reference, operand type : 0-Target 1-Source 2-Source2
+  @_ == 3 or confess "Three parameters";
 
   return "" unless defined $r;
   ref($r) =~ m(Reference) or confess "Must be a reference, not: ".dump($r);
 
-  if ($r->arena == arenaLocal)
-   {return "" unless my $a = $r->address;
-    return dump $a
+  if ($operand == 0)
+   {if ($r->arena == arenaLocal)
+     {my  $a = $r->address; my $da = $r->dAddress;
+      return dump \\$a if $da == 2;
+      return dump   $a
+     }
+    else
+     {my $A = $r-> area;   my $dA = $r->dArea;
+      my $a = $r->address; my $da = $r->dAddress;
+      my $n = $r->name;    my $d  = $r->delta;
+
+      return dump [\$A, \\$a, $n, $d] if $dA == 1 && $da == 2;
+      return dump [\$A,   $a, $n, $d] if $dA == 1 && $da == 1;
+      return dump [ $A, \\$a, $n, $d] if $dA == 0 && $da == 2;
+      return dump [ $A,   $a, $n, $d] if $dA == 0 && $da == 1;
+      confess "Area depth: $dA, address $da";
+     }
    }
   else
-   {return dump [$r->area, $r->address, $r->name, $r->delta];
+   {if ($r->arena == arenaLocal)
+     {return "" unless my $a = $r->address;
+      return dump \\$a if $r->dAddress == 2;
+      return dump  \$a if $r->dAddress == 1;
+      return dump   $a
+     }
+    else
+     {my $A = $r-> area;   my $dA = $r->dArea;
+      my $a = $r->address; my $da = $r->dAddress;
+      my $n = $r->name;    my $d  = $r->delta;
+
+      return dump [\$A, \\$a, $n, $d] if $dA == 1 && $da == 2;
+      return dump [\$A,  \$a, $n, $d] if $dA == 1 && $da == 1;
+      return dump [\$A,   $a, $n, $d] if $dA == 1 && $da == 0;
+      return dump [ $A, \\$a, $n, $d] if $dA == 0 && $da == 2;
+      return dump [ $A,  \$a, $n, $d] if $dA == 0 && $da == 1;
+      return dump [ $A,   $a, $n, $d] if $dA == 0 && $da == 0;
+      confess "Area depth: $dA, address $da";
+     }
    }
+  confess "ReferenceToString, operand: $operand ".dump($r);
  }
 
 sub Zero::Emulator::Code::ArrayNameToNumber($$)                                 #P Generate a unique number for this array name.
@@ -342,8 +375,8 @@ sub Reference($$$$$)                                                            
 
   genHash(q(Zero::Emulator::Reference),
     arena=>     $arena,                                                         # Arrays are allocated in arenas in the hope of facilitating the reuse of freed memory
-    area=>      $area,                                                          # The array number
-    address=>   $address,                                                       # The index with in the array
+    area=>      refValue($area),                                                # The array number
+    address=>   refValue($address),                                             # The index with in the array
     name=>      $name,                                                          # The name of the array. Naming the array allows a check to be performed to ensure that the expected type of array is being manipulated
     delta=>     $delta,                                                         # An constant increment or decrement to the address which sometimes allows the elimination of extra L<Add> and L<Subtract> instructions.
     dArea=>     refDepth($area),                                                # Depth of area reference
@@ -396,7 +429,7 @@ sub Zero::Emulator::Code::assemble($%)                                          
    {my $i = $$code[$c];
     next unless $i->action =~ m(\A(j|call))i;
     if (my $l = $i->target->address)                                            # Label
-     {if (my $t = $labels{$$l})                                                 # Found label
+     {if (my $t = $labels{$l})                                                  # Found label
        {$i->jump = $Block->Reference($t - $c, 1);                               # Relative jump
        }
       else
@@ -933,8 +966,8 @@ sub left($$)                                                                    
  {my ($exec, $ref) = @_;                                                        # Execution environment, reference
   @_ == 2 or confess "Two parameters";
   ref($ref)   =~ m(Reference) or confess "Reference required, not: ".dump($ref);
-  my $r       =  $ref->address;
-  my $address =  $r;
+  my $r       = $ref->address;
+  my $address = $r;
   my $arena   = $ref->arena;
   my $area    = $ref->area;
   my $delta   = $ref->delta;
@@ -943,10 +976,10 @@ sub left($$)                                                                    
 
   my $M;                                                                        # Memory address
   if ($ref->dAddress == 1)                                                      # Direct address
-   {$M = $$address + $delta;
+   {$M = $address + $delta;
    }
   elsif ($ref->dAddress == 2)                                                   # Indirect address
-   {$M = $exec->getMemory(arenaLocal, $S, $$$address, $stackArea) + $delta;
+   {$M = $exec->getMemory(arenaLocal, $S, $address, $stackArea) + $delta;
    }
 
   if (!$ref->dArea)                                                             # Current stack frame
@@ -954,7 +987,7 @@ sub left($$)                                                                    
     return $a;
    }
   else                                                                          # Indirect area
-   {my $A = $exec->getMemory(arenaLocal, $S, $$area, $stackArea);
+   {my $A = $exec->getMemory(arenaLocal, $S, $area, $stackArea);
     my $a = Address($arena, $A, $M, $ref->name);
     return $a;
    }
@@ -995,17 +1028,20 @@ sub right($$)                                                                   
   my $memory = $exec->memory;
 
   if ($ref->dAddress == 1)                                                      # Direct
-   {$m = $$address + $delta;
+   {$m = $address + $delta;
    }
   else                                                                          # Indirect
-   {$m = $exec->getMemory(arenaLocal, $stackArea, $$$address, $stackAN) + $delta;
+   {#say STDERR "AAAA", dump(arenaLocal, $stackArea, $address, $stackAN);
+    my $d = $exec->getMemory(arenaLocal, $stackArea, $address, $stackAN);
+       $m = $d + $delta;
    }
 
   if (!$ref->dArea)                                                             # Stack frame
    {$r = $exec->getMemory(arenaLocal, $stackArea, $m, $stackAN);                # Direct from stack area
    }
   else                                                                          # Indirect from stack area
-   {if (defined(my $j = $exec->getMemory(arenaLocal, $stackArea, $$area, $stackAN)))
+   {my $j = $exec->getMemory(arenaLocal, $stackArea, $area, $stackAN);
+    if (defined $j)
      {$r = $exec->getMemory($arena, $j, $m, $ref->name);
      }
    }
@@ -1556,16 +1592,16 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->output($s);
      },
 
-    clear=> sub                                                                 # Clear the first bytes of an area as specified by the target operand
-     {my $i = $exec->currentInstruction;
-      my $t =  $exec->right($i->target);
-      my $N =  $exec->right($i->source);
-      my $n =  $exec->right($i->source2);
-      for my $a(0..$N-1)
-       {my $p = Address(arenaHeap, $t, $a, $N);
-        $exec->assign($p, 0);
-       }
-     },
+#    clear=> sub   s## source2 should become part of the target                 # Clear the first bytes of an area as specified by the target operand
+#     {my $i = $exec->currentInstruction;
+#      my $t =  $exec->right($i->target);
+#      my $N =  $exec->right($i->source);
+#      my $n =  $exec->right($i->source2);
+#      for my $a(0..$N-1)
+#       {my $p = Address(arenaHeap, $t, $a, $N);
+#        $exec->assign($p, 0);
+#       }
+#     },
 
     loadAddress=> sub                                                           # Load the address component of a reference
      {my $i = $exec->currentInstruction;
@@ -1952,7 +1988,8 @@ sub Array($)                                                                    
  {my ($source) = @_;                                                            # Name of allocation
   my $t = &Var();
   my $n = $assembly->ArrayNameToNumber($source);
-  $assembly->instruction(action=>"array", xTarget($t), xSource($n));            # Encode array name as a number
+  my $i = $assembly->instruction(action=>"array", xTarget($t), xSource($n));            # Encode array name as a number
+
   $t;
  }
 
@@ -2107,11 +2144,12 @@ sub Call($)                                                                     
   $assembly->instruction(action=>"call", xTarget($p->target));
  }
 
-sub Clear($$$)                                                                  #i Clear the first bytes of an area.  The area is specified by the first element of the address, the number of locations to clear is specified by the second element of the target address.
- {my ($target, $source, $source2) = @_;                                         # Target address to clear, number of bytes to clear, name of target
-  $assembly->instruction(action=>"clear", xTarget($target),
-    xSource($source), xSource2($source2));
- }
+#sub Clear($$$) ## Source2 must beciome part of the array reference             #i Clear the first bytes of an area.  The area is specified by the first element of the address, the number of locations to clear is specified by the second element of the target address.
+# {my ($target, $source, $source2) = @_;                                        # Target address to clear, number of bytes to clear, name of target
+#  my $i = $assembly->instruction(action=>"clear", xTarget($target),
+#            xSource($source), xSource2($source2));
+#  $i;
+# }
 
 sub Confess()                                                                   #i Confess with a stack trace showing the location both in the emulated code and in the code that produced the emulated code.
  {$assembly->instruction(action=>"confess");
@@ -2753,7 +2791,7 @@ sub rerefValue($$)                                                              
 
 sub Zero::Emulator::Code::packRef($$$)                                          #P Pack a reference into 8 bytes.
  {my ($code, $instruction, $ref) = @_;                                          # Code block being packed, instruction being packed, reference being packed
-
+#say STDERR "AAAA", dump($instruction);
   if (!defined($ref) or ref($ref) =~ m(array)i && !@$ref)                       # Unused reference
    {my $a = '';
     vec($a, 0, 32) = 0;
@@ -2762,16 +2800,15 @@ sub Zero::Emulator::Code::packRef($$$)                                          
     return $a;
    }
 
-  my @a = (arenaLocal, 0, $ref, 0);                                             # Local variable or constant
-  @a = @$ref{qw(arena area address delta name)} if ref($ref) =~ m(Reference)i;  # Heap reference
+  my @a = (arenaLocal, 0, 0, $ref, 0, 0);                                       # Local variable or constant
+  if (ref($ref) =~ m(Reference)i)                                               # Heap reference
+   {@a = @$ref{qw(arena area dArea address dAddress delta)}
+   }
 
   $_ //= 0 for @a;
-  my ($arena, $area, $address, $delta, $name) = @a;
-
-  my $dArea    = dump $area;
-  my $dAddress = dump $address;
-  my $dArena   = dump $arena;
-  my $dDelta   = dump $delta;
+  my ($arena, $area, $dArea, $address, $dAddress, $delta) = @a;
+#say STDERR "GGGG", dump($address, $area, $dAddress, $dArea, $arena, $delta);
+#say STDERR "GG11", dump($ref);
 
   my $b = "too big, should be less than:";
 
@@ -2780,12 +2817,11 @@ sub Zero::Emulator::Code::packRef($$$)                                          
   my $bArena   = "$b 2**2";
   my $bDelta   = "$b 2**7";
 
-
   my @m;
-  push @m, "Area: $dArea $bArea"          if refValue($area)    >= 2**16;       # 2 + 16
-  push @m, "Address: $dAddress $bAddress" if refValue($address) >= 2**32;       # 2 + 32
-  push @m, "Arena: $dArena $bArea"        if     $arena         >= 2**2;        # 2
-  push @m, "Delta: $dDelta $bDelta"       if abs($delta)        >  2**7;        # 8
+  push @m, "Area: $area $bArea"          if $area       >= 2**16;               # 2 + 16
+  push @m, "Address: $address $bAddress" if $address    >= 2**32;               # 2 + 32
+  push @m, "Arena: $arena $bArea"        if $arena      >= 2**2;                # 2
+  push @m, "Delta: $delta $bDelta"       if abs($delta) >  2**7;                # 8
 
   if (@m)
    {my $i = dump $instruction;
@@ -2801,13 +2837,12 @@ END
    }
 
   my $a = '';
-  vec($a, 0, 32) =  refValue $address;
-  vec($a, 2, 16) =  refValue $area;
-  vec($a, 24, 2) =  refDepth $address;
-  vec($a, 25, 2) =  refDepth $area;
-  vec($a, 26, 2) =           $arena;
-  vec($a, 27, 2) =           $arena;
-  vec($a, 7,  8) =  2**7 +   $delta - 1;
+  vec($a, 0, 32) =         $address;
+  vec($a, 2, 16) =         $area;
+  vec($a, 24, 2) =         $dAddress;
+  vec($a, 25, 2) =         $dArea;
+  vec($a, 26, 2) =         $arena;
+  vec($a, 7,  8) =  2**7 + $delta - 1;
   $a
  }
 
@@ -2816,13 +2851,15 @@ sub Zero::Emulator::Code::unpackRef($$$)                                        
 
   my $vAddress = vec($a,  0, 32);
   my $vArea    = vec($a,  2, 16);
-  my $rAddress = vec($a, 24,  2);
-  my $rArea    = vec($a, 25,  2);
+  my $dAddress = vec($a, 24,  2);
+  my $dArea    = vec($a, 25,  2);
   my $arena    = vec($a, 26,  2);
   my $delta    = vec($a,  7,  8) - (2**7 - 1);
 
-  my $area     = rerefValue($vArea,    $rArea);
-  my $address  = rerefValue($vAddress, $rAddress);
+#say STDERR "HHHH", dump($vAddress, $vArea, $dAddress, $dArea, $arena, $delta);
+
+  my $area     = rerefValue($vArea,    $dArea);
+  my $address  = rerefValue($vAddress, $dAddress);
   $code->Reference([$arena  != arenaHeap ? undef : $area, $address, 0, $delta], $operand);
  }
 
@@ -2871,6 +2908,7 @@ sub disAssemble($)                                                              
       source=>  $C->unpackRef    (substr($c, 16, 8), 1),
       source2=> $C->unpackRef    (substr($c, 24, 8), 2));
    }
+#say STDERR "AAAA", dump($C);
   $C
  }
 
@@ -2926,7 +2964,7 @@ manager to prove that different implementations produce the same results.
 =cut
 
 for my $testSet(1..4) {                                                         # Select various combinations of execution engine and memory handler
-say STDOUT "TestSet: $testSet";
+say STDERR "TestSet: $testSet";
 my $ee = $testSet % 2 ? \&Execute :                                             # Assemble and execute
                         \&GenerateMachineCodeDisAssembleExecute;                # Generate machine code, load code and execute
 
@@ -3590,10 +3628,10 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          ##Alloc ##Clear
+if (0)                                                                          ##Alloc ##Clear
  {Start 1;
   my $a = Array "aaa";
-  Clear $a, 10, 'aaa';
+  #Clear $a, 10, 'aaa';
   my $e = &$ee(suppressOutput=>1, maximumArraySize=>10);
   is_deeply $e->heap(1), [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
  }
@@ -3741,7 +3779,7 @@ END
   is_deeply $e->heap(1), [undef, undef, 44, undef, undef, 33] if $testSet <= 2;
   is_deeply $e->heap(1), [0,     0,     44, 0,     0,     33] if $testSet  > 2;
   is_deeply $e->widestAreaInArena, [4,5];
-  is_deeply $e->namesOfWidestArrays, ["stackArea", "array"] if $testSet % 2;
+  is_deeply $e->namesOfWidestArrays, ["stackArea", "array"]   if $testSet % 2;
  }
 
 #latest:;
@@ -4115,20 +4153,22 @@ if (1)                                                                          
 
   is_deeply eval($e->out), [1, 22, 333];
 
-  is_deeply $e->block->codeToString, <<'END' if $testSet == 1;
-0000     array           \0             3
-0001       mov [\0, \0, 3, 0]             1
-0002       mov [\0, \1, 3, 0]            22
-0003       mov [\0, \2, 3, 0]           333
-0004  arrayDump           \0
+  #say STDERR $e->block->codeToString;
+
+  is_deeply $e->block->codeToString, <<'END' if $testSet % 2 == 1;
+0000     array            0             3
+0001       mov [\0, 0, 3, 0]             1
+0002       mov [\0, 1, 3, 0]            22
+0003       mov [\0, 2, 3, 0]           333
+0004  arrayDump            0
 END
 
-  is_deeply $e->block->codeToString, <<'END' if $testSet == 2;
-0000     array [undef, \0, 3, 0]  [undef, 3, 3, 0]  [undef, 0, 3, 0]
-0001       mov [\0, \0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
-0002       mov [\0, \1, 3, 0]  [undef, 22, 3, 0]  [undef, 0, 3, 0]
-0003       mov [\0, \2, 3, 0]  [undef, 333, 3, 0]  [undef, 0, 3, 0]
-0004  arrayDump [undef, \0, 3, 0]  [undef, 0, 3, 0]  [undef, 0, 3, 0]
+  is_deeply $e->block->codeToString, <<'END' if $testSet % 2 == 0;
+0000     array [undef, 0, 3, 0]  [undef, 3, 3, 0]  [undef, 0, 3, 0]
+0001       mov [\0, 0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+0002       mov [\0, 1, 3, 0]  [undef, 22, 3, 0]  [undef, 0, 3, 0]
+0003       mov [\0, 2, 3, 0]  [undef, 333, 3, 0]  [undef, 0, 3, 0]
+0004  arrayDump [undef, 0, 3, 0]  [undef, 0, 3, 0]  [undef, 0, 3, 0]
 END
  }
 
@@ -4260,16 +4300,16 @@ if (1)                                                                          
  {Start 1;
   my $a = Mov 1;
   my $g = GenerateMachineCode;
-  is_deeply dump($g), 'pack("H*","0000002300000000000000000000017f000000010000007f000000000000007f")';
+  is_deeply dump($g), 'pack("H*","0000002200000000000000000000017f000000010000007f000000000000007f")';
 
   my $d = disAssemble $g;
      $d->assemble;
   is_deeply $d->codeToString, <<'END';
-0000       mov [undef, \0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+0000       mov [undef, 0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
 END
   my $e =  GenerateMachineCodeDisAssembleExecute;
   is_deeply $e->block->codeToString, <<'END';
-0000       mov [undef, \0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+0000       mov [undef, 0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
 END
  }
 
