@@ -62,14 +62,12 @@ sub ExecutionEnvironment(%)                                                     
     mostArrays=>            [],                                                 # The maximum number of arrays active at any point during the execution in each arena
     namesOfWidestArrays=>   [],                                                 # The name of the widest arrays in each arena
     notExecuted=>           [],                                                 # Instructions not executed
-    notReadAddresses=>      [],                                                 # Memory addresses never read
     out=>                   '',                                                 # The out channel. L<Out> writes an array of items to this followed by a new line.  L<out> does the same but without the new line.
     parallelLastStart=>     [],                                                 # Point in time at which last parallel section started
     parallelLongest=>       [],                                                 # Longest paralle section so far
     pointlessAssign=>       {},                                                 # Location already has the specified value
     PopMemoryArea=>        \&popMemoryArea,                                     # Low level memory access - pop from area
     printDoubleWrite=>      $options{doubleWrite},                              # Double writes: earlier instruction number to later instruction number
-    printNotRead=>          $options{NotRead},                                  # Memory locations never read
     printPointlessAssign=>  $options{pointlessAssign},                          # Pointless assigns {instruction number} to count - address already has the specified value
     PushMemoryArea=>       \&pushMemoryArea,                                    # Low level memory access - push onto area
     read=>                  [],                                                 # Records whether a memory address was ever read allowing us to find all the unused locations
@@ -496,6 +494,19 @@ my sub dumpMemory($)                                                            
   join "\n", @m, '';
  }
 
+my sub getMemory($$$$$)                                                         #P Get from memory.
+ {my ($exec, $arena, $area, $address, $name) = @_;                              # Execution environment, arena, area, address, expected name of area
+  @_ == 5 or confess "Five parameters";
+  $exec->checkArrayName($arena, $area, $name);
+  my $v = $exec->GetMemoryLocation->($exec, $arena, $area, $address);
+  if (!defined($$v))                                                            # Check we are getting a defined value.  If undefined values are acceptable use L<getMemoryAddress> and dereference the result.
+   {my $n = $name // 'unknown';
+    $exec->stackTraceAndExit
+     ("Undefined memory accessed in arena: $arena, at area: $area ($n), address: $address\n");
+   }
+  $$v
+ }
+
 # These methods provide the original unlimited memory mechanism using multidimensional arrays
 
 sub getMemoryHeaps($)                                                           #P Heaps.
@@ -731,19 +742,6 @@ sub setStringMemoryTechnique($)                                                 
 
 # End of memory implementation
 
-my sub getMemory($$$$$)                                                         #P Get from memory.
- {my ($exec, $arena, $area, $address, $name) = @_;                              # Execution environment, arena, area, address, expected name of area
-  @_ == 5 or confess "Five parameters";
-  $exec->checkArrayName($arena, $area, $name);
-  my $v = $exec->GetMemoryLocation->($exec, $arena, $area, $address);
-  if (!defined($$v))                                                            # Check we are getting a defined value.  If undefined values are acceptable use L<getMemoryAddress> and dereference the result.
-   {my $n = $name // 'unknown';
-    $exec->stackTraceAndExit
-     ("Undefined memory accessed in arena: $arena, at area: $area ($n), address: $address\n");
-   }
-  $$v
- }
-
 my sub Address($$$$$$)                                                          #P Record a reference to memory.
  {my ($exec, $arena, $area, $address, $name, $delta) = @_;                      # Execution environment, arena, area, address in area, name of area, delta from specified address
   $exec =~ m(Emulator) or confess "Emulator execution environment required not: ".dump($exec);
@@ -800,6 +798,7 @@ sub Zero::Emulator::Address::getMemoryAddress($)                                
 my sub currentInstruction($)                                                    #P Locate current instruction.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
+  ref($exec) =~ m(Zero::Emulator) or confess "Zero::Emulator required, not: ".dump($exec);
   $exec->calls->[-1]->instruction;
  }
 
@@ -877,25 +876,6 @@ sub getMemoryType($$$)                                                          
   @_ == 3 or confess "Three parameters";
   $exec->memoryType->[$arena][$area];
  }
-
-sub notRead()                                                                   #P Record the unused memory locations in the current stack frame.
- {my ($exec) = @_;                                                              # Parameters
-  my $area = currentStackFrame($exec);
-#    my @area = $memory{$area}->@*;                                             # Memory in area
-#    my %r;                                                                     # Location in stack frame=>  instruction defining vasriable
-#    for my $a(keys @area)
-#     {if (my $I  = $calls[-1]->variables->instructions->[$a])
-#       {$r{$a} = $I;                                                           # Number of instruction creating variable
-#       }
-#     }
-#
-#    if (my $r = $read{$area})                                                  # Locations in this area that have ben read
-#     {delete $r{$_} for keys %$r;                                              # Delete locations that have been read from
-#     }
-#
-#    $notRead{$area} = {%r} if keys %r;                                         # Record not read
-     {}
-   }
 
 sub rwWrite($$$$)                                                               #P Observe write to memory.
  {my ($exec, $arena, $area, $address) = @_;                                     # Execution environment, arena, area, address within area
@@ -1130,7 +1110,6 @@ my sub allocateSystemAreas($)                                                   
 my sub freeSystemAreas($$)                                                      #P Free system areas for the specified stack frame.
  {my ($exec, $c) = @_;                                                          # Execution environment, stack frame
   @_ == 2 or confess "Two parameters";
-  $exec->notRead;                                                               # Record unread memory locations in the current stack frame
   freeArea($exec, arenaLocal,  $c->stackArea, stackAreaNumber($exec));
   freeArea($exec, arenaParms,  $c->params,    paramsNumber($exec));
   freeArea($exec, arenaReturn, $c->return,    returnNumber($exec));
@@ -1271,22 +1250,6 @@ sub analyzeExecutionResultsMost($%)                                             
   map{sprintf "%4d\n%s", $m[$_][1], $m[$_][0]} keys @m;
  }
 
-sub analyzeExecutionNotRead($%)                                                 #P Analyze execution results for variables never read.
- {my ($exec, %options) = @_;                                                    # Execution results, options
-
-  my @t;
-  my $n = $exec->notRead;
-  for my $areaK(sort keys %$n)
-   {my $area = $$n{$areaK};
-    for my $addressK(sort keys %$area)
-     {my $address = $$area{$addressK};
-      push @t, contextString($exec, block->code->[$addressK],
-       "Not read from area: $areaK, address: $addressK in context:");
-     }
-   }
-  @t;
- }
-
 sub analyzeExecutionResultsDoubleWrite($%)                                      #P Analyze execution results - double writes.
  {my ($exec, %options) = @_;                                                    # Execution results, options
 
@@ -1326,13 +1289,6 @@ sub analyzeExecutionResults($%)                                                 
      {push @r, "Most executed:";
       push @r, @m;
      }
-   }
-
-  if (my @n = $exec->analyzeExecutionNotRead(%options))                         # Variables not read
-   {my $n = @n;
-    @n = () unless $options{notRead};
-    push @r, @n;
-    push @r, sprintf "# %8d variables not read", $n;
    }
 
   if (my @d = $exec->analyzeExecutionResultsDoubleWrite(%options))              # Analyze execution results - double writes
@@ -3715,15 +3671,6 @@ if (1)                                                                          
   Add 2, \2, 0;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->pointlessAssign, { 1=>  1 };
- }
-
-#latest:;
-if (0)                                                                          # Not read
- {Start 1;
-  my $a = Mov 1;
-  my $b = Mov $a;
-  my $e = &$ee(suppressOutput=>1);
-  ok $e->notRead->{0}{1} == 1;                                                  # Area 0 == stack, variable 1 == $b generated by instruction 1
  }
 
 #latest:;
