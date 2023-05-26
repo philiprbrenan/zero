@@ -76,24 +76,24 @@ executable instructions and then executes these instructions.
 ## Addresses
 
 Each [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) instruction can potentially affect a target [memory](https://en.wikipedia.org/wiki/Computer_memory) location
-specified by the target operand known as the **left hand** address.  Each [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) instruction can potentially read zero, one or two source operands to
+specified by the target operand known as the **left hand** reference.  Each [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) instruction can potentially read zero, one or two source operands to
 locate the data to be processed by the instruction.
 
-Each address indexes an [array](https://en.wikipedia.org/wiki/Dynamic_array) in [memory](https://en.wikipedia.org/wiki/Computer_memory). Each [array](https://en.wikipedia.org/wiki/Dynamic_array) has a non unique name to
+Each reference indexes an [array](https://en.wikipedia.org/wiki/Dynamic_array) in [memory](https://en.wikipedia.org/wiki/Computer_memory). Each [array](https://en.wikipedia.org/wiki/Dynamic_array) has a non unique name to
 confirm that we are reading or writing to the right kind of [memory](https://en.wikipedia.org/wiki/Computer_memory). 
-The [emulator](https://en.wikipedia.org/wiki/Emulator) evaluates the target address as a left hand address and the first
-source operand as a right hand address before executing each instruction and
+The [emulator](https://en.wikipedia.org/wiki/Emulator) evaluates the target reference as a left hand reference and the first
+source operand as a right hand reference before executing each instruction and
 saves the results of these operations in the execution environment.  These pre
 computed values can be used to simplify the implementation of instructions that
-follow the convention that the target operand is always a left hand address and
-the first source operand is always a right hand address. However, not all
+follow the convention that the target operand is always a left hand reference and
+the first source operand is always a right hand reference. However, not all
 instructions follow this convention, for example, **MoveLong** treats its first
-source oeprand address as a left hand reference rather than a right hand
+source oeprand reference as a left hand reference rather than a right hand
 reference.
 
-### Left hand addresses
+### Left hand references
 
-#### Left hand address in current stack frame
+#### Left hand reference in current stack frame
 
 ```
   Mov \1, 2
@@ -103,21 +103,21 @@ reference.
 The above instruction moves the constant ```2``` to the location in the current
 stack frame identified by location ```1``` in the current stack frame.
 
-#### Left hand addresses as indexed [arrays](https://en.wikipedia.org/wiki/Dynamic_array) 
+#### Left hand references as indexed [arrays](https://en.wikipedia.org/wiki/Dynamic_array) 
 ```
-  [Array, address, name, delta]
+  [Array, index, name, delta]
 
   Mov [1, 2, 'array name'], 99
 
 ```
 
-A **left hand** address can specify the address of a location in an [array](https://en.wikipedia.org/wiki/Dynamic_array) in [memory](https://en.wikipedia.org/wiki/Computer_memory). Left hand addresses always occur first in the written specification of
+A **left hand** reference can specify the reference of a location in an [array](https://en.wikipedia.org/wiki/Dynamic_array) in [memory](https://en.wikipedia.org/wiki/Computer_memory). Left hand references always occur first in the written specification of
 an instruction.  In the example above, the value ```99``` is being moved to
 location ```2``` in [array](https://en.wikipedia.org/wiki/Dynamic_array) ```1``` operating under the name of 'array name'.
 
 If the [array](https://en.wikipedia.org/wiki/Dynamic_array) number is preceded by ```\``` as in ```\1``` then the number of
 the [array](https://en.wikipedia.org/wiki/Dynamic_array) will be retrieved from location ```1``` the current stack frame. This
-mechanism allows for indirect addressing of [array](https://en.wikipedia.org/wiki/Dynamic_array) names.
+mechanism allows for indirect referenceing of [array](https://en.wikipedia.org/wiki/Dynamic_array) names.
 
 Likewise the index of the location in the [array](https://en.wikipedia.org/wiki/Dynamic_array) can either be specified as a
 direct number as in ```2``` or indirectly as ```\2```.
@@ -127,20 +127,20 @@ of [array](https://en.wikipedia.org/wiki/Dynamic_array).  If the name does not m
 accessed an error message will be written to the out channel and the execution
 of the [program](https://en.wikipedia.org/wiki/Computer_program) will be terminated.
 
-An address can also be specified as just as ```n``` meaning at location ```n```
+An reference can also be specified as just as ```n``` meaning at location ```n```
 in the current stack frame, or ```\n``` indicating an indirect location in the
 current stack frame.
 
-Scalars on the left hand side are assumed to be addresses not constants because
-we cannot assign to a constant. The target address of an instruction is always
-a left hand address and is thus never treated as a constant.
+Scalars on the left hand side are assumed to be references not constants because
+we cannot assign to a constant. The target reference of an instruction is always
+a left hand reference and is thus never treated as a constant.
 
-### Right hand addresses
+### Right hand references
 
-#### Right hand addresses as constants
+#### Right hand references as constants
 
 ```
-  [Array, address, name]
+  [Array, index, name]
 
   Mov 3, 99
 
@@ -149,11 +149,11 @@ a left hand address and is thus never treated as a constant.
 The example above moves the **right hand** constant ```99``` to the location
 ```3``` in the current stack frame.
 
-Right hand addresses can normally be scalars if a constant is required except
+Right hand references can normally be scalars if a constant is required except
 in the case of the **MoveLong** instruction which requires that both its target
-operand and its first source operand represent addresses.
+operand and its first source operand represent references.
 
-#### Right hand addresses as variables
+#### Right hand references as variables
 
 ```
   Mov 3, \4
@@ -162,9 +162,9 @@ operand and its first source operand represent addresses.
 The example above moves the contents of location ```4``` in the current stack
 frame to location ```3``` in the current stack frame.
 
-#### Right hand addresses as indexed [arrays](https://en.wikipedia.org/wiki/Dynamic_array) 
+#### Right hand references as indexed [arrays](https://en.wikipedia.org/wiki/Dynamic_array) 
 ```
-  [Array, address, name]
+  [Array, index, name]
 
   my $a = Array "keys";
   Mov [$a, 3, 'keys'], \4
