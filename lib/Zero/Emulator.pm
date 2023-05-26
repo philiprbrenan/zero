@@ -16,7 +16,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Time::HiRes qw(time);
-eval "use Test::More tests=>404" unless caller;
+eval "use Test::More tests=>390" unless caller;
 
 makeDieConfess;
 our $memoryTechnique;                                                           # Undef or the address of a sub that loads the memory handlers into an execution environment.
