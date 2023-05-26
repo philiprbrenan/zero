@@ -917,8 +917,8 @@ my sub left($$)                                                                 
  {my ($exec, $ref) = @_;                                                        # Execution environment, reference
   @_ == 2 or confess "Two parameters";
   ref($ref)     =~ m(Reference) or confess "Reference required, not: ".dump($ref);
-  my $r         = $ref->address;
-  my $address   = $r;
+  my $address   = $ref->address;
+  my $dAddress  = $ref->dAddress;
   my $arena     = $ref->arena;
   my $area      = $ref->area;
   my $delta     = $ref->delta;
@@ -926,12 +926,15 @@ my sub left($$)                                                                 
   my $stackArea = stackAreaNameNumber($exec);
 
   my $M;                                                                        # Memory address
-  if ($ref->dAddress == 1)                                                      # Direct address
+  if ($dAddress == 1)                                                           # Direct address
    {$M = $address + $delta;
    }
-  elsif ($ref->dAddress == 2)                                                   # Indirect address
+  elsif ($dAddress == 2)                                                        # Indirect address
    {$M = getMemory($exec, arenaLocal, $S, $address, $stackArea) + $delta;
    }
+  else
+   {confess "Address depth must be 1 or 2, not: ".dump($dAddress)
+   };
 
   if (!$ref->dArea)                                                             # Current stack frame
    {my $a = Address($exec, arenaLocal, $S, $M, $ref->name, 0);                  # Stack frame
