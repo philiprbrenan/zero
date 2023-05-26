@@ -3643,10 +3643,6 @@ The name of the widest arrays in each arena
 
 Instructions not executed
 
-#### notReadAddresses
-
-Memory addresses never read
-
 #### out
 
 The out channel. [Out](https://metacpan.org/pod/Out) writes an array of items to this followed by a new line.  [out](https://metacpan.org/pod/out) does the same but without the new line.
@@ -3666,10 +3662,6 @@ Location already has the specified value
 #### printDoubleWrite
 
 Double writes: earlier instruction number to later instruction number
-
-#### printNotRead
-
-Memory locations never read
 
 #### printPointlessAssign
 
