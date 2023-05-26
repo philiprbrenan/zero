@@ -81,6 +81,15 @@ locate the data to be processed by the instruction.
 
 Each address indexes an [array](https://en.wikipedia.org/wiki/Dynamic_array) in [memory](https://en.wikipedia.org/wiki/Computer_memory). Each [array](https://en.wikipedia.org/wiki/Dynamic_array) has a non unique name to
 confirm that we are reading or writing to the right kind of [memory](https://en.wikipedia.org/wiki/Computer_memory). 
+The [emulator](https://en.wikipedia.org/wiki/Emulator) evaluates the target address as a left hand address and the first
+source operand as a right hand address before executing each instruction and
+saves the results of these operations in the execution environment.  These pre
+computed values can be used to simplify the implementation of instructions that
+follow the convention that the target operand is always a left hand address and
+the first source operand is always a right hand address. However, not all
+instructions follow this convention, for example, **MoveLong** treats its first
+source oeprand address as a left hand reference rather than a right hand
+reference.
 
 ### Left hand addresses
 
