@@ -977,7 +977,7 @@ my sub right($$)                                                                
      ." stack: ".currentStackFrame($exec));
    }
 
-  if ($arena == arenaNull)                                                # Empty reference
+  if ($arena == arenaNull)                                                      # Empty reference
    {return 0;
    }
 
@@ -1378,7 +1378,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = currentInstruction $exec;
       my $s = $exec->latestRightSource;
       my $a = allocMemory $exec, $s, arenaHeap;                                 # Allocate
-      my $t = $exec->latestLeftTarget;                                           # Target in which to save array number
+      my $t = $exec->latestLeftTarget;                                          # Target in which to save array number
       assign $exec, $t, $a;                                                     # Save array number in target#
       $a
      },
@@ -1392,7 +1392,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     arraySize=> sub                                                             # Get the size of the specified area
      {my $i = currentInstruction $exec;
-      my $size = $exec->latestLeftTarget;                                        # Location to store size in
+      my $size = $exec->latestLeftTarget;                                       # Location to store size in
       my $area = $exec->latestRightSource;                                      # Location of area
       my $name = $i->source2;                                                   # Name of area
 
@@ -1411,7 +1411,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     arrayCountGreater=> sub                                                     # Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result in the target location
      {my $i = currentInstruction $exec;
-      my $x = $exec->latestLeftTarget;                                           # Location to store index in
+      my $x = $exec->latestLeftTarget;                                          # Location to store index in
       my $e = right $exec, $i->source2;                                         # Location of element
 
       assign($exec, $x, countAreaElement($exec, $i->source, sub{$_[0] > $e}))   # Index of element
@@ -1419,7 +1419,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     arrayCountLess=> sub                                                        # Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result in the target location
      {my $i = currentInstruction $exec;
-      my $x = $exec->latestLeftTarget;                                           # Location to store index in
+      my $x = $exec->latestLeftTarget;                                          # Location to store index in
       my $e = right $exec, $i->source2;                                         # Location of element
 
       assign($exec, $x, countAreaElement($exec, $i->source, sub{$_[0] < $e}))   # Index of element
