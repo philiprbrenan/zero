@@ -279,9 +279,9 @@ Get the number of keys in the tree..
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [537, 6];
-      is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
-      is_deeply $e->mostArrays,          [1, 251, 1, 1];
+      is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+      is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
+      is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
       #say STDERR dump $e->tallyCount;
       is_deeply $e->tallyCount,  24611;                                             # Insertion instruction counts
@@ -462,9 +462,9 @@ Get data field from find results.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [537, 6];
-      is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
-      is_deeply $e->mostArrays,          [1, 251, 1, 1];
+      is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+      is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
+      is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
       #say STDERR dump $e->tallyCount;
       is_deeply $e->tallyCount,  24611;                                             # Insertion instruction counts
@@ -602,9 +602,9 @@ Get key field from find results.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [537, 6];
-      is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
-      is_deeply $e->mostArrays,          [1, 251, 1, 1];
+      is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+      is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
+      is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
       #say STDERR dump $e->tallyCount;
       is_deeply $e->tallyCount,  24611;                                             # Insertion instruction counts
@@ -779,9 +779,9 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [537, 6];
-      is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
-      is_deeply $e->mostArrays,          [1, 251, 1, 1];
+      is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+      is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
+      is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
       #say STDERR dump $e->tallyCount;
       is_deeply $e->tallyCount,  24611;                                             # Insertion instruction counts
@@ -1098,9 +1098,9 @@ Iterate over a tree.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [537, 6];
-      is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
-      is_deeply $e->mostArrays,          [1, 251, 1, 1];
+      is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+      is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
+      is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
       #say STDERR dump $e->tallyCount;
       is_deeply $e->tallyCount,  24611;                                             # Insertion instruction counts
@@ -1242,9 +1242,9 @@ Print the keys held in a tree.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [537, 6];
-      is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
-      is_deeply $e->mostArrays,          [1, 251, 1, 1];
+      is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+      is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
+      is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
       #say STDERR dump $e->tallyCount;
       is_deeply $e->tallyCount,  24611;                                             # Insertion instruction counts
@@ -1384,9 +1384,9 @@ Print the data held in a tree.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [537, 6];
-      is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
-      is_deeply $e->mostArrays,          [1, 251, 1, 1];
+      is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+      is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
+      is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
       #say STDERR dump $e->tallyCount;
       is_deeply $e->tallyCount,  24611;                                             # Insertion instruction counts
