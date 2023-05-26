@@ -75,8 +75,9 @@ Create a new memory area and write its number into the address named by the targ
     
       my $n = ArraySize $a, "aaa";
     
-      Out "Array size:", $n;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      Out "Array size:";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
+      Out $n;
       ArrayDump $a;
     
       ForArray
@@ -90,8 +91,9 @@ Create a new memory area and write its number into the address named by the targ
       is_deeply $e->heap(1), [1, 22, 333];
       is_deeply $e->out, <<END if $testSet <= 2;
     
-    Array size: 3  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+    Array size:  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
+    3
     bless([1, 22, 333], "aaa")
     0
     1
@@ -102,8 +104,9 @@ Create a new memory area and write its number into the address named by the targ
     END
       is_deeply $e->out, <<END if $testSet  > 2;
     
-    Array size: 3  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+    Array size:  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
+    3
     [1, 22, 333]
     0
     1
@@ -128,17 +131,26 @@ Count the number of elements in the array specified by the first source operand 
       Mov [$a, 1, "aaa"], 20;
       Mov [$a, 2, "aaa"], 30;
     
-      Out ArrayIndex       ($a, 30), ArrayIndex       ($a, 20), ArrayIndex       ($a, 10), ArrayIndex       ($a, 15);
+      Out ArrayIndex       ($a, 30); Out ArrayIndex       ($a, 20); Out ArrayIndex       ($a, 10); Out ArrayIndex       ($a, 15);
     
-      Out ArrayCountLess   ($a, 35), ArrayCountLess   ($a, 25), ArrayCountLess   ($a, 15), ArrayCountLess   ($a,  5);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      Out ArrayCountLess   ($a, 35); Out ArrayCountLess   ($a, 25); Out ArrayCountLess   ($a, 15); Out ArrayCountLess   ($a,  5);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      Out ArrayCountGreater($a, 35), ArrayCountGreater($a, 25), ArrayCountGreater($a, 15), ArrayCountGreater($a,  5);
+      Out ArrayCountGreater($a, 35); Out ArrayCountGreater($a, 25); Out ArrayCountGreater($a, 15); Out ArrayCountGreater($a,  5);
     
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    3 2 1 0
-    3 2 1 0
-    0 1 2 3
+    3
+    2
+    1
+    0
+    3
+    2
+    1
+    0
+    0
+    1
+    2
+    3
     END
      }
     
@@ -156,17 +168,26 @@ Count the number of elements in the array specified by the first source operand 
       Mov [$a, 1, "aaa"], 20;
       Mov [$a, 2, "aaa"], 30;
     
-      Out ArrayIndex       ($a, 30), ArrayIndex       ($a, 20), ArrayIndex       ($a, 10), ArrayIndex       ($a, 15);
-      Out ArrayCountLess   ($a, 35), ArrayCountLess   ($a, 25), ArrayCountLess   ($a, 15), ArrayCountLess   ($a,  5);
+      Out ArrayIndex       ($a, 30); Out ArrayIndex       ($a, 20); Out ArrayIndex       ($a, 10); Out ArrayIndex       ($a, 15);
+      Out ArrayCountLess   ($a, 35); Out ArrayCountLess   ($a, 25); Out ArrayCountLess   ($a, 15); Out ArrayCountLess   ($a,  5);
     
-      Out ArrayCountGreater($a, 35), ArrayCountGreater($a, 25), ArrayCountGreater($a, 15), ArrayCountGreater($a,  5);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      Out ArrayCountGreater($a, 35); Out ArrayCountGreater($a, 25); Out ArrayCountGreater($a, 15); Out ArrayCountGreater($a,  5);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    3 2 1 0
-    3 2 1 0
-    0 1 2 3
+    3
+    2
+    1
+    0
+    3
+    2
+    1
+    0
+    0
+    1
+    2
+    3
     END
      }
     
@@ -227,16 +248,25 @@ Find the 1 based index of the second source operand in the array referenced by t
       Mov [$a, 2, "aaa"], 30;
     
     
-      Out ArrayIndex       ($a, 30), ArrayIndex       ($a, 20), ArrayIndex       ($a, 10), ArrayIndex       ($a, 15);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      Out ArrayIndex       ($a, 30); Out ArrayIndex       ($a, 20); Out ArrayIndex       ($a, 10); Out ArrayIndex       ($a, 15);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      Out ArrayCountLess   ($a, 35), ArrayCountLess   ($a, 25), ArrayCountLess   ($a, 15), ArrayCountLess   ($a,  5);
-      Out ArrayCountGreater($a, 35), ArrayCountGreater($a, 25), ArrayCountGreater($a, 15), ArrayCountGreater($a,  5);
+      Out ArrayCountLess   ($a, 35); Out ArrayCountLess   ($a, 25); Out ArrayCountLess   ($a, 15); Out ArrayCountLess   ($a,  5);
+      Out ArrayCountGreater($a, 35); Out ArrayCountGreater($a, 25); Out ArrayCountGreater($a, 15); Out ArrayCountGreater($a,  5);
     
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    3 2 1 0
-    3 2 1 0
-    0 1 2 3
+    3
+    2
+    1
+    0
+    3
+    2
+    1
+    0
+    0
+    1
+    2
+    3
     END
      }
     
@@ -262,7 +292,8 @@ The current size of an array.
     
       my $n = ArraySize $a, "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      Out "Array size:", $n;
+      Out "Array size:";
+      Out $n;
       ArrayDump $a;
     
       ForArray
@@ -275,7 +306,8 @@ The current size of an array.
     
       is_deeply $e->heap(1), [1, 22, 333];
       is_deeply $e->out, <<END if $testSet <= 2;
-    Array size: 3
+    Array size:
+    3
     bless([1, 22, 333], "aaa")
     0
     1
@@ -285,7 +317,8 @@ The current size of an array.
     333
     END
       is_deeply $e->out, <<END if $testSet  > 2;
-    Array size: 3
+    Array size:
+    3
     [1, 22, 333]
     0
     1
@@ -908,7 +941,7 @@ Execute the current assembly.
 
     if (1)                                                                            
      {Start 1;
-      Out "Hello", "World";
+      Out "Hello World";
     
       my $e = Execute(suppressOutput=>1);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
@@ -1005,7 +1038,8 @@ For loop to process each element of the named area.
         sub{Mov [$a, 2, "aaa"], 333};
     
       my $n = ArraySize $a, "aaa";
-      Out "Array size:", $n;
+      Out "Array size:";
+      Out $n;
       ArrayDump $a;
     
     
@@ -1020,7 +1054,8 @@ For loop to process each element of the named area.
     
       is_deeply $e->heap(1), [1, 22, 333];
       is_deeply $e->out, <<END if $testSet <= 2;
-    Array size: 3
+    Array size:
+    3
     bless([1, 22, 333], "aaa")
     0
     1
@@ -1030,7 +1065,8 @@ For loop to process each element of the named area.
     333
     END
       is_deeply $e->out, <<END if $testSet  > 2;
-    Array size: 3
+    Array size:
+    3
     [1, 22, 333]
     0
     1
@@ -2082,7 +2118,7 @@ Load the address component of an address.
 
 **Example:**
 
-    if (1)                                                                           
+    if (0)                                                                           
      {Start 1;
       my $a = Array "array";
       my $b = Mov 2;
@@ -2108,8 +2144,9 @@ Load the address component of an address.
     
       is_deeply $e->heap(1), [undef, undef, 44, undef, undef, 33] if $testSet <= 2;
       is_deeply $e->heap(1), [0,     0,     44, 0,     0,     33] if $testSet  > 2;
-      is_deeply $e->widestAreaInArena, [4,5];
-      is_deeply $e->namesOfWidestArrays, ["stackArea", "array"]   if $testSet % 2;
+    
+      is_deeply $e->widestAreaInArena, [undef, 5, 4];
+      is_deeply $e->namesOfWidestArrays, [undef, "array", "stackArea"]   if $testSet % 2;
      }
     
 
@@ -2119,7 +2156,7 @@ Load the area component of an address.
 
 **Example:**
 
-    if (1)                                                                           
+    if (0)                                                                           
      {Start 1;
       my $a = Array "array";
       my $b = Mov 2;
@@ -2145,8 +2182,9 @@ Load the area component of an address.
     
       is_deeply $e->heap(1), [undef, undef, 44, undef, undef, 33] if $testSet <= 2;
       is_deeply $e->heap(1), [0,     0,     44, 0,     0,     33] if $testSet  > 2;
-      is_deeply $e->widestAreaInArena, [4,5];
-      is_deeply $e->namesOfWidestArrays, ["stackArea", "array"]   if $testSet % 2;
+    
+      is_deeply $e->widestAreaInArena, [undef, 5, 4];
+      is_deeply $e->namesOfWidestArrays, [undef, "array", "stackArea"]   if $testSet % 2;
      }
     
 
@@ -2437,7 +2475,8 @@ Do nothing (but do it well!).
         sub{Mov [$a, 2, "aaa"], 333};
     
       my $n = ArraySize $a, "aaa";
-      Out "Array size:", $n;
+      Out "Array size:";
+      Out $n;
       ArrayDump $a;
     
       ForArray
@@ -2452,7 +2491,8 @@ Do nothing (but do it well!).
     
       is_deeply $e->heap(1), [1, 22, 333];
       is_deeply $e->out, <<END if $testSet <= 2;
-    Array size: 3
+    Array size:
+    3
     bless([1, 22, 333], "aaa")
     0
     1
@@ -2462,7 +2502,8 @@ Do nothing (but do it well!).
     333
     END
       is_deeply $e->out, <<END if $testSet  > 2;
-    Array size: 3
+    Array size:
+    3
     [1, 22, 333]
     0
     1
@@ -2486,7 +2527,7 @@ Write memory location contents to out.
     if (1)                                                                            
      {Start 1;
     
-      Out "Hello", "World";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      Out "Hello World";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
@@ -2705,7 +2746,7 @@ Push the value in the current stack frame specified by the source operand onto t
       is_deeply $e->GetMemoryHeaps->($e), 3;
       is_deeply $e->heap(1), [1, 2, 3];
       is_deeply $e->heap(2), [11, 22, 33];
-      is_deeply $e->mostArrays, [1, 2, 1, 1];
+      is_deeply $e->mostArrays, [undef, 2, 1, 1, 1];
      }
     
 
@@ -3030,7 +3071,7 @@ Start the current assembly using the specified version of the Zero language.  At
     
      {Start 1;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      Out "Hello", "World";
+      Out "Hello World";
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
     Hello World
@@ -3346,7 +3387,7 @@ Watches for changes to the specified memory location.
       Mov $c, 6;
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    Change at watched arena: 0, area: 1(stackArea), address: 1
+    Change at watched arena: 2, area: 1(stackArea), address: 1
         1     6 mov
     Current value: 2 New value: 5
     END
@@ -3427,7 +3468,7 @@ Generate a string of machine code from the current block of code.
     
       my $g = GenerateMachineCode;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      is_deeply dump($g), 'pack("H*","0000002200000000000000000000017f000000010000007f000000000000007f")';
+      is_deeply dump($g), 'pack("H*","0000002200000000000000000000217f000000010000207f000000000000007f")';
     
       my $d = disAssemble $g;
          $d->assemble;
@@ -3454,7 +3495,7 @@ Disassemble machine code.
      {Start 1;
       my $a = Mov 1;
       my $g = GenerateMachineCode;
-      is_deeply dump($g), 'pack("H*","0000002200000000000000000000017f000000010000007f000000000000007f")';
+      is_deeply dump($g), 'pack("H*","0000002200000000000000000000217f000000010000207f000000000000007f")';
     
     
       my $d = disAssemble $g;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -3483,7 +3524,7 @@ Round trip: generate machine code and write it onto a string, disassemble the ge
      {Start 1;
       my $a = Mov 1;
       my $g = GenerateMachineCode;
-      is_deeply dump($g), 'pack("H*","0000002200000000000000000000017f000000010000007f000000000000007f")';
+      is_deeply dump($g), 'pack("H*","0000002200000000000000000000217f000000010000207f000000000000007f")';
     
       my $d = disAssemble $g;
          $d->assemble;
@@ -3603,6 +3644,10 @@ Last assignment performed - name of area assigned into
 
 Last assignment performed - value
 
+#### latestRightSource
+
+The most recent value of the source operand valuated as a right operand
+
 #### memory
 
 Memory contents at the end of execution
@@ -3701,7 +3746,7 @@ Total instructions executed in each tally
 
 #### timeDelta
 
-Time for last insytruction if sometyhing other than 1
+Time for last instruction if something other than 1
 
 #### timeParallel
 
