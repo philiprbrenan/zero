@@ -2515,12 +2515,12 @@ Do nothing (but do it well!).
      }
     
 
-## Out(@source)
+## Out($source)
 
 Write memory location contents to out.
 
        Parameter  Description
-    1  @source    Either a scalar constant or memory address to output
+    1  $source    Value to write
 
 **Example:**
 
@@ -3643,6 +3643,10 @@ Last assignment performed - name of area assigned into
 #### lastAssignValue
 
 Last assignment performed - value
+
+#### latestLeftTarget
+
+The most recent value of the target operand valuated as a left operand
 
 #### latestRightSource
 
