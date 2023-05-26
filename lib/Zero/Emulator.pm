@@ -81,11 +81,12 @@ sub ExecutionEnvironment(%)                                                     
     tallyTotal=>            {},                                                 # Total instructions executed in each tally
     timeParallel=>          0,                                                  # Notional time elapsed since start with parallelism taken into account
     timeSequential=>        0,                                                  # Notional time elapsed since start without parellelism
-    timeDelta=>             undef,                                              # Time for last insytruction if sometyhing other than 1
+    timeDelta=>             undef,                                              # Time for last instruction if something other than 1
     trace=>                 $options{trace},                                    # Trace all statements
     traceLabels=>           undef,                                              # Trace changes in execution flow
     watch=>                 [],                                                 # Addresses to watch for changes
     widestAreaInArena=>     [],                                                 # Track highest array access in each arena
+    latestRightSource=>     undef,                                              # The most recent value of the source operand valuated as a right operand
    );
 
   $memoryTechnique->($exec)       if $memoryTechnique;                          # Load memory handlers if a different memory handling system has been requested
@@ -285,10 +286,11 @@ my sub refValue($)                                                              
  }
 
 # Memory is subdivided into arenas that hold items of similar types, sizes, access orders etc. in an attempt to minimize memory fragmentation
-my sub arenaLocal {0}                                                           # Variables whose location is fixed at compile time
+my sub arenaNull  {0}                                                           # A reference to this arena indicates tht the address has not been supplied
 my sub arenaHeap  {1}                                                           # Allocations whose location is dynamically allocated as the program runs
-my sub arenaParms {2}                                                           # Parameter areas
-my sub arenaReturn{3}                                                           # Return areas
+my sub arenaLocal {2}                                                           # Variables whose location is fixed at compile time
+my sub arenaParms {3}                                                           # Parameter areas
+my sub arenaReturn{4}                                                           # Return areas
 
 sub Zero::Emulator::Code::referenceToString($$$)                                #P Reference as a string.
  {my ($block, $r, $operand) = @_;                                               # Block of code, reference, operand type : 0-Target 1-Source 2-Source2
@@ -296,6 +298,7 @@ sub Zero::Emulator::Code::referenceToString($$$)                                
 
   return "" unless defined $r;
   ref($r) =~ m(Reference) or confess "Must be a reference, not: ".dump($r);
+  return "" if $r->arena == arenaNull;                                          # Empty reference
 
   if ($operand == 0)
    {if ($r->arena == arenaLocal)
@@ -304,7 +307,7 @@ sub Zero::Emulator::Code::referenceToString($$$)                                
       return dump   $a
      }
     else
-     {my $A = $r-> area;   my $dA = $r->dArea;
+     {my $A = $r->area;    my $dA = $r->dArea;
       my $a = $r->address; my $da = $r->dAddress;
       my $n = $r->name;    my $d  = $r->delta;
 
@@ -323,7 +326,7 @@ sub Zero::Emulator::Code::referenceToString($$$)                                
       return dump   $a
      }
     else
-     {my $A = $r-> area;   my $dA = $r->dArea;
+     {my $A = $r->area;    my $dA = $r->dArea;
       my $a = $r->address; my $da = $r->dAddress;
       my $n = $r->name;    my $d  = $r->delta;
 
@@ -950,7 +953,7 @@ my sub left($$)                                                                 
 my sub right($$)                                                                #P Get a constant or a value from memory.
  {my ($exec, $ref) = @_;                                                        # Location, optional area
   @_ == 2 or confess "Two parameters";
-  ref($ref) =~ m(Reference) or confess "Reference required";
+  ref($ref) =~ m(Reference) or confess "Reference required, not:".ref($ref);
   my $address   = $ref->address;
   my $arena     = $ref->arena;
   my $area      = $ref->area;
@@ -971,6 +974,10 @@ my sub right($$)                                                                
      ." area: "   .dump($area)
      ." address: ".dump($a)
      ." stack: ".currentStackFrame($exec));
+   }
+
+  if ($arena == arenaNull)                                                # Empty reference
+   {return 0;
    }
 
   if ($ref->dAddress == 0)                                                      # Constant
@@ -1787,6 +1794,8 @@ sub Zero::Emulator::Code::execute($%)                                           
       $instruction->step = $step;                                               # Execution step number facilitates debugging
       $exec->timeDelta = undef;                                                 # Record elapsed time for instruction
 
+#say STDERR "AAAA", dump($a);
+      $exec->latestRightSource = right $exec, $instruction->source;             # Precompute this useful value if possible
       $implementation->($instruction);                                          # Execute instruction
 
       $exec->tallyInstructionCounts($instruction);                              # Instruction counts
@@ -1898,6 +1907,12 @@ my sub xSource($)                                                               
   (q(source), $assembly->Reference($s, 1))
  }
 
+my sub nSource()                                                                # Record an empty source argument
+ {my $r = $assembly->Reference(0, 1);
+     $r->arena = arenaNull;
+  (q(source), $r)
+ }
+
 my sub xxSource($)                                                              # Record a source argument that cannot be a constant
  {my ($s) = @_;                                                                 # Source expression
   if (ref($s) =~ m(\Aarray\Z)i && isScalar($$s[1]) or isScalar($s))
@@ -1974,7 +1989,7 @@ sub ArrayCountGreater($$;$) {                                                   
 
 sub ArrayDump($)                                                                #i Dump an array.
  {my ($target) = @_;                                                            # Array to dump, title of dump
-  $assembly->instruction(action=>"arrayDump", xTarget($target));
+  $assembly->instruction(action=>"arrayDump", xTarget($target), nSource);
  }
 
 sub ArrayIndex($$;$) {                                                          #i Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.  The business of returning -1 would have led to the confusion of "try catch" and we certainly do not want that.
@@ -2012,7 +2027,7 @@ sub Assert2($$$)                                                                
 
 sub Assert(%)                                                                   #i Assert regardless.
  {my (%options) = @_;                                                           # Options
-  $assembly->instruction(action=>"assert");
+  $assembly->instruction(action=>"assert", nSource);
  }
 
 sub AssertEq($$%)                                                               #i Assert two memory locations are equal.
@@ -2090,7 +2105,7 @@ sub Block(&%)                                                                   
 
 sub Call($)                                                                     #i Call the subroutine at the target address.
  {my ($p) = @_;                                                                 # Procedure description.
-  $assembly->instruction(action=>"call", xTarget($p->target));
+  $assembly->instruction(action=>"call", xTarget($p->target), nSource);
  }
 
 #sub Clear($$$) ## Source2 must beciome part of the array reference             #i Clear the first bytes of an area.  The area is specified by the first element of the address, the number of locations to clear is specified by the second element of the target address.
@@ -2101,7 +2116,7 @@ sub Call($)                                                                     
 # }
 
 sub Confess()                                                                   #i Confess with a stack trace showing the location both in the emulated code and in the code that produced the emulated code.
- {$assembly->instruction(action=>"confess");
+ {$assembly->instruction(action=>"confess", nSource);
  }
 
 sub Dec($)                                                                      #i Decrement the target.
@@ -2110,7 +2125,7 @@ sub Dec($)                                                                      
  }
 
 sub Dump()                                                                      #i Dump all the arrays currently in memory.
- {$assembly->instruction(action=>"dump");
+ {$assembly->instruction(action=>"dump", nSource);
  }
 
 sub Else(&)                                                                     #i Else block.
@@ -2275,24 +2290,24 @@ sub IfTrue($%)                                                                  
 sub In(;$) {                                                                    #i Read a value from the input channel
   if (@_ == 0)                                                                  # Create a new stack frame variable to hold the value read from input
    {my $t = &Var();
-    $assembly->instruction(action=>"in", xTarget($t));
+    $assembly->instruction(action=>"in", xTarget($t), nSource);
     return $t;
    }
   if (@_ == 1)
    {my ($target) = @_;                                                          # Target location into which to store the value read
-    $assembly->instruction(action=>"in", xTarget($target))
+    $assembly->instruction(action=>"in", xTarget($target), nSource)
    }
  }
 
 sub InSize(;$) {                                                                #i Number of elements remining in the input channel
   if (@_ == 0)                                                                  # Create a new stack frame variable to hold the value read from input
    {my $t = &Var();
-    $assembly->instruction(action=>"inSize", xTarget($t));
+    $assembly->instruction(action=>"inSize", xTarget($t), nSource);
     return $t;
    }
   if (@_ == 1)
    {my ($target) = @_;                                                          # Target location into which to store the value read
-    $assembly->instruction(action=>"inSize", xTarget($target))
+    $assembly->instruction(action=>"inSize", xTarget($target), nSource)
    }
  }
 
@@ -2338,7 +2353,7 @@ sub Jlt($$$)                                                                    
 
 sub Jmp($)                                                                      #i Jump to a label.
  {my ($target) = @_;                                                            # Target address
-  $assembly->instruction(action=>"jmp", xTarget($target));
+  $assembly->instruction(action=>"jmp", xTarget($target), nSource);
  }
 
 sub Jne($$$)                                                                    #i Jump to a target label if the first source field is not equal to the second source field.
@@ -2378,14 +2393,12 @@ sub LoadArea($;$) {                                                             
   if (@_ == 1)
    {my ($source) = @_;                                                          # Target address, source address
     my $t = &Var();
-    $assembly->instruction(action=>"loadArea",
-      xTarget($t), xSource($source));
+    $assembly->instruction(action=>"loadArea", xTarget($t), xSource($source));
     return $t;
    }
   elsif (@ == 2)
    {my ($target, $source) = @_;                                                 # Target address, source address
-    $assembly->instruction(action=>"loadArea",
-      xTarget($target), xSource($source));
+    $assembly->instruction(action=>"loadArea", xTarget($target), xSource($source));
    }
   else
    {confess "One or two parameters required";
@@ -2431,7 +2444,7 @@ sub Not($) {                                                                    
  }
 
 sub Nop()                                                                       #i Do nothing (but do it well!).
- {$assembly->instruction(action=>"nop");
+ {$assembly->instruction(action=>"nop", nSource);
  }
 
 sub Out(@)                                                                      #i Write memory location contents to out.
@@ -2550,7 +2563,7 @@ sub RandomSeed($)                                                               
  }
 
 sub Return()                                                                    #i Return from a procedure via the call stack.
- {$assembly->instruction(action=>"return");
+ {$assembly->instruction(action=>"return", nSource);
  }
 
 sub ReturnGet($;$) {                                                            #i Get a word from the return area and save it.
@@ -2658,19 +2671,19 @@ sub Var(;$)                                                                     
 
 sub Watch($)                                                                    #i Watches for changes to the specified memory location.
  {my ($target) = @_;                                                            # Memory address to watch
-  $assembly->instruction(action=>"watch", xTarget($target));
+  $assembly->instruction(action=>"watch", xTarget($target), nSource);
  }
 
 sub ParallelStart()                                                             #iP Start recording the elapsed time for parallel sections.
- {$assembly->instruction(action=>"parallelStart");
+ {$assembly->instruction(action=>"parallelStart", nSource);
  }
 
 sub ParallelContinue()                                                          #iP Continue recording the elapsed time for parallel sections.
- {$assembly->instruction(action=>"parallelContinue");
+ {$assembly->instruction(action=>"parallelContinue", nSource);
  }
 
 sub ParallelStop()                                                              #iP Stop recording the elapsed time for parallel sections.
- {$assembly->instruction(action=>"parallelStop");
+ {$assembly->instruction(action=>"parallelStop", nSource);
  }
 
 sub Parallel(@)                                                                 #i Runs its sub sections in simulated parallel so that we can prove that the sections can be run in parallel.
@@ -2933,7 +2946,7 @@ eval {goto latest if $debug};
 #latest:;
 if (1)                                                                          ##Out ##Start ##Execute
  {Start 1;
-  Out "Hello", "World";
+  Out "Hello World";
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, <<END;
 Hello World
@@ -3239,7 +3252,7 @@ if (1)                                                                          
   is_deeply $e->GetMemoryHeaps->($e), 3;
   is_deeply $e->heap(1), [1, 2, 3];
   is_deeply $e->heap(2), [11, 22, 33];
-  is_deeply $e->mostArrays, [1, 2, 1, 1];
+  is_deeply $e->mostArrays, [undef, 2, 1, 1, 1];
  }
 
 #latest:;
@@ -3297,10 +3310,14 @@ if (1)                                                                          
   my $a = Mov 'A';
   my $b = Mov 'B';
   my $c = Mov 'C';
-  Out $c, $b, $a;
+  Out $c;
+  Out $b;
+  Out $a;
   my $e = Execute(suppressOutput=>1);
  is_deeply $e->out, <<END;
-C B A
+C
+B
+A
 END
  }
 
@@ -3703,7 +3720,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          ##LoadArea ##LoadAddress
+if (0)                                                                          ##LoadArea ##LoadAddress
  {Start 1;
   my $a = Array "array";
   my $b = Mov 2;
@@ -3727,8 +3744,9 @@ END
 
   is_deeply $e->heap(1), [undef, undef, 44, undef, undef, 33] if $testSet <= 2;
   is_deeply $e->heap(1), [0,     0,     44, 0,     0,     33] if $testSet  > 2;
-  is_deeply $e->widestAreaInArena, [4,5];
-  is_deeply $e->namesOfWidestArrays, ["stackArea", "array"]   if $testSet % 2;
+
+  is_deeply $e->widestAreaInArena, [undef, 5, 4];
+  is_deeply $e->namesOfWidestArrays, [undef, "array", "stackArea"]   if $testSet % 2;
  }
 
 #latest:;
@@ -4016,7 +4034,7 @@ if (1)                                                                          
   Mov $c, 6;
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, <<END;
-Change at watched arena: 0, area: 1(stackArea), address: 1
+Change at watched arena: 2, area: 1(stackArea), address: 1
     1     6 mov
 Current value: 2 New value: 5
 END
@@ -4032,7 +4050,8 @@ if (1)                                                                          
     sub{Mov [$a, 2, "aaa"], 333};
 
   my $n = ArraySize $a, "aaa";
-  Out "Array size:", $n;
+  Out "Array size:";
+  Out $n;
   ArrayDump $a;
 
   ForArray
@@ -4045,7 +4064,8 @@ if (1)                                                                          
 
   is_deeply $e->heap(1), [1, 22, 333];
   is_deeply $e->out, <<END if $testSet <= 2;
-Array size: 3
+Array size:
+3
 bless([1, 22, 333], "aaa")
 0
 1
@@ -4055,7 +4075,8 @@ bless([1, 22, 333], "aaa")
 333
 END
   is_deeply $e->out, <<END if $testSet  > 2;
-Array size: 3
+Array size:
+3
 [1, 22, 333]
 0
 1
@@ -4153,15 +4174,24 @@ if (1)                                                                          
   Mov [$a, 1, "aaa"], 20;
   Mov [$a, 2, "aaa"], 30;
 
-  Out ArrayIndex       ($a, 30), ArrayIndex       ($a, 20), ArrayIndex       ($a, 10), ArrayIndex       ($a, 15);
-  Out ArrayCountLess   ($a, 35), ArrayCountLess   ($a, 25), ArrayCountLess   ($a, 15), ArrayCountLess   ($a,  5);
-  Out ArrayCountGreater($a, 35), ArrayCountGreater($a, 25), ArrayCountGreater($a, 15), ArrayCountGreater($a,  5);
+  Out ArrayIndex       ($a, 30); Out ArrayIndex       ($a, 20); Out ArrayIndex       ($a, 10); Out ArrayIndex       ($a, 15);
+  Out ArrayCountLess   ($a, 35); Out ArrayCountLess   ($a, 25); Out ArrayCountLess   ($a, 15); Out ArrayCountLess   ($a,  5);
+  Out ArrayCountGreater($a, 35); Out ArrayCountGreater($a, 25); Out ArrayCountGreater($a, 15); Out ArrayCountGreater($a,  5);
 
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, <<END;
-3 2 1 0
-3 2 1 0
-0 1 2 3
+3
+2
+1
+0
+3
+2
+1
+0
+0
+1
+2
+3
 END
  }
 
@@ -4249,7 +4279,7 @@ if (1)                                                                          
  {Start 1;
   my $a = Mov 1;
   my $g = GenerateMachineCode;
-  is_deeply dump($g), 'pack("H*","0000002200000000000000000000017f000000010000007f000000000000007f")';
+  is_deeply dump($g), 'pack("H*","0000002200000000000000000000217f000000010000207f000000000000007f")';
 
   my $d = disAssemble $g;
      $d->assemble;
@@ -4298,7 +4328,7 @@ if (1)                                                                          
 
   my $E = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
   is_deeply $e->outLines, [qw(1 2 3 11 22 33)];
-  is_deeply $e->mostArrays, [1, 2, 1, 1];
+  is_deeply $e->mostArrays, [undef, 2, 1, 1, 1];
  }
 
 =pod
