@@ -1368,9 +1368,9 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1, in=>[@r]);
   is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-  is_deeply $e->widestAreaInArena,   [537, 6];
-  is_deeply $e->namesOfWidestArrays, ["stackArea", "Node"];
-  is_deeply $e->mostArrays,          [1, 251, 1, 1];
+  is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+  is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
+  is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
 
   #say STDERR dump $e->tallyCount;
   is_deeply $e->tallyCount,  24611;                                             # Insertion instruction counts
@@ -1498,9 +1498,9 @@ if (1)                                                                          
   my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1, in=>[@r],
     stringMemory=>1, maximumArraySize=>7);
   is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-  is_deeply $e->widestAreaInArena,   [537, 6];
-  is_deeply $e->namesOfWidestArrays, [0, 0];
-  is_deeply $e->mostArrays,          [1, 251, 1, 1];
+  is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+  is_deeply $e->namesOfWidestArrays, [undef, 0, 0];
+  is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
 
   #say STDERR dump $e->tallyCount;
   is_deeply $e->tallyCount,  24611;                                             # Insertion instruction counts
