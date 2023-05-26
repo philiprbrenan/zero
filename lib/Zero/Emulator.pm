@@ -1323,7 +1323,7 @@ sub Zero::Emulator::Code::execute($%)                                           
    (add=> sub                                                                   # Add the two source operands and store the result in the target
      {my $i = currentInstruction $exec;
       my $t = left  $exec, $i->target;
-      my $a = right $exec, $i->source;
+      my $a = $exec->latestRightSource;
       my $b = right $exec, $i->source2;
       assign($exec, $t, $a + $b);
      },
@@ -1331,7 +1331,7 @@ sub Zero::Emulator::Code::execute($%)                                           
     subtract=> sub                                                              # Subtract the second source operand from the first and store the result in the target
      {my $i = currentInstruction $exec;
       my $t = left  $exec, $i->target;
-      my $a = right $exec, $i->source;
+      my $a = $exec->latestRightSource;
       my $b = right $exec, $i->source2;
       assign($exec, $t, $a - $b);
      },
@@ -1375,24 +1375,24 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     array=> sub                                                                 # Create a new memory area and write its number into the address named by the target operand
      {my $i = currentInstruction $exec;
-      my $s = right $exec, $i->source;                                          # The reason for this allocation
-      my $a = allocMemory($exec, $s, arenaHeap);                                # Allocate
+      my $s = $exec->latestRightSource;
+      my $a = allocMemory $exec, $s, arenaHeap;                                 # Allocate
       my $t = left $exec, $i->target;                                           # Target in which to save array number
-      assign($exec, $t, $a);                                                    # Save array number in target#
+      assign $exec, $t, $a;                                                     # Save array number in target#
       $a
      },
 
     free=> sub                                                                  # Free the memory area named by the source operand
      {my $i = currentInstruction $exec;
       my $area = right $exec, $i->target;                                       # Area
-      my $name = right $exec, $i->source;
+      my $name = $exec->latestRightSource;
       freeArea($exec, arenaHeap, $area, $name);                                 # Free the area
      },
 
     arraySize=> sub                                                             # Get the size of the specified area
      {my $i = currentInstruction $exec;
       my $size = left $exec, $i->target;                                        # Location to store size in
-      my $area = right $exec, $i->source;                                       # Location of area
+      my $area = $exec->latestRightSource;                                      # Location of area
       my $name = $i->source2;                                                   # Name of area
 
       $exec->checkArrayName(arenaHeap, $area, $name);                           # Check that the supplied array name matches what is actually in memory
@@ -1426,9 +1426,9 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     resize=> sub                                                                # Resize an array
      {my $i = currentInstruction $exec;
-      my $size =  right $exec, $i->source;                                      # New size
-      my $name =  right $exec, $i->source2;                                     # Array name
-      my $area =  right $exec, $i->target;                                      # Array to resize
+      my $size = $exec->latestRightSource;                                      # New size
+      my $name = right $exec, $i->source2;                                      # Array name
+      my $area = right $exec, $i->target;                                       # Array to resize
       $exec->checkArrayName(arenaHeap, $area, $name);
       $exec->ResizeMemoryArea->($exec, $area, $size);
      },
@@ -1468,7 +1468,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     trace=> sub                                                                 # Start/stop/change tracing status from a program. A trace writes out which instructions have been executed and how they affected memory
      {my $i = currentInstruction $exec;
-      my $s = right($exec, $i->source) ? 1 : 0;
+      my $s = !!$exec->latestRightSource;
       $exec->trace = $s;
       my $m = "Trace: $s";
       say STDERR           $m unless $exec->suppressOutput;
@@ -1478,7 +1478,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     traceLabels=> sub                                                           # Start trace points
      {my $i = currentInstruction $exec;
-      my $s = right($exec, $i->source) ? 1 : 0;
+      my $s = !!$exec->latestRightSource;
       $exec->traceLabels = $s;
       my $m = "TraceLabels: $s";
       say STDERR           $m unless $exec->suppressOutput;
@@ -1530,14 +1530,14 @@ sub Zero::Emulator::Code::execute($%)                                           
       $exec->instructionPointer = $n + $r;
      },
                                                                                 # Conditional jumps
-    jEq=>    sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{right($exec, $i->source) == right($exec, $i->source2)})},
-    jNe=>    sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{right($exec, $i->source) != right($exec, $i->source2)})},
-    jLe=>    sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{right($exec, $i->source) <= right($exec, $i->source2)})},
-    jLt=>    sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{right($exec, $i->source) <  right($exec, $i->source2)})},
-    jGe=>    sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{right($exec, $i->source) >= right($exec, $i->source2)})},
-    jGt=>    sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{right($exec, $i->source) >  right($exec, $i->source2)})},
-    jFalse=> sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{right($exec, $i->source) == 0})},
-    jTrue=>  sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{right($exec, $i->source) != 0})},
+    jEq=>    sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{$exec->latestRightSource == right($exec, $i->source2)})},
+    jNe=>    sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{$exec->latestRightSource != right($exec, $i->source2)})},
+    jLe=>    sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{$exec->latestRightSource <= right($exec, $i->source2)})},
+    jLt=>    sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{$exec->latestRightSource <  right($exec, $i->source2)})},
+    jGe=>    sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{$exec->latestRightSource >= right($exec, $i->source2)})},
+    jGt=>    sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{$exec->latestRightSource >  right($exec, $i->source2)})},
+    jFalse=> sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{$exec->latestRightSource == 0})},
+    jTrue=>  sub {my $i = currentInstruction $exec; jumpOp($exec, $i, sub{$exec->latestRightSource != 0})},
 
     label=> sub                                                                 # Label - no operation
      {my ($i) = @_;                                                             # Instruction
@@ -1575,7 +1575,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     mov=> sub                                                                   # Move data moves data from one part of memory to another - "set", by contrast, sets variables from constant values
      {my $i = currentInstruction $exec;
-      my $s = right $exec, $i->source;
+      my $s = $exec->latestRightSource;
       my $t = left $exec, $i->target;
       assign($exec, $t, $s);
      },
@@ -1595,7 +1595,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     not=> sub                                                                   # Not in place
      {my $i = currentInstruction $exec;
-      my $s = right $exec, $i->source;
+      my $s = $exec->latestRightSource;
       my $t = left  $exec, $i->target;
       assign($exec, $t, !$s);
      },
@@ -1603,7 +1603,7 @@ sub Zero::Emulator::Code::execute($%)                                           
     paramsGet=> sub                                                             # Get a parameter from the previous parameter block - this means that we must always have two entries on the call stack - one representing the caller of the program, the second representing the current context of the program
      {my $i = currentInstruction $exec;
       my $t = left $exec, $i->target;
-      my $s = right $exec, $i->source;
+      my $s = $exec->latestRightSource;
       my $S = Address($exec, arenaParms, currentParamsGet($exec), $s, paramsNumber($exec), 0);
       my $v = $S->getMemoryValue;
       assign($exec, $t, $v);
@@ -1611,7 +1611,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     paramsPut=> sub                                                             # Place a parameter in the current parameter block
      {my $i = currentInstruction $exec;
-      my $s = right $exec, $i->source;
+      my $s = $exec->latestRightSource;
       my $t = left $exec, $i->target;
       my $T = Address($exec, arenaParms, currentParamsPut($exec), $t->address, paramsNumber($exec), 0);
       assign($exec, $T, $s);
@@ -1619,21 +1619,21 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     random=> sub                                                                # Random number in the specified range
      {my $i = currentInstruction $exec;
-      my $s = right $exec, $i->source;
+      my $s = $exec->latestRightSource;
       my $t = left $exec, $i->target;
       assign($exec, $t, int rand($s));
      },
 
     randomSeed=> sub                                                            # Random number seed
      {my $i = currentInstruction $exec;
-      my $s = right $exec, $i->source;
+      my $s = $exec->latestRightSource;
       srand $s;
      },
 
     returnGet=> sub                                                             # Get a returned value
      {my $i = currentInstruction $exec;
       my $t = left $exec, $i->target;
-      my $s = right $exec, $i->source;
+      my $s = $exec->latestRightSource;
       my $S = Address($exec, arenaReturn, currentReturnGet($exec), $s, returnNumber($exec), 0);
       my $v = $S->getMemoryValue;
       assign($exec, $t, $v);
@@ -1641,7 +1641,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     returnPut=> sub                                                             # Place a value to be returned
      {my $i = currentInstruction $exec;
-      my $s = right $exec, $i->source;
+      my $s = $exec->latestRightSource;
       my $t = left $exec, $i->target;
       my $T = Address($exec, arenaReturn, currentReturnPut($exec), $t->address, returnNumber($exec), 0);
       assign($exec, $T, $s);
@@ -1671,7 +1671,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     pop=> sub                                                                   # Pop a value from the specified memory area if possible else confess
      {my $i = currentInstruction $exec;
-      my $s = right $exec, $i->source;
+      my $s = $exec->latestRightSource;
       my $S = $i->source2;
       my $t = left $exec, $i->target;
       my $v = popArea($exec, arenaHeap, $s, $S);
@@ -1680,7 +1680,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     push=> sub                                                                  # Push a value onto the specified memory area
      {my $i = currentInstruction $exec;
-      my $s = right $exec, $i->source;
+      my $s = $exec->latestRightSource;
       my $S = $i->source2;
       my $t = right $exec, $i->target;
       pushArea($exec, $t, $S, $s);
@@ -1689,7 +1689,7 @@ sub Zero::Emulator::Code::execute($%)                                           
     shiftLeft=> sub                                                             # Shift left within an element
      {my $i = currentInstruction $exec;
       my $t = left $exec, $i->target;
-      my $s = right $exec, $i->source;
+      my $s = $exec->latestRightSource;
       my $v = $t->getMemoryValue << $s;
       assign($exec, $t, $v);
      },
@@ -1697,14 +1697,14 @@ sub Zero::Emulator::Code::execute($%)                                           
     shiftRight=> sub                                                            # Shift right within an element
      {my $i = currentInstruction $exec;
       my $t = left $exec, $i->target;
-      my $s = right $exec, $i->source;
+      my $s = $exec->latestRightSource;
       my $v = $t->getMemoryValue >> $s;
       assign($exec, $t, $v);
      },
 
     shiftUp=> sub                                                               # Shift an element up in a memory area
      {my $i = currentInstruction $exec;
-      my $s = right $exec, $i->source;
+      my $s = $exec->latestRightSource;
       my $t = left $exec, $i->target;
       my $L = areaLength($exec, $t->area);                                      # Length of target array
       my $l = $t->address;
@@ -1737,7 +1737,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     tally=> sub                                                                 # Tally instruction usage
      {my $i = currentInstruction $exec;
-      my $t = right $exec, $i->source;
+      my $t = $exec->latestRightSource;
       $exec->tally = $t;
       $exec->timeDelta = 0;
      },
