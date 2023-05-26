@@ -14,7 +14,7 @@ if (1)
 
   my $a = Array "aaa";
   Mov [$a, 0, "aaa"], 1;
-  Out "Hello", "World";
+  Out "Hello World";
 
   my $e = Execute(suppressOutput=>1);
 
