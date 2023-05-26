@@ -86,6 +86,7 @@ sub ExecutionEnvironment(%)                                                     
     traceLabels=>           undef,                                              # Trace changes in execution flow
     watch=>                 [],                                                 # Addresses to watch for changes
     widestAreaInArena=>     [],                                                 # Track highest array access in each arena
+    latestLeftTarget=>      undef,                                              # The most recent value of the target operand valuated as a left operand
     latestRightSource=>     undef,                                              # The most recent value of the source operand valuated as a right operand
    );
 
@@ -1322,7 +1323,7 @@ sub Zero::Emulator::Code::execute($%)                                           
   my %instructions =                                                            # Instruction definitions
    (add=> sub                                                                   # Add the two source operands and store the result in the target
      {my $i = currentInstruction $exec;
-      my $t = left  $exec, $i->target;
+      my $t = $exec->latestLeftTarget;
       my $a = $exec->latestRightSource;
       my $b = right $exec, $i->source2;
       assign($exec, $t, $a + $b);
@@ -1330,7 +1331,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     subtract=> sub                                                              # Subtract the second source operand from the first and store the result in the target
      {my $i = currentInstruction $exec;
-      my $t = left  $exec, $i->target;
+      my $t = $exec->latestLeftTarget;
       my $a = $exec->latestRightSource;
       my $b = right $exec, $i->source2;
       assign($exec, $t, $a - $b);
@@ -1377,7 +1378,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = currentInstruction $exec;
       my $s = $exec->latestRightSource;
       my $a = allocMemory $exec, $s, arenaHeap;                                 # Allocate
-      my $t = left $exec, $i->target;                                           # Target in which to save array number
+      my $t = $exec->latestLeftTarget;                                           # Target in which to save array number
       assign $exec, $t, $a;                                                     # Save array number in target#
       $a
      },
@@ -1391,7 +1392,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     arraySize=> sub                                                             # Get the size of the specified area
      {my $i = currentInstruction $exec;
-      my $size = left $exec, $i->target;                                        # Location to store size in
+      my $size = $exec->latestLeftTarget;                                        # Location to store size in
       my $area = $exec->latestRightSource;                                      # Location of area
       my $name = $i->source2;                                                   # Name of area
 
@@ -1402,7 +1403,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     arrayIndex=> sub                                                            # Place the 1 based index of the second source operand in the array referenced by the first source operand in the target location
      {my $i = currentInstruction $exec;
-      my $x = left  $exec, $i->target;                                          # Location to store index in
+      my $x = $exec->latestLeftTarget;                                          # Location to store index in
       my $e = right $exec, $i->source2;                                         # Location of element
 
       assign($exec, $x, locateAreaElement($exec, $i->source, sub{$_[0] == $e})) # Index of element
@@ -1410,7 +1411,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     arrayCountGreater=> sub                                                     # Count the number of elements in the array specified by the first source operand that are greater than the element supplied by the second source operand and place the result in the target location
      {my $i = currentInstruction $exec;
-      my $x = left $exec, $i->target;                                           # Location to store index in
+      my $x = $exec->latestLeftTarget;                                           # Location to store index in
       my $e = right $exec, $i->source2;                                         # Location of element
 
       assign($exec, $x, countAreaElement($exec, $i->source, sub{$_[0] > $e}))   # Index of element
@@ -1418,7 +1419,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     arrayCountLess=> sub                                                        # Count the number of elements in the array specified by the first source operand that are less than the element supplied by the second source operand and place the result in the target location
      {my $i = currentInstruction $exec;
-      my $x = left $exec, $i->target;                                           # Location to store index in
+      my $x = $exec->latestLeftTarget;                                           # Location to store index in
       my $e = right $exec, $i->source2;                                         # Location of element
 
       assign($exec, $x, countAreaElement($exec, $i->source, sub{$_[0] < $e}))   # Index of element
@@ -1507,7 +1508,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     in=> sub                                                                    # Read the next value from the input channel
      {my $i = currentInstruction $exec;
-      my $t = left $exec, $i->target;
+      my $t = $exec->latestLeftTarget;
       if ($exec->in->@*)
        {assign($exec, $t, shift $exec->in->@*);
        }
@@ -1518,7 +1519,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     inSize=> sub                                                                # Number of items remining in the input channel
      {my $i = currentInstruction $exec;
-      my $t = left $exec, $i->target;
+      my $t = $exec->latestLeftTarget;
       assign($exec, $t, scalar $exec->in->@*);
      },
 
@@ -1562,21 +1563,21 @@ sub Zero::Emulator::Code::execute($%)                                           
     loadAddress=> sub                                                           # Load the address component of a reference
      {my $i = currentInstruction $exec;
       my $s = left $exec, $i->source;
-      my $t = left $exec, $i->target;
+      my $t = $exec->latestLeftTarget;
       assign($exec, $t, $s->address);
      },
 
     loadArea=> sub                                                              # Load the area component of an address
      {my $i = currentInstruction $exec;
       my $s = left $exec, $i->source;
-      my $t = left $exec, $i->target;
+      my $t = $exec->latestLeftTarget;
       assign($exec, $t, $s->area);
      },
 
     mov=> sub                                                                   # Move data moves data from one part of memory to another - "set", by contrast, sets variables from constant values
      {my $i = currentInstruction $exec;
       my $s = $exec->latestRightSource;
-      my $t = left $exec, $i->target;
+      my $t = $exec->latestLeftTarget;
       assign($exec, $t, $s);
      },
 
@@ -1584,7 +1585,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = currentInstruction $exec;
       my $s = left  $exec, $i->source;                                          # Source
       my $l = right $exec, $i->source2;                                         # Length
-      my $t = left  $exec, $i->target;                                          # Target
+      my $t = $exec->latestLeftTarget;                                          # Target
       for my $j(0..$l-1)
        {my $S = Address($exec, $s->arena, $s->area, $s->address+$j, $s->name, 0);
         my $T = Address($exec, $t->arena, $t->area, $t->address+$j, $t->name, 0);
@@ -1596,13 +1597,13 @@ sub Zero::Emulator::Code::execute($%)                                           
     not=> sub                                                                   # Not in place
      {my $i = currentInstruction $exec;
       my $s = $exec->latestRightSource;
-      my $t = left  $exec, $i->target;
+      my $t = $exec->latestLeftTarget;
       assign($exec, $t, !$s);
      },
 
     paramsGet=> sub                                                             # Get a parameter from the previous parameter block - this means that we must always have two entries on the call stack - one representing the caller of the program, the second representing the current context of the program
      {my $i = currentInstruction $exec;
-      my $t = left $exec, $i->target;
+      my $t = $exec->latestLeftTarget;
       my $s = $exec->latestRightSource;
       my $S = Address($exec, arenaParms, currentParamsGet($exec), $s, paramsNumber($exec), 0);
       my $v = $S->getMemoryValue;
@@ -1612,7 +1613,7 @@ sub Zero::Emulator::Code::execute($%)                                           
     paramsPut=> sub                                                             # Place a parameter in the current parameter block
      {my $i = currentInstruction $exec;
       my $s = $exec->latestRightSource;
-      my $t = left $exec, $i->target;
+      my $t = $exec->latestLeftTarget;
       my $T = Address($exec, arenaParms, currentParamsPut($exec), $t->address, paramsNumber($exec), 0);
       assign($exec, $T, $s);
      },
@@ -1620,7 +1621,7 @@ sub Zero::Emulator::Code::execute($%)                                           
     random=> sub                                                                # Random number in the specified range
      {my $i = currentInstruction $exec;
       my $s = $exec->latestRightSource;
-      my $t = left $exec, $i->target;
+      my $t = $exec->latestLeftTarget;
       assign($exec, $t, int rand($s));
      },
 
@@ -1632,7 +1633,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     returnGet=> sub                                                             # Get a returned value
      {my $i = currentInstruction $exec;
-      my $t = left $exec, $i->target;
+      my $t = $exec->latestLeftTarget;
       my $s = $exec->latestRightSource;
       my $S = Address($exec, arenaReturn, currentReturnGet($exec), $s, returnNumber($exec), 0);
       my $v = $S->getMemoryValue;
@@ -1642,7 +1643,7 @@ sub Zero::Emulator::Code::execute($%)                                           
     returnPut=> sub                                                             # Place a value to be returned
      {my $i = currentInstruction $exec;
       my $s = $exec->latestRightSource;
-      my $t = left $exec, $i->target;
+      my $t = $exec->latestLeftTarget;
       my $T = Address($exec, arenaReturn, currentReturnPut($exec), $t->address, returnNumber($exec), 0);
       assign($exec, $T, $s);
      },
@@ -1673,7 +1674,7 @@ sub Zero::Emulator::Code::execute($%)                                           
      {my $i = currentInstruction $exec;
       my $s = $exec->latestRightSource;
       my $S = $i->source2;
-      my $t = left $exec, $i->target;
+      my $t = $exec->latestLeftTarget;
       my $v = popArea($exec, arenaHeap, $s, $S);
       assign($exec, $t, $v);                                                    # Pop from memory area into indicated memory address
      },
@@ -1688,7 +1689,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     shiftLeft=> sub                                                             # Shift left within an element
      {my $i = currentInstruction $exec;
-      my $t = left $exec, $i->target;
+      my $t = $exec->latestLeftTarget;
       my $s = $exec->latestRightSource;
       my $v = $t->getMemoryValue << $s;
       assign($exec, $t, $v);
@@ -1696,7 +1697,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     shiftRight=> sub                                                            # Shift right within an element
      {my $i = currentInstruction $exec;
-      my $t = left $exec, $i->target;
+      my $t = $exec->latestLeftTarget;
       my $s = $exec->latestRightSource;
       my $v = $t->getMemoryValue >> $s;
       assign($exec, $t, $v);
@@ -1705,7 +1706,7 @@ sub Zero::Emulator::Code::execute($%)                                           
     shiftUp=> sub                                                               # Shift an element up in a memory area
      {my $i = currentInstruction $exec;
       my $s = $exec->latestRightSource;
-      my $t = left $exec, $i->target;
+      my $t = $exec->latestLeftTarget;
       my $L = areaLength($exec, $t->area);                                      # Length of target array
       my $l = $t->address;
       for my $j(reverse $l..$L)
@@ -1720,7 +1721,7 @@ sub Zero::Emulator::Code::execute($%)                                           
     shiftDown=> sub                                                             # Shift an element down in a memory area
      {my $i = currentInstruction $exec;
       my $s = left $exec, $i->source;
-      my $t = left $exec, $i->target;
+      my $t = $exec->latestLeftTarget;
       my $L = areaLength($exec, $s->area);                                      # Length of source array
       my $l = $s->address;
       my $v = $s->getMemoryValue;
@@ -1731,7 +1732,7 @@ sub Zero::Emulator::Code::execute($%)                                           
         assign($exec, $T, $v);
        }
       popArea($exec, arenaHeap, $s->area, $s->name);
-      my $T = left $exec, $i->target;
+      my $T = $exec->latestLeftTarget;
       assign($exec, $T, $v);
      },
 
@@ -1744,7 +1745,7 @@ sub Zero::Emulator::Code::execute($%)                                           
 
     watch=> sub                                                                 # Watch a memory location for changes
      {my $i = currentInstruction $exec;
-      my $t = left $exec, $i->target;
+      my $t = $exec->latestLeftTarget;
       $exec->watch->[$t->area][$t->address]++;
       $exec->timeDelta = 0;
      },
@@ -1794,7 +1795,8 @@ sub Zero::Emulator::Code::execute($%)                                           
       $instruction->step = $step;                                               # Execution step number facilitates debugging
       $exec->timeDelta = undef;                                                 # Record elapsed time for instruction
 
-#say STDERR "AAAA", dump($a);
+#say STDERR "AAAA $a";
+      $exec->latestLeftTarget  = left  $exec, $instruction->target;             # Precompute this useful value if possible
       $exec->latestRightSource = right $exec, $instruction->source;             # Precompute this useful value if possible
       $implementation->($instruction);                                          # Execute instruction
 
@@ -1932,6 +1934,12 @@ my sub xTarget($)                                                               
   (q(target), $assembly->Reference($t, 0))
  }
 
+my sub nTarget()                                                                # Record an empty target argument
+ {my $r = $assembly->Reference(0, 0);
+     $r->arena = arenaNull;
+  (q(target), $r)
+ }
+
 sub In(;$);
 sub InSize(;$);
 sub Inc($);
@@ -2016,18 +2024,18 @@ sub ArraySize($$)                                                               
  }
 sub Assert1($$)                                                                 #P Assert operation.
  {my ($op, $a) = @_;                                                            # Operation, Source operand
-  $assembly->instruction(action=>"assert$op", xSource($a), level=>2);
+  $assembly->instruction(action=>"assert$op", nTarget, xSource($a), level=>2);
  }
 
 sub Assert2($$$)                                                                #P Assert operation.
  {my ($op, $a, $b) = @_;                                                        # Operation, First memory address, second memory address
   $assembly->instruction(action=>"assert$op",
-    xSource($a), xSource2($b), level=>2);
+    nTarget, xSource($a), xSource2($b), level=>2);
  }
 
 sub Assert(%)                                                                   #i Assert regardless.
  {my (%options) = @_;                                                           # Options
-  $assembly->instruction(action=>"assert", nSource);
+  $assembly->instruction(action=>"assert", nTarget, nSource);
  }
 
 sub AssertEq($$%)                                                               #i Assert two memory locations are equal.
@@ -2116,7 +2124,7 @@ sub Call($)                                                                     
 # }
 
 sub Confess()                                                                   #i Confess with a stack trace showing the location both in the emulated code and in the code that produced the emulated code.
- {$assembly->instruction(action=>"confess", nSource);
+ {$assembly->instruction(action=>"confess", nTarget, nSource);
  }
 
 sub Dec($)                                                                      #i Decrement the target.
@@ -2125,7 +2133,7 @@ sub Dec($)                                                                      
  }
 
 sub Dump()                                                                      #i Dump all the arrays currently in memory.
- {$assembly->instruction(action=>"dump", nSource);
+ {$assembly->instruction(action=>"dump", nTarget, nSource);
  }
 
 sub Else(&)                                                                     #i Else block.
@@ -2369,7 +2377,7 @@ sub JTrue($$)                                                                   
 
 sub Label($)                                                                    #P Create a label.
  {my ($source) = @_;                                                            # Name of label
-  $assembly->instruction(action=>"label", xSource($source));
+  $assembly->instruction(action=>"label", nTarget, xSource($source));
  }
 
 sub LoadAddress($;$) {                                                          #i Load the address component of an address.
@@ -2444,18 +2452,12 @@ sub Not($) {                                                                    
  }
 
 sub Nop()                                                                       #i Do nothing (but do it well!).
- {$assembly->instruction(action=>"nop", nSource);
+ {$assembly->instruction(action=>"nop", nTarget, nSource);
  }
 
-sub Out(@)                                                                      #i Write memory location contents to out.
- {my (@source) = @_;                                                            # Either a scalar constant or memory address to output
-  if (@source > 1)
-   {my @a = map {$assembly->Reference($_, 1)} @source;
-    $assembly->instruction(action=>"out",  source=>[@a]);
-   }
-  else
-   {$assembly->instruction(action=>"out",  xSource($source[0]));
-   }
+sub Out($)                                                                      #i Write memory location contents to out.
+ {my ($source) = @_;                                                            # Value to write
+  $assembly->instruction(action=>"out", nTarget, xSource($source));
  }
 
 sub ParamsGet($;$) {                                                            #i Get a word from the parameters in the previous frame and store it in the current frame.
@@ -2477,8 +2479,7 @@ sub ParamsGet($;$) {                                                            
 
 sub ParamsPut($$)                                                               #i Put a word into the parameters list to make it visible in a called procedure.
  {my ($target, $source) = @_;                                                   # Parameter number, address to fetch parameter from
-  $assembly->instruction(action=>"paramsPut",
-    xTarget($target), xSource($source));
+  $assembly->instruction(action=>"paramsPut", xTarget($target), xSource($source));
  }
 
 sub Pop(;$$) {                                                                  #i Pop the memory area specified by the source operand into the memory address specified by the target operand.
@@ -2559,11 +2560,11 @@ sub Random($;$) {                                                               
 
 sub RandomSeed($)                                                               #i Seed the random number generator.
  {my ($seed) = @_;                                                              # Parameters
-  $assembly->instruction(action=>"randomSeed", xSource($seed));
+  $assembly->instruction(action=>"randomSeed", nTarget, xSource($seed));
  }
 
 sub Return()                                                                    #i Return from a procedure via the call stack.
- {$assembly->instruction(action=>"return", nSource);
+ {$assembly->instruction(action=>"return", nTarget, nSource);
  }
 
 sub ReturnGet($;$) {                                                            #i Get a word from the return area and save it.
@@ -2644,7 +2645,7 @@ sub Subtract($$;$)                                                              
 
 sub Tally($)                                                                    #i Counts instructions when enabled.
  {my ($source) = @_;                                                            # Tally instructions when true
-  $assembly->instruction(action=>"tally", xSource($source));
+  $assembly->instruction(action=>"tally", nTarget, xSource($source));
  }
 
 sub Then(&)                                                                     #i Then block.
@@ -2655,12 +2656,12 @@ sub Then(&)                                                                     
 
 sub Trace($)                                                                    #i Start or stop tracing.  Tracing prints each instruction executed and its effect on memory.
  {my ($source) = @_;                                                            # Trace setting
-  $assembly->instruction(action=>"trace", xSource($source));
+  $assembly->instruction(action=>"trace", nTarget, xSource($source));
  }
 
 sub TraceLabels($)                                                              #i Enable or disable label tracing.  If tracing is enabled a stack trace is printed for each label instruction executed showing the call stack at the time the instruction was generated as well as the current stack frames.
  {my ($source) = @_;                                                            # Trace points if true
-  $assembly->instruction(action=>"traceLabels", xSource($source));
+  $assembly->instruction(action=>"traceLabels", nTarget, xSource($source));
  }
 
 sub Var(;$)                                                                     #i Create a variable initialized to the specified value.
@@ -2675,15 +2676,15 @@ sub Watch($)                                                                    
  }
 
 sub ParallelStart()                                                             #iP Start recording the elapsed time for parallel sections.
- {$assembly->instruction(action=>"parallelStart", nSource);
+ {$assembly->instruction(action=>"parallelStart", nTarget, nSource);
  }
 
 sub ParallelContinue()                                                          #iP Continue recording the elapsed time for parallel sections.
- {$assembly->instruction(action=>"parallelContinue", nSource);
+ {$assembly->instruction(action=>"parallelContinue", nTarget, nSource);
  }
 
 sub ParallelStop()                                                              #iP Stop recording the elapsed time for parallel sections.
- {$assembly->instruction(action=>"parallelStop", nSource);
+ {$assembly->instruction(action=>"parallelStop", nTarget, nSource);
  }
 
 sub Parallel(@)                                                                 #i Runs its sub sections in simulated parallel so that we can prove that the sections can be run in parallel.
