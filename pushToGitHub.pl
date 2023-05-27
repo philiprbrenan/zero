@@ -56,7 +56,7 @@ push my @files,
   grep {!/Build.PL/}
   grep {!/blib/}
   grep {$perlXmp or !/\.pl\Z/}                                                  # No changes expected
-  searchDirectoryTreesForMatchingFiles($home, qw(.pm .pl .md));                 # Files
+  searchDirectoryTreesForMatchingFiles($home, qw(.pm .pl .md .sv));             # Files
 
 for my $s(@files)                                                               # Upload each selected file
  {my $c = readFile($s);                                                         # Load file
