@@ -16,7 +16,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Time::HiRes qw(time);
-eval "use Test::More tests=>390" unless caller;
+eval "use Test::More tests=>391" unless caller;
 
 makeDieConfess;
 our $memoryTechnique;                                                           # Undef or the address of a sub that loads the memory handlers into an execution environment.
@@ -2713,6 +2713,7 @@ sub Sequential(@)                                                               
 my $instructions = Zero::Emulator::Code::execute(undef);
 my @instructions = sort keys %$instructions;
 my %instructions = map {$instructions[$_]=>$_} keys @instructions;
+#say STDERR "AAAA", dump(\%instructions), formatTable(\@instructions); exit;
 
 my sub instructionList()                                                        #P Create a list of instructions.
  {my @i = grep {m(\s+#i)} readFile $0;
@@ -2726,12 +2727,6 @@ my sub instructionList()                                                        
    }
   [sort {$$a[0] cmp $$b[0]} @j]
 }
-
-my sub instructionListExport()                                                  #P Create an export statement.
- {my $i = instructionList;
-  say STDERR '@EXPORT_OK   = qw(', (join ' ', map {$$_[0]} @$i), ");\n";
-}
-#instructionListExport; exit;
 
 my sub instructionListReadMe()                                                  #P List  instructions for inclusion in read me.
  {my $i = instructionList;
@@ -2838,7 +2833,8 @@ sub Zero::Emulator::Code::unpackRef($$$)                                        
 sub Zero::Emulator::Code::packInstruction($$)                                   #P Pack an instruction.
  {my ($code, $i) = @_;                                                          # Code being packed, instruction to pack
   my  $a = '';
-  vec($a, 0, 32) = $instructions{$i->action};
+  my $n = $instructions{$i->action};
+  vec($a, 0, 32) = $n;
   vec($a, 1, 32) = 0;
   $a .= $code->packRef($i, $i->target,  0);
   $a .= $code->packRef($i, $i->source,  1);
@@ -2906,7 +2902,56 @@ sub GenerateMachineCodeDisAssembleExecute(%)                                    
      $M->execute(checkArrayNames=>0,  %options);
  }
 
+#D1 Generate Verilog
+
+sub verilogMachineCode($$%)                                                     # Convert a code string into verilog statements
+ {my ($name, $string, %options) = @_;                                           # Name of subroutine, code string, options
+  my $N = 32;
+  my $l = length($string);
+  my $L = $l / $N;
+
+  my @v = <<END;
+reg[255:0] code[$L];
+task $name();
+  begin
+END
+
+  for my $i(0..$L-1)
+   {my $s  = unpack "H*", substr($string, $i*$N, $N);
+    push @v, sprintf qq(    code[%4d] = 'h$s;), $i;
+   }
+  push @v, <<END;
+  end
+endtask
+END
+  join "\n", @v;
+ }
+
+my sub verilogInstructionDecode()                                               #P Create a verilog case statment to decode each instruction
+ {my @i = @instructions;
+  my @t = <<END;
+    case(operator)
+END
+  for my $i(keys @i)
+   {my ($n) = $i[$i];
+    my $j = sprintf "    %4d", $i;
+    my $c = pad qq($j: begin;  \$display("$n");), 72;
+    push @t, "$c  end // $n";
+   }
+  push @t, <<END;
+    endcase
+END
+  join "\n", @t;
+}
+say STDERR verilogInstructionDecode(); exit;
+
 #D0
+
+my sub instructionListExport()                                                  #P Create an export statement.
+ {my $i = instructionList;
+  say STDERR '@EXPORT_OK   = qw(', (join ' ', map {$$_[0]} @$i), ");\n";
+}
+#instructionListExport; exit;
 
 use Exporter qw(import);
 use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
@@ -4292,6 +4337,17 @@ END
 0000       mov [undef, 0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
 END
  }
+
+latest:;
+if (1)
+ {Start 1;
+  my $a = Mov 1;
+  Out $a;
+  my $g = GenerateMachineCode;
+  is_deeply unpack("H*", $g), '0000002200000000000000000000217f000000010000207f000000000000007f0000002600000000000000000000017f000000000000217f000000000000007f';
+  say STDERR verilogMachineCode("Mov1", $g);
+ }
+x;
 
 #latest:;
 if (1)                                                                          # String memory
