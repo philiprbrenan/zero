@@ -268,8 +268,8 @@ maintained by the [emulator](https://en.wikipedia.org/wiki/Emulator):
 
 ### Instruction level parallelism
 
-Each instruction can contain up to 3 addresses: two source operands and one
-target operand. Each address contains two components which can access [memory](https://en.wikipedia.org/wiki/Computer_memory) either directly or indirectly. This gives a maximum of ```2**2**3 = 64```
+Each instruction can contain up to 3 references: two source operands and one
+target operand. Each reference contains two components which can access [memory](https://en.wikipedia.org/wiki/Computer_memory) either directly or indirectly. This gives a maximum of ```2**2**3 = 64```
 possible addressing configurations for each instruction.  In reality, most
 applications will only use a small number of these possible configurations.  To
 assist in choosing the most useful combinations  to implement in the [Silicon](https://en.wikipedia.org/wiki/Silicon) realization of an application, the [emulator](https://en.wikipedia.org/wiki/Emulator) tracks the number of times each
