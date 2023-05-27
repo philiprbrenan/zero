@@ -3540,6 +3540,17 @@ Round trip: generate machine code and write it onto a string, disassemble the ge
      }
     
 
+# Generate Verilog
+
+## verilogMachineCode($name, $string, %options)
+
+Convert a code string into verilog statements
+
+       Parameter  Description
+    1  $name      Name of subroutine
+    2  $string    Code string
+    3  %options   Options
+
 # Hash Definitions
 
 ## Zero::Emulator Definition
@@ -4275,13 +4286,15 @@ Disassemble and remove context information from disassembly to make testing easi
 
 92 [Var](#var) - Create a variable initialized to the specified value.
 
-93 [Watch](#watch) - Watches for changes to the specified memory location.
+93 [verilogMachineCode](#verilogmachinecode) - Convert a code string into verilog statements
 
-94 [Zero::Emulator::Code::packInstruction](#zero-emulator-code-packinstruction) - Pack an instruction.
+94 [Watch](#watch) - Watches for changes to the specified memory location.
 
-95 [Zero::Emulator::Code::packRef](#zero-emulator-code-packref) - Pack a reference into 8 bytes.
+95 [Zero::Emulator::Code::packInstruction](#zero-emulator-code-packinstruction) - Pack an instruction.
 
-96 [Zero::Emulator::Code::unpackRef](#zero-emulator-code-unpackref) - Unpack a reference.
+96 [Zero::Emulator::Code::packRef](#zero-emulator-code-packref) - Pack a reference into 8 bytes.
+
+97 [Zero::Emulator::Code::unpackRef](#zero-emulator-code-unpackref) - Unpack a reference.
 
 # Installation
 
