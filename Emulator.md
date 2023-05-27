@@ -3544,7 +3544,7 @@ Round trip: generate machine code and write it onto a string, disassemble the ge
 
 ## verilogMachineCode($name, $string, %options)
 
-Convert a code string into verilog statements
+Convert a code string into verilog statements to load the code values into the code array
 
        Parameter  Description
     1  $name      Name of subroutine
@@ -4300,7 +4300,7 @@ Disassemble and remove context information from disassembly to make testing easi
 
 92 [Var](#var) - Create a variable initialized to the specified value.
 
-93 [verilogMachineCode](#verilogmachinecode) - Convert a code string into verilog statements
+93 [verilogMachineCode](#verilogmachinecode) - Convert a code string into verilog statements to load the code values into the code array
 
 94 [Watch](#watch) - Watches for changes to the specified memory location.
 
