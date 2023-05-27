@@ -2943,7 +2943,7 @@ END
 END
   join "\n", @t;
 }
-say STDERR verilogInstructionDecode(); exit;
+#say STDERR verilogInstructionDecode(); exit;
 
 #D0
 
@@ -4338,16 +4338,15 @@ END
 END
  }
 
-latest:;
-if (1)
+#latest:;
+if (1)                                                                          ##verilogMachineCode
  {Start 1;
   my $a = Mov 1;
   Out $a;
   my $g = GenerateMachineCode;
   is_deeply unpack("H*", $g), '0000002200000000000000000000217f000000010000207f000000000000007f0000002600000000000000000000017f000000000000217f000000000000007f';
-  say STDERR verilogMachineCode("Mov1", $g);
+  #say STDERR verilogMachineCode("Mov1", $g);
  }
-x;
 
 #latest:;
 if (1)                                                                          # String memory
