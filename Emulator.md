@@ -3551,6 +3551,20 @@ Convert a code string into verilog statements
     2  $string    Code string
     3  %options   Options
 
+**Example:**
+
+    if (1)                                                                          
+     {Start 1;
+      my $a = Mov 1;
+      Out $a;
+      my $g = GenerateMachineCode;
+      is_deeply unpack("H*", $g), '0000002200000000000000000000217f000000010000207f000000000000007f0000002600000000000000000000017f000000000000217f000000000000007f';
+    
+      #say STDERR verilogMachineCode("Mov1", $g);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+     }
+    
+
 # Hash Definitions
 
 ## Zero::Emulator Definition
