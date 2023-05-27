@@ -10,9 +10,28 @@ module fpga;                                                                    
   parameter integer NHeap  = 1000;                                              // Amount of heap memory
   parameter integer NArea  =   10;                                              // Size of each area on the heap
   parameter integer NLocal = 1000;                                              // Size of local memory
+  parameter integer NOut   = 1000;                                              // Size of output area
   reg[255:0] code[NInstructions];                                               // Code memory
   reg[ 32:0] heapMem [NHeap];                                                   // Heap memory
   reg[255:0] localMem[NLocal];                                                  // Local memory
+  reg[ 32:0] outMem[NOut];                                                      // Out channel
+  integer outMemPos;                                                            // Position in output channel
+
+  task ok(integer test, string name);
+    begin
+      if (test == 0 || test == 1'bx || test == 1'bz) begin
+        $display("Assertion %s FAILED", name);
+        $stop;
+      end
+    end
+  endtask
+
+  task loadCode(); Mov1(); endtask
+  task checkResults();
+    begin
+      ok(outMem[0] == 1, "Mov 1");
+    end
+  endtask
 
   wire clock;                                                                   // Clock
   integer ip = 0;                                                               // Instruction pointer
@@ -24,11 +43,11 @@ module fpga;                                                                    
   wire [63:0]  source      = instruction[127: 64];
   wire [63:0]  target      = instruction[191:128];
 
-  wire [31: 0] source2Address  = source2[63:32];                                       // Source2
+  wire [31: 0] source2Address  = source2[63:32];                                // Source2
   wire [15: 0] source2Area     = source2[31:16];
-  wire [ 2: 0] source2DAddress = source2[15:14];
   wire [ 2: 0] source2Arena    = source2[13:12];
   wire [ 2: 0] source2DArea    = source2[11:10];
+  wire [ 2: 0] source2DAddress = source2[ 9: 8];
   wire [ 7: 0] source2Delta    = source2[ 7: 0] - 127;
   wire [31: 0] source2Value    =
     source2Arena      == 0 ? 0 :
@@ -47,9 +66,9 @@ module fpga;                                                                    
 
   wire [31: 0] source1Address  = source[63:32];                                 // Source
   wire [15: 0] source1Area     = source[31:16];
-  wire [ 2: 0] source1DAddress = source[15:14];
   wire [ 2: 0] source1Arena    = source[13:12];
   wire [ 2: 0] source1DArea    = source[11:10];
+  wire [ 2: 0] source1DAddress = source[ 9: 8];
   wire [ 7: 0] source1Delta    = source[ 7: 0] - 127;
   wire [31: 0] source1Value    =
     source1Arena      == 0 ? 0 :
@@ -68,9 +87,9 @@ module fpga;                                                                    
 
   wire [31: 0] targetAddress   = target[63:32];                                 // Target
   wire [15: 0] targetArea      = target[31:16];
-  wire [ 2: 0] targetDAddress  = target[15:14];
   wire [ 2: 0] targetArena     = target[13:12];
   wire [ 2: 0] targetDArea     = target[11:10];
+  wire [ 2: 0] targetDAddress  = target[ 9: 8];
   wire [ 7: 0] targetDelta     = target[ 7: 0] - 127;
   wire [31: 0] targetLocation  =
     targetArena      == 0 ? 0 :
@@ -88,8 +107,9 @@ module fpga;                                                                    
       targetDArea    == 1 && targetDAddress == 2 ? targetDelta + localMem[targetArea]*NArea + localMem[targetAddress] : 0) : 0;
 
   initial begin                                                                 // Limit run
-    Mov1();                                                                     //
+    loadCode();                                                                 // Load the program
     $display("aaa");
+    outMemPos = 0;
     for(ip = 0; ip >= 0 && ip < NInstructions; ++ip)                            // Each instruction
     begin
       //instruction = code[ip];
@@ -107,6 +127,7 @@ module fpga;                                                                    
       executeInstruction();
       #100;
     end
+    checkResults();                                                             // Check results
     $finish;
   end
 
@@ -116,15 +137,28 @@ module fpga;                                                                    
 //                   xxxxxxxx        Address AreaD D Address AreaD D Address AreaD D
 //                   0         1         2         3         4         5         6
 //                   0123456789012345678901234567890123456789012345678901234567890123
-      code[   0] = 'h0000002200000000000000000000217f000000010000207f000000000000007f;
-      code[   1] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
+      code[   0] = 'h0000002200000000000000000000217f000000010000207f000000000000007f;  // my $a = Mov 1;
+      code[   1] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;  // Out $a;
     end
   endtask
 
-  task mov();                                                                   // Execute a move instruction
+  task mov();                                                                   // Mov
     begin
       $display("target=%x  source=%x", target, source);
-      $display("%d = %d", targetLocation, source1Value);
+      $display("%d(%d) = %d", targetLocation, targetArena, source1Value);
+      case(targetArena)
+        1: heapMem [targetLocation] = source1Value;
+        2: localMem[targetLocation] = source1Value;
+      endcase
+    end
+  endtask
+
+  task out();                                                                   // Out
+    begin
+      $display("source=%x", source1Value);
+      $display("value: %d", source1Value);
+      outMem[outMemPos++] = source1Value;
+      $display("res: %d", outMem[0]);
     end
   endtask
 
@@ -169,7 +203,7 @@ module fpga;                                                                    
         35: begin;  $display("moveLong");                                   end // moveLong
         36: begin;  $display("nop");                                        end // nop
         37: begin;  $display("not");                                        end // not
-        38: begin;  $display("out");                                        end // out
+        38: begin;  $display("out");  out();                                 end // out
         39: begin;  $display("parallelContinue");                           end // parallelContinue
         40: begin;  $display("parallelStart");                              end // parallelStart
         41: begin;  $display("parallelStop");                               end // parallelStop
