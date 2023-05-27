@@ -2904,7 +2904,7 @@ sub GenerateMachineCodeDisAssembleExecute(%)                                    
 
 #D1 Generate Verilog
 
-sub verilogMachineCode($$%)                                                     # Convert a code string into verilog statements
+sub verilogMachineCode($$%)                                                     # Convert a code string into verilog statements to load the code values into the code array
  {my ($name, $string, %options) = @_;                                           # Name of subroutine, code string, options
   my $N = 32;
   my $l = length($string);
@@ -2927,23 +2927,36 @@ END
   join "\n", @v;
  }
 
-my sub verilogInstructionDecode()                                               #P Create a verilog case statment to decode each instruction
+my sub verilogInstructionDecode()                                               #P Create a verilog case statment to decode each instruction in the code array
  {my @i = @instructions;
   my @t = <<END;
-    case(operator)
+  task executeInstruction();                                                    // Execute an instruction
+    begin
+      case(operator)
 END
+  my @s;
   for my $i(keys @i)
-   {my ($n) = $i[$i];
+   {my ($N) = $i[$i];
+    my $n = $N."_instruction";
     my $j = sprintf "    %4d", $i;
-    my $c = pad qq($j: begin;  \$display("$n");), 72;
-    push @t, "$c  end // $n";
+    my $c = pad qq(  $j: begin; $n();), 72;                                     # Case statement
+    push @t, "$c    end // $n";
+    push @s, <<END;                                                             # Implementations
+  task $n();
+    begin                                                                       // $N
+     \$display("$N");
+    end
+  endtask
+END
    }
   push @t, <<END;
-    endcase
+      endcase
+    end
+  endtask
 END
-  join "\n", @t;
+  join "\n", @t, @s;
 }
-#say STDERR verilogInstructionDecode(); exit;
+say STDERR verilogInstructionDecode(); exit;
 
 #D0
 
