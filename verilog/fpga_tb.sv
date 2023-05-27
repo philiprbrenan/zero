@@ -11,25 +11,42 @@ module fpga;                                                                    
   parameter integer NArea  =   10;                                              // Size of each area on the heap
   parameter integer NLocal = 1000;                                              // Size of local memory
   parameter integer NOut   = 1000;                                              // Size of output area
+  parameter integer NTests =    1;                                              // Number of tests
+
   reg[255:0] code[NInstructions];                                               // Code memory
   reg[ 32:0] heapMem [NHeap];                                                   // Heap memory
   reg[255:0] localMem[NLocal];                                                  // Local memory
   reg[ 32:0] outMem[NOut];                                                      // Out channel
   integer outMemPos;                                                            // Position in output channel
+  integer test;                                                                 // Tests passed
+  integer testsPassed;                                                          // Tests passed
+  integer testsFailed;                                                          // Tests failed
 
-  task ok(integer test, string name);
+  task ok(integer test, string name);                                           // Check a single test result
     begin
       if (test == 0 || test == 1'bx || test == 1'bz) begin
         $display("Assertion %s FAILED", name);
-        $stop;
+        testsFailed++;
+      end
+      else begin
+        testsPassed++;
       end
     end
   endtask
 
-  task loadCode(); Mov1(); endtask
-  task checkResults();
+  task loadCode();                                                              // Load code to be tested for test
     begin
-      ok(outMem[0] == 1, "Mov 1");
+      case(test)
+        1: Mov1();
+      endcase
+    end
+  endtask
+
+  task checkResults();                                                          // Check results of test
+    begin
+      case(test)
+        1: ok(outMem[0] == 1, "Mov 1");
+      endcase
     end
   endtask
 
@@ -106,28 +123,45 @@ module fpga;                                                                    
       targetDArea    == 1 && targetDAddress == 1 ? targetDelta + localMem[targetArea]*NArea + targetAddress           :
       targetDArea    == 1 && targetDAddress == 2 ? targetDelta + localMem[targetArea]*NArea + localMem[targetAddress] : 0) : 0;
 
-  initial begin                                                                 // Limit run
-    loadCode();                                                                 // Load the program
-    $display("aaa");
-    outMemPos = 0;
-    for(ip = 0; ip >= 0 && ip < NInstructions; ++ip)                            // Each instruction
-    begin
-      //instruction = code[ip];
-      #1;
+  initial begin                                                                 // Load, run confirm
+    testsPassed = 0;                                                            // Start passed tests count
+    for(test = 1; test <= NTests; ++test) begin                                 // Each test
 
-      $display("targetAddress =%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Location=%4x",
-        targetAddress, targetArea, targetDAddress, targetDArea, targetArena, targetDelta, targetLocation);
+      loadCode(test);                                                           // Load the program
+      $display("Test %d", test);
+      outMemPos = 0; for(i = 0; i < NOut; ++i) outMem[i] = 0;                   // Empty the output channel
 
-      $display("source1Address=%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Value   =%4x",
-        source1Address, source1Area, source1DAddress, source1DArea, source1Arena, source1Delta, source1Value);
+      for(ip = 0; ip >= 0 && ip < NInstructions; ++ip)                          // Each instruction
+      begin
+        #1                                                                      // Let the ip update its assigns
+        $display("targetAddress =%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Location=%4x",
+          targetAddress, targetArea, targetDAddress, targetDArea, targetArena, targetDelta, targetLocation);
 
-      $display("source2Address=%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Value   =%4x",
-        source2Address, source2Area, source2DAddress, source2DArea, source2Arena, source2Delta, source2Value);
+        $display("source1Address=%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Value   =%4x",
+          source1Address, source1Area, source1DAddress, source1DArea, source1Arena, source1Delta, source1Value);
 
-      executeInstruction();
-      #100;
+        $display("source2Address=%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Value   =%4x",
+          source2Address, source2Area, source2DAddress, source2DArea, source2Arena, source2Delta, source2Value);
+
+        executeInstruction();
+      end
+      checkResults(test);                                                       // Check results
     end
-    checkResults();                                                             // Check results
+    if (testsPassed == NTests) begin                                             // Testing summary
+       $display("All %1d tests passed successfully", NTests);
+    end
+    else if (testsPassed > 0) begin
+       $display("Passed %1d tests out of %d tests with no failures ", testsPassed, NTests);
+    end
+    else if (testsPassed > 0 && testsFailed > 0) begin
+       $display("Passed %1d tests, FAILED %1d tests out of %d tests", testsPassed, testsFailed, NTests);
+    end
+    else if (testsFailed > 0) begin
+       $display("FAILED %1d tests out of %d tests", testsFailed, NTests);
+    end
+    else begin
+       $display("No tests run");
+    end
     $finish;
   end
 
@@ -142,7 +176,7 @@ module fpga;                                                                    
     end
   endtask
 
-  task mov();                                                                   // Mov
+  task mov_instruction();                                                       // Mov
     begin
       $display("target=%x  source=%x", target, source);
       $display("%d(%d) = %d", targetLocation, targetArena, source1Value);
@@ -153,7 +187,7 @@ module fpga;                                                                    
     end
   endtask
 
-  task out();                                                                   // Out
+  task out_instruction();                                                       // Out
     begin
       $display("source=%x", source1Value);
       $display("value: %d", source1Value);
@@ -165,68 +199,363 @@ module fpga;                                                                    
   task executeInstruction();                                                    // Execute an instruction
     begin
       case(operator)
-         0: begin;  $display("add");                                        end // add
-         1: begin;  $display("array");                                      end // array
-         2: begin;  $display("arrayCountGreater");                          end // arrayCountGreater
-         3: begin;  $display("arrayCountLess");                             end // arrayCountLess
-         4: begin;  $display("arrayDump");                                  end // arrayDump
-         5: begin;  $display("arrayIndex");                                 end // arrayIndex
-         6: begin;  $display("arraySize");                                  end // arraySize
-         7: begin;  $display("assert");                                     end // assert
-         8: begin;  $display("assertEq");                                   end // assertEq
-         9: begin;  $display("assertFalse");                                end // assertFalse
-        10: begin;  $display("assertGe");                                   end // assertGe
-        11: begin;  $display("assertGt");                                   end // assertGt
-        12: begin;  $display("assertLe");                                   end // assertLe
-        13: begin;  $display("assertLt");                                   end // assertLt
-        14: begin;  $display("assertNe");                                   end // assertNe
-        15: begin;  $display("assertTrue");                                 end // assertTrue
-        16: begin;  $display("call");                                       end // call
-        17: begin;  $display("confess");                                    end // confess
-        18: begin;  $display("dump");                                       end // dump
-        19: begin;  $display("free");                                       end // free
-        20: begin;  $display("in");                                         end // in
-        21: begin;  $display("inSize");                                     end // inSize
-        22: begin;  $display("jEq");                                        end // jEq
-        23: begin;  $display("jFalse");                                     end // jFalse
-        24: begin;  $display("jGe");                                        end // jGe
-        25: begin;  $display("jGt");                                        end // jGt
-        26: begin;  $display("jLe");                                        end // jLe
-        27: begin;  $display("jLt");                                        end // jLt
-        28: begin;  $display("jNe");                                        end // jNe
-        29: begin;  $display("jTrue");                                      end // jTrue
-        30: begin;  $display("jmp");                                        end // jmp
-        31: begin;  $display("label");                                      end // label
-        32: begin;  $display("loadAddress");                                end // loadAddress
-        33: begin;  $display("loadArea");                                   end // loadArea
-        34: begin;  $display("mov");  mov();                                end // mov
-        35: begin;  $display("moveLong");                                   end // moveLong
-        36: begin;  $display("nop");                                        end // nop
-        37: begin;  $display("not");                                        end // not
-        38: begin;  $display("out");  out();                                 end // out
-        39: begin;  $display("parallelContinue");                           end // parallelContinue
-        40: begin;  $display("parallelStart");                              end // parallelStart
-        41: begin;  $display("parallelStop");                               end // parallelStop
-        42: begin;  $display("paramsGet");                                  end // paramsGet
-        43: begin;  $display("paramsPut");                                  end // paramsPut
-        44: begin;  $display("pop");                                        end // pop
-        45: begin;  $display("push");                                       end // push
-        46: begin;  $display("random");                                     end // random
-        47: begin;  $display("randomSeed");                                 end // randomSeed
-        48: begin;  $display("resize");                                     end // resize
-        49: begin;  $display("return");                                     end // return
-        50: begin;  $display("returnGet");                                  end // returnGet
-        51: begin;  $display("returnPut");                                  end // returnPut
-        52: begin;  $display("shiftDown");                                  end // shiftDown
-        53: begin;  $display("shiftLeft");                                  end // shiftLeft
-        54: begin;  $display("shiftRight");                                 end // shiftRight
-        55: begin;  $display("shiftUp");                                    end // shiftUp
-        56: begin;  $display("subtract");                                   end // subtract
-        57: begin;  $display("tally");                                      end // tally
-        58: begin;  $display("trace");                                      end // trace
-        59: begin;  $display("traceLabels");                                end // traceLabels
-        60: begin;  $display("watch");                                      end // watch
+         0: begin; add_instruction();                                       end // add_instruction
+         1: begin; array_instruction();                                     end // array_instruction
+         2: begin; arrayCountGreater_instruction();                         end // arrayCountGreater_instruction
+         3: begin; arrayCountLess_instruction();                            end // arrayCountLess_instruction
+         4: begin; arrayDump_instruction();                                 end // arrayDump_instruction
+         5: begin; arrayIndex_instruction();                                end // arrayIndex_instruction
+         6: begin; arraySize_instruction();                                 end // arraySize_instruction
+         7: begin; assert_instruction();                                    end // assert_instruction
+         8: begin; assertEq_instruction();                                  end // assertEq_instruction
+         9: begin; assertFalse_instruction();                               end // assertFalse_instruction
+        10: begin; assertGe_instruction();                                  end // assertGe_instruction
+        11: begin; assertGt_instruction();                                  end // assertGt_instruction
+        12: begin; assertLe_instruction();                                  end // assertLe_instruction
+        13: begin; assertLt_instruction();                                  end // assertLt_instruction
+        14: begin; assertNe_instruction();                                  end // assertNe_instruction
+        15: begin; assertTrue_instruction();                                end // assertTrue_instruction
+        16: begin; call_instruction();                                      end // call_instruction
+        17: begin; confess_instruction();                                   end // confess_instruction
+        18: begin; dump_instruction();                                      end // dump_instruction
+        19: begin; free_instruction();                                      end // free_instruction
+        20: begin; in_instruction();                                        end // in_instruction
+        21: begin; inSize_instruction();                                    end // inSize_instruction
+        22: begin; jEq_instruction();                                       end // jEq_instruction
+        23: begin; jFalse_instruction();                                    end // jFalse_instruction
+        24: begin; jGe_instruction();                                       end // jGe_instruction
+        25: begin; jGt_instruction();                                       end // jGt_instruction
+        26: begin; jLe_instruction();                                       end // jLe_instruction
+        27: begin; jLt_instruction();                                       end // jLt_instruction
+        28: begin; jNe_instruction();                                       end // jNe_instruction
+        29: begin; jTrue_instruction();                                     end // jTrue_instruction
+        30: begin; jmp_instruction();                                       end // jmp_instruction
+        31: begin; label_instruction();                                     end // label_instruction
+        32: begin; loadAddress_instruction();                               end // loadAddress_instruction
+        33: begin; loadArea_instruction();                                  end // loadArea_instruction
+        34: begin; mov_instruction();                                       end // mov_instruction
+        35: begin; moveLong_instruction();                                  end // moveLong_instruction
+        36: begin; nop_instruction();                                       end // nop_instruction
+        37: begin; not_instruction();                                       end // not_instruction
+        38: begin; out_instruction();                                       end // out_instruction
+        39: begin; parallelContinue_instruction();                          end // parallelContinue_instruction
+        40: begin; parallelStart_instruction();                             end // parallelStart_instruction
+        41: begin; parallelStop_instruction();                              end // parallelStop_instruction
+        42: begin; paramsGet_instruction();                                 end // paramsGet_instruction
+        43: begin; paramsPut_instruction();                                 end // paramsPut_instruction
+        44: begin; pop_instruction();                                       end // pop_instruction
+        45: begin; push_instruction();                                      end // push_instruction
+        46: begin; random_instruction();                                    end // random_instruction
+        47: begin; randomSeed_instruction();                                end // randomSeed_instruction
+        48: begin; resize_instruction();                                    end // resize_instruction
+        49: begin; return_instruction();                                    end // return_instruction
+        50: begin; returnGet_instruction();                                 end // returnGet_instruction
+        51: begin; returnPut_instruction();                                 end // returnPut_instruction
+        52: begin; shiftDown_instruction();                                 end // shiftDown_instruction
+        53: begin; shiftLeft_instruction();                                 end // shiftLeft_instruction
+        54: begin; shiftRight_instruction();                                end // shiftRight_instruction
+        55: begin; shiftUp_instruction();                                   end // shiftUp_instruction
+        56: begin; subtract_instruction();                                  end // subtract_instruction
+        57: begin; tally_instruction();                                     end // tally_instruction
+        58: begin; trace_instruction();                                     end // trace_instruction
+        59: begin; traceLabels_instruction();                               end // traceLabels_instruction
+        60: begin; watch_instruction();                                     end // watch_instruction
       endcase
+    end
+  endtask
+  task add_instruction();
+    begin                                                                       // add
+     $display("add");
+    end
+  endtask
+  task array_instruction();
+    begin                                                                       // array
+     $display("array");
+    end
+  endtask
+  task arrayCountGreater_instruction();
+    begin                                                                       // arrayCountGreater
+     $display("arrayCountGreater");
+    end
+  endtask
+  task arrayCountLess_instruction();
+    begin                                                                       // arrayCountLess
+     $display("arrayCountLess");
+    end
+  endtask
+  task arrayDump_instruction();
+    begin                                                                       // arrayDump
+     $display("arrayDump");
+    end
+  endtask
+  task arrayIndex_instruction();
+    begin                                                                       // arrayIndex
+     $display("arrayIndex");
+    end
+  endtask
+  task arraySize_instruction();
+    begin                                                                       // arraySize
+     $display("arraySize");
+    end
+  endtask
+  task assert_instruction();
+    begin                                                                       // assert
+     $display("assert");
+    end
+  endtask
+  task assertEq_instruction();
+    begin                                                                       // assertEq
+     $display("assertEq");
+    end
+  endtask
+  task assertFalse_instruction();
+    begin                                                                       // assertFalse
+     $display("assertFalse");
+    end
+  endtask
+  task assertGe_instruction();
+    begin                                                                       // assertGe
+     $display("assertGe");
+    end
+  endtask
+  task assertGt_instruction();
+    begin                                                                       // assertGt
+     $display("assertGt");
+    end
+  endtask
+  task assertLe_instruction();
+    begin                                                                       // assertLe
+     $display("assertLe");
+    end
+  endtask
+  task assertLt_instruction();
+    begin                                                                       // assertLt
+     $display("assertLt");
+    end
+  endtask
+  task assertNe_instruction();
+    begin                                                                       // assertNe
+     $display("assertNe");
+    end
+  endtask
+  task assertTrue_instruction();
+    begin                                                                       // assertTrue
+     $display("assertTrue");
+    end
+  endtask
+  task call_instruction();
+    begin                                                                       // call
+     $display("call");
+    end
+  endtask
+  task confess_instruction();
+    begin                                                                       // confess
+     $display("confess");
+    end
+  endtask
+  task dump_instruction();
+    begin                                                                       // dump
+     $display("dump");
+    end
+  endtask
+  task free_instruction();
+    begin                                                                       // free
+     $display("free");
+    end
+  endtask
+  task in_instruction();
+    begin                                                                       // in
+     $display("in");
+    end
+  endtask
+  task inSize_instruction();
+    begin                                                                       // inSize
+     $display("inSize");
+    end
+  endtask
+  task jEq_instruction();
+    begin                                                                       // jEq
+     $display("jEq");
+    end
+  endtask
+  task jFalse_instruction();
+    begin                                                                       // jFalse
+     $display("jFalse");
+    end
+  endtask
+  task jGe_instruction();
+    begin                                                                       // jGe
+     $display("jGe");
+    end
+  endtask
+  task jGt_instruction();
+    begin                                                                       // jGt
+     $display("jGt");
+    end
+  endtask
+  task jLe_instruction();
+    begin                                                                       // jLe
+     $display("jLe");
+    end
+  endtask
+  task jLt_instruction();
+    begin                                                                       // jLt
+     $display("jLt");
+    end
+  endtask
+  task jNe_instruction();
+    begin                                                                       // jNe
+     $display("jNe");
+    end
+  endtask
+  task jTrue_instruction();
+    begin                                                                       // jTrue
+     $display("jTrue");
+    end
+  endtask
+  task jmp_instruction();
+    begin                                                                       // jmp
+     $display("jmp");
+    end
+  endtask
+  task label_instruction();
+    begin                                                                       // label
+     $display("label");
+    end
+  endtask
+  task loadAddress_instruction();
+    begin                                                                       // loadAddress
+     $display("loadAddress");
+    end
+  endtask
+  task loadArea_instruction();
+    begin                                                                       // loadArea
+     $display("loadArea");
+    end
+  endtask
+  task moveLong_instruction();
+    begin                                                                       // moveLong
+     $display("moveLong");
+    end
+  endtask
+  task nop_instruction();
+    begin                                                                       // nop
+     $display("nop");
+    end
+  endtask
+  task not_instruction();
+    begin                                                                       // not
+     $display("not");
+    end
+  endtask
+  task parallelContinue_instruction();
+    begin                                                                       // parallelContinue
+     $display("parallelContinue");
+    end
+  endtask
+  task parallelStart_instruction();
+    begin                                                                       // parallelStart
+     $display("parallelStart");
+    end
+  endtask
+  task parallelStop_instruction();
+    begin                                                                       // parallelStop
+     $display("parallelStop");
+    end
+  endtask
+  task paramsGet_instruction();
+    begin                                                                       // paramsGet
+     $display("paramsGet");
+    end
+  endtask
+  task paramsPut_instruction();
+    begin                                                                       // paramsPut
+     $display("paramsPut");
+    end
+  endtask
+  task pop_instruction();
+    begin                                                                       // pop
+     $display("pop");
+    end
+  endtask
+  task push_instruction();
+    begin                                                                       // push
+     $display("push");
+    end
+  endtask
+  task random_instruction();
+    begin                                                                       // random
+     $display("random");
+    end
+  endtask
+  task randomSeed_instruction();
+    begin                                                                       // randomSeed
+     $display("randomSeed");
+    end
+  endtask
+  task resize_instruction();
+    begin                                                                       // resize
+     $display("resize");
+    end
+  endtask
+  task return_instruction();
+    begin                                                                       // return
+     $display("return");
+    end
+  endtask
+  task returnGet_instruction();
+    begin                                                                       // returnGet
+     $display("returnGet");
+    end
+  endtask
+  task returnPut_instruction();
+    begin                                                                       // returnPut
+     $display("returnPut");
+    end
+  endtask
+  task shiftDown_instruction();
+    begin                                                                       // shiftDown
+     $display("shiftDown");
+    end
+  endtask
+  task shiftLeft_instruction();
+    begin                                                                       // shiftLeft
+     $display("shiftLeft");
+    end
+  endtask
+  task shiftRight_instruction();
+    begin                                                                       // shiftRight
+     $display("shiftRight");
+    end
+  endtask
+  task shiftUp_instruction();
+    begin                                                                       // shiftUp
+     $display("shiftUp");
+    end
+  endtask
+  task subtract_instruction();
+    begin                                                                       // subtract
+     $display("subtract");
+    end
+  endtask
+  task tally_instruction();
+    begin                                                                       // tally
+     $display("tally");
+    end
+  endtask
+  task trace_instruction();
+    begin                                                                       // trace
+     $display("trace");
+    end
+  endtask
+  task traceLabels_instruction();
+    begin                                                                       // traceLabels
+     $display("traceLabels");
+    end
+  endtask
+  task watch_instruction();
+    begin                                                                       // watch
+     $display("watch");
     end
   endtask
 
