@@ -24,12 +24,12 @@ module fpga;                                                                    
   wire [63:0]  source      = instruction[127: 64];
   wire [63:0]  target      = instruction[191:128];
 
-  wire [63:32] source2Address  = source2;                                       // Source2
-  wire [31:16] source2Area     = source2;
-  wire [15:14] source2DAddress = source2;
-  wire [13:12] source2DArea    = source2;
-  wire [11:10] source2Arena    = source2;
-  wire [ 7: 0] source2Delta    = source2;
+  wire [31: 0] source2Address  = source2[63:32];                                       // Source2
+  wire [15: 0] source2Area     = source2[31:16];
+  wire [ 2: 0] source2DAddress = source2[15:14];
+  wire [ 2: 0] source2Arena    = source2[13:12];
+  wire [ 2: 0] source2DArea    = source2[11:10];
+  wire [ 7: 0] source2Delta    = source2[ 7: 0] - 127;
   wire [31: 0] source2Value    =
     source2Arena      == 0 ? 0 :
     source2Arena      == 1 ?
@@ -45,12 +45,12 @@ module fpga;                                                                    
       source2DArea    == 1 && source2DAddress == 1 ? source2Delta + localMem[localMem[source2Area]*NArea + source2Address]           :
       source2DArea    == 1 && source2DAddress == 2 ? source2Delta + localMem[localMem[source2Area]*NArea + localMem[source2Address]] : 0) : 0;
 
-  wire [63:32] source1Address  = source;                                        // Source
-  wire [31:16] source1Area     = source;
-  wire [15:14] source1DAddress = source;
-  wire [13:12] source1DArea    = source;
-  wire [11:10] source1Arena    = source;
-  wire [ 7: 0] source1Delta    = source;
+  wire [31: 0] source1Address  = source[63:32];                                 // Source
+  wire [15: 0] source1Area     = source[31:16];
+  wire [ 2: 0] source1DAddress = source[15:14];
+  wire [ 2: 0] source1Arena    = source[13:12];
+  wire [ 2: 0] source1DArea    = source[11:10];
+  wire [ 7: 0] source1Delta    = source[ 7: 0] - 127;
   wire [31: 0] source1Value    =
     source1Arena      == 0 ? 0 :
     source1Arena      == 1 ?
@@ -66,12 +66,12 @@ module fpga;                                                                    
       source1DArea    == 1 && source1DAddress == 1 ? source1Delta + localMem[localMem[source1Area]*NArea + source1Address]           :
       source1DArea    == 1 && source1DAddress == 2 ? source1Delta + localMem[localMem[source1Area]*NArea + localMem[source1Address]] : 0) : 0;
 
-  wire [63:32] targetAddress   = target;                                        // Target
-  wire [31:16] targetArea      = target;
-  wire [15:14] targetDAddress  = target;
-  wire [13:12] targetDArea     = target;
-  wire [11:10] targetArena     = target;
-  wire [ 7: 0] targetDelta     = target;
+  wire [31: 0] targetAddress   = target[63:32];                                 // Target
+  wire [15: 0] targetArea      = target[31:16];
+  wire [ 2: 0] targetDAddress  = target[15:14];
+  wire [ 2: 0] targetArena     = target[13:12];
+  wire [ 2: 0] targetDArea     = target[11:10];
+  wire [ 7: 0] targetDelta     = target[ 7: 0] - 127;
   wire [31: 0] targetLocation  =
     targetArena      == 0 ? 0 :
     targetArena      == 1 ?
@@ -94,6 +94,16 @@ module fpga;                                                                    
     begin
       //instruction = code[ip];
       #1;
+
+      $display("targetAddress =%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Location=%4x",
+        targetAddress, targetArea, targetDAddress, targetDArea, targetArena, targetDelta, targetLocation);
+
+      $display("source1Address=%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Value   =%4x",
+        source1Address, source1Area, source1DAddress, source1DArea, source1Arena, source1Delta, source1Value);
+
+      $display("source2Address=%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Value   =%4x",
+        source2Address, source2Area, source2DAddress, source2DArea, source2Arena, source2Delta, source2Value);
+
       executeInstruction();
       #100;
     end
@@ -102,6 +112,10 @@ module fpga;                                                                    
 
   task Mov1();
     begin
+//                   operator        target          source1         source2
+//                   xxxxxxxx        Address AreaD D Address AreaD D Address AreaD D
+//                   0         1         2         3         4         5         6
+//                   0123456789012345678901234567890123456789012345678901234567890123
       code[   0] = 'h0000002200000000000000000000217f000000010000207f000000000000007f;
       code[   1] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
     end
@@ -109,7 +123,8 @@ module fpga;                                                                    
 
   task mov();                                                                   // Execute a move instruction
     begin
-
+      $display("target=%x  source=%x", target, source);
+      $display("%d = %d", targetLocation, source1Value);
     end
   endtask
 
