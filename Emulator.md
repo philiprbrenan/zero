@@ -51,6 +51,7 @@ Add the source locations together and store the result in the target area.
       Out  $a;
       my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [5];
+      #say STDERR generateVerilogMachineCode("Add_test", $e); exit;
      }
     
 
@@ -3477,7 +3478,7 @@ Generate a string of machine code from the current block of code.
     END
       my $e =  GenerateMachineCodeDisAssembleExecute;
       is_deeply $e->block->codeToString, <<'END';
-    0000       mov [undef, 0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+    0000       mov [0, 0, 3, 0]  [0, 1, 3, 0]  [0, 0, 3, 0]
     END
      }
     
@@ -3506,7 +3507,7 @@ Disassemble machine code.
     END
       my $e =  GenerateMachineCodeDisAssembleExecute;
       is_deeply $e->block->codeToString, <<'END';
-    0000       mov [undef, 0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+    0000       mov [0, 0, 3, 0]  [0, 1, 3, 0]  [0, 0, 3, 0]
     END
      }
     
@@ -3535,7 +3536,7 @@ Round trip: generate machine code and write it onto a string, disassemble the ge
       my $e =  GenerateMachineCodeDisAssembleExecute;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       is_deeply $e->block->codeToString, <<'END';
-    0000       mov [undef, 0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+    0000       mov [0, 0, 3, 0]  [0, 1, 3, 0]  [0, 0, 3, 0]
     END
      }
     
@@ -3564,6 +3565,14 @@ Convert a code string into verilog statements to load the code values into the c
 
      }
     
+
+## generateVerilogMachineCode($name, $assembly)
+
+Generate machine code using the string memory model so that we can run it in verilog
+
+       Parameter  Description
+    1  $name      Name of subroutine to contain generated code
+    2  $assembly  Assembly
 
 # Hash Definitions
 
@@ -3849,7 +3858,7 @@ Order of the elements in the structure, in effect, giving the offset of each ele
 
 Name of the structure
 
-## Zero::Emulator::Code Definition
+## Zero::Emulator::Assembly Definition
 
 Block of code description.
 
@@ -3887,7 +3896,7 @@ Procedures defined in this block of code
 
 Variables in this block of code
 
-## Zero::Emulator::Code::Instruction Definition
+## Zero::Emulator::Assembly::Instruction Definition
 
 Instruction details
 
@@ -3991,9 +4000,12 @@ Variables local to this stack frame
 
 # Private Methods
 
-## Assembly()
+## Assembly(%options)
 
 Start some assembly code.
+
+       Parameter  Description
+    1  %options   Options
 
 ## Assert1($op, $a)
 
@@ -4081,7 +4093,7 @@ Continue recording the elapsed time for parallel sections.
 
 Stop recording the elapsed time for parallel sections.
 
-## Zero::Emulator::Code::packRef($code, $instruction, $ref)
+## Zero::Emulator::Assembly::packRef($code, $instruction, $ref)
 
 Pack a reference into 8 bytes.
 
@@ -4090,7 +4102,7 @@ Pack a reference into 8 bytes.
     2  $instruction  Instruction being packed
     3  $ref          Reference being packed
 
-## Zero::Emulator::Code::unpackRef($code, $a, $operand)
+## Zero::Emulator::Assembly::unpackRef($code, $a, $operand)
 
 Unpack a reference.
 
@@ -4099,7 +4111,7 @@ Unpack a reference.
     2  $a         Instruction being packed
     3  $operand   Reference being packed
 
-## Zero::Emulator::Code::packInstruction($code, $i)
+## Zero::Emulator::Assembly::packInstruction($code, $i)
 
 Pack an instruction.
 
@@ -4186,129 +4198,131 @@ Disassemble and remove context information from disassembly to make testing easi
 
 35 [GenerateMachineCodeDisAssembleExecute](#generatemachinecodedisassembleexecute) - Round trip: generate machine code and write it onto a string, disassemble the generated machine code string and recreate a block of code from it, then execute the reconstituted code to prove that it works as well as the original code.
 
-36 [Good](#good) - A good ending to a block of code.
+36 [generateVerilogMachineCode](#generateverilogmachinecode) - Generate machine code using the string memory model so that we can run it in verilog
 
-37 [IfEq](#ifeq) - Execute then or else clause depending on whether two memory locations are equal.
+37 [Good](#good) - A good ending to a block of code.
 
-38 [IfFalse](#iffalse) - Execute then clause if the specified memory address is zero thus representing false.
+38 [IfEq](#ifeq) - Execute then or else clause depending on whether two memory locations are equal.
 
-39 [IfGe](#ifge) - Execute then or else clause depending on whether two memory locations are greater than or equal.
+39 [IfFalse](#iffalse) - Execute then clause if the specified memory address is zero thus representing false.
 
-40 [IfGt](#ifgt) - Execute then or else clause depending on whether two memory locations are greater than.
+40 [IfGe](#ifge) - Execute then or else clause depending on whether two memory locations are greater than or equal.
 
-41 [IfLe](#ifle) - Execute then or else clause depending on whether two memory locations are less than or equal.
+41 [IfGt](#ifgt) - Execute then or else clause depending on whether two memory locations are greater than.
 
-42 [IfLt](#iflt) - Execute then or else clause depending on whether two memory locations are less than.
+42 [IfLe](#ifle) - Execute then or else clause depending on whether two memory locations are less than or equal.
 
-43 [IfNe](#ifne) - Execute then or else clause depending on whether two memory locations are not equal.
+43 [IfLt](#iflt) - Execute then or else clause depending on whether two memory locations are less than.
 
-44 [IfTrue](#iftrue) - Execute then clause if the specified memory address is not zero thus representing true.
+44 [IfNe](#ifne) - Execute then or else clause depending on whether two memory locations are not equal.
 
-45 [Ifx](#ifx) - Execute then or else clause depending on whether two memory locations are equal.
+45 [IfTrue](#iftrue) - Execute then clause if the specified memory address is not zero thus representing true.
 
-46 [In](#in) - Read a value from the input channel
+46 [Ifx](#ifx) - Execute then or else clause depending on whether two memory locations are equal.
 
-47 [Inc](#inc) - Increment the target.
+47 [In](#in) - Read a value from the input channel
 
-48 [InSize](#insize) - Number of elements remining in the input channel
+48 [Inc](#inc) - Increment the target.
 
-49 [Jeq](#jeq) - Jump to a target label if the first source field is equal to the second source field.
+49 [InSize](#insize) - Number of elements remining in the input channel
 
-50 [JFalse](#jfalse) - Jump to a target label if the first source field is equal to zero.
+50 [Jeq](#jeq) - Jump to a target label if the first source field is equal to the second source field.
 
-51 [Jge](#jge) - Jump to a target label if the first source field is greater than or equal to the second source field.
+51 [JFalse](#jfalse) - Jump to a target label if the first source field is equal to zero.
 
-52 [Jgt](#jgt) - Jump to a target label if the first source field is greater than the second source field.
+52 [Jge](#jge) - Jump to a target label if the first source field is greater than or equal to the second source field.
 
-53 [Jle](#jle) - Jump to a target label if the first source field is less than or equal to the second source field.
+53 [Jgt](#jgt) - Jump to a target label if the first source field is greater than the second source field.
 
-54 [Jlt](#jlt) - Jump to a target label if the first source field is less than the second source field.
+54 [Jle](#jle) - Jump to a target label if the first source field is less than or equal to the second source field.
 
-55 [Jmp](#jmp) - Jump to a label.
+55 [Jlt](#jlt) - Jump to a target label if the first source field is less than the second source field.
 
-56 [Jne](#jne) - Jump to a target label if the first source field is not equal to the second source field.
+56 [Jmp](#jmp) - Jump to a label.
 
-57 [JTrue](#jtrue) - Jump to a target label if the first source field is not equal to zero.
+57 [Jne](#jne) - Jump to a target label if the first source field is not equal to the second source field.
 
-58 [Label](#label) - Create a label.
+58 [JTrue](#jtrue) - Jump to a target label if the first source field is not equal to zero.
 
-59 [LoadAddress](#loadaddress) - Load the address component of an address.
+59 [Label](#label) - Create a label.
 
-60 [LoadArea](#loadarea) - Load the area component of an address.
+60 [LoadAddress](#loadaddress) - Load the address component of an address.
 
-61 [Mov](#mov) - Copy a constant or memory address to the target address.
+61 [LoadArea](#loadarea) - Load the area component of an address.
 
-62 [MoveLong](#movelong) - Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand.
+62 [Mov](#mov) - Copy a constant or memory address to the target address.
 
-63 [Nop](#nop) - Do nothing (but do it well!).
+63 [MoveLong](#movelong) - Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand.
 
-64 [Not](#not) - Move and not.
+64 [Nop](#nop) - Do nothing (but do it well!).
 
-65 [Out](#out) - Write memory location contents to out.
+65 [Not](#not) - Move and not.
 
-66 [Parallel](#parallel) - Runs its sub sections in simulated parallel so that we can prove that the sections can be run in parallel.
+66 [Out](#out) - Write memory location contents to out.
 
-67 [ParallelContinue](#parallelcontinue) - Continue recording the elapsed time for parallel sections.
+67 [Parallel](#parallel) - Runs its sub sections in simulated parallel so that we can prove that the sections can be run in parallel.
 
-68 [ParallelStart](#parallelstart) - Start recording the elapsed time for parallel sections.
+68 [ParallelContinue](#parallelcontinue) - Continue recording the elapsed time for parallel sections.
 
-69 [ParallelStop](#parallelstop) - Stop recording the elapsed time for parallel sections.
+69 [ParallelStart](#parallelstart) - Start recording the elapsed time for parallel sections.
 
-70 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
+70 [ParallelStop](#parallelstop) - Stop recording the elapsed time for parallel sections.
 
-71 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
+71 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
 
-72 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
+72 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
 
-73 [Procedure](#procedure) - Define a procedure.
+73 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
 
-74 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
+74 [Procedure](#procedure) - Define a procedure.
 
-75 [Random](#random) - Create a random number in a specified range.
+75 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
 
-76 [RandomSeed](#randomseed) - Seed the random number generator.
+76 [Random](#random) - Create a random number in a specified range.
 
-77 [Resize](#resize) - Resize the target area to the source size.
+77 [RandomSeed](#randomseed) - Seed the random number generator.
 
-78 [Return](#return) - Return from a procedure via the call stack.
+78 [Resize](#resize) - Resize the target area to the source size.
 
-79 [ReturnGet](#returnget) - Get a word from the return area and save it.
+79 [Return](#return) - Return from a procedure via the call stack.
 
-80 [ReturnPut](#returnput) - Put a word into the return area.
+80 [ReturnGet](#returnget) - Get a word from the return area and save it.
 
-81 [Sequential](#sequential) - Runs its sub sections in sequential order
+81 [ReturnPut](#returnput) - Put a word into the return area.
 
-82 [ShiftDown](#shiftdown) - Shift an element down one in an area.
+82 [Sequential](#sequential) - Runs its sub sections in sequential order
 
-83 [ShiftLeft](#shiftleft) - Shift left within an element.
+83 [ShiftDown](#shiftdown) - Shift an element down one in an area.
 
-84 [ShiftRight](#shiftright) - Shift right with an element.
+84 [ShiftLeft](#shiftleft) - Shift left within an element.
 
-85 [ShiftUp](#shiftup) - Shift an element up one in an area.
+85 [ShiftRight](#shiftright) - Shift right with an element.
 
-86 [Start](#start) - Start the current assembly using the specified version of the Zero language.
+86 [ShiftUp](#shiftup) - Shift an element up one in an area.
 
-87 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
+87 [Start](#start) - Start the current assembly using the specified version of the Zero language.
 
-88 [Tally](#tally) - Counts instructions when enabled.
+88 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
 
-89 [Then](#then) - Then block.
+89 [Tally](#tally) - Counts instructions when enabled.
 
-90 [Trace](#trace) - Start or stop tracing.
+90 [Then](#then) - Then block.
 
-91 [TraceLabels](#tracelabels) - Enable or disable label tracing.
+91 [Trace](#trace) - Start or stop tracing.
 
-92 [Var](#var) - Create a variable initialized to the specified value.
+92 [TraceLabels](#tracelabels) - Enable or disable label tracing.
 
-93 [verilogMachineCode](#verilogmachinecode) - Convert a code string into verilog statements to load the code values into the code array
+93 [Var](#var) - Create a variable initialized to the specified value.
 
-94 [Watch](#watch) - Watches for changes to the specified memory location.
+94 [verilogMachineCode](#verilogmachinecode) - Convert a code string into verilog statements to load the code values into the code array
 
-95 [Zero::Emulator::Code::packInstruction](#zero-emulator-code-packinstruction) - Pack an instruction.
+95 [Watch](#watch) - Watches for changes to the specified memory location.
 
-96 [Zero::Emulator::Code::packRef](#zero-emulator-code-packref) - Pack a reference into 8 bytes.
+96 [Zero::Emulator::Assembly::packInstruction](#zero-emulator-assembly-packinstruction) - Pack an instruction.
 
-97 [Zero::Emulator::Code::unpackRef](#zero-emulator-code-unpackref) - Unpack a reference.
+97 [Zero::Emulator::Assembly::packRef](#zero-emulator-assembly-packref) - Pack a reference into 8 bytes.
+
+98 [Zero::Emulator::Assembly::unpackRef](#zero-emulator-assembly-unpackref) - Unpack a reference.
 
 # Installation
 
