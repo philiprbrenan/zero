@@ -2909,7 +2909,7 @@ sub generateVerilogMachineCode($)                                               
   my @v = <<END;
   reg[255:0] code[$L];                                                          // Code memory
 
-  task $name();                                                              // Load program '$name' into code memory
+  task $name();                                                           // Load program '$name' into code memory
     begin
       NInstructionEnd = $L;
 END
