@@ -38,7 +38,6 @@ sub ExecutionEnvironment(%)                                                     
     counts=>                {},                                                 # Executed instructions by name counts
     doubleWrite=>           {},                                                 # Source of double writes {instruction number} to count - an existing value was overwritten before it was used
     freedArrays=>           [],                                                 # Arrays that have been recently freed and can thus be reused
-    freedArrays=>           [],                                                 # Arrays that have been recently freed and can thus be reused
     FreeMemoryArea=>       \&freeMemoryArea,                                    # Low level memory access - free an area
     GetMemoryArea=>        \&getMemoryArea,                                     # Low level memory access - area
     GetMemoryHeaps=>       \&getMemoryHeaps,                                    # Low level memory access - arenas in use
@@ -1649,7 +1648,6 @@ sub Zero::Emulator::Assembly::execute($%)                                       
        {my $t = right $exec, $i->source;
         say STDERR $t if !$exec->suppressOutput and !$exec->trace;
         $exec->lastAssignValue = $t;
-say STDERR "AAAA", dump($t);
         $exec->output("$t\n");
        }
       $exec->timeDelta = 0;                                                     # Out is used only for diagnostic purposes.
@@ -3106,7 +3104,7 @@ if (1)                                                                          
   is_deeply $e->outLines, [4];
  }
 
-latest:;
+#latest:;
 if (1)                                                                          ##Not
  {Start 1;
   my $a = Mov 3;
@@ -3121,9 +3119,9 @@ if (1)                                                                          
 0
 1
 END
-  say STDERR generateVerilogMachineCode("Not_test");
+  #say STDERR generateVerilogMachineCode("Not_test");
  }
-x;
+
 #latest:;
 if (1)                                                                          ##ShiftLeft
  {Start 1;
@@ -3198,7 +3196,18 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          ##Mov
+if (1)                                                                          ##Mov ##Array
+ {Start 1;
+  my $a = Array "aaa";
+  Mov     [$a,  0, "aaa"],  11;
+  Mov     [$a,  1, "aaa"],  22;
+  my $e = &$ee(suppressOutput=>1);
+  is_deeply $e->heap(1), [11, 22];
+  #say STDERR generateVerilogMachineCode("Array_test");  exit;
+ }
+
+#latest:;
+if (1)                                                                          ##Mov ##Array
  {Start 1;
   my $a = Array "aaa";
   Mov     [$a,  1, "aaa"],  11;
@@ -3206,6 +3215,7 @@ if (1)                                                                          
   Out \1;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [11];
+  #say STDERR generateVerilogMachineCode("Array_test");  exit;
  }
 
 #latest:;
@@ -4228,7 +4238,7 @@ if (1)                                                                          
 #     10    20    30
 # 5=0   15=1  25=2  35=3
 
-#latest:;
+latest:;
 if (1)                                                                          ##ArrayIndex ##ArrayCountLess ##ArrayCountGreater
  {Start 1;
   my $a = Array "aaa";
@@ -4255,6 +4265,7 @@ if (1)                                                                          
 2
 3
 END
+  say STDERR generateVerilogMachineCode("Array_scans");  exit;
  }
 
 #latest:;
