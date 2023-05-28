@@ -2446,9 +2446,10 @@ Move and not.
       my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     3
-    
+    0
     1
     END
+      say STDERR generateVerilogMachineCode("Not_test");
      }
     
 
