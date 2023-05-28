@@ -11,12 +11,13 @@ module fpga;                                                                    
   parameter integer NArea  =   10;                                              // Size of each area on the heap
   parameter integer NLocal = 1000;                                              // Size of local memory
   parameter integer NOut   = 1000;                                              // Size of output area
-  parameter integer NTests =    2;                                              // Number of tests
+  parameter integer NTests =    3;                                              // Number of tests
 
   reg[255:0] code[NInstructions];                                               // Code memory
   reg[ 32:0] heapMem [NHeap];                                                   // Heap memory
   reg[255:0] localMem[NLocal];                                                  // Local memory
   reg[ 32:0] outMem[NOut];                                                      // Out channel
+
   integer NInstructionEnd;                                                      // Limit of instructions for the current program
   integer outMemPos;                                                            // Position in output channel
   integer test;                                                                 // Tests passed
@@ -40,6 +41,7 @@ module fpga;                                                                    
       case(test)
         1: Mov_test();
         2: Add_test();
+        3: Subtract_test();
       endcase
     end
   endtask
@@ -49,6 +51,7 @@ module fpga;                                                                    
       case(test)
         1: ok(outMem[0] == 1, "Mov 1");
         2: ok(outMem[0] == 5, "Add 1");
+        3: ok(outMem[0] == 2, "Subtract 1");
       endcase
     end
   endtask
@@ -184,10 +187,24 @@ module fpga;                                                                    
     end
   endtask
 
+  task Subtract_test();                                                         // Load program 'Subtract_test' into code memory
+    begin
+      NInstructionEnd = 2;
+      code[   0] = 'h0000003800000000000000000000217f000000000004207f000000000002207f;
+      code[   1] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
+    end
+  endtask
+
+  task print_instruction();                                                     // Print the details of an instruction
+    begin
+      $display("target=%x  source=%x source2=%x", target, source, source2);
+      $display("%d(%d) = %d + %d", targetLocation, targetArena, source1Value, source2Value);
+    end
+  endtask
+
   task add_instruction();                                                       // Add
     begin
-      $display("target=%x  source=%x source=%x", target, source, source2);
-      $display("%d(%d) = %d + %d", targetLocation, targetArena, source1Value, source2Value);
+      print_instruction();
       case(targetArena)
         1: heapMem [targetLocation] = source1Value + source2Value;
         2: localMem[targetLocation] = source1Value + source2Value;
@@ -197,11 +214,20 @@ module fpga;                                                                    
 
   task mov_instruction();                                                       // Mov
     begin
-      $display("target=%x  source=%x", target, source);
-      $display("%d(%d) = %d", targetLocation, targetArena, source1Value);
+      print_instruction();
       case(targetArena)
         1: heapMem [targetLocation] = source1Value;
         2: localMem[targetLocation] = source1Value;
+      endcase
+    end
+  endtask
+
+  task subtract_instruction();                                                  // Subtract
+    begin
+      print_instruction();
+      case(targetArena)
+        1: heapMem [targetLocation] = source1Value - source2Value;
+        2: localMem[targetLocation] = source1Value - source2Value;
       endcase
     end
   endtask
@@ -545,11 +571,6 @@ module fpga;                                                                    
   task shiftUp_instruction();
     begin                                                                       // shiftUp
      $display("shiftUp");
-    end
-  endtask
-  task subtract_instruction();
-    begin                                                                       // subtract
-     $display("subtract");
     end
   endtask
   task tally_instruction();
