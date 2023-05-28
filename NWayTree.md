@@ -279,17 +279,17 @@ Get the number of keys in the tree..
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+      is_deeply $e->widestAreaInArena,   [undef, 6, 539];
       is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
       is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  24611;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  24613;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
       is_deeply $e->tallyTotal->{1}, 15456;
       is_deeply $e->tallyTotal->{2},  6294;
-      is_deeply $e->tallyTotal->{3},  2861;
+      is_deeply $e->tallyTotal->{3},  2863;
     #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
     
       #say STDERR formatTable $e->tallyCounts->{1};   exit;
@@ -340,9 +340,10 @@ Get the number of keys in the tree..
     jNe          117
     jTrue         73
     jmp          252
-    mov         1111
+    mov         1112
     moveLong     107
     not          180
+    shiftLeft      1
     subtract      72
     END
     
@@ -462,17 +463,17 @@ Get data field from find results.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+      is_deeply $e->widestAreaInArena,   [undef, 6, 539];
       is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
       is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  24611;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  24613;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
       is_deeply $e->tallyTotal->{1}, 15456;
       is_deeply $e->tallyTotal->{2},  6294;
-      is_deeply $e->tallyTotal->{3},  2861;
+      is_deeply $e->tallyTotal->{3},  2863;
     #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
     
       #say STDERR formatTable $e->tallyCounts->{1};   exit;
@@ -523,9 +524,10 @@ Get data field from find results.
     jNe          117
     jTrue         73
     jmp          252
-    mov         1111
+    mov         1112
     moveLong     107
     not          180
+    shiftLeft      1
     subtract      72
     END
     
@@ -602,17 +604,17 @@ Get key field from find results.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+      is_deeply $e->widestAreaInArena,   [undef, 6, 539];
       is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
       is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  24611;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  24613;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
       is_deeply $e->tallyTotal->{1}, 15456;
       is_deeply $e->tallyTotal->{2},  6294;
-      is_deeply $e->tallyTotal->{3},  2861;
+      is_deeply $e->tallyTotal->{3},  2863;
     #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
     
       #say STDERR formatTable $e->tallyCounts->{1};   exit;
@@ -663,9 +665,10 @@ Get key field from find results.
     jNe          117
     jTrue         73
     jmp          252
-    mov         1111
+    mov         1112
     moveLong     107
     not          180
+    shiftLeft      1
     subtract      72
     END
     
@@ -779,17 +782,17 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+      is_deeply $e->widestAreaInArena,   [undef, 6, 539];
       is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
       is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  24611;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  24613;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
       is_deeply $e->tallyTotal->{1}, 15456;
       is_deeply $e->tallyTotal->{2},  6294;
-      is_deeply $e->tallyTotal->{3},  2861;
+      is_deeply $e->tallyTotal->{3},  2863;
     #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
     
       #say STDERR formatTable $e->tallyCounts->{1};   exit;
@@ -842,9 +845,10 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
     jNe          117
     jTrue         73
     jmp          252
-    mov         1111
+    mov         1112
     moveLong     107
     not          180
+    shiftLeft      1
     subtract      72
     END
     
@@ -1098,17 +1102,17 @@ Iterate over a tree.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+      is_deeply $e->widestAreaInArena,   [undef, 6, 539];
       is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
       is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  24611;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  24613;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
       is_deeply $e->tallyTotal->{1}, 15456;
       is_deeply $e->tallyTotal->{2},  6294;
-      is_deeply $e->tallyTotal->{3},  2861;
+      is_deeply $e->tallyTotal->{3},  2863;
     #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
     
       #say STDERR formatTable $e->tallyCounts->{1};   exit;
@@ -1161,9 +1165,10 @@ Iterate over a tree.
     jNe          117
     jTrue         73
     jmp          252
-    mov         1111
+    mov         1112
     moveLong     107
     not          180
+    shiftLeft      1
     subtract      72
     END
     
@@ -1242,17 +1247,17 @@ Print the keys held in a tree.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+      is_deeply $e->widestAreaInArena,   [undef, 6, 539];
       is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
       is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  24611;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  24613;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
       is_deeply $e->tallyTotal->{1}, 15456;
       is_deeply $e->tallyTotal->{2},  6294;
-      is_deeply $e->tallyTotal->{3},  2861;
+      is_deeply $e->tallyTotal->{3},  2863;
     #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
     
       #say STDERR formatTable $e->tallyCounts->{1};   exit;
@@ -1303,9 +1308,10 @@ Print the keys held in a tree.
     jNe          117
     jTrue         73
     jmp          252
-    mov         1111
+    mov         1112
     moveLong     107
     not          180
+    shiftLeft      1
     subtract      72
     END
     
@@ -1384,17 +1390,17 @@ Print the data held in a tree.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+      is_deeply $e->widestAreaInArena,   [undef, 6, 539];
       is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
       is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
       #say STDERR dump $e->tallyCount;
-      is_deeply $e->tallyCount,  24611;                                             # Insertion instruction counts
+      is_deeply $e->tallyCount,  24613;                                             # Insertion instruction counts
     
       #say STDERR dump $e->tallyTotal;
       is_deeply $e->tallyTotal->{1}, 15456;
       is_deeply $e->tallyTotal->{2},  6294;
-      is_deeply $e->tallyTotal->{3},  2861;
+      is_deeply $e->tallyTotal->{3},  2863;
     #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
     
       #say STDERR formatTable $e->tallyCounts->{1};   exit;
@@ -1445,9 +1451,10 @@ Print the data held in a tree.
     jNe          117
     jTrue         73
     jmp          252
-    mov         1111
+    mov         1112
     moveLong     107
     not          180
+    shiftLeft      1
     subtract      72
     END
     
