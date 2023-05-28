@@ -843,7 +843,8 @@ sub Iterate(&$)                                                                 
  {my ($block, $tree) = @_;                                                      # Block of code to execute for each key in tree, tree
 
   my $n; my $f; my $F;
-
+  my $l = Mov 1;
+  ShiftLeft $l, 31;
   Parallel
     sub {$n = root($tree)},
     sub {$f = FindResult_new},
@@ -860,7 +861,7 @@ sub Iterate(&$)                                                                 
     Parallel
       sub {&$block($F)},
       sub {GoUpAndAround($f)};
-   } 2**32-1;                                                                   # A reasonabley high number being the largest we can represent in vec() without annoying messages
+   } $l;                                                                        # 2**31
 
   Parallel
     sub{FindResult_free($f)},
@@ -1368,17 +1369,17 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1, in=>[@r]);
   is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-  is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+  is_deeply $e->widestAreaInArena,   [undef, 6, 539];
   is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
   is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  24611;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  24613;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
   is_deeply $e->tallyTotal->{1}, 15456;
   is_deeply $e->tallyTotal->{2},  6294;
-  is_deeply $e->tallyTotal->{3},  2861;
+  is_deeply $e->tallyTotal->{3},  2863;
 #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
 
   #say STDERR formatTable $e->tallyCounts->{1};   exit;
@@ -1429,9 +1430,10 @@ jGe          316
 jNe          117
 jTrue         73
 jmp          252
-mov         1111
+mov         1112
 moveLong     107
 not          180
+shiftLeft      1
 subtract      72
 END
 
@@ -1498,20 +1500,20 @@ if (1)                                                                          
   my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1, in=>[@r],
     stringMemory=>1, maximumArraySize=>7);
   is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-  is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+  is_deeply $e->widestAreaInArena,   [undef, 6, 539];
   is_deeply $e->namesOfWidestArrays, [undef, 0, 0];
   is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  24611;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  24613;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
   is_deeply $e->tallyTotal->{1}, 15456;
   is_deeply $e->tallyTotal->{2},  6294;
-  is_deeply $e->tallyTotal->{3},  2861;
+  is_deeply $e->tallyTotal->{3},  2863;
 
-  is_deeply $e->timeParallel,   24689;
-  is_deeply $e->timeSequential, 29086;
+  is_deeply $e->timeParallel,   24693;
+  is_deeply $e->timeSequential, 29090;
  }
 
 # (\A.{80})\s+(#.*\Z) \1\2
