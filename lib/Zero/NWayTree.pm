@@ -13,7 +13,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
-eval "use Test::More tests=>113" unless caller;
+eval "use Test::More tests=>114" unless caller;
 
 makeDieConfess;
 
@@ -1514,6 +1514,33 @@ if (1)                                                                          
 
   is_deeply $e->timeParallel,   24693;
   is_deeply $e->timeSequential, 29090;
+
+  #say STDERR formatTable($e->counts);
+  is_deeply formatTable($e->counts), <<END;                                     # All instruction codes used in NWay Tree
+add                 2241
+array                253
+arrayCountGreater      2
+arrayCountLess       485
+arrayIndex           767
+free                   4
+in                   107
+inSize                 1
+jEq                 2104
+jFalse                56
+jGe                 1855
+jLe                  928
+jLt                  565
+jNe                 1249
+jTrue                146
+jmp                 2093
+mov                12786
+moveLong             385
+not                 1351
+resize               161
+shiftLeft              2
+shiftUp              300
+subtract            1249
+END
  }
 
 # (\A.{80})\s+(#.*\Z) \1\2
