@@ -6,17 +6,18 @@ module fpga_tb;                                                                 
 endmodule
 
 module fpga;                                                                    // The cpu executes one step in the computation per input clock. We can also put values into memory and get values out again to test each program.
-  parameter integer NInstructions = 2;                                          // Number of instrcutions in code
+  parameter integer NInstructions = 2000;                                       // Number of instruction slots in code memory
   parameter integer NHeap  = 1000;                                              // Amount of heap memory
   parameter integer NArea  =   10;                                              // Size of each area on the heap
   parameter integer NLocal = 1000;                                              // Size of local memory
   parameter integer NOut   = 1000;                                              // Size of output area
-  parameter integer NTests =    1;                                              // Number of tests
+  parameter integer NTests =    2;                                              // Number of tests
 
   reg[255:0] code[NInstructions];                                               // Code memory
   reg[ 32:0] heapMem [NHeap];                                                   // Heap memory
   reg[255:0] localMem[NLocal];                                                  // Local memory
   reg[ 32:0] outMem[NOut];                                                      // Out channel
+  integer NInstructionEnd;                                                      // Limit of instructions for the current program
   integer outMemPos;                                                            // Position in output channel
   integer test;                                                                 // Tests passed
   integer testsPassed;                                                          // Tests passed
@@ -37,7 +38,8 @@ module fpga;                                                                    
   task loadCode();                                                              // Load code to be tested for test
     begin
       case(test)
-        1: Mov1();
+        1: Mov_test();
+        2: Add_test();
       endcase
     end
   endtask
@@ -46,6 +48,7 @@ module fpga;                                                                    
     begin
       case(test)
         1: ok(outMem[0] == 1, "Mov 1");
+        2: ok(outMem[0] == 5, "Add 1");
       endcase
     end
   endtask
@@ -60,8 +63,8 @@ module fpga;                                                                    
   wire [63:0]  source      = instruction[127: 64];
   wire [63:0]  target      = instruction[191:128];
 
-  wire [31: 0] source2Address  = source2[63:32];                                // Source2
-  wire [15: 0] source2Area     = source2[31:16];
+  wire [31: 0] source2Area     = source2[63:32];                                // Source2
+  wire [15: 0] source2Address  = source2[31:16];
   wire [ 2: 0] source2Arena    = source2[13:12];
   wire [ 2: 0] source2DArea    = source2[11:10];
   wire [ 2: 0] source2DAddress = source2[ 9: 8];
@@ -81,8 +84,8 @@ module fpga;                                                                    
       source2DArea    == 1 && source2DAddress == 1 ? source2Delta + localMem[localMem[source2Area]*NArea + source2Address]           :
       source2DArea    == 1 && source2DAddress == 2 ? source2Delta + localMem[localMem[source2Area]*NArea + localMem[source2Address]] : 0) : 0;
 
-  wire [31: 0] source1Address  = source[63:32];                                 // Source
-  wire [15: 0] source1Area     = source[31:16];
+  wire [31: 0] source1Area     = source[63:32];                                 // Source
+  wire [15: 0] source1Address  = source[31:16];
   wire [ 2: 0] source1Arena    = source[13:12];
   wire [ 2: 0] source1DArea    = source[11:10];
   wire [ 2: 0] source1DAddress = source[ 9: 8];
@@ -102,8 +105,8 @@ module fpga;                                                                    
       source1DArea    == 1 && source1DAddress == 1 ? source1Delta + localMem[localMem[source1Area]*NArea + source1Address]           :
       source1DArea    == 1 && source1DAddress == 2 ? source1Delta + localMem[localMem[source1Area]*NArea + localMem[source1Address]] : 0) : 0;
 
-  wire [31: 0] targetAddress   = target[63:32];                                 // Target
-  wire [15: 0] targetArea      = target[31:16];
+  wire [31: 0] targetArea      = target[63:32];                                 // Target
+  wire [15: 0] targetAddress   = target[31:16];
   wire [ 2: 0] targetArena     = target[13:12];
   wire [ 2: 0] targetDArea     = target[11:10];
   wire [ 2: 0] targetDAddress  = target[ 9: 8];
@@ -131,7 +134,7 @@ module fpga;                                                                    
       $display("Test %d", test);
       outMemPos = 0; for(i = 0; i < NOut; ++i) outMem[i] = 0;                   // Empty the output channel
 
-      for(ip = 0; ip >= 0 && ip < NInstructions; ++ip)                          // Each instruction
+      for(ip = 0; ip >= 0 && ip < NInstructionEnd; ++ip)                        // Each instruction
       begin
         #1                                                                      // Let the ip update its assigns
         $display("targetAddress =%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Location=%4x",
@@ -165,14 +168,30 @@ module fpga;                                                                    
     $finish;
   end
 
-  task Mov1();
+  task Mov_test();                                                              // Load program 'Mov_test' into code memory
     begin
-//                   operator        target          source1         source2
-//                   xxxxxxxx        Address AreaD D Address AreaD D Address AreaD D
-//                   0         1         2         3         4         5         6
-//                   0123456789012345678901234567890123456789012345678901234567890123
-      code[   0] = 'h0000002200000000000000000000217f000000010000207f000000000000007f;  // my $a = Mov 1;
-      code[   1] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;  // Out $a;
+      NInstructionEnd = 2;
+      code[   0] = 'h0000002200000000000000000000217f000000000001207f000000000000007f;
+      code[   1] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
+    end
+  endtask
+
+  task Add_test();                                                              // Load program 'Add_test' into code memory    begin
+    begin
+      NInstructionEnd = 2;
+      code[   0] = 'h0000000000000000000000000000217f000000000003207f000000000002207f;
+      code[   1] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
+    end
+  endtask
+
+  task add_instruction();                                                       // Add
+    begin
+      $display("target=%x  source=%x source=%x", target, source, source2);
+      $display("%d(%d) = %d + %d", targetLocation, targetArena, source1Value, source2Value);
+      case(targetArena)
+        1: heapMem [targetLocation] = source1Value + source2Value;
+        2: localMem[targetLocation] = source1Value + source2Value;
+      endcase
     end
   endtask
 
@@ -261,11 +280,6 @@ module fpga;                                                                    
         59: begin; traceLabels_instruction();                               end // traceLabels_instruction
         60: begin; watch_instruction();                                     end // watch_instruction
       endcase
-    end
-  endtask
-  task add_instruction();
-    begin                                                                       // add
-     $display("add");
     end
   endtask
   task array_instruction();
