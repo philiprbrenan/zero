@@ -1,5 +1,6 @@
 //-----------------------------------------------------------------------------
-// Fpga test bed
+// Fpga implementation and testing of NWay Trees
+// Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
 module fpga_tb;                                                                 // The cpu executes one step in the computation per input clock. We can also put values into memory and get values out again to test each program.
   fpga a();                                                                     // Instantiate
@@ -11,7 +12,8 @@ module fpga;                                                                    
   parameter integer NArea  =   10;                                              // Size of each area on the heap
   parameter integer NLocal = 1000;                                              // Size of local memory
   parameter integer NOut   = 1000;                                              // Size of output area
-  parameter integer NTests =    3;                                              // Number of tests
+  parameter integer NTests =    4;                                              // Number of test programs to run
+  parameter integer NTestE =    6;                                              // Number of tests expected
 
   reg[255:0] code[NInstructions];                                               // Code memory
   reg[ 32:0] heapMem [NHeap];                                                   // Heap memory
@@ -42,6 +44,7 @@ module fpga;                                                                    
         1: Mov_test();
         2: Add_test();
         3: Subtract_test();
+        4: Not_test();
       endcase
     end
   endtask
@@ -52,6 +55,11 @@ module fpga;                                                                    
         1: ok(outMem[0] == 1, "Mov 1");
         2: ok(outMem[0] == 5, "Add 1");
         3: ok(outMem[0] == 2, "Subtract 1");
+        4: begin
+          ok(outMem[0] == 3, "Not 1");
+          ok(outMem[1] == 0, "Not 2");
+          ok(outMem[2] == 1, "Not 3");
+        end
       endcase
     end
   endtask
@@ -153,17 +161,17 @@ module fpga;                                                                    
       end
       checkResults(test);                                                       // Check results
     end
-    if (testsPassed == NTests) begin                                             // Testing summary
-       $display("All %1d tests passed successfully", NTests);
+    if (testsPassed == NTestE) begin                                             // Testing summary
+       $display("All %1d tests passed successfully", NTestE);
     end
     else if (testsPassed > 0) begin
-       $display("Passed %1d tests out of %d tests with no failures ", testsPassed, NTests);
+       $display("Passed %1d tests out of %d tests with no failures ", testsPassed, NTestE);
     end
     else if (testsPassed > 0 && testsFailed > 0) begin
-       $display("Passed %1d tests, FAILED %1d tests out of %d tests", testsPassed, testsFailed, NTests);
+       $display("Passed %1d tests, FAILED %1d tests out of %d tests", testsPassed, testsFailed, NTestE);
     end
     else if (testsFailed > 0) begin
-       $display("FAILED %1d tests out of %d tests", testsFailed, NTests);
+       $display("FAILED %1d tests out of %d tests", testsFailed, NTestE);
     end
     else begin
        $display("No tests run");
@@ -171,29 +179,7 @@ module fpga;                                                                    
     $finish;
   end
 
-  task Mov_test();                                                              // Load program 'Mov_test' into code memory
-    begin
-      NInstructionEnd = 2;
-      code[   0] = 'h0000002200000000000000000000217f000000000001207f000000000000007f;
-      code[   1] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
-    end
-  endtask
-
-  task Add_test();                                                              // Load program 'Add_test' into code memory    begin
-    begin
-      NInstructionEnd = 2;
-      code[   0] = 'h0000000000000000000000000000217f000000000003207f000000000002207f;
-      code[   1] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
-    end
-  endtask
-
-  task Subtract_test();                                                         // Load program 'Subtract_test' into code memory
-    begin
-      NInstructionEnd = 2;
-      code[   0] = 'h0000003800000000000000000000217f000000000004207f000000000002207f;
-      code[   1] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
-    end
-  endtask
+// Instruction implementations
 
   task print_instruction();                                                     // Print the details of an instruction
     begin
@@ -218,6 +204,17 @@ module fpga;                                                                    
       case(targetArena)
         1: heapMem [targetLocation] = source1Value;
         2: localMem[targetLocation] = source1Value;
+      endcase
+    end
+  endtask
+
+
+  task not_instruction();                                                       // Not
+    begin
+      print_instruction();
+      case(targetArena)
+        1: heapMem [targetLocation] = source1Value ? 0 : 1;
+        2: localMem[targetLocation] = source1Value ? 0 : 1;
       endcase
     end
   endtask
@@ -483,11 +480,6 @@ module fpga;                                                                    
      $display("nop");
     end
   endtask
-  task not_instruction();
-    begin                                                                       // not
-     $display("not");
-    end
-  endtask
   task parallelContinue_instruction();
     begin                                                                       // parallelContinue
      $display("parallelContinue");
@@ -594,4 +586,40 @@ module fpga;                                                                    
     end
   endtask
 
+// Tests
+  task Mov_test();                                                              // Load program 'Mov_test' into code memory
+    begin
+      NInstructionEnd = 2;
+      code[   0] = 'h0000002200000000000000000000217f000000000001207f000000000000007f;
+      code[   1] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
+    end
+  endtask
+
+  task Add_test();                                                              // Load program 'Add_test' into code memory    begin
+    begin
+      NInstructionEnd = 2;
+      code[   0] = 'h0000000000000000000000000000217f000000000003207f000000000002207f;
+      code[   1] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
+    end
+  endtask
+
+  task Not_test();                                                              // Load program 'Not_test' into code memory
+    begin
+      NInstructionEnd = 6;
+      code[   0] = 'h0000002200000000000000000000217f000000000003207f000000000000007f;
+      code[   1] = 'h0000002500000000000000000001217f000000000000217f000000000000007f;
+      code[   2] = 'h0000002500000000000000000002217f000000000001217f000000000000007f;
+      code[   3] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
+      code[   4] = 'h0000002600000000000000000000017f000000000001217f000000000000007f;
+      code[   5] = 'h0000002600000000000000000000017f000000000002217f000000000000007f;
+    end
+  endtask
+
+  task Subtract_test();                                                         // Load program 'Subtract_test' into code memory
+    begin
+      NInstructionEnd = 2;
+      code[   0] = 'h0000003800000000000000000000217f000000000004207f000000000002207f;
+      code[   1] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
+    end
+  endtask
 endmodule
