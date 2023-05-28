@@ -101,22 +101,6 @@ sub ExecutionEnvironment(%)                                                     
   $exec
  }
 
-my sub Code(%)                                                                  # A block of code
- {my (%options) = @_;                                                           # Parameters
-
-  genHash(q(Zero::Emulator::Code),                                              # Block of code description.
-    code=>          [],                                                         # An array of instructions
-    variables=>     AreaStructure("Variables"),                                 # Variables in this block of code
-    labels=>        {},                                                         # Label name to instruction
-    labelCounter=>  0,                                                          # Label counter used to generate unique labels
-    files=>         [],                                                         # File number to file name
-    procedures=>    {},                                                         # Procedures defined in this block of code
-    arrayNames=>    {stackArea=>0, params=>1, return=>2},                       # Array names as strings to numbers
-    arrayNumbers=>  [qw(stackArea params return)],                              # Array number to name
-    %options,
-   );
- }
-
 my sub stackFrame(%)                                                            # Describe an entry on the call stack: the return address, the parameter list length, the parameter list address, the line of code from which the call was made, the file number of the file from which the call was made
  {my (%options) = @_;                                                           # Parameters
 
@@ -132,7 +116,7 @@ my sub stackFrame(%)                                                            
   );
  }
 
-sub Zero::Emulator::Code::instruction($%)                                       #P Create a new instruction.
+sub Zero::Emulator::Assembly::instruction($%)                                       #P Create a new instruction.
  {my ($block, %options) = @_;                                                   # Block of code descriptor, options
 
   my ($package, $fileName, $line) = caller($options{level} // 1);
@@ -148,7 +132,7 @@ sub Zero::Emulator::Code::instruction($%)                                       
    };
 
   if ($options{action} !~ m(\Avariable\Z)i)                                     # Non variable
-   {push $block->code->@*, my $i = genHash(q(Zero::Emulator::Code::Instruction),# Instruction details
+   {push $block->code->@*, my $i = genHash(q(Zero::Emulator::Assembly::Instruction),# Instruction details
       action=>    $options{action },                                            # Instruction name
       number=>    $options{number },                                            # Instruction sequence number
       source=>    $options{source },                                            # Source memory address
@@ -165,7 +149,7 @@ sub Zero::Emulator::Code::instruction($%)                                       
    }
  }
 
-sub Zero::Emulator::Code::codeToString($)                                       #P Code as a string.
+sub Zero::Emulator::Assembly::codeToString($)                                       #P Code as a string.
  {my ($block) = @_;                                                             # Block of code
   @_ == 1 or confess "One parameter";
   my @T;
@@ -194,7 +178,7 @@ my sub contextString($$$)                                                       
   join "\n", @s
  }
 
-sub Zero::Emulator::Code::Instruction::contextString($)                         #P Stack trace back for this instruction.
+sub Zero::Emulator::Assembly::Instruction::contextString($)                         #P Stack trace back for this instruction.
  {my ($i) = @_;                                                                 # Instruction
   @_ == 1 or confess "One parameter";
   my @s;
@@ -293,7 +277,7 @@ my sub arenaLocal {2}                                                           
 my sub arenaParms {3}                                                           # Parameter areas
 my sub arenaReturn{4}                                                           # Return areas
 
-sub Zero::Emulator::Code::referenceToString($$$)                                #P Reference as a string.
+sub Zero::Emulator::Assembly::referenceToString($$$)                                #P Reference as a string.
  {my ($block, $r, $operand) = @_;                                               # Block of code, reference, operand type : 0-Target 1-Source 2-Source2
   @_ == 3 or confess "Three parameters";
 
@@ -343,7 +327,7 @@ sub Zero::Emulator::Code::referenceToString($$$)                                
   confess "ReferenceToString, operand: $operand ".dump($r);
  }
 
-sub Zero::Emulator::Code::ArrayNameToNumber($$)                                 #P Generate a unique number for this array name.
+sub Zero::Emulator::Assembly::ArrayNameToNumber($$)                                 #P Generate a unique number for this array name.
  {my ($code, $name) = @_;                                                       # Code block, array name
 
   if (defined(my $n = $code->arrayNames->{$name}))                              # Name already exists
@@ -355,7 +339,7 @@ sub Zero::Emulator::Code::ArrayNameToNumber($$)                                 
   $n
  }
 
-sub Zero::Emulator::Code::ArrayNumberToName($$)                                 #P Return the array name associated with an array number.
+sub Zero::Emulator::Assembly::ArrayNumberToName($$)                                 #P Return the array name associated with an array number.
  {my ($code, $number) = @_;                                                     # Code block, array name
 
   $code->arrayNumbers->[$number] // $number
@@ -377,7 +361,7 @@ my sub Reference($$$$$)                                                         
    );
  }
 
-sub Zero::Emulator::Code::Reference($$$)                                        # Record a reference to a left or right address.
+sub Zero::Emulator::Assembly::Reference($$$)                                        # Record a reference to a left or right address.
  {my ($code, $r, $operand) = @_;                                                # Code block, reference, type of refence: 0-Target 1-Source 2-Source2
   @_ == 3 or confess "Three parameters";
   ref($r) and ref($r) !~ m(\A(array|scalar|ref)\Z)i and confess "Scalar or reference required, not: ".dump($r);
@@ -402,7 +386,7 @@ sub Zero::Emulator::Procedure::call($)                                          
   Zero::Emulator::Call($procedure->target);
  }
 
-sub Zero::Emulator::Code::assemble($%)                                          #P Assemble a block of code to prepare it for execution.  This modifies the jump targets and so once assembled we cannot assembled again.
+sub Zero::Emulator::Assembly::assemble($%)                                          #P Assemble a block of code to prepare it for execution.  This modifies the jump targets and so once assembled we cannot assembled again.
  {my ($Block, %options) = @_;                                                   # Code block, assembly options
 
   my $code = $Block->code;                                                      # The code to be assembled
@@ -1313,7 +1297,7 @@ sub analyzeExecutionResults($%)                                                 
   join "\n", @r;
  }
 
-sub Zero::Emulator::Code::execute($%)                                           #P Execute a block of code.
+sub Zero::Emulator::Assembly::execute($%)                                           #P Execute a block of code.
  {my ($block, %options) = @_;                                                   # Block of code, execution options
 
   $block->assemble if $block;                                                   # Assemble unless we just want the instructions
@@ -1889,8 +1873,19 @@ sub formatTrace($)                                                              
 
 my $assembly;                                                                   # The current assembly
 
-sub Assembly()                                                                  #P Start some assembly code.
- {$assembly = Code;                                                             # The current assembly
+sub Assembly(%)                                                                 #P Start some assembly code.
+ {my (%options) = @_;                                                           # Options
+  $assembly = genHash(q(Zero::Emulator::Assembly),                              # Block of code description.
+    code=>          [],                                                         # An array of instructions
+    variables=>     AreaStructure("Variables"),                                 # Variables in this block of code
+    labels=>        {},                                                         # Label name to instruction
+    labelCounter=>  0,                                                          # Label counter used to generate unique labels
+    files=>         [],                                                         # File number to file name
+    procedures=>    {},                                                         # Procedures defined in this block of code
+    arrayNames=>    {stackArea=>0, params=>1, return=>2},                       # Array names as strings to numbers
+    arrayNumbers=>  [qw(stackArea params return)],                              # Array number to name
+    %options,
+   );
  }
 
 my sub label()                                                                  # Next unique label
@@ -2710,7 +2705,7 @@ sub Sequential(@)                                                               
 
 #D1 Instruction Set Architecture                                                # Map the instruction set into a machine architecture.
 
-my $instructions = Zero::Emulator::Code::execute(undef);
+my $instructions = Zero::Emulator::Assembly::execute(undef);
 my @instructions = sort keys %$instructions;
 my %instructions = map {$instructions[$_]=>$_} keys @instructions;
 #say STDERR "AAAA", dump(\%instructions), formatTable(\@instructions); exit;
@@ -2756,7 +2751,7 @@ my sub rerefValue($$)                                                           
   confess "Rereference depth of $depth is too deep";
  }
 
-sub Zero::Emulator::Code::packRef($$$)                                          #P Pack a reference into 8 bytes.
+sub Zero::Emulator::Assembly::packRef($$$)                                          #P Pack a reference into 8 bytes.
  {my ($code, $instruction, $ref) = @_;                                          # Code block being packed, instruction being packed, reference being packed
 #say STDERR "AAAA", dump($instruction);
   if (!defined($ref) or ref($ref) =~ m(array)i && !@$ref)                       # Unused reference
@@ -2813,7 +2808,7 @@ END
   $a
  }
 
-sub Zero::Emulator::Code::unpackRef($$$)                                        #P Unpack a reference.
+sub Zero::Emulator::Assembly::unpackRef($$$)                                        #P Unpack a reference.
  {my ($code, $a, $operand) = @_;                                                # Code block being packed, instruction being packed, reference being packed, operand type 0-target 1-source 2-source2
 
   my $vAddress = vec($a,  0, 32);
@@ -2830,7 +2825,7 @@ sub Zero::Emulator::Code::unpackRef($$$)                                        
   $code->Reference([$arena  != arenaHeap ? undef : $area, $address, 0, $delta], $operand);
  }
 
-sub Zero::Emulator::Code::packInstruction($$)                                   #P Pack an instruction.
+sub Zero::Emulator::Assembly::packInstruction($$)                                   #P Pack an instruction.
  {my ($code, $i) = @_;                                                          # Code being packed, instruction to pack
   my  $a = '';
   my $n = $instructions{$i->action};
@@ -2865,7 +2860,7 @@ sub GenerateMachineCode(%)                                                      
 sub disAssemble($)                                                              # Disassemble machine code.
  {my ($mc) = @_;                                                                # Machine code string
 
-  my $C = Code;
+  my $C = Assembly();
 
   my $n = length($mc) / 32;                                                     # The instructions are formatted into 32 byte blocks
   for my $i(1..$n)
@@ -2908,7 +2903,8 @@ sub verilogMachineCode($$%)                                                     
  {my ($name, $string, %options) = @_;                                           # Name of subroutine, code string, options
   my $N = 32;
   my $l = length($string);
-  my $L = $l / $N;
+  my $F = int($l / $N);
+  my $L = $F == $l ? $l : int($F) + 1;
 
   my @v = <<END;
 reg[255:0] code[$L];
@@ -2926,8 +2922,33 @@ endtask
 END
   join "\n", @v;
  }
+=pod
+sub generateVerilogMachineCode($$)                                              # Generate machine code using the string memory model so that we can run it in verilog
+ {my ($name, $assembly) = @_;                                                   # Name of subroutine to contain generated code, assembly
+  my $N = 32;
+  my $l = length($string);
+  my $F = int($l / $N);
+  my $L = $F == $l ? $l : int($F) + 1;
 
-my sub verilogInstructionDecode()                                               #P Create a verilog case statment to decode each instruction in the code array
+  my @v = <<END;
+reg[255:0] code[$L];
+task $name();
+  begin
+END
+
+  for my $i(0..$L-1)
+   {my $s  = unpack "H*", substr($string, $i*$N, $N);
+    push @v, sprintf qq(    code[%4d] = 'h$s;), $i;
+   }
+  push @v, <<END;
+  end
+endtask
+END
+  join "\n", @v;
+ }
+=cut
+
+my sub verilogInstructionDecode()                                               #P Create a verilog case statement to decode each instruction in the code array
  {my @i = @instructions;
   my @t = <<END;
   task executeInstruction();                                                    // Execute an instruction
@@ -2956,7 +2977,7 @@ END
 END
   join "\n", @t, @s;
 }
-say STDERR verilogInstructionDecode(); exit;
+#say STDERR verilogInstructionDecode(); exit;
 
 #D0
 
@@ -3073,6 +3094,7 @@ if (1)                                                                          
   Out  $a;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [5];
+  #say STDERR generateVerilogMachineCode("Add_test", $e); exit;
  }
 
 #latest:;
@@ -4347,7 +4369,7 @@ if (1)                                                                          
 END
   my $e =  GenerateMachineCodeDisAssembleExecute;
   is_deeply $e->block->codeToString, <<'END';
-0000       mov [undef, 0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+0000       mov [0, 0, 3, 0]  [0, 1, 3, 0]  [0, 0, 3, 0]
 END
  }
 
