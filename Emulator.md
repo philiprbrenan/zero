@@ -64,6 +64,31 @@ Create a new memory area and write its number into the address named by the targ
 
 **Example:**
 
+    if (1)                                                                           
+     {Start 1;
+    
+      my $a = Array "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      Mov     [$a,  0, "aaa"],  11;
+      Mov     [$a,  1, "aaa"],  22;
+      my $e = &$ee(suppressOutput=>1);
+      is_deeply $e->heap(1), [11, 22];
+      #say STDERR generateVerilogMachineCode("Array_test");  exit;
+     }
+    
+    if (1)                                                                           
+     {Start 1;
+    
+      my $a = Array "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      Mov     [$a,  1, "aaa"],  11;
+      Mov  1, [$a, \1, "aaa"];
+      Out \1;
+      my $e = &$ee(suppressOutput=>1);
+      is_deeply $e->outLines, [11];
+      #say STDERR generateVerilogMachineCode("Array_test");  exit;
+     }
+    
     if (1)                                                                             
      {Start 1;
     
@@ -153,6 +178,7 @@ Count the number of elements in the array specified by the first source operand 
     2
     3
     END
+      say STDERR generateVerilogMachineCode("Array_scans");  exit;
      }
     
 
@@ -190,6 +216,7 @@ Count the number of elements in the array specified by the first source operand 
     2
     3
     END
+      say STDERR generateVerilogMachineCode("Array_scans");  exit;
      }
     
 
@@ -269,6 +296,7 @@ Find the 1 based index of the second source operand in the array referenced by t
     2
     3
     END
+      say STDERR generateVerilogMachineCode("Array_scans");  exit;
      }
     
 
@@ -2207,7 +2235,21 @@ Copy a constant or memory address to the target address.
     
      {Start 1;                                                                      
     
-    if (1)                                                                          
+    if (1)                                                                           
+     {Start 1;
+      my $a = Array "aaa";
+    
+      Mov     [$a,  0, "aaa"],  11;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+    
+      Mov     [$a,  1, "aaa"],  22;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      my $e = &$ee(suppressOutput=>1);
+      is_deeply $e->heap(1), [11, 22];
+      #say STDERR generateVerilogMachineCode("Array_test");  exit;
+     }
+    
+    if (1)                                                                           
      {Start 1;
       my $a = Array "aaa";
     
@@ -2219,6 +2261,7 @@ Copy a constant or memory address to the target address.
       Out \1;
       my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [11];
+      #say STDERR generateVerilogMachineCode("Array_test");  exit;
      }
     
     if (1)                                                                           
@@ -2449,7 +2492,7 @@ Move and not.
     0
     1
     END
-      say STDERR generateVerilogMachineCode("Not_test");
+      #say STDERR generateVerilogMachineCode("Not_test");
      }
     
 
