@@ -51,7 +51,7 @@ Add the source locations together and store the result in the target area.
       Out  $a;
       my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [5];
-      say STDERR generateVerilogMachineCode("Add_test"); exit;
+      #say STDERR generateVerilogMachineCode("Add_test"); exit;
      }
     
 
@@ -3543,14 +3543,12 @@ Round trip: generate machine code and write it onto a string, disassemble the ge
 
 # Generate Verilog
 
-## verilogMachineCode($name, $string, %options)
+## generateVerilogMachineCode($name)
 
-Convert a code string into verilog statements to load the code values into the code array
+Generate machine code and print it out in Verilog format
 
        Parameter  Description
-    1  $name      Name of subroutine
-    2  $string    Code string
-    3  %options   Options
+    1  $name      Name of subroutine to contain generated code
 
 **Example:**
 
@@ -3560,16 +3558,11 @@ Convert a code string into verilog statements to load the code values into the c
       Out $a;
       my $g = GenerateMachineCode;
       is_deeply unpack("H*", $g), '0000002200000000000000000000217f000000000001207f000000000000007f0000002600000000000000000000017f000000000000217f000000000000007f';
-      #say STDERR generateVerilogMachineCode("Mov_test");  exit;
+    
+      #say STDERR generateVerilogMachineCode("Mov_test");  exit;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
      }
     
-
-## generateVerilogMachineCode($name)
-
-Generate machine code and print it out in Verilog format
-
-       Parameter  Description
-    1  $name      Name of subroutine to contain generated code
 
 # Hash Definitions
 
@@ -4311,15 +4304,13 @@ Disassemble and remove context information from disassembly to make testing easi
 
 93 [Var](#var) - Create a variable initialized to the specified value.
 
-94 [verilogMachineCode](#verilogmachinecode) - Convert a code string into verilog statements to load the code values into the code array
+94 [Watch](#watch) - Watches for changes to the specified memory location.
 
-95 [Watch](#watch) - Watches for changes to the specified memory location.
+95 [Zero::Emulator::Assembly::packInstruction](#zero-emulator-assembly-packinstruction) - Pack an instruction.
 
-96 [Zero::Emulator::Assembly::packInstruction](#zero-emulator-assembly-packinstruction) - Pack an instruction.
+96 [Zero::Emulator::Assembly::packRef](#zero-emulator-assembly-packref) - Pack a reference into 8 bytes.
 
-97 [Zero::Emulator::Assembly::packRef](#zero-emulator-assembly-packref) - Pack a reference into 8 bytes.
-
-98 [Zero::Emulator::Assembly::unpackRef](#zero-emulator-assembly-unpackref) - Unpack a reference.
+97 [Zero::Emulator::Assembly::unpackRef](#zero-emulator-assembly-unpackref) - Unpack a reference.
 
 # Installation
 
