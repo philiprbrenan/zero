@@ -3082,6 +3082,7 @@ if (1)                                                                          
   Out $a;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [2];
+  #say STDERR generateVerilogMachineCode("Subtract_test"); exit;
  }
 
 #latest:;
