@@ -7,21 +7,33 @@ module fpga_tb;                                                                 
 endmodule
 
 module fpga;                                                                    // The cpu executes one step in the computation per input clock. We can also put values into memory and get values out again to test each program.
-  parameter integer NInstructions = 2000;                                       // Number of instruction slots in code memory
-  parameter integer NHeap  = 1000;                                              // Amount of heap memory
-  parameter integer NArea  =   10;                                              // Size of each area on the heap
-  parameter integer NLocal = 1000;                                              // Size of local memory
-  parameter integer NOut   = 1000;                                              // Size of output area
-  parameter integer NTests =    4;                                              // Number of test programs to run
-  parameter integer NTestE =    6;                                              // Number of tests expected
+  parameter integer NInstructions  = 2000;                                      // Number of instruction slots in code memory
+  parameter integer NHeap          = 1000;                                      // Amount of heap memory
+  parameter integer NArea          =   10;                                      // Size of each area on the heap
+  parameter integer NLocal         = 1000;                                      // Size of local memory
+  parameter integer NOut           = 1000;                                      // Size of output area
+  parameter integer NFreedArrays   = 1000;                                      // Size of output area
+  parameter integer NTestPrograms  =    6;                                      // Number of test programs to run
+  parameter integer NTestsExpected =   10;                                      // Number of test passes expected
+
+  parameter integer ElementWidth   = 4;                                         // Width of each element in an an area
+  parameter integer UserElements   = 5;                                         // User width of a heap area
+  parameter integer SystemElements = 1;                                         // System width of a heap area
+  parameter integer TotalElements  = UserElements + SystemElements;             // Total width of a heap area
+
+  parameter integer showInstructionDetails = 0;                                 // Show details of each instruction as it is executed
 
   reg[255:0] code[NInstructions];                                               // Code memory
   reg[ 32:0] heapMem [NHeap];                                                   // Heap memory
   reg[255:0] localMem[NLocal];                                                  // Local memory
   reg[ 32:0] outMem[NOut];                                                      // Out channel
+  reg[ 32:0] freedArrays[NFreedArrays];                                         // Freed arrays list implemented as a stack
 
   integer NInstructionEnd;                                                      // Limit of instructions for the current program
   integer outMemPos;                                                            // Position in output channel
+  integer result;                                                               // Result of an instruction execution
+  integer allocs;                                                               // Maximum number of array allocations in use at any one time
+  integer freedArraysTop;                                                       // Position in freed arrays stack
   integer test;                                                                 // Tests passed
   integer testsPassed;                                                          // Tests passed
   integer testsFailed;                                                          // Tests failed
@@ -45,7 +57,25 @@ module fpga;                                                                    
         2: Add_test();
         3: Subtract_test();
         4: Not_test();
+        5: Array_test();
+        6: Array_scans();
       endcase
+    end
+  endtask
+
+  task printMemory();                                                           // Print memory so we now what to chec
+    begin
+      $display("          0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31   32");
+      $write("Local:");
+      for(i = 0; i < 32; ++i) begin
+        $write(" %4d", localMem[i]);
+      end
+      $display("");
+      $write("Heap: ");
+      for(i = 0; i < 32; ++i) begin
+        $write(" %4d", heapMem[i]);
+      end
+      $display("");
     end
   endtask
 
@@ -56,9 +86,19 @@ module fpga;                                                                    
         2: ok(outMem[0] == 5, "Add 1");
         3: ok(outMem[0] == 2, "Subtract 1");
         4: begin
-          ok(outMem[0] == 3, "Not 1");
-          ok(outMem[1] == 0, "Not 2");
-          ok(outMem[2] == 1, "Not 3");
+          ok(outMem[0] == 3, "Not 1.1");
+          ok(outMem[1] == 0, "Not 1.2");
+          ok(outMem[2] == 1, "Not 1.3");
+        end
+        5: begin
+          ok(localMem[ 0] ==  1, "Array 1.1");
+          ok( heapMem[10] ==  0, "Array 1.1");
+          ok( heapMem[11] == 11, "Array 1.2");
+          ok( heapMem[12] == 22, "Array 1.3");
+          printMemory();
+        end
+        6: begin
+          $display("Array scans");
         end
       endcase
     end
@@ -123,55 +163,59 @@ module fpga;                                                                    
   wire [ 2: 0] targetDAddress  = target[ 9: 8];
   wire [ 7: 0] targetDelta     = target[ 7: 0] - 127;
   wire [31: 0] targetLocation  =
-    targetArena      == 0 ? 0 :
-    targetArena      == 1 ?
+    targetArena      == 0 ? 0 :                                                 // Invalid
+    targetArena      == 1 ?                                                     // Heap - we have to skip over the array systems elements used to manage the array
      (targetDAddress == 0 ?  targetAddress :
-      targetDArea    == 0 && targetDAddress == 1 ? targetDelta + targetArea*NArea           + targetAddress           :
-      targetDArea    == 0 && targetDAddress == 2 ? targetDelta + targetArea*NArea           + localMem[targetAddress] :
-      targetDArea    == 1 && targetDAddress == 1 ? targetDelta + localMem[targetArea]*NArea + targetAddress           :
-      targetDArea    == 1 && targetDAddress == 2 ? targetDelta + localMem[targetArea]*NArea + localMem[targetAddress] : 0) :
-    targetArena      == 2 ?
+      targetDArea    == 0 && targetDAddress == 1 ? SystemElements + targetDelta + targetArea*NArea           + targetAddress           :
+      targetDArea    == 0 && targetDAddress == 2 ? SystemElements + targetDelta + targetArea*NArea           + localMem[targetAddress] :
+      targetDArea    == 1 && targetDAddress == 1 ? SystemElements + targetDelta + localMem[targetArea]*NArea + targetAddress           :
+      targetDArea    == 1 && targetDAddress == 2 ? SystemElements + targetDelta + localMem[targetArea]*NArea + localMem[targetAddress] : 0) :
+    targetArena      == 2 ?                                                     // Local
      (targetDAddress == 0 ?  targetAddress :
-      targetDArea    == 0 && targetDAddress == 1 ? targetDelta + targetArea*NArea           + targetAddress           :
-      targetDArea    == 0 && targetDAddress == 2 ? targetDelta + targetArea*NArea           + localMem[targetAddress] :
-      targetDArea    == 1 && targetDAddress == 1 ? targetDelta + localMem[targetArea]*NArea + targetAddress           :
-      targetDArea    == 1 && targetDAddress == 2 ? targetDelta + localMem[targetArea]*NArea + localMem[targetAddress] : 0) : 0;
+      targetDAddress == 1 ?  targetDelta + targetAddress           :
+      targetDAddress == 2 ?  targetDelta + localMem[targetAddress] : 0) : 0;
 
   initial begin                                                                 // Load, run confirm
-    testsPassed = 0;                                                            // Start passed tests count
-    for(test = 1; test <= NTests; ++test) begin                                 // Each test
-
+    testsPassed    = 0;                                                         // Start passed tests count
+    allocs         = 0;                                                         // largest number of arrays in use at any one time so far
+    freedArraysTop = 0;                                                         // Start freed arrays stack
+    for(test = NTestPrograms; test > 0; --test) begin                           // Run the tests from bewest to oldest
       loadCode(test);                                                           // Load the program
       $display("Test %d", test);
-      outMemPos = 0; for(i = 0; i < NOut; ++i) outMem[i] = 0;                   // Empty the output channel
+      outMemPos = 0;                                                            // Output channel position
+      for(i = 0; i < NOut;   ++i)   outMem[i] = 'bx;                            // Reset the output channel
+      for(i = 0; i < NHeap;  ++i)  heapMem[i] = 'bx;                            // Reset heap memory
+      for(i = 0; i < NLocal; ++i) localMem[i] = 'bx;                            // Reset local memory
 
       for(ip = 0; ip >= 0 && ip < NInstructionEnd; ++ip)                        // Each instruction
       begin
         #1                                                                      // Let the ip update its assigns
-        $display("targetAddress =%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Location=%4x",
-          targetAddress, targetArea, targetDAddress, targetDArea, targetArena, targetDelta, targetLocation);
+        if (showInstructionDetails) begin                                       // Print Instruction details
+          $display("targetAddress =%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Location=%4x",
+            targetAddress, targetArea, targetDAddress, targetDArea, targetArena, targetDelta, targetLocation);
 
-        $display("source1Address=%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Value   =%4x",
-          source1Address, source1Area, source1DAddress, source1DArea, source1Arena, source1Delta, source1Value);
+          $display("source1Address=%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Value   =%4x",
+            source1Address, source1Area, source1DAddress, source1DArea, source1Arena, source1Delta, source1Value);
 
-        $display("source2Address=%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Value   =%4x",
-          source2Address, source2Area, source2DAddress, source2DArea, source2Arena, source2Delta, source2Value);
+          $display("source2Address=%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Value   =%4x",
+            source2Address, source2Area, source2DAddress, source2DArea, source2Arena, source2Delta, source2Value);
+        end
 
         executeInstruction();
       end
       checkResults(test);                                                       // Check results
     end
-    if (testsPassed == NTestE) begin                                             // Testing summary
-       $display("All %1d tests passed successfully", NTestE);
+    if (testsPassed == NTestsExpected) begin                                    // Testing summary
+       $display("All %1d tests passed successfully in %1d programs", NTestsExpected, NTestPrograms);
     end
     else if (testsPassed > 0) begin
-       $display("Passed %1d tests out of %d tests with no failures ", testsPassed, NTestE);
+       $display("Passed %1d tests out of %1d tests with no failures ", testsPassed, NTestsExpected);
     end
     else if (testsPassed > 0 && testsFailed > 0) begin
-       $display("Passed %1d tests, FAILED %1d tests out of %d tests", testsPassed, testsFailed, NTestE);
+       $display("Passed %1d tests, FAILED %1d tests out of %d tests", testsPassed, testsFailed, NTestsExpected);
     end
     else if (testsFailed > 0) begin
-       $display("FAILED %1d tests out of %d tests", testsFailed, NTestE);
+       $display("FAILED %1d tests out of %1d tests", testsFailed, NTestsExpected);
     end
     else begin
        $display("No tests run");
@@ -179,67 +223,9 @@ module fpga;                                                                    
     $finish;
   end
 
-// Instruction implementations
-
-  task print_instruction();                                                     // Print the details of an instruction
-    begin
-      $display("target=%x  source=%x source2=%x", target, source, source2);
-      $display("%d(%d) = %d + %d", targetLocation, targetArena, source1Value, source2Value);
-    end
-  endtask
-
-  task add_instruction();                                                       // Add
-    begin
-      print_instruction();
-      case(targetArena)
-        1: heapMem [targetLocation] = source1Value + source2Value;
-        2: localMem[targetLocation] = source1Value + source2Value;
-      endcase
-    end
-  endtask
-
-  task mov_instruction();                                                       // Mov
-    begin
-      print_instruction();
-      case(targetArena)
-        1: heapMem [targetLocation] = source1Value;
-        2: localMem[targetLocation] = source1Value;
-      endcase
-    end
-  endtask
-
-
-  task not_instruction();                                                       // Not
-    begin
-      print_instruction();
-      case(targetArena)
-        1: heapMem [targetLocation] = source1Value ? 0 : 1;
-        2: localMem[targetLocation] = source1Value ? 0 : 1;
-      endcase
-    end
-  endtask
-
-  task subtract_instruction();                                                  // Subtract
-    begin
-      print_instruction();
-      case(targetArena)
-        1: heapMem [targetLocation] = source1Value - source2Value;
-        2: localMem[targetLocation] = source1Value - source2Value;
-      endcase
-    end
-  endtask
-
-  task out_instruction();                                                       // Out
-    begin
-      $display("source=%x", source1Value);
-      $display("value: %d", source1Value);
-      outMem[outMemPos++] = source1Value;
-      $display("res: %d", outMem[0]);
-    end
-  endtask
-
   task executeInstruction();                                                    // Execute an instruction
     begin
+      result = 'bx;
       case(operator)
          0: begin; add_instruction();                                       end // add_instruction
          1: begin; array_instruction();                                     end // array_instruction
@@ -305,11 +291,6 @@ module fpga;                                                                    
       endcase
     end
   endtask
-  task array_instruction();
-    begin                                                                       // array
-     $display("array");
-    end
-  endtask
   task arrayCountGreater_instruction();
     begin                                                                       // arrayCountGreater
      $display("arrayCountGreater");
@@ -323,11 +304,6 @@ module fpga;                                                                    
   task arrayDump_instruction();
     begin                                                                       // arrayDump
      $display("arrayDump");
-    end
-  endtask
-  task arrayIndex_instruction();
-    begin                                                                       // arrayIndex
-     $display("arrayIndex");
     end
   endtask
   task arraySize_instruction();
@@ -622,4 +598,123 @@ module fpga;                                                                    
       code[   1] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
     end
   endtask
+
+  task Array_test();                                                            // Load program 'Array_test' into code memory
+    begin
+      NInstructionEnd = 3;
+      code[   0] = 'h0000000100000000000000000000217f000000000003207f000000000000007f;
+      code[   1] = 'h0000002200000000000000000000157f00000000000b207f000000000000007f;
+      code[   2] = 'h0000002200000000000000000001157f000000000016207f000000000000007f;
+    end
+  endtask
+                                                                                // Load program 'Array_scans' into code memory
+  task Array_scans();
+    begin
+      NInstructionEnd = 28;
+      code[   0] = 'h0000000100000000000000000000217f000000000003207f000000000000007f;
+      code[   1] = 'h0000002200000000000000000000157f00000000000a207f000000000000007f;
+      code[   2] = 'h0000002200000000000000000001157f000000000014207f000000000000007f;
+      code[   3] = 'h0000002200000000000000000002157f00000000001e207f000000000000007f;
+      code[   4] = 'h0000000500000000000000000001217f000000000000217f00000000001e207f;
+      code[   5] = 'h0000002600000000000000000000017f000000000001217f000000000000007f;
+      code[   6] = 'h0000000500000000000000000002217f000000000000217f000000000014207f;
+      code[   7] = 'h0000002600000000000000000000017f000000000002217f000000000000007f;
+      code[   8] = 'h0000000500000000000000000003217f000000000000217f00000000000a207f;
+      code[   9] = 'h0000002600000000000000000000017f000000000003217f000000000000007f;
+      code[  10] = 'h0000000500000000000000000004217f000000000000217f00000000000f207f;
+      code[  11] = 'h0000002600000000000000000000017f000000000004217f000000000000007f;
+      code[  12] = 'h0000000300000000000000000005217f000000000000217f000000000023207f;
+      code[  13] = 'h0000002600000000000000000000017f000000000005217f000000000000007f;
+      code[  14] = 'h0000000300000000000000000006217f000000000000217f000000000019207f;
+      code[  15] = 'h0000002600000000000000000000017f000000000006217f000000000000007f;
+      code[  16] = 'h0000000300000000000000000007217f000000000000217f00000000000f207f;
+      code[  17] = 'h0000002600000000000000000000017f000000000007217f000000000000007f;
+      code[  18] = 'h0000000300000000000000000008217f000000000000217f000000000005207f;
+      code[  19] = 'h0000002600000000000000000000017f000000000008217f000000000000007f;
+      code[  20] = 'h0000000200000000000000000009217f000000000000217f000000000023207f;
+      code[  21] = 'h0000002600000000000000000000017f000000000009217f000000000000007f;
+      code[  22] = 'h000000020000000000000000000a217f000000000000217f000000000019207f;
+      code[  23] = 'h0000002600000000000000000000017f00000000000a217f000000000000007f;
+      code[  24] = 'h000000020000000000000000000b217f000000000000217f00000000000f207f;
+      code[  25] = 'h0000002600000000000000000000017f00000000000b217f000000000000007f;
+      code[  26] = 'h000000020000000000000000000c217f000000000000217f000000000005207f;
+      code[  27] = 'h0000002600000000000000000000017f00000000000c217f000000000000007f;
+    end
+  endtask
+
+// Instruction memory access functions
+
+  task setMemory();                                                             // Set the target memory location
+    begin
+      case(targetArena)
+        1: heapMem [targetLocation] = result;
+        2: localMem[targetLocation] = result;
+      endcase
+    end
+  endtask
+
+// Instruction implementations
+
+  task add_instruction();                                                       // Add
+    begin
+      result = source1Value + source2Value;
+      $display("%4d = Add %d(%d), %d, %d", result, targetLocation, targetArena, source1Value, source2Value);
+      setMemory(result);
+    end
+  endtask
+
+  task array_instruction();                                                     // Array
+    begin
+      if (freedArraysTop > 0) begin                                             // Reuse an array
+        result = freedArrays[freedArraysTop++];
+        $display("%4d(%4d) = Array reuse", targetLocation, result);
+      end
+      else begin
+        result = ++allocs;                                                      // Array zero means undefined
+        $display("%4d(%4d) = Array new",   targetLocation, result);
+      end
+
+      heapMem[result  * NArea] = 0;                                             // Zero array length
+      setMemory();                                                              // Save address of array
+    end
+  endtask
+
+  task mov_instruction();                                                       // Mov
+    begin
+      result = source1Value;
+      $display("%4d = Mov %d(%d), %d", result, targetLocation, targetArena, source1Value);
+      setMemory();                                                              // Save result in target
+    end
+  endtask
+
+
+  task not_instruction();                                                       // Not
+    begin
+      result = source1Value ? 0 : 1;
+      $display("%4d = Not %d(%d), %d", result, targetLocation, targetArena, source1Value);
+      setMemory();                                                              // Save result in target
+    end
+  endtask
+
+  task subtract_instruction();                                                  // Subtract
+    begin
+      result = source1Value - source2Value;
+      $display("%4d = Subtract %d(%d), %d, %d", result, targetLocation, targetArena, source1Value, source2Value);
+      setMemory();                                                              // Save result in target
+    end
+  endtask
+
+  task out_instruction();                                                       // Out
+    begin
+      $display("%4d = Out %d", source1Value, source1Value);
+      outMem[outMemPos++] = source1Value;
+    end
+  endtask
+
+  task arrayIndex_instruction();
+    begin                                                                       // ArrayIndex
+     $display("arrayIndex");
+    end
+  endtask
+
 endmodule
