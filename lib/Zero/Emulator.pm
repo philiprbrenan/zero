@@ -4265,7 +4265,7 @@ if (1)                                                                          
 2
 3
 END
-  say STDERR generateVerilogMachineCode("Array_scans");  exit;
+ #say STDERR generateVerilogMachineCode("Array_scans");  exit;
  }
 
 #latest:;
