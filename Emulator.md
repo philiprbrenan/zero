@@ -51,7 +51,7 @@ Add the source locations together and store the result in the target area.
       Out  $a;
       my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [5];
-      #say STDERR generateVerilogMachineCode("Add_test", $e); exit;
+      say STDERR generateVerilogMachineCode("Add_test"); exit;
      }
     
 
@@ -3469,7 +3469,7 @@ Generate a string of machine code from the current block of code.
     
       my $g = GenerateMachineCode;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      is_deeply dump($g), 'pack("H*","0000002200000000000000000000217f000000010000207f000000000000007f")';
+      is_deeply dump($g), 'pack("H*","0000002200000000000000000000217f000000000001207f000000000000007f")';
     
       my $d = disAssemble $g;
          $d->assemble;
@@ -3496,7 +3496,7 @@ Disassemble machine code.
      {Start 1;
       my $a = Mov 1;
       my $g = GenerateMachineCode;
-      is_deeply dump($g), 'pack("H*","0000002200000000000000000000217f000000010000207f000000000000007f")';
+      is_deeply dump($g), 'pack("H*","0000002200000000000000000000217f000000000001207f000000000000007f")';
     
     
       my $d = disAssemble $g;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -3525,7 +3525,7 @@ Round trip: generate machine code and write it onto a string, disassemble the ge
      {Start 1;
       my $a = Mov 1;
       my $g = GenerateMachineCode;
-      is_deeply dump($g), 'pack("H*","0000002200000000000000000000217f000000010000207f000000000000007f")';
+      is_deeply dump($g), 'pack("H*","0000002200000000000000000000217f000000000001207f000000000000007f")';
     
       my $d = disAssemble $g;
          $d->assemble;
@@ -3559,20 +3559,17 @@ Convert a code string into verilog statements to load the code values into the c
       my $a = Mov 1;
       Out $a;
       my $g = GenerateMachineCode;
-      is_deeply unpack("H*", $g), '0000002200000000000000000000217f000000010000207f000000000000007f0000002600000000000000000000017f000000000000217f000000000000007f';
-    
-      #say STDERR verilogMachineCode("Mov1", $g);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
+      is_deeply unpack("H*", $g), '0000002200000000000000000000217f000000000001207f000000000000007f0000002600000000000000000000017f000000000000217f000000000000007f';
+      #say STDERR generateVerilogMachineCode("Mov_test");  exit;
      }
     
 
-## generateVerilogMachineCode($name, $assembly)
+## generateVerilogMachineCode($name)
 
-Generate machine code using the string memory model so that we can run it in verilog
+Generate machine code and print it out in Verilog format
 
        Parameter  Description
     1  $name      Name of subroutine to contain generated code
-    2  $assembly  Assembly
 
 # Hash Definitions
 
@@ -4198,7 +4195,7 @@ Disassemble and remove context information from disassembly to make testing easi
 
 35 [GenerateMachineCodeDisAssembleExecute](#generatemachinecodedisassembleexecute) - Round trip: generate machine code and write it onto a string, disassemble the generated machine code string and recreate a block of code from it, then execute the reconstituted code to prove that it works as well as the original code.
 
-36 [generateVerilogMachineCode](#generateverilogmachinecode) - Generate machine code using the string memory model so that we can run it in verilog
+36 [generateVerilogMachineCode](#generateverilogmachinecode) - Generate machine code and print it out in Verilog format
 
 37 [Good](#good) - A good ending to a block of code.
 
