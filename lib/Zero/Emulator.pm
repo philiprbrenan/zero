@@ -2899,30 +2899,6 @@ sub GenerateMachineCodeDisAssembleExecute(%)                                    
 
 #D1 Generate Verilog
 
-sub verilogMachineCode($$%)                                                     # Convert a code string into verilog statements to load the code values into the code array
- {my ($name, $string, %options) = @_;                                           # Name of subroutine, code string, options
-  my $N = 32;
-  my $l = length($string);
-  my $F = int($l / $N);
-  my $L = $F == $l ? $l : int($F) + 1;
-
-  my @v = <<END;
-reg[255:0] code[$L];
-task $name();
-  begin
-END
-
-  for my $i(0..$L-1)
-   {my $s  = unpack "H*", substr($string, $i*$N, $N);
-    push @v, sprintf qq(    code[%4d] = 'h$s;), $i;
-   }
-  push @v, <<END;
-  end
-endtask
-END
-  join "\n", @v;
- }
-
 sub generateVerilogMachineCode($)                                               # Generate machine code and print it out in Verilog format
  {my ($name) = @_;                                                              # Name of subroutine to contain generated code
   my $string = GenerateMachineCode;
@@ -3096,7 +3072,7 @@ if (1)                                                                          
   Out  $a;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [5];
-  say STDERR generateVerilogMachineCode("Add_test"); exit;
+  #say STDERR generateVerilogMachineCode("Add_test"); exit;
  }
 
 #latest:;
@@ -4376,7 +4352,7 @@ END
  }
 
 #latest:;
-if (1)                                                                          ##verilogMachineCode
+if (1)                                                                          ##generateVerilogMachineCode
  {Start 1;
   my $a = Mov 1;
   Out $a;
