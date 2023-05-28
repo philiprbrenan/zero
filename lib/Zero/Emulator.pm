@@ -2774,16 +2774,16 @@ sub Zero::Emulator::Assembly::packRef($$$)                                      
 
   my $b = "too big, should be less than:";
 
-  my $bArea    = "$b 2**16";
-  my $bAddress = "$b 2**32";
+  my $bAddress = "$b 2**16";
+  my $bArea    = "$b 2**32";
   my $bArena   = "$b 2**2";
   my $bDelta   = "$b 2**7";
 
   my @m;
-  push @m, "Area: $area $bArea"          if $area       >= 2**16;               # 2 + 16
-  push @m, "Address: $address $bAddress" if $address    >= 2**32;               # 2 + 32
-  push @m, "Arena: $arena $bArea"        if $arena      >= 2**2;                # 2
-  push @m, "Delta: $delta $bDelta"       if abs($delta) >  2**7;                # 8
+  push @m, "Area: $area $bArea"          if $area       >= 2**32;
+  push @m, "Address: $address $bAddress" if $address    >= 2**16;
+  push @m, "Arena: $arena $bArea"        if $arena      >= 2**2;
+  push @m, "Delta: $delta $bDelta"       if abs($delta) >  2**7;
 
   if (@m)
    {my $i = dump $instruction;
@@ -2799,8 +2799,8 @@ END
    }
 
   my $a = '';
-  vec($a, 0, 32) =         $address;
-  vec($a, 2, 16) =         $area;
+  vec($a, 0, 32) =         $area;
+  vec($a, 2, 16) =         $address;
   vec($a, 24, 2) =         $dAddress;
   vec($a, 25, 2) =         $dArea;
   vec($a, 26, 2) =         $arena;
@@ -2811,8 +2811,8 @@ END
 sub Zero::Emulator::Assembly::unpackRef($$$)                                        #P Unpack a reference.
  {my ($code, $a, $operand) = @_;                                                # Code block being packed, instruction being packed, reference being packed, operand type 0-target 1-source 2-source2
 
-  my $vAddress = vec($a,  0, 32);
-  my $vArea    = vec($a,  2, 16);
+  my $vArea    = vec($a,  0, 32);
+  my $vAddress = vec($a,  2, 16);
   my $dAddress = vec($a, 24,  2);
   my $dArea    = vec($a, 25,  2);
   my $arena    = vec($a, 26,  2);
@@ -2922,31 +2922,33 @@ endtask
 END
   join "\n", @v;
  }
-=pod
-sub generateVerilogMachineCode($$)                                              # Generate machine code using the string memory model so that we can run it in verilog
- {my ($name, $assembly) = @_;                                                   # Name of subroutine to contain generated code, assembly
+
+sub generateVerilogMachineCode($)                                               # Generate machine code and print it out in Verilog format
+ {my ($name) = @_;                                                              # Name of subroutine to contain generated code
+  my $string = GenerateMachineCode;
   my $N = 32;
   my $l = length($string);
-  my $F = int($l / $N);
-  my $L = $F == $l ? $l : int($F) + 1;
+  my $L = int($l / $N);
 
   my @v = <<END;
-reg[255:0] code[$L];
-task $name();
-  begin
+  reg[255:0] code[$L];                                                          // Code memory
+
+  task $name();                                                              // Load program '$name' into code memory
+    begin
+      NInstructionEnd = $L;
 END
 
-  for my $i(0..$L-1)
+  for my $i(0..$L-1)                                                            # Each instruction
    {my $s  = unpack "H*", substr($string, $i*$N, $N);
-    push @v, sprintf qq(    code[%4d] = 'h$s;), $i;
+    push @v, sprintf qq(      code[%4d] = 'h$s;), $i;
    }
+
   push @v, <<END;
-  end
-endtask
+    end
+  endtask
 END
   join "\n", @v;
  }
-=cut
 
 my sub verilogInstructionDecode()                                               #P Create a verilog case statement to decode each instruction in the code array
  {my @i = @instructions;
@@ -3094,7 +3096,7 @@ if (1)                                                                          
   Out  $a;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [5];
-  #say STDERR generateVerilogMachineCode("Add_test", $e); exit;
+  say STDERR generateVerilogMachineCode("Add_test"); exit;
  }
 
 #latest:;
@@ -4360,7 +4362,7 @@ if (1)                                                                          
  {Start 1;
   my $a = Mov 1;
   my $g = GenerateMachineCode;
-  is_deeply dump($g), 'pack("H*","0000002200000000000000000000217f000000010000207f000000000000007f")';
+  is_deeply dump($g), 'pack("H*","0000002200000000000000000000217f000000000001207f000000000000007f")';
 
   my $d = disAssemble $g;
      $d->assemble;
@@ -4379,8 +4381,8 @@ if (1)                                                                          
   my $a = Mov 1;
   Out $a;
   my $g = GenerateMachineCode;
-  is_deeply unpack("H*", $g), '0000002200000000000000000000217f000000010000207f000000000000007f0000002600000000000000000000017f000000000000217f000000000000007f';
-  #say STDERR verilogMachineCode("Mov1", $g);
+  is_deeply unpack("H*", $g), '0000002200000000000000000000217f000000000001207f000000000000007f0000002600000000000000000000017f000000000000217f000000000000007f';
+  #say STDERR generateVerilogMachineCode("Mov_test");  exit;
  }
 
 #latest:;
