@@ -1582,7 +1582,7 @@ sub Zero::Emulator::Assembly::execute($%)                                       
      {my $i = currentInstruction $exec;
       my $s = $exec->latestRightSource;
       my $t = $exec->latestLeftTarget;
-      assign($exec, $t, !$s);
+      assign($exec, $t, $s ? 0 : 1);
      },
 
     paramsGet=> sub                                                             # Get a parameter from the previous parameter block - this means that we must always have two entries on the call stack - one representing the caller of the program, the second representing the current context of the program
@@ -1649,6 +1649,7 @@ sub Zero::Emulator::Assembly::execute($%)                                       
        {my $t = right $exec, $i->source;
         say STDERR $t if !$exec->suppressOutput and !$exec->trace;
         $exec->lastAssignValue = $t;
+say STDERR "AAAA", dump($t);
         $exec->output("$t\n");
        }
       $exec->timeDelta = 0;                                                     # Out is used only for diagnostic purposes.
@@ -2907,9 +2908,9 @@ sub generateVerilogMachineCode($)                                               
   my $L = int($l / $N);
 
   my @v = <<END;
-  reg[255:0] code[$L];                                                          // Code memory
-
-  task $name();                                                           // Load program '$name' into code memory
+  reg[255:0] code[$L];
+                                                                                // Load program '$name' into code memory
+  task $name();
     begin
       NInstructionEnd = $L;
 END
@@ -3105,7 +3106,7 @@ if (1)                                                                          
   is_deeply $e->outLines, [4];
  }
 
-#latest:;
+latest:;
 if (1)                                                                          ##Not
  {Start 1;
   my $a = Mov 3;
@@ -3117,11 +3118,12 @@ if (1)                                                                          
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->out, <<END;
 3
-
+0
 1
 END
+  say STDERR generateVerilogMachineCode("Not_test");
  }
-
+x;
 #latest:;
 if (1)                                                                          ##ShiftLeft
  {Start 1;
