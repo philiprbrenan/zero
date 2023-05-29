@@ -14,7 +14,7 @@ module fpga;                                                                    
   parameter integer NOut           = 1000;                                      // Size of output area
   parameter integer NFreedArrays   = 1000;                                      // Size of output area
   parameter integer NTestPrograms  =    6;                                      // Number of test programs to run
-  parameter integer NTestsExpected =   10;                                      // Number of test passes expected
+  parameter integer NTestsExpected =   20;                                      // Number of test passes expected
 
   parameter integer ElementWidth   = 4;                                         // Width of each element in an an area
   parameter integer UserElements   = 5;                                         // User width of a heap area
@@ -79,6 +79,16 @@ module fpga;                                                                    
     end
   endtask
 
+  task printOut();                                                              // Print the output channel
+    begin
+      $display("    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31   32");
+      for(i = 0; i < outMemPos; ++i) begin
+        $write(" %4d", outMem[i]);
+      end
+      $display("");
+    end
+  endtask
+
   task checkResults();                                                          // Check results of test
     begin
       case(test)
@@ -99,6 +109,10 @@ module fpga;                                                                    
         end
         6: begin
           $display("Array scans");
+          ok(outMem[0] == 3, "scan 1.1"); ok(outMem[1] == 2, "scan 1.2"); ok(outMem[ 2] == 1, "scan 1.3"); ok(outMem[ 3] == 0, "scan 1.4");
+          ok(outMem[4] == 3, "scan 2.1"); ok(outMem[5] == 2, "scan 2.2"); ok(outMem[ 6] == 2, "scan 2.3"); ok(outMem[ 7] == 0, "scan 2.4");
+          ok(outMem[8] == 0, "scan 3.1"); ok(outMem[9] == 1, "scan 3.2"); ok(outMem[10] == 2, "scan 3.3"); ok(outMem[11] == 3, "scan 3.4");
+          printOut();
         end
       endcase
     end
@@ -106,7 +120,9 @@ module fpga;                                                                    
 
   wire clock;                                                                   // Clock
   integer ip = 0;                                                               // Instruction pointer
-  integer i, j, p, q;
+  integer i, j, k, l, m, n, o, p, q;                                            // Useful integers
+  integer r1, r2, r3, r4, r5, r6, r7, r8;                                       // Intermediate array results
+
   wire [255:0] instruction = code[ip];
 //wire [31:0]  operator    = instruction[255:223];
   wire [31:0]  operator    = instruction[255:224];
@@ -175,6 +191,19 @@ module fpga;                                                                    
       targetDAddress == 1 ?  targetDelta + targetAddress           :
       targetDAddress == 2 ?  targetDelta + localMem[targetAddress] : 0) : 0;
 
+  task printInstruction();                                                      // Print an instruction
+    begin;
+      $display("targetAddress =%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Location=%4x",
+        targetAddress, targetArea, targetDAddress, targetDArea, targetArena, targetDelta, targetLocation);
+
+      $display("source1Address=%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Value   =%4x",
+        source1Address, source1Area, source1DAddress, source1DArea, source1Arena, source1Delta, source1Value);
+
+      $display("source2Address=%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Value   =%4x",
+        source2Address, source2Area, source2DAddress, source2DArea, source2Arena, source2Delta, source2Value);
+    end
+  endtask
+
   initial begin                                                                 // Load, run confirm
     testsPassed    = 0;                                                         // Start passed tests count
     allocs         = 0;                                                         // largest number of arrays in use at any one time so far
@@ -190,17 +219,7 @@ module fpga;                                                                    
       for(ip = 0; ip >= 0 && ip < NInstructionEnd; ++ip)                        // Each instruction
       begin
         #1                                                                      // Let the ip update its assigns
-        if (showInstructionDetails) begin                                       // Print Instruction details
-          $display("targetAddress =%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Location=%4x",
-            targetAddress, targetArea, targetDAddress, targetDArea, targetArena, targetDelta, targetLocation);
-
-          $display("source1Address=%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Value   =%4x",
-            source1Address, source1Area, source1DAddress, source1DArea, source1Arena, source1Delta, source1Value);
-
-          $display("source2Address=%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Value   =%4x",
-            source2Address, source2Area, source2DAddress, source2DArea, source2Arena, source2Delta, source2Value);
-        end
-
+        if (showInstructionDetails) printInstruction();                         // Print Instruction details
         executeInstruction();
       end
       checkResults(test);                                                       // Check results
@@ -289,16 +308,6 @@ module fpga;                                                                    
         59: begin; traceLabels_instruction();                               end // traceLabels_instruction
         60: begin; watch_instruction();                                     end // watch_instruction
       endcase
-    end
-  endtask
-  task arrayCountGreater_instruction();
-    begin                                                                       // arrayCountGreater
-     $display("arrayCountGreater");
-    end
-  endtask
-  task arrayCountLess_instruction();
-    begin                                                                       // arrayCountLess
-     $display("arrayCountLess");
     end
   endtask
   task arrayDump_instruction();
@@ -501,11 +510,6 @@ module fpga;                                                                    
      $display("randomSeed");
     end
   endtask
-  task resize_instruction();
-    begin                                                                       // resize
-     $display("resize");
-    end
-  endtask
   task return_instruction();
     begin                                                                       // return
      $display("return");
@@ -610,35 +614,36 @@ module fpga;                                                                    
                                                                                 // Load program 'Array_scans' into code memory
   task Array_scans();
     begin
-      NInstructionEnd = 28;
+      NInstructionEnd = 29;
       code[   0] = 'h0000000100000000000000000000217f000000000003207f000000000000007f;
       code[   1] = 'h0000002200000000000000000000157f00000000000a207f000000000000007f;
       code[   2] = 'h0000002200000000000000000001157f000000000014207f000000000000007f;
       code[   3] = 'h0000002200000000000000000002157f00000000001e207f000000000000007f;
-      code[   4] = 'h0000000500000000000000000001217f000000000000217f00000000001e207f;
-      code[   5] = 'h0000002600000000000000000000017f000000000001217f000000000000007f;
-      code[   6] = 'h0000000500000000000000000002217f000000000000217f000000000014207f;
-      code[   7] = 'h0000002600000000000000000000017f000000000002217f000000000000007f;
-      code[   8] = 'h0000000500000000000000000003217f000000000000217f00000000000a207f;
-      code[   9] = 'h0000002600000000000000000000017f000000000003217f000000000000007f;
-      code[  10] = 'h0000000500000000000000000004217f000000000000217f00000000000f207f;
-      code[  11] = 'h0000002600000000000000000000017f000000000004217f000000000000007f;
-      code[  12] = 'h0000000300000000000000000005217f000000000000217f000000000023207f;
-      code[  13] = 'h0000002600000000000000000000017f000000000005217f000000000000007f;
-      code[  14] = 'h0000000300000000000000000006217f000000000000217f000000000019207f;
-      code[  15] = 'h0000002600000000000000000000017f000000000006217f000000000000007f;
-      code[  16] = 'h0000000300000000000000000007217f000000000000217f00000000000f207f;
-      code[  17] = 'h0000002600000000000000000000017f000000000007217f000000000000007f;
-      code[  18] = 'h0000000300000000000000000008217f000000000000217f000000000005207f;
-      code[  19] = 'h0000002600000000000000000000017f000000000008217f000000000000007f;
-      code[  20] = 'h0000000200000000000000000009217f000000000000217f000000000023207f;
-      code[  21] = 'h0000002600000000000000000000017f000000000009217f000000000000007f;
-      code[  22] = 'h000000020000000000000000000a217f000000000000217f000000000019207f;
-      code[  23] = 'h0000002600000000000000000000017f00000000000a217f000000000000007f;
-      code[  24] = 'h000000020000000000000000000b217f000000000000217f00000000000f207f;
-      code[  25] = 'h0000002600000000000000000000017f00000000000b217f000000000000007f;
-      code[  26] = 'h000000020000000000000000000c217f000000000000217f000000000005207f;
-      code[  27] = 'h0000002600000000000000000000017f00000000000c217f000000000000007f;
+      code[   4] = 'h0000003000000000000000000000217f000000000003207f000000000003207f;
+      code[   5] = 'h0000000500000000000000000001217f000000000000217f00000000001e207f;
+      code[   6] = 'h0000002600000000000000000000017f000000000001217f000000000000007f;
+      code[   7] = 'h0000000500000000000000000002217f000000000000217f000000000014207f;
+      code[   8] = 'h0000002600000000000000000000017f000000000002217f000000000000007f;
+      code[   9] = 'h0000000500000000000000000003217f000000000000217f00000000000a207f;
+      code[  10] = 'h0000002600000000000000000000017f000000000003217f000000000000007f;
+      code[  11] = 'h0000000500000000000000000004217f000000000000217f00000000000f207f;
+      code[  12] = 'h0000002600000000000000000000017f000000000004217f000000000000007f;
+      code[  13] = 'h0000000300000000000000000005217f000000000000217f000000000023207f;
+      code[  14] = 'h0000002600000000000000000000017f000000000005217f000000000000007f;
+      code[  15] = 'h0000000300000000000000000006217f000000000000217f000000000019207f;
+      code[  16] = 'h0000002600000000000000000000017f000000000006217f000000000000007f;
+      code[  17] = 'h0000000300000000000000000007217f000000000000217f00000000000f207f;
+      code[  18] = 'h0000002600000000000000000000017f000000000007217f000000000000007f;
+      code[  19] = 'h0000000300000000000000000008217f000000000000217f000000000005207f;
+      code[  20] = 'h0000002600000000000000000000017f000000000008217f000000000000007f;
+      code[  21] = 'h0000000200000000000000000009217f000000000000217f000000000023207f;
+      code[  22] = 'h0000002600000000000000000000017f000000000009217f000000000000007f;
+      code[  23] = 'h000000020000000000000000000a217f000000000000217f000000000019207f;
+      code[  24] = 'h0000002600000000000000000000017f00000000000a217f000000000000007f;
+      code[  25] = 'h000000020000000000000000000b217f000000000000217f00000000000f207f;
+      code[  26] = 'h0000002600000000000000000000017f00000000000b217f000000000000007f;
+      code[  27] = 'h000000020000000000000000000c217f000000000000217f000000000005207f;
+      code[  28] = 'h0000002600000000000000000000017f00000000000c217f000000000000007f;
     end
   endtask
 
@@ -696,6 +701,18 @@ module fpga;                                                                    
     end
   endtask
 
+  task resize_instruction();                                                    // Resize
+    begin
+      result = source1Value;
+      $display("%4d = Resize %d(%d), %d", result, targetLocation, targetArena, source1Value);
+      p = localMem[targetLocation];
+      fork
+        heapMem[p * NArea] = result;
+        q = heapMem[p * NArea];
+      join
+    end
+  endtask
+
   task subtract_instruction();                                                  // Subtract
     begin
       result = source1Value - source2Value;
@@ -713,7 +730,188 @@ module fpga;                                                                    
 
   task arrayIndex_instruction();
     begin                                                                       // ArrayIndex
-     $display("arrayIndex");
+      q = source1Value * NArea;                                                 // Array location
+      fork
+        p = heapMem[q];                                                         // Length of array
+        result = 0;
+      join
+      case(p)                                                                   // Arrays can be dynamic but only up to a fixed size so that we can unroll the loop that finds an element
+        1:
+            begin if (heapMem[q+1] == source2Value) result = 1; end
+        2:
+          fork
+            begin if (heapMem[q+1] == source2Value) result = 1; end
+            begin if (heapMem[q+2] == source2Value) result = 2; end
+          join
+        3:
+          fork
+            begin if (heapMem[q+1] == source2Value) result = 1; end
+            begin if (heapMem[q+2] == source2Value) result = 2; end
+            begin if (heapMem[q+3] == source2Value) result = 3; end
+          join
+        4:
+          fork
+            begin if (heapMem[q+1] == source2Value) result = 1; end
+            begin if (heapMem[q+2] == source2Value) result = 2; end
+            begin if (heapMem[q+3] == source2Value) result = 3; end
+            begin if (heapMem[q+4] == source2Value) result = 4; end
+          join
+        5:
+          fork
+            begin if (heapMem[q+1] == source2Value) result = 1; end
+            begin if (heapMem[q+2] == source2Value) result = 2; end
+            begin if (heapMem[q+3] == source2Value) result = 3; end
+            begin if (heapMem[q+4] == source2Value) result = 4; end
+            begin if (heapMem[q+5] == source2Value) result = 5; end
+          join
+        6:
+          fork
+            begin if (heapMem[q+1] == source2Value) result = 1; end
+            begin if (heapMem[q+2] == source2Value) result = 2; end
+            begin if (heapMem[q+3] == source2Value) result = 3; end
+            begin if (heapMem[q+4] == source2Value) result = 4; end
+            begin if (heapMem[q+5] == source2Value) result = 5; end
+            begin if (heapMem[q+6] == source2Value) result = 6; end
+          join
+        7:
+          fork
+            begin if (heapMem[q+1] == source2Value) result = 1; end
+            begin if (heapMem[q+2] == source2Value) result = 2; end
+            begin if (heapMem[q+3] == source2Value) result = 3; end
+            begin if (heapMem[q+4] == source2Value) result = 4; end
+            begin if (heapMem[q+5] == source2Value) result = 5; end
+            begin if (heapMem[q+6] == source2Value) result = 6; end
+            begin if (heapMem[q+7] == source2Value) result = 7; end
+          join
+      endcase
+      setMemory();
+    end
+  endtask
+
+  task arrayCountGreater_instruction();
+    begin                                                                       // ArrayIndex
+      //$display("arrayIndex");
+      //printMemory();
+      //printInstruction();
+      fork;
+        q = source1Value * NArea;                                               // Array location
+        p = heapMem[q];                                                         // Length of array
+        result = 0;
+        r1 = 0; r2 = 0; r3 = 0; r4 = 0; r5 = 0; r6 = 0; r7 = 0; r8 = 0;
+      join;
+      case(p)                                                                   // Arrays can be dynamic but only up to a fixed size so that we can unroll the loop that finds an element
+        1:
+            begin if (heapMem[q+1] > source2Value) r1 = 1; end
+        2:
+          fork
+            begin if (heapMem[q+1] > source2Value) r1 = 1; end
+            begin if (heapMem[q+2] > source2Value) r2 = 1; end
+          join
+        3:
+          fork
+            begin if (heapMem[q+1] > source2Value) r1 = 1; end
+            begin if (heapMem[q+2] > source2Value) r2 = 1; end
+            begin if (heapMem[q+3] > source2Value) r3 = 1; end
+          join
+        4:
+          fork
+            begin if (heapMem[q+1] > source2Value) r1 = 1; end
+            begin if (heapMem[q+2] > source2Value) r2 = 1; end
+            begin if (heapMem[q+3] > source2Value) r3 = 1; end
+            begin if (heapMem[q+4] > source2Value) r4 = 1; end
+          join
+        5:
+          fork
+            begin if (heapMem[q+1] > source2Value) r1 = 1; end
+            begin if (heapMem[q+2] > source2Value) r2 = 1; end
+            begin if (heapMem[q+3] > source2Value) r3 = 1; end
+            begin if (heapMem[q+4] > source2Value) r4 = 1; end
+            begin if (heapMem[q+5] > source2Value) r5 = 1; end
+          join
+        6:
+          fork
+            begin if (heapMem[q+1] > source2Value) r1 = 1; end
+            begin if (heapMem[q+2] > source2Value) r2 = 1; end
+            begin if (heapMem[q+3] > source2Value) r3 = 1; end
+            begin if (heapMem[q+4] > source2Value) r4 = 1; end
+            begin if (heapMem[q+5] > source2Value) r5 = 1; end
+            begin if (heapMem[q+6] > source2Value) r6 = 1; end
+          join
+        7:
+          fork
+            begin if (heapMem[q+1] > source2Value) r1 = 1; end
+            begin if (heapMem[q+2] > source2Value) r2 = 1; end
+            begin if (heapMem[q+3] > source2Value) r3 = 1; end
+            begin if (heapMem[q+4] > source2Value) r4 = 1; end
+            begin if (heapMem[q+5] > source2Value) r5 = 1; end
+            begin if (heapMem[q+6] > source2Value) r6 = 1; end
+            begin if (heapMem[q+7] > source2Value) r7 = 1; end
+          join
+      endcase
+      result = r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8;
+      setMemory();
+    end
+  endtask
+
+  task arrayCountLess_instruction();
+    begin                                                                       // ArrayIndex
+      fork
+        q = source1Value * NArea;                                               // Array location
+        p = heapMem[q];                                                         // Length of array
+        result = 0;
+        r1 = 0; r2 = 0; r3 = 0; r4 = 0; r5 = 0; r6 = 0; r7 = 0; r8 = 0;
+      join
+      case(p)                                                                   // Arrays can be dynamic but only up to a fixed size so that we can unroll the loop that finds an element
+        1:
+            begin if (heapMem[q+1] < source2Value) r1 = 1; end
+        2:
+          fork
+            begin if (heapMem[q+1] < source2Value) r1 = 1; end
+            begin if (heapMem[q+2] < source2Value) r2 = 1; end
+          join
+        3:
+          fork
+            begin if (heapMem[q+1] < source2Value) r1 = 1; end
+            begin if (heapMem[q+2] < source2Value) r2 = 1; end
+            begin if (heapMem[q+3] < source2Value) r3 = 1; end
+          join
+        4:
+          fork
+            begin if (heapMem[q+1] < source2Value) r1 = 1; end
+            begin if (heapMem[q+2] < source2Value) r2 = 1; end
+            begin if (heapMem[q+3] < source2Value) r3 = 1; end
+            begin if (heapMem[q+4] < source2Value) r4 = 1; end
+          join
+        5:
+          fork
+            begin if (heapMem[q+1] < source2Value) r1 = 1; end
+            begin if (heapMem[q+2] < source2Value) r2 = 1; end
+            begin if (heapMem[q+3] < source2Value) r3 = 1; end
+            begin if (heapMem[q+4] < source2Value) r4 = 1; end
+            begin if (heapMem[q+5] < source2Value) r5 = 1; end
+          join
+        6:
+          fork
+            begin if (heapMem[q+1] < source2Value) r1 = 1; end
+            begin if (heapMem[q+2] < source2Value) r2 = 1; end
+            begin if (heapMem[q+3] < source2Value) r3 = 1; end
+            begin if (heapMem[q+4] < source2Value) r4 = 1; end
+            begin if (heapMem[q+5] < source2Value) r5 = 1; end
+            begin if (heapMem[q+6] < source2Value) r6 = 1; end
+          join
+        7:
+          fork
+            begin if (heapMem[q+1] < source2Value) r1 = 1; end
+            begin if (heapMem[q+2] < source2Value) r2 = 1; end
+            begin if (heapMem[q+3] < source2Value) r3 = 1; end
+            begin if (heapMem[q+4] < source2Value) r4 = 1; end
+            begin if (heapMem[q+5] < source2Value) r5 = 1; end
+            begin if (heapMem[q+6] < source2Value) r6 = 1; end
+            begin if (heapMem[q+7] < source2Value) r7 = 1; end
+          join
+      endcase
+      result = r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8;
+      setMemory();
     end
   endtask
 
