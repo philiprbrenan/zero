@@ -13,8 +13,8 @@ module fpga;                                                                    
   parameter integer NLocal         = 1000;                                      // Size of local memory
   parameter integer NOut           = 1000;                                      // Size of output area
   parameter integer NFreedArrays   = 1000;                                      // Size of output area
-  parameter integer NTestPrograms  =    6;                                      // Number of test programs to run
-  parameter integer NTestsExpected =   20;                                      // Number of test passes expected
+  parameter integer NTestPrograms  =    7;                                      // Number of test programs to run
+  parameter integer NTestsExpected =   25;                                      // Number of test passes expected
 
   parameter integer ElementWidth   = 4;                                         // Width of each element in an an area
   parameter integer UserElements   = 5;                                         // User width of a heap area
@@ -40,12 +40,12 @@ module fpga;                                                                    
 
   task ok(integer test, string name);                                           // Check a single test result
     begin
-      if (test == 0 || test == 1'bx || test == 1'bz) begin
-        $display("Assertion %s FAILED", name);
-        testsFailed++;
+      if (test == 1) begin
+        testsPassed++;
       end
       else begin
-        testsPassed++;
+        $display("Assertion %s FAILED", name);
+        testsFailed++;
       end
     end
   endtask
@@ -59,6 +59,7 @@ module fpga;                                                                    
         4: Not_test();
         5: Array_test();
         6: Array_scans();
+        7: Free_test();
       endcase
     end
   endtask
@@ -81,6 +82,7 @@ module fpga;                                                                    
 
   task printOut();                                                              // Print the output channel
     begin
+      $display("Out %d", outMemPos);
       $display("    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31   32");
       for(i = 0; i < outMemPos; ++i) begin
         $write(" %4d", outMem[i]);
@@ -105,13 +107,14 @@ module fpga;                                                                    
           ok( heapMem[10] ==  0, "Array 1.1");
           ok( heapMem[11] == 11, "Array 1.2");
           ok( heapMem[12] == 22, "Array 1.3");
-          printMemory();
         end
         6: begin
-          $display("Array scans");
           ok(outMem[0] == 3, "scan 1.1"); ok(outMem[1] == 2, "scan 1.2"); ok(outMem[ 2] == 1, "scan 1.3"); ok(outMem[ 3] == 0, "scan 1.4");
-          ok(outMem[4] == 3, "scan 2.1"); ok(outMem[5] == 2, "scan 2.2"); ok(outMem[ 6] == 2, "scan 2.3"); ok(outMem[ 7] == 0, "scan 2.4");
+          ok(outMem[4] == 3, "scan 2.1"); ok(outMem[5] == 2, "scan 2.2"); ok(outMem[ 6] == 1, "scan 2.3"); ok(outMem[ 7] == 0, "scan 2.4");
           ok(outMem[8] == 0, "scan 3.1"); ok(outMem[9] == 1, "scan 3.2"); ok(outMem[10] == 2, "scan 3.3"); ok(outMem[11] == 3, "scan 3.4");
+        end
+        7: begin
+          ok(outMem[0] == 1, "Free 1"); ok(outMem[1] == 1, "Free 1"); ok(outMem[2] == 1, "Free 1");
           printOut();
         end
       endcase
@@ -144,12 +147,10 @@ module fpga;                                                                    
       source2DArea    == 0 && source2DAddress == 2 ? source2Delta + heapMem [source2Area*NArea           + localMem[source2Address]] :
       source2DArea    == 1 && source2DAddress == 1 ? source2Delta + heapMem [localMem[source2Area]*NArea + source2Address]           :
       source2DArea    == 1 && source2DAddress == 2 ? source2Delta + heapMem [localMem[source2Area]*NArea + localMem[source2Address]] : 0) :
-    source2Arena      == 2 ?                         source2Delta +
-     (source2DAddress == 0 ?  source2Address :       source2Delta +
-      source2DArea    == 0 && source2DAddress == 1 ? source2Delta + localMem[source2Area*NArea           + source2Address]           :
-      source2DArea    == 0 && source2DAddress == 2 ? source2Delta + localMem[source2Area*NArea           + localMem[source2Address]] :
-      source2DArea    == 1 && source2DAddress == 1 ? source2Delta + localMem[localMem[source2Area]*NArea + source2Address]           :
-      source2DArea    == 1 && source2DAddress == 2 ? source2Delta + localMem[localMem[source2Area]*NArea + localMem[source2Address]] : 0) : 0;
+    source2Arena      == 2 ?
+     (source2DAddress == 0 ? source2Address :
+      source2DAddress == 1 ? source2Delta + localMem[source2Area*NArea + source2Address]           :
+      source2DAddress == 2 ? source2Delta + localMem[source2Area*NArea + localMem[source2Address]] : 0) : 0;
 
   wire [31: 0] source1Area     = source[63:32];                                 // Source
   wire [15: 0] source1Address  = source[31:16];
@@ -166,11 +167,9 @@ module fpga;                                                                    
       source1DArea    == 1 && source1DAddress == 1 ? source1Delta + heapMem [localMem[source1Area]*NArea + source1Address]           :
       source1DArea    == 1 && source1DAddress == 2 ? source1Delta + heapMem [localMem[source1Area]*NArea + localMem[source1Address]] : 0) :
     source1Arena      == 2 ?
-     (source1DAddress == 0 ?  source1Address :
-      source1DArea    == 0 && source1DAddress == 1 ? source1Delta + localMem[source1Area*NArea           + source1Address]           :
-      source1DArea    == 0 && source1DAddress == 2 ? source1Delta + localMem[source1Area*NArea           + localMem[source1Address]] :
-      source1DArea    == 1 && source1DAddress == 1 ? source1Delta + localMem[localMem[source1Area]*NArea + source1Address]           :
-      source1DArea    == 1 && source1DAddress == 2 ? source1Delta + localMem[localMem[source1Area]*NArea + localMem[source1Address]] : 0) : 0;
+     (source1DAddress == 0 ? source1Address :
+      source1DAddress == 1 ? source1Delta + localMem[source1Area*NArea + source1Address]           :
+      source1DAddress == 2 ? source1Delta + localMem[source1Area*NArea + localMem[source1Address]] : 0) : 0;
 
   wire [31: 0] targetArea      = target[63:32];                                 // Target
   wire [15: 0] targetAddress   = target[31:16];
@@ -191,6 +190,19 @@ module fpga;                                                                    
       targetDAddress == 1 ?  targetDelta + targetAddress           :
       targetDAddress == 2 ?  targetDelta + localMem[targetAddress] : 0) : 0;
 
+  wire [31: 0] targetValue    =
+    targetArena      == 0 ? 0 :
+    targetArena      == 1 ?
+     (targetDAddress == 0 ?  targetAddress :
+      targetDArea    == 0 && targetDAddress == 1 ? targetDelta + heapMem [targetArea*NArea           + targetAddress]           :
+      targetDArea    == 0 && targetDAddress == 2 ? targetDelta + heapMem [targetArea*NArea           + localMem[targetAddress]] :
+      targetDArea    == 1 && targetDAddress == 1 ? targetDelta + heapMem [localMem[targetArea]*NArea + targetAddress]           :
+      targetDArea    == 1 && targetDAddress == 2 ? targetDelta + heapMem [localMem[targetArea]*NArea + localMem[targetAddress]] : 0) :
+    targetArena      == 2 ?
+     (targetDAddress == 0 ? targetAddress :
+      targetDAddress == 1 ? targetDelta + localMem[targetArea*NArea + targetAddress]           :
+      targetDAddress == 2 ? targetDelta + localMem[targetArea*NArea + localMem[targetAddress]] : 0) : 0;
+
   task printInstruction();                                                      // Print an instruction
     begin;
       $display("targetAddress =%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Location=%4x",
@@ -205,10 +217,11 @@ module fpga;                                                                    
   endtask
 
   initial begin                                                                 // Load, run confirm
-    testsPassed    = 0;                                                         // Start passed tests count
-    allocs         = 0;                                                         // largest number of arrays in use at any one time so far
-    freedArraysTop = 0;                                                         // Start freed arrays stack
+    testsPassed    = 0;                                                         // Passed tests
+    testsFailed    = 0;                                                         // Failed tests
     for(test = NTestPrograms; test > 0; --test) begin                           // Run the tests from bewest to oldest
+      allocs         = 0;                                                       // Largest number of arrays in use at any one time so far
+      freedArraysTop = 0;                                                       // Start freed arrays stack
       loadCode(test);                                                           // Load the program
       $display("Test %d", test);
       outMemPos = 0;                                                            // Output channel position
@@ -224,20 +237,20 @@ module fpga;                                                                    
       end
       checkResults(test);                                                       // Check results
     end
-    if (testsPassed == NTestsExpected) begin                                    // Testing summary
-       $display("All %1d tests passed successfully in %1d programs", NTestsExpected, NTestPrograms);
-    end
-    else if (testsPassed > 0) begin
-       $display("Passed %1d tests out of %1d tests with no failures ", testsPassed, NTestsExpected);
-    end
-    else if (testsPassed > 0 && testsFailed > 0) begin
+    if (testsPassed > 0 && testsFailed > 0) begin
        $display("Passed %1d tests, FAILED %1d tests out of %d tests", testsPassed, testsFailed, NTestsExpected);
     end
     else if (testsFailed > 0) begin
        $display("FAILED %1d tests out of %1d tests", testsFailed, NTestsExpected);
     end
+    else if (testsPassed > 0 && testsPassed != NTestsExpected) begin
+       $display("Passed %1d tests out of %1d tests with no failures ", testsPassed, NTestsExpected);
+    end
+    else if (testsPassed == NTestsExpected) begin                                    // Testing summary
+       $display("All %1d tests passed successfully in %1d programs", NTestsExpected, NTestPrograms);
+    end
     else begin
-       $display("No tests run");
+       $display("No tests run passed: %1d, failed: %1d, expected %1d, programs: %1d", testsPassed, testsFailed, NTestsExpected, NTestPrograms);
     end
     $finish;
   end
@@ -378,11 +391,6 @@ module fpga;                                                                    
   task dump_instruction();
     begin                                                                       // dump
      $display("dump");
-    end
-  endtask
-  task free_instruction();
-    begin                                                                       // free
-     $display("free");
     end
   endtask
   task in_instruction();
@@ -647,6 +655,21 @@ module fpga;                                                                    
     end
   endtask
 
+  task Free_test();
+    begin
+      NInstructionEnd = 9;
+      code[   0] = 'h0000000100000000000000000000217f000000000003207f000000000000007f;
+      code[   1] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
+      code[   2] = 'h0000001300000000000000000000217f000000000003207f000000000000007f;
+      code[   3] = 'h0000000100000000000000000001217f000000000004207f000000000000007f;
+      code[   4] = 'h0000002600000000000000000000017f000000000001217f000000000000007f;
+      code[   5] = 'h0000001300000000000000000001217f000000000004207f000000000000007f;
+      code[   6] = 'h0000000100000000000000000002217f000000000005207f000000000000007f;
+      code[   7] = 'h0000002600000000000000000000017f000000000002217f000000000000007f;
+      code[   8] = 'h0000001300000000000000000002217f000000000005207f000000000000007f;
+    end
+  endtask
+
 // Instruction memory access functions
 
   task setMemory();                                                             // Set the target memory location
@@ -671,8 +694,9 @@ module fpga;                                                                    
   task array_instruction();                                                     // Array
     begin
       if (freedArraysTop > 0) begin                                             // Reuse an array
-        result = freedArrays[freedArraysTop++];
+        result = freedArrays[--freedArraysTop];
         $display("%4d(%4d) = Array reuse", targetLocation, result);
+
       end
       else begin
         result = ++allocs;                                                      // Array zero means undefined
@@ -681,6 +705,13 @@ module fpga;                                                                    
 
       heapMem[result  * NArea] = 0;                                             // Zero array length
       setMemory();                                                              // Save address of array
+    end
+  endtask
+
+  task free_instruction();
+    begin                                                                       // Free
+     freedArrays[freedArraysTop++] = targetValue;
+      heapMem[result  * NArea] = 0;                                             // Zero array length
     end
   endtask
 
