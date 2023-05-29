@@ -540,11 +540,12 @@ sub pushMemoryArea($$$)                                                         
   push $exec->memory->[arenaHeap][$area]->@*, $value;                           # Push
  }
 
-sub popMemoryArea($$$)                                                          #P Pop a value from the specified memory area if possible else confess.
- {my ($exec, $arena, $area) = @_;                                               # Execution environment, arena, array,
-  my $a = $exec->memory->[$arena][$area];
+sub popMemoryArea($$)                                                           #P Pop a value from the specified memory area if possible else confess.
+ {my ($exec, $area) = @_;                                                       # Execution environment, arena, array,
+  @_ == 2 or confess "Two parameters";
+  my $a = $exec->memory->[arenaHeap][$area];
   if (!defined($a) or !$a->@*)                                                  # Area does not exists or has zero elements
-   {stackTraceAndExit($exec, "Cannot pop area: $area, in arena: $arena");
+   {stackTraceAndExit($exec, "Cannot pop array: $area");
    }
   pop @$a;                                                                      # Pop
  }
@@ -695,16 +696,16 @@ sub stringPushMemoryArea($$$)                                                   
   vec($exec->memoryString, $o, $w * 8) = $l + 1;                                # Increase size of area
  }
 
-sub stringPopMemoryArea($$$)                                                    #P Pop a value from the specified memory area if possible else confess.
- {my ($exec, $arena, $area) = @_;                                               # Execution environment, arena, array,
-
+sub stringPopMemoryArea($$)                                                     #P Pop a value from the specified memory area if possible else confess.
+ {my ($exec, $area) = @_;                                                       # Execution environment, arena, array,
+  @_ == 2 or confess "Two parameters";
   my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
   my $u = $exec->memoryStringUserElements;                                      # User width of a heap area
   my $s = $exec->memoryStringSystemElements;                                    # System width of a heap area
   my $t = $exec->memoryStringTotalElements;                                     # Total width of a heap area
   my $o = $area * $t;                                                           # Offset of heap area in arena
   my $l = vec($exec->memoryString, $o, $w * 8);                                 # Zero current length of area so we can push and pop
-    $l > 0 or confess "Area underflow, arena: $arena, area: $area";             # Check we are within the area
+    $l > 0 or confess "Arrray underflow, array: $area";                         # Check we are within the area
   --$l;                                                                         # Pop
   my $O = $o + $s + $l;                                                         # Offset of element in area
   my $v = vec($exec->memoryString, $O, $w * 8);                                 # Pop element
@@ -856,7 +857,7 @@ my sub pushArea($$$$)                                                           
 my sub popArea($$$$)                                                            # Pop a value from the specified memory area if possible else confess.
  {my ($exec, $arena, $area, $name) = @_;                                        # Execution environment, arena, array, name of allocation, value to assign
   $exec->checkArrayName($arena, $area, $name);                                  # Check stack name
-  $exec->PopMemoryArea->($exec, $arena, $area);
+  $exec->PopMemoryArea->($exec, $area);
  }
 
 sub getMemoryType($$$)                                                          #P Get the type of an area.
