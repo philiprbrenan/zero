@@ -1825,6 +1825,30 @@ Jump to a target label if the first source field is equal to the second source f
       is_deeply $e->heap(2), [99];
      }
     
+    if (1)                                                                          
+     {Start 1;
+      Block
+       {my ($Start, $Good, $Bad, $End) = @_;
+    
+        my $a = Mov 1;
+        my $b = Mov 2;
+    
+        Jeq $Good, $a, $b;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+        Out 111;
+    
+        Jeq $Good, $a, $a;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+        Out 222;
+       }
+      Good
+       {Out 333;
+       };
+      my $e = Execute(suppressOutput=>1);
+      is_deeply $e->outLines, [111, 333];
+      #say STDERR generateVerilogMachineCode("Jeq_test");
+     }
+    
 
 ## JFalse($target, $source)
 
