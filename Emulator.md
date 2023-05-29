@@ -153,9 +153,10 @@ Count the number of elements in the array specified by the first source operand 
     if (1)                                                                            
      {Start 1;
       my $a = Array "aaa";
-      Mov [$a, 0, "aaa"], 10;
-      Mov [$a, 1, "aaa"], 20;
-      Mov [$a, 2, "aaa"], 30;
+      Mov   [$a, 0, "aaa"], 10;
+      Mov   [$a, 1, "aaa"], 20;
+      Mov   [$a, 2, "aaa"], 30;
+      Resize $a, 3, "aaa";
     
       Out ArrayIndex       ($a, 30); Out ArrayIndex       ($a, 20); Out ArrayIndex       ($a, 10); Out ArrayIndex       ($a, 15);
     
@@ -178,7 +179,7 @@ Count the number of elements in the array specified by the first source operand 
     2
     3
     END
-     #say STDERR generateVerilogMachineCode("Array_scans");  exit;
+      say STDERR generateVerilogMachineCode("Array_scans");  exit;
      }
     
 
@@ -191,9 +192,10 @@ Count the number of elements in the array specified by the first source operand 
     if (1)                                                                            
      {Start 1;
       my $a = Array "aaa";
-      Mov [$a, 0, "aaa"], 10;
-      Mov [$a, 1, "aaa"], 20;
-      Mov [$a, 2, "aaa"], 30;
+      Mov   [$a, 0, "aaa"], 10;
+      Mov   [$a, 1, "aaa"], 20;
+      Mov   [$a, 2, "aaa"], 30;
+      Resize $a, 3, "aaa";
     
       Out ArrayIndex       ($a, 30); Out ArrayIndex       ($a, 20); Out ArrayIndex       ($a, 10); Out ArrayIndex       ($a, 15);
       Out ArrayCountLess   ($a, 35); Out ArrayCountLess   ($a, 25); Out ArrayCountLess   ($a, 15); Out ArrayCountLess   ($a,  5);
@@ -216,7 +218,7 @@ Count the number of elements in the array specified by the first source operand 
     2
     3
     END
-     #say STDERR generateVerilogMachineCode("Array_scans");  exit;
+      say STDERR generateVerilogMachineCode("Array_scans");  exit;
      }
     
 
@@ -264,16 +266,17 @@ Dump an array.
 
 ## ArrayIndex()
 
-Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.  The business of returning -1 would have led to the confusion of "try catch" and we certainly do not want that.
+Store in the target location the 1 based index of the second source operand in the array referenced by the first source operand if the secound source operand is present somwhere in the array else store 0 into the target location.  If the sought element appears in multiple locations, any one of these locations can be chosen.  The business of returning a zero based result with -1 signalling an error would have led to the confusion of "try catch" and we certainly do not want that.
 
 **Example:**
 
     if (1)                                                                            
      {Start 1;
       my $a = Array "aaa";
-      Mov [$a, 0, "aaa"], 10;
-      Mov [$a, 1, "aaa"], 20;
-      Mov [$a, 2, "aaa"], 30;
+      Mov   [$a, 0, "aaa"], 10;
+      Mov   [$a, 1, "aaa"], 20;
+      Mov   [$a, 2, "aaa"], 30;
+      Resize $a, 3, "aaa";
     
     
       Out ArrayIndex       ($a, 30); Out ArrayIndex       ($a, 20); Out ArrayIndex       ($a, 10); Out ArrayIndex       ($a, 15);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -296,7 +299,7 @@ Find the 1 based index of the second source operand in the array referenced by t
     2
     3
     END
-     #say STDERR generateVerilogMachineCode("Array_scans");  exit;
+      say STDERR generateVerilogMachineCode("Array_scans");  exit;
      }
     
 
@@ -4173,7 +4176,7 @@ Disassemble and remove context information from disassembly to make testing easi
 
 5 [ArrayDump](#arraydump) - Dump an array.
 
-6 [ArrayIndex](#arrayindex) - Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.
+6 [ArrayIndex](#arrayindex) - Store in the target location the 1 based index of the second source operand in the array referenced by the first source operand if the secound source operand is present somwhere in the array else store 0 into the target location.
 
 7 [ArraySize](#arraysize) - The current size of an array.
 
