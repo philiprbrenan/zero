@@ -4131,7 +4131,7 @@ Continue recording the elapsed time for parallel sections.
 
 Stop recording the elapsed time for parallel sections.
 
-## Zero::Emulator::Assembly::packRef($code, $instruction, $ref)
+## Zero::Emulator::Assembly::packRef($code, $instruction, $ref, $type)
 
 Pack a reference into 8 bytes.
 
@@ -4139,6 +4139,7 @@ Pack a reference into 8 bytes.
     1  $code         Code block being packed
     2  $instruction  Instruction being packed
     3  $ref          Reference being packed
+    4  $type         Type of reference being packed 0-target 1-source1 2-source2
 
 ## Zero::Emulator::Assembly::unpackRef($code, $a, $operand)
 
