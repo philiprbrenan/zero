@@ -415,46 +415,6 @@ module fpga;                                                                    
      $display("inSize");
     end
   endtask
-  task jFalse_instruction();
-    begin                                                                       // jFalse
-     $display("jFalse");
-    end
-  endtask
-  task jGe_instruction();
-    begin                                                                       // jGe
-     $display("jGe");
-    end
-  endtask
-  task jGt_instruction();
-    begin                                                                       // jGt
-     $display("jGt");
-    end
-  endtask
-  task jLe_instruction();
-    begin                                                                       // jLe
-     $display("jLe");
-    end
-  endtask
-  task jLt_instruction();
-    begin                                                                       // jLt
-     $display("jLt");
-    end
-  endtask
-  task jNe_instruction();
-    begin                                                                       // jNe
-     $display("jNe");
-    end
-  endtask
-  task jTrue_instruction();
-    begin                                                                       // jTrue
-     $display("jTrue");
-    end
-  endtask
-  task jmp_instruction();
-    begin                                                                       // jmp
-     $display("jmp");
-    end
-  endtask
   task label_instruction();
     begin                                                                       // label
      $display("label");
@@ -998,6 +958,68 @@ module fpga;                                                                    
       if (source1Value == source2Value) begin
         ip += targetArea;
       end
+    end
+  endtask
+
+  task jFalse_instruction();
+    begin                                                                       // jFalse
+      if (source1Value == 0) begin
+        ip += targetArea;
+      end
+    end
+  endtask
+
+  task jGe_instruction();
+    begin                                                                       // jGe
+      if (source1Value >= source2Value) begin
+        ip += targetArea;
+      end
+    end
+  endtask
+
+  task jGt_instruction();
+    begin                                                                       // jGt
+      if (source1Value >  source2Value) begin
+        ip += targetArea;
+      end
+    end
+  endtask
+
+  task jLe_instruction();
+    begin                                                                       // jLe
+      if (source1Value <= source2Value) begin
+        ip += targetArea;
+      end
+    end
+  endtask
+
+  task jLt_instruction();
+    begin                                                                       // jLt
+      if (source1Value <  source2Value) begin
+        ip += targetArea;
+      end
+    end
+  endtask
+
+  task jNe_instruction();
+    begin                                                                       // jNe
+      if (source1Value != source2Value) begin
+        ip += targetArea;
+      end
+    end
+  endtask
+
+  task jTrue_instruction();
+    begin                                                                       // jTrue
+      if (source1Value != 0) begin
+        ip += targetArea;
+      end
+    end
+  endtask
+
+  task jmp_instruction();
+    begin                                                                       // jmp
+      ip += targetArea;
     end
   endtask
 endmodule
