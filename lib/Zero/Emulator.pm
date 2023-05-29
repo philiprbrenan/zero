@@ -4239,7 +4239,7 @@ if (1)                                                                          
 #     10    20    30
 # 5=0   15=1  25=2  35=3
 
-latest:;
+#latest:;
 if (1)                                                                          ##ArrayIndex ##ArrayCountLess ##ArrayCountGreater
  {Start 1;
   my $a = Array "aaa";
@@ -4267,9 +4267,8 @@ if (1)                                                                          
 2
 3
 END
-  say STDERR generateVerilogMachineCode("Array_scans");  exit;
+  #say STDERR generateVerilogMachineCode("Array_scans");  exit;
  }
-x;
 
 #latest:;
 if (1)                                                                          ##Tally ##For
