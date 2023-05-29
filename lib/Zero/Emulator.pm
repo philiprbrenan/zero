@@ -17,7 +17,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Time::HiRes qw(time);
-eval "use Test::More tests=>395" unless caller;
+eval "use Test::More tests=>396" unless caller;
 
 makeDieConfess;
 our $memoryTechnique;                                                           # Undef or the address of a sub that loads the memory handlers into an execution environment.
@@ -2751,9 +2751,9 @@ my sub rerefValue($$)                                                           
   confess "Rereference depth of $depth is too deep";
  }
 
-sub Zero::Emulator::Assembly::packRef($$$)                                          #P Pack a reference into 8 bytes.
- {my ($code, $instruction, $ref) = @_;                                          # Code block being packed, instruction being packed, reference being packed
-#say STDERR "AAAA", dump($instruction);
+sub Zero::Emulator::Assembly::packRef($$$$)                                          #P Pack a reference into 8 bytes.
+ {my ($code, $instruction, $ref, $type) = @_;                                          # Code block being packed, instruction being packed, reference being packed, type of reference being packed 0-target 1-source1 2-source2
+  @_ == 4 or confess "Four parameters";
   if (!defined($ref) or ref($ref) =~ m(array)i && !@$ref)                       # Unused reference
    {my $a = '';
     vec($a, 0, 32) = 0;
@@ -2769,8 +2769,6 @@ sub Zero::Emulator::Assembly::packRef($$$)                                      
 
   $_ //= 0 for @a;
   my ($arena, $area, $dArea, $address, $dAddress, $delta) = @a;
-#say STDERR "GGGG", dump($address, $area, $dAddress, $dArea, $arena, $delta);
-#say STDERR "GG11", dump($ref);
 
   my $b = "too big, should be less than:";
 
@@ -4414,6 +4412,26 @@ if (1)                                                                          
   my $E = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
   is_deeply $e->outLines, [qw(1 2 3 11 22 33)];
   is_deeply $e->mostArrays, [undef, 2, 1, 1, 1];
+ }
+
+
+#latest:;
+if (1)
+ {Start 1;
+
+  my $a = Array 'aaa';
+  Out $a;
+  Free $a, 'aaa';
+  my $b = Array 'bbb';
+  Out $b;
+  Free $b, 'bbb';
+  my $c = Array 'ccc';
+  Out $c;
+  Free $c, 'ccc';
+
+  my $e = Execute(suppressOutput=>1);
+  is_deeply $e->outLines, [1,1,1];
+  #say STDERR generateVerilogMachineCode("Free");
  }
 
 =pod
