@@ -17,7 +17,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Time::HiRes qw(time);
-eval "use Test::More tests=>396" unless caller;
+eval "use Test::More tests=>397" unless caller;
 
 makeDieConfess;
 our $memoryTechnique;                                                           # Undef or the address of a sub that loads the memory handlers into an execution environment.
@@ -2816,8 +2816,6 @@ sub Zero::Emulator::Assembly::unpackRef($$$)                                    
   my $arena    = vec($a, 26,  2);
   my $delta    = vec($a,  7,  8) - (2**7 - 1);
 
-#say STDERR "HHHH", dump($vAddress, $vArea, $dAddress, $dArea, $arena, $delta);
-
   my $area     = rerefValue($vArea,    $dArea);
   my $address  = rerefValue($vAddress, $dAddress);
   $code->Reference([$arena  != arenaHeap ? undef : $area, $address, 0, $delta], $operand);
@@ -2832,6 +2830,11 @@ sub Zero::Emulator::Assembly::packInstruction($$)                               
   $a .= $code->packRef($i, $i->target,  0);
   $a .= $code->packRef($i, $i->source,  1);
   $a .= $code->packRef($i, $i->source2, 2);
+
+  if (my $j = $i->jump)
+   {vec($a, 2, 32) = $j->address;
+   }
+
   $a
  }
 
@@ -4434,6 +4437,27 @@ if (1)
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [1,1,1];
   #say STDERR generateVerilogMachineCode("Free");
+ }
+
+#latest:;
+if (1)                                                                          ##Jeq
+ {Start 1;
+  Block
+   {my ($Start, $Good, $Bad, $End) = @_;
+
+    my $a = Mov 1;
+    my $b = Mov 2;
+    Jeq $Good, $a, $b;
+    Out 111;
+    Jeq $Good, $a, $a;
+    Out 222;
+   }
+  Good
+   {Out 333;
+   };
+  my $e = Execute(suppressOutput=>1);
+  is_deeply $e->outLines, [111, 333];
+  #say STDERR generateVerilogMachineCode("Jeq_test");
  }
 
 =pod
