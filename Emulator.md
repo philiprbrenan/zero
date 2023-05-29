@@ -2988,6 +2988,7 @@ Shift left within an element.
       Out $a;
       my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [2];
+      #say STDERR generateVerilogMachineCode("ShiftLeft_test"); exit;
      }
     
 
@@ -3010,6 +3011,7 @@ Shift right with an element.
       Out $a;
       my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [2];
+      #say STDERR generateVerilogMachineCode("ShiftRight_test"); exit;
      }
     
 
