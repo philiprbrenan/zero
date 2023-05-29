@@ -13,8 +13,8 @@ module fpga;                                                                    
   parameter integer NLocal         = 1000;                                      // Size of local memory
   parameter integer NOut           = 1000;                                      // Size of output area
   parameter integer NFreedArrays   = 1000;                                      // Size of output area
-  parameter integer NTestPrograms  =    9;                                      // Number of test programs to run
-  parameter integer NTestsExpected =   27;                                      // Number of test passes expected
+  parameter integer NTestPrograms  =   10;                                      // Number of test programs to run
+  parameter integer NTestsExpected =   29;                                      // Number of test passes expected
 
   parameter integer ElementWidth   = 4;                                         // Width of each element in an an area
   parameter integer UserElements   = 5;                                         // User width of a heap area
@@ -62,6 +62,7 @@ module fpga;                                                                    
         7: Free_test();
         8: ShiftLeft_test();
         9: ShiftRight_test();
+       10: Jeq_test();
       endcase
     end
   endtask
@@ -104,23 +105,29 @@ module fpga;                                                                    
           ok(outMem[1] == 0, "Not 1.2");
           ok(outMem[2] == 1, "Not 1.3");
         end
-        5: begin                                                                // 4
+        5: begin                                                                // 4 => 10
           ok(localMem[ 0] ==  1, "Array 1.1");
           ok( heapMem[10] ==  0, "Array 1.1");
           ok( heapMem[11] == 11, "Array 1.2");
           ok( heapMem[12] == 22, "Array 1.3");
         end
-        6: begin                                                                // 12
+        6: begin                                                                // 12 => 22
           ok(outMem[0] == 3, "scan 1.1"); ok(outMem[1] == 2, "scan 1.2"); ok(outMem[ 2] == 1, "scan 1.3"); ok(outMem[ 3] == 0, "scan 1.4");
           ok(outMem[4] == 3, "scan 2.1"); ok(outMem[5] == 2, "scan 2.2"); ok(outMem[ 6] == 1, "scan 2.3"); ok(outMem[ 7] == 0, "scan 2.4");
           ok(outMem[8] == 0, "scan 3.1"); ok(outMem[9] == 1, "scan 3.2"); ok(outMem[10] == 2, "scan 3.3"); ok(outMem[11] == 3, "scan 3.4");
         end
-        7: begin                                                                // 3
+        7: begin                                                                // 3    => 25
           ok(outMem[0] == 1, "Free 1"); ok(outMem[1] == 1, "Free 1"); ok(outMem[2] == 1, "Free 1");
         end
         8: begin
-          ok(localMem[0] == 2, "ShiftLeft");                                    // 2
-          ok(localMem[0] == 2, "ShiftRight");
+          ok(localMem[0] == 2, "ShiftLeft");                                    // 1
+        end
+        9: begin
+          ok(localMem[0] == 2, "ShiftRight");                                   // 1
+        end
+       10: begin
+          ok(outMem[0] == 111, "Jeq_test 1");                                   // 1
+          ok(outMem[1] == 333, "Jeq_test 2");                                   // 1    => 29
         end
       endcase
     end
@@ -210,8 +217,8 @@ module fpga;                                                                    
 
   task printInstruction();                                                      // Print an instruction
     begin;
-      $display("targetAddress =%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Location=%4x",
-        targetAddress, targetArea, targetDAddress, targetDArea, targetArena, targetDelta, targetLocation);
+      $display("targetAddress =%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Location=%4x value=%4x",
+        targetAddress, targetArea, targetDAddress, targetDArea, targetArena, targetDelta, targetLocation, targetValue);
 
       $display("source1Address=%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Value   =%4x",
         source1Address, source1Area, source1DAddress, source1DArea, source1Arena, source1Delta, source1Value);
@@ -406,11 +413,6 @@ module fpga;                                                                    
   task inSize_instruction();
     begin                                                                       // inSize
      $display("inSize");
-    end
-  endtask
-  task jEq_instruction();
-    begin                                                                       // jEq
-     $display("jEq");
     end
   endtask
   task jFalse_instruction();
@@ -680,6 +682,24 @@ module fpga;                                                                    
       code[   0] = 'h0000002200000000000000000000217f000000000004207f000000000000007f;
       code[   1] = 'h0000003600000000000000000000217f000000000001207f000000000000007f;
       code[   2] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
+    end
+  endtask
+
+  task Jeq_test();
+    begin
+      NInstructionEnd = 12;
+      code[   0] = 'h0000001f00000000000000000000017f000000000001207f000000000000007f;
+      code[   1] = 'h0000002200000000000000000000217f000000000001207f000000000000007f;
+      code[   2] = 'h0000002200000000000000000001217f000000000002207f000000000000007f;
+      code[   3] = 'h0000001600000000000000050002217f000000000000217f000000000001217f;
+      code[   4] = 'h0000002600000000000000000000017f00000000006f207f000000000000007f;
+      code[   5] = 'h0000001600000000000000030002217f000000000000217f000000000000217f;
+      code[   6] = 'h0000002600000000000000000000017f0000000000de207f000000000000007f;
+      code[   7] = 'h0000001e00000000000000040004217f000000000000007f000000000000007f;
+      code[   8] = 'h0000001f00000000000000000000017f000000000002207f000000000000007f;
+      code[   9] = 'h0000002600000000000000000000017f00000000014d207f000000000000007f;
+      code[  10] = 'h0000001f00000000000000000000017f000000000003207f000000000000007f;
+      code[  11] = 'h0000001f00000000000000000000017f000000000004207f000000000000007f;
     end
   endtask
 
@@ -973,4 +993,11 @@ module fpga;                                                                    
     end
   endtask
 
+  task jEq_instruction();
+    begin                                                                       // Jeq
+      if (source1Value == source2Value) begin
+        ip += targetArea;
+      end
+    end
+  endtask
 endmodule
