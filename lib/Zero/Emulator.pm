@@ -3129,6 +3129,7 @@ if (1)                                                                          
   Out $a;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [2];
+  #say STDERR generateVerilogMachineCode("ShiftLeft_test"); exit;
  }
 
 #latest:;
@@ -3139,6 +3140,7 @@ if (1)                                                                          
   Out $a;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [2];
+  #say STDERR generateVerilogMachineCode("ShiftRight_test"); exit;
  }
 
 #latest:;
