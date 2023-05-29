@@ -179,7 +179,7 @@ Count the number of elements in the array specified by the first source operand 
     2
     3
     END
-      say STDERR generateVerilogMachineCode("Array_scans");  exit;
+      #say STDERR generateVerilogMachineCode("Array_scans");  exit;
      }
     
 
@@ -218,7 +218,7 @@ Count the number of elements in the array specified by the first source operand 
     2
     3
     END
-      say STDERR generateVerilogMachineCode("Array_scans");  exit;
+      #say STDERR generateVerilogMachineCode("Array_scans");  exit;
      }
     
 
@@ -299,7 +299,7 @@ Store in the target location the 1 based index of the second source operand in t
     2
     3
     END
-      say STDERR generateVerilogMachineCode("Array_scans");  exit;
+      #say STDERR generateVerilogMachineCode("Array_scans");  exit;
      }
     
 
