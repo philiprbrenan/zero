@@ -13,8 +13,8 @@ module fpga;                                                                    
   parameter integer NLocal         = 1000;                                      // Size of local memory
   parameter integer NOut           = 1000;                                      // Size of output area
   parameter integer NFreedArrays   = 1000;                                      // Size of output area
-  parameter integer NTestPrograms  =    7;                                      // Number of test programs to run
-  parameter integer NTestsExpected =   25;                                      // Number of test passes expected
+  parameter integer NTestPrograms  =    9;                                      // Number of test programs to run
+  parameter integer NTestsExpected =   27;                                      // Number of test passes expected
 
   parameter integer ElementWidth   = 4;                                         // Width of each element in an an area
   parameter integer UserElements   = 5;                                         // User width of a heap area
@@ -60,6 +60,8 @@ module fpga;                                                                    
         5: Array_test();
         6: Array_scans();
         7: Free_test();
+        8: ShiftLeft_test();
+        9: ShiftRight_test();
       endcase
     end
   endtask
@@ -94,28 +96,31 @@ module fpga;                                                                    
   task checkResults();                                                          // Check results of test
     begin
       case(test)
-        1: ok(outMem[0] == 1, "Mov 1");
-        2: ok(outMem[0] == 5, "Add 1");
-        3: ok(outMem[0] == 2, "Subtract 1");
-        4: begin
+        1: ok(outMem[0] == 1, "Mov 1");                                         // 1
+        2: ok(outMem[0] == 5, "Add 1");                                         // 1
+        3: ok(outMem[0] == 2, "Subtract 1");                                    // 1
+        4: begin                                                                // 3
           ok(outMem[0] == 3, "Not 1.1");
           ok(outMem[1] == 0, "Not 1.2");
           ok(outMem[2] == 1, "Not 1.3");
         end
-        5: begin
+        5: begin                                                                // 4
           ok(localMem[ 0] ==  1, "Array 1.1");
           ok( heapMem[10] ==  0, "Array 1.1");
           ok( heapMem[11] == 11, "Array 1.2");
           ok( heapMem[12] == 22, "Array 1.3");
         end
-        6: begin
+        6: begin                                                                // 12
           ok(outMem[0] == 3, "scan 1.1"); ok(outMem[1] == 2, "scan 1.2"); ok(outMem[ 2] == 1, "scan 1.3"); ok(outMem[ 3] == 0, "scan 1.4");
           ok(outMem[4] == 3, "scan 2.1"); ok(outMem[5] == 2, "scan 2.2"); ok(outMem[ 6] == 1, "scan 2.3"); ok(outMem[ 7] == 0, "scan 2.4");
           ok(outMem[8] == 0, "scan 3.1"); ok(outMem[9] == 1, "scan 3.2"); ok(outMem[10] == 2, "scan 3.3"); ok(outMem[11] == 3, "scan 3.4");
         end
-        7: begin
+        7: begin                                                                // 3
           ok(outMem[0] == 1, "Free 1"); ok(outMem[1] == 1, "Free 1"); ok(outMem[2] == 1, "Free 1");
-          printOut();
+        end
+        8: begin
+          ok(localMem[0] == 2, "ShiftLeft");                                    // 2
+          ok(localMem[0] == 2, "ShiftRight");
         end
       endcase
     end
@@ -538,16 +543,6 @@ module fpga;                                                                    
      $display("shiftDown");
     end
   endtask
-  task shiftLeft_instruction();
-    begin                                                                       // shiftLeft
-     $display("shiftLeft");
-    end
-  endtask
-  task shiftRight_instruction();
-    begin                                                                       // shiftRight
-     $display("shiftRight");
-    end
-  endtask
   task shiftUp_instruction();
     begin                                                                       // shiftUp
      $display("shiftUp");
@@ -667,6 +662,24 @@ module fpga;                                                                    
       code[   6] = 'h0000000100000000000000000002217f000000000005207f000000000000007f;
       code[   7] = 'h0000002600000000000000000000017f000000000002217f000000000000007f;
       code[   8] = 'h0000001300000000000000000002217f000000000005207f000000000000007f;
+    end
+  endtask
+                                                                                // Load program 'ShiftLeft_test' into code memory
+  task ShiftLeft_test();
+    begin
+      NInstructionEnd = 3;
+      code[   0] = 'h0000002200000000000000000000217f000000000001207f000000000000007f;
+      code[   1] = 'h0000003500000000000000000000217f000000000000217f000000000000007f;
+      code[   2] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
+    end
+  endtask
+                                                                                // Load program 'ShiftRight_test' into code memory
+  task ShiftRight_test();
+    begin
+      NInstructionEnd = 3;
+      code[   0] = 'h0000002200000000000000000000217f000000000004207f000000000000007f;
+      code[   1] = 'h0000003600000000000000000000217f000000000001207f000000000000007f;
+      code[   2] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
     end
   endtask
 
@@ -942,6 +955,20 @@ module fpga;                                                                    
           join
       endcase
       result = r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8;
+      setMemory();
+    end
+  endtask
+
+  task shiftLeft_instruction();
+    begin                                                                       // shiftLeft
+      result = targetValue << source1Value;
+      setMemory();
+    end
+  endtask
+
+  task shiftRight_instruction();
+    begin                                                                       // shiftLeft
+      result = targetValue >> source1Value;
       setMemory();
     end
   endtask
