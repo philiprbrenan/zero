@@ -8,7 +8,6 @@
 # Count number of ways an if statement actually goes.
 # doubleWrite, not read, rewrite need make-over
 # Initially array dimensions were set automatically by assignment to and array - now we require the resize operation or push/pop; to set the array size
-# Try removing auto setting of array size
 use v5.30;
 package Zero::Emulator;
 our $VERSION = 20230519;                                                        # Version
@@ -563,6 +562,23 @@ sub setOriginalMemoryTechnique($)                                               
  }
 
 # These methods place the heap arena in a vector string. Each area is up to a prespecified width wide. The current length of each such array is held in the first element.
+
+sub stringMemoryAreaLength($$$)                                                 #P Get the current length of a string memory area n area in.
+ {my ($exec, $arena, $area) = @_;                                               # Execution environment, arena, array,
+
+  my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
+  my $u = $exec->memoryStringUserElements;                                      # User width of a heap area
+  my $s = $exec->memoryStringSystemElements;                                    # System width of a heap area
+  my $t = $exec->memoryStringTotalElements;                                     # Total width of a heap area
+  my $o = $area * $t;                                                           # Offset of heap area in arena
+  my $l = vec($exec->memoryString, $o, $w * 8);                                 # Zero current length of area so we can push and pop
+    $l > 0 or confess "Area underflow, arena: $arena, area: $area";             # Check we are within the area
+  --$l;                                                                         # Pop
+  my $O = $o + $s + $l;                                                         # Offset of element in area
+  my $v = vec($exec->memoryString, $O, $w * 8);                                 # Pop element
+          vec($exec->memoryString, $o, $w * 8) = $l;                            # Decrease size of area
+  $v
+ }
 
 sub stringGetMemoryHeaps($)                                                     #P Get number of heaps.
  {my ($exec) = @_;                                                              # Execution environment, arena
