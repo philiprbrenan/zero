@@ -7,6 +7,7 @@
 # Assign needs to know from whence we got the value so we can write a better error message when it is no good
 # Count number of ways an if statement actually goes.
 # doubleWrite, not read, rewrite need make-over
+# Initially array dimensions were set automatically by assignment to and array - now we require the resize operation or push/pop; to set the array size
 use v5.30;
 package Zero::Emulator;
 our $VERSION = 20230519;                                                        # Version
@@ -1164,7 +1165,7 @@ my sub areaLength($$)                                                           
   scalar @$a
  }
 
-my sub locateAreaElement($$$)                                                   #P Locate an element in an array.
+my sub locateAreaElement($$$)                                                   #P Locate an element in an array.  If there are multiple elements with the specified value the last such element is indexed
  {my ($exec, $ref, $op) = @_;                                                   # Execution environment, reference naming the array, operation
 
   my @a = areaContent($exec, $ref);
@@ -1994,7 +1995,7 @@ sub ArrayDump($)                                                                
   $assembly->instruction(action=>"arrayDump", xTarget($target), nSource);
  }
 
-sub ArrayIndex($$;$) {                                                          #i Find the 1 based index of the second source operand in the array referenced by the first source operand if it is present in the array else 0 into the target location.  The business of returning -1 would have led to the confusion of "try catch" and we certainly do not want that.
+sub ArrayIndex($$;$) {                                                          #i Store in the target location the 1 based index of the second source operand in the array referenced by the first source operand if the secound source operand is present somwhere in the array else store 0 into the target location.  If the sought element appears in multiple locations, any one of these locations can be chosen.  The business of returning a zero based result with -1 signalling an error would have led to the confusion of "try catch" and we certainly do not want that.
   if (@_ == 2)
    {my ($area, $element) = @_;                                                  # Area, element to find
     my $t = &Var();
@@ -4242,9 +4243,10 @@ latest:;
 if (1)                                                                          ##ArrayIndex ##ArrayCountLess ##ArrayCountGreater
  {Start 1;
   my $a = Array "aaa";
-  Mov [$a, 0, "aaa"], 10;
-  Mov [$a, 1, "aaa"], 20;
-  Mov [$a, 2, "aaa"], 30;
+  Mov   [$a, 0, "aaa"], 10;
+  Mov   [$a, 1, "aaa"], 20;
+  Mov   [$a, 2, "aaa"], 30;
+  Resize $a, 3, "aaa";
 
   Out ArrayIndex       ($a, 30); Out ArrayIndex       ($a, 20); Out ArrayIndex       ($a, 10); Out ArrayIndex       ($a, 15);
   Out ArrayCountLess   ($a, 35); Out ArrayCountLess   ($a, 25); Out ArrayCountLess   ($a, 15); Out ArrayCountLess   ($a,  5);
@@ -4265,8 +4267,9 @@ if (1)                                                                          
 2
 3
 END
- #say STDERR generateVerilogMachineCode("Array_scans");  exit;
+  say STDERR generateVerilogMachineCode("Array_scans");  exit;
  }
+x;
 
 #latest:;
 if (1)                                                                          ##Tally ##For
