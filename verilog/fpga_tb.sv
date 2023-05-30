@@ -13,8 +13,8 @@ module fpga;                                                                    
   parameter integer NLocal         = 1000;                                      // Size of local memory
   parameter integer NOut           = 1000;                                      // Size of output area
   parameter integer NFreedArrays   = 1000;                                      // Size of output area
-  parameter integer NTestPrograms  =   12;                                      // Number of test programs to run
-  parameter integer NTestsExpected =   39;                                      // Number of test passes expected
+  parameter integer NTestPrograms  =   13;                                      // Number of test programs to run
+  parameter integer NTestsExpected =   42;                                      // Number of test passes expected
 
   parameter integer ElementWidth   = 4;                                         // Width of each element in an an area
   parameter integer UserElements   = 5;                                         // User width of a heap area
@@ -67,6 +67,7 @@ module fpga;                                                                    
        10: Jeq_test();
        11: Shift_up_test();
        12: Shift_up_test_2();
+       13: Push_test();
       endcase
     end
   endtask
@@ -147,6 +148,11 @@ module fpga;                                                                    
           ok(heapMem[13] == 99, "ShiftUp 2 1");
           ok(heapMem[14] ==  2, "ShiftUp 2 2");
         end
+       13: begin
+          ok(heapMem[10] ==  2, "Push 1 length");                               // 3 => 42
+          ok(heapMem[11] ==  1, "Push 1 1");
+          ok(heapMem[12] ==  2, "Push 1 2");
+        end
       endcase
     end
   endtask
@@ -188,7 +194,7 @@ module fpga;                                                                    
   wire [ 2: 0] source1DArea    = source[11:10];
   wire [ 2: 0] source1DAddress = source[ 9: 8];
   wire [ 7: 0] source1Delta    = source[ 7: 0] - 127;
-  wire [31: 0] source1Value    =
+  wire [31: 0] source1Value    =                                                // Source 1 as value
     source1Arena      == 0 ? 0 :
     source1Arena      == 1 ?
      (source1DAddress == 0 ?  source1Address :
@@ -200,6 +206,18 @@ module fpga;                                                                    
      (source1DAddress == 0 ? source1Address :
       source1DAddress == 1 ? source1Delta + localMem[source1Area*NArea + source1Address]           :
       source1DAddress == 2 ? source1Delta + localMem[source1Area*NArea + localMem[source1Address]] : 0) : 0;
+  wire [31: 0] sourceLocation  =                                                // Source 1 as a location
+    source1Arena      == 0 ? 0 :                                                // Invalid
+    source1Arena      == 1 ?                                                    // Heap - we have to skip over the array systems elements used to manage the array
+     (source1DAddress == 0 ?  source1Address :
+      source1DArea    == 0 && source1DAddress == 1 ? SystemElements + source1Delta + source1Area*NArea           + source1Address           :
+      source1DArea    == 0 && source1DAddress == 2 ? SystemElements + source1Delta + source1Area*NArea           + localMem[source1Address] :
+      source1DArea    == 1 && source1DAddress == 1 ? SystemElements + source1Delta + localMem[source1Area]*NArea + source1Address           :
+      source1DArea    == 1 && source1DAddress == 2 ? SystemElements + source1Delta + localMem[source1Area]*NArea + localMem[source1Address] : 0) :
+    source1Arena      == 2 ?                                                    // Local
+     (source1DAddress == 0 ?  source1Address :
+      source1DAddress == 1 ?  source1Delta + source1Address           :
+      source1DAddress == 2 ?  source1Delta + localMem[source1Address] : 0) : 0;
 
   wire [31: 0] targetArea      = target[63:32];                                 // Target
   wire [15: 0] targetAddress   = target[31:16];
@@ -207,7 +225,7 @@ module fpga;                                                                    
   wire [ 2: 0] targetDArea     = target[11:10];
   wire [ 2: 0] targetDAddress  = target[ 9: 8];
   wire [ 7: 0] targetDelta     = target[ 7: 0] - 127;
-  wire [31: 0] targetLocation  =
+  wire [31: 0] targetLocation  =                                                // Target as a location
     targetArena      == 0 ? 0 :                                                 // Invalid
     targetArena      == 1 ?                                                     // Heap - we have to skip over the array systems elements used to manage the array
      (targetDAddress == 0 ?  targetAddress :
@@ -220,7 +238,7 @@ module fpga;                                                                    
       targetDAddress == 1 ?  targetDelta + targetAddress           :
       targetDAddress == 2 ?  targetDelta + localMem[targetAddress] : 0) : 0;
 
-  wire [31: 0] targetValue    =
+  wire [31: 0] targetValue =                                                    // Target as a value
     targetArena      == 0 ? 0 :
     targetArena      == 1 ?
      (targetDAddress == 0 ?  targetAddress :
@@ -249,10 +267,10 @@ module fpga;                                                                    
   initial begin                                                                 // Load, run confirm
     testsPassed    = 0;                                                         // Passed tests
     testsFailed    = 0;                                                         // Failed tests
-    for(test = NTestPrograms; test > 0; --test) begin                           // Run the tests from bewest to oldest
+    for(test = 1; test <= NTestPrograms; ++test) begin                          // Run the tests from bewest to oldest
 //if (test == 11) begin
       allocs         = 0;                                                       // Largest number of arrays in use at any one time so far
-      freedArraysTop = 0;                                                      // Start freed arrays stack
+      freedArraysTop = 0;                                                       // Start freed arrays stack
       loadCode(test);                                                           // Load the program
       $display("Test %d", test);
       outMemPos = 0;                                                            // Output channel position
@@ -490,11 +508,6 @@ module fpga;                                                                    
      $display("pop");
     end
   endtask
-  task push_instruction();
-    begin                                                                       // push
-     $display("push");
-    end
-  endtask
   task random_instruction();
     begin                                                                       // random
      $display("random");
@@ -698,6 +711,17 @@ module fpga;                                                                    
       code[   4] = 'h0000003700000000000000000002157f000000000063207f000000000000007f;
     end
   endtask
+
+  task Push_test();
+    begin
+      NInstructionEnd = 3;
+      code[   0] = 'h0000000100000000000000000000217f000000000003207f000000000000007f;
+      code[   1] = 'h0000002d00000000000000000000217f000000000001207f000000000003207f;
+      code[   2] = 'h0000002d00000000000000000000217f000000000002207f000000000003207f;
+    end
+  endtask
+
+
 // Instruction memory access functions
 
   task setMemory();                                                             // Set the target memory location updating the containing array size if necessary
@@ -1061,6 +1085,15 @@ module fpga;                                                                    
   task jmp_instruction();
     begin                                                                       // jmp
       ip += targetArea;
+    end
+  endtask
+
+  task push_instruction();                                                      // push
+    begin
+      l = targetValue * NArea;
+      o = heapMem[l];
+      heapMem[l+o+1] = source1Value;                                            // Push
+      heapMem[l] += 1;                                                          // Increment length
     end
   endtask
 
