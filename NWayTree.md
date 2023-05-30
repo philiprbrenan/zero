@@ -974,11 +974,11 @@ Insert a key and its associated data into a tree.
     
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->heap(0 ), bless([5, 4, 3, 3], "Tree");
-      is_deeply $e->heap(2 ), bless([2, 1, 0, 1, 4, 5, 12], "Node"),;
+      is_deeply $e->heap(0 ), bless([5, 4, 3, 2], "Tree");
+      is_deeply $e->heap(2 ), bless([2, 1, 0, 0, 3, 4, 11], "Node");
       is_deeply $e->heap(3 ), bless([2, 4], "Keys");
       is_deeply $e->heap(4 ), bless([22, 44], "Data");
-      is_deeply $e->heap(5 ), bless([1, 2, 3, 1, 7, 8, 0], "Node"),;
+      is_deeply $e->heap(5 ), bless([1, 2, 2, 0, 6, 7, 0], "Node");
       is_deeply $e->heap(6 ), bless([1], "Keys");
       is_deeply $e->heap(7 ), bless([11], "Data");
       is_deeply $e->heap(8 ), bless([1, 3, 3, 1, 10, 11, 0], "Node"),;
@@ -988,6 +988,8 @@ Insert a key and its associated data into a tree.
       is_deeply $e->heap(12), bless([1, 4, 3, 1, 14, 15, 0], "Node"),;
       is_deeply $e->heap(13), bless([5], "Keys");
       is_deeply $e->heap(14), bless([55], "Data");
+    say STDERR dump($e->heap(8)); exit;
+    
      }
     
     if (1)                                                                          
@@ -998,20 +1000,19 @@ Insert a key and its associated data into a tree.
 
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->heap(1 ), bless([6, 4, 3, 3], "Tree");
-      is_deeply $e->heap(3 ), bless([2, 1, 0, 1, 4, 5, 12], "Node"),;
-      is_deeply $e->heap(4 ), bless([2, 4], "Keys");
-      is_deeply $e->heap(5 ), bless([22, 44], "Data");
-      is_deeply $e->heap(6 ), bless([1, 2, 3, 1, 7, 8, 0], "Node"),;
-      is_deeply $e->heap(7 ), bless([1], "Keys");
-      is_deeply $e->heap(8 ), bless([11], "Data");
-      is_deeply $e->heap(9 ), bless([1, 3, 3, 1, 10, 11, 0], "Node"),;
-      is_deeply $e->heap(10), bless([3], "Keys");
-      is_deeply $e->heap(11), bless([33], "Data");
-      is_deeply $e->heap(12), bless([6, 9, 13], "Down"),;
-      is_deeply $e->heap(13), bless([2, 4, 3, 1, 14, 15, 0], "Node"),;
-      is_deeply $e->heap(14), bless([5, 6], "Keys");
-      is_deeply $e->heap(15), bless([55, 66], "Data");
+      is_deeply $e->heap(0 ), bless([2, 1, 0, 1, 4, 5, 12], "Node"),;
+      is_deeply $e->heap(2 ), bless([2, 4], "Keys");
+      is_deeply $e->heap(3 ), bless([22, 44], "Data");
+      is_deeply $e->heap(4 ), bless([1, 2, 3, 1, 7, 8, 0], "Node"),;
+      is_deeply $e->heap(5 ), bless([1], "Keys");
+      is_deeply $e->heap(6 ), bless([11], "Data");
+      is_deeply $e->heap(7 ), bless([1, 3, 3, 1, 10, 11, 0], "Node"),;
+      is_deeply $e->heap(8 ), bless([3], "Keys");
+      is_deeply $e->heap(9),  bless([33], "Data");
+      is_deeply $e->heap(10), bless([6, 9, 13], "Down"),;
+      is_deeply $e->heap(11), bless([2, 4, 3, 1, 14, 15, 0], "Node"),;
+      is_deeply $e->heap(12), bless([5, 6], "Keys");
+      is_deeply $e->heap(13), bless([55, 66], "Data");
      }
     
     if (1)                                                                             
