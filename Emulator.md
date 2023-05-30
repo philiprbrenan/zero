@@ -156,7 +156,6 @@ Count the number of elements in the array specified by the first source operand 
       Mov   [$a, 0, "aaa"], 10;
       Mov   [$a, 1, "aaa"], 20;
       Mov   [$a, 2, "aaa"], 30;
-      Resize $a, 3, "aaa";
     
       Out ArrayIndex       ($a, 30); Out ArrayIndex       ($a, 20); Out ArrayIndex       ($a, 10); Out ArrayIndex       ($a, 15);
     
@@ -195,7 +194,6 @@ Count the number of elements in the array specified by the first source operand 
       Mov   [$a, 0, "aaa"], 10;
       Mov   [$a, 1, "aaa"], 20;
       Mov   [$a, 2, "aaa"], 30;
-      Resize $a, 3, "aaa";
     
       Out ArrayIndex       ($a, 30); Out ArrayIndex       ($a, 20); Out ArrayIndex       ($a, 10); Out ArrayIndex       ($a, 15);
       Out ArrayCountLess   ($a, 35); Out ArrayCountLess   ($a, 25); Out ArrayCountLess   ($a, 15); Out ArrayCountLess   ($a,  5);
@@ -276,7 +274,6 @@ Store in the target location the 1 based index of the second source operand in t
       Mov   [$a, 0, "aaa"], 10;
       Mov   [$a, 1, "aaa"], 20;
       Mov   [$a, 2, "aaa"], 30;
-      Resize $a, 3, "aaa";
     
     
       Out ArrayIndex       ($a, 30); Out ArrayIndex       ($a, 20); Out ArrayIndex       ($a, 10); Out ArrayIndex       ($a, 15);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -3062,6 +3059,7 @@ Shift an element up one in an area.
     
       my $e = &$ee(suppressOutput=>0);
       is_deeply $e->heap(1), [99, 0, 1, 2];
+      #say STDERR generateVerilogMachineCode("Shift_up_test");  exit;
      }
     
     if (1)                                                                          
@@ -3094,6 +3092,7 @@ Shift an element up one in an area.
     
       my $e = &$ee(suppressOutput=>0);
       is_deeply $e->heap(1), [0, 1, 99, 2];
+      #say STDERR generateVerilogMachineCode("Shift_up_test_2");  exit;
      }
     
     if (1)                                                                           
@@ -3521,6 +3520,7 @@ Runs its sub sections in sequential order
     
       my $e = &$ee(suppressOutput=>0);
       is_deeply $e->heap(1), [0, 1, 99, 2];
+      #say STDERR generateVerilogMachineCode("Shift_up_test_2");  exit;
      }
     
 
