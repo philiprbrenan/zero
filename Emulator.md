@@ -2504,7 +2504,7 @@ Move and not.
     0
     1
     END
-      #say STDERR generateVerilogMachineCode("Not_test");
+      #say STDERR generateVerilogMachineCode("Not_test"); exit;
      }
     
 
@@ -3548,7 +3548,6 @@ Generate a string of machine code from the current block of code.
     
       my $g = GenerateMachineCode;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      is_deeply dump($g), 'pack("H*","0000002200000000000000000000217f000000000001207f000000000000007f")';
     
       my $d = disAssemble $g;
          $d->assemble;
@@ -3575,7 +3574,6 @@ Disassemble machine code.
      {Start 1;
       my $a = Mov 1;
       my $g = GenerateMachineCode;
-      is_deeply dump($g), 'pack("H*","0000002200000000000000000000217f000000000001207f000000000000007f")';
     
     
       my $d = disAssemble $g;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -3604,7 +3602,6 @@ Round trip: generate machine code and write it onto a string, disassemble the ge
      {Start 1;
       my $a = Mov 1;
       my $g = GenerateMachineCode;
-      is_deeply dump($g), 'pack("H*","0000002200000000000000000000217f000000000001207f000000000000007f")';
     
       my $d = disAssemble $g;
          $d->assemble;
@@ -3628,20 +3625,6 @@ Generate machine code and print it out in Verilog format
 
        Parameter  Description
     1  $name      Name of subroutine to contain generated code
-
-**Example:**
-
-    if (1)                                                                          
-     {Start 1;
-      my $a = Mov 1;
-      Out $a;
-      my $g = GenerateMachineCode;
-      is_deeply unpack("H*", $g), '0000002200000000000000000000217f000000000001207f000000000000007f0000002600000000000000000000017f000000000000217f000000000000007f';
-    
-      #say STDERR generateVerilogMachineCode("Mov_test");  exit;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-     }
-    
 
 # Hash Definitions
 
