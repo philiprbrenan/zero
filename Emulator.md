@@ -2712,16 +2712,6 @@ Pop the memory area specified by the source operand into the memory address spec
       is_deeply $e->heap(1), [];
      }
     
-    if (1)                                                                           
-     {Start 1;
-      my $a = Array   "aaa";
-      Push $a, 1,     "aaa";
-      Push $a, 2,     "aaa";
-      my $e = Execute(suppressOutput=>1);
-      is_deeply $e->heap(1), [1..2];
-      #say STDERR generateVerilogMachineCode("Push_test");
-     }
-    
 
 ## Procedure($name, $source)
 
@@ -2828,7 +2818,7 @@ Push the value in the current stack frame specified by the source operand onto t
       is_deeply $e->mostArrays, [undef, 2, 1, 1, 1];
      }
     
-    if (1)                                                                           
+    if (1)                                                                          
      {Start 1;
       my $a = Array   "aaa";
     
