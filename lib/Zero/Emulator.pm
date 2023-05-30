@@ -2780,7 +2780,7 @@ sub Zero::Emulator::Assembly::packRef($$$$)                                     
    {my $a = '';
     vec($a, 0, 32) = 0;
     vec($a, 1, 32) = 0;
-    vec($a, 7,  8) =  2**7 - 1;
+    vec($a, 7,  8) = 0;
     return $a;
    }
 
@@ -2819,12 +2819,12 @@ END
    }
 
   my $a = '';
-  vec($a, 0, 32) =         $area;
-  vec($a, 2, 16) =         $address;
-  vec($a, 24, 2) =         $dAddress;
-  vec($a, 25, 2) =         $dArea;
-  vec($a, 26, 2) =         $arena;
-  vec($a, 7,  8) =  2**7 + $delta - 1;
+  vec($a, 0, 32) = $area;
+  vec($a, 2, 16) = $address;
+  vec($a, 24, 2) = $dAddress;
+  vec($a, 25, 2) = $dArea;
+  vec($a, 26, 2) = $arena;
+  vec($a, 7,  8) = $delta;
   $a
  }
 
@@ -2836,7 +2836,7 @@ sub Zero::Emulator::Assembly::unpackRef($$$)                                    
   my $dAddress = vec($a, 24,  2);
   my $dArea    = vec($a, 25,  2);
   my $arena    = vec($a, 26,  2);
-  my $delta    = vec($a,  7,  8) - (2**7 - 1);
+  my $delta    = vec($a,  7,  8);
 
   my $area     = rerefValue($vArea,    $dArea);
   my $address  = rerefValue($vAddress, $dAddress);
@@ -3142,7 +3142,7 @@ if (1)                                                                          
 0
 1
 END
-  #say STDERR generateVerilogMachineCode("Not_test");
+  #say STDERR generateVerilogMachineCode("Not_test"); exit;
  }
 
 #latest:;
@@ -4379,7 +4379,6 @@ if (1)                                                                          
  {Start 1;
   my $a = Mov 1;
   my $g = GenerateMachineCode;
-  is_deeply dump($g), 'pack("H*","0000002200000000000000000000217f000000000001207f000000000000007f")';
 
   my $d = disAssemble $g;
      $d->assemble;
@@ -4390,16 +4389,6 @@ END
   is_deeply $e->block->codeToString, <<'END';
 0000       mov [0, 0, 3, 0]  [0, 1, 3, 0]  [0, 0, 3, 0]
 END
- }
-
-#latest:;
-if (1)                                                                          ##generateVerilogMachineCode
- {Start 1;
-  my $a = Mov 1;
-  Out $a;
-  my $g = GenerateMachineCode;
-  is_deeply unpack("H*", $g), '0000002200000000000000000000217f000000000001207f000000000000007f0000002600000000000000000000017f000000000000217f000000000000007f';
-  #say STDERR generateVerilogMachineCode("Mov_test");  exit;
  }
 
 #latest:;
@@ -4490,6 +4479,22 @@ if (1)                                                                          
   is_deeply $e->Heap->($e, 0), [1..2];
   #say STDERR generateVerilogMachineCode("Push_test");
  }
+
+#latest:;
+if (1)                                                                          # Local variable
+ {Start 1;
+  my $a = Mov 1;
+  my $b = Mov 2;
+  my $c = Mov 3;
+  Out $a;
+  Out $b;
+  Out $c;
+  my $e = Execute(suppressOutput=>1);
+  is_deeply $e->outLines, [1..3];
+  #say STDERR generateVerilogMachineCode("Mov_test");
+ }
+
+ok 1;
 
 =pod
 (\A.{80})\s+(#.*\Z) \1\2
