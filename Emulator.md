@@ -72,7 +72,7 @@ Create a new memory area and write its number into the address named by the targ
       Mov     [$a,  0, "aaa"],  11;
       Mov     [$a,  1, "aaa"],  22;
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->heap(1), [11, 22];
+      is_deeply $e->Heap->($e, 0), [11, 22];
       #say STDERR generateVerilogMachineCode("Array_test");  exit;
      }
     
@@ -114,7 +114,7 @@ Create a new memory area and write its number into the address named by the targ
       Nop;
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->heap(1), [1, 22, 333];
+      is_deeply $e->Heap->($e, 0), [1, 22, 333];
       is_deeply $e->out, <<END if $testSet <= 2;
     
     Array size:  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -333,7 +333,7 @@ The current size of an array.
       Nop;
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->heap(1), [1, 22, 333];
+      is_deeply $e->Heap->($e, 0), [1, 22, 333];
       is_deeply $e->out, <<END if $testSet <= 2;
     Array size:
     3
@@ -853,24 +853,17 @@ Dump all the arrays currently in memory.
       Out $a;
       Mov [$a, 1, 'node'], 1;
       Mov [$a, 2, 'node'], 2;
-      Mov 1, [$a, \1, 'node'];
-    
-      Dump;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
+      Out Mov [$a, \1, 'node'];
+      Out Mov [$a, \2, 'node'];
       Free $a, "node";
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, <<END if $testSet <= 2;
-    1
-    1=bless([undef, 1, 2], "node")
-    Stack trace:
-        1     6 dump
+      #say STDERR $e->PrintMemory->($e); exit;
+      is_deeply $e->PrintMemory->($e), <<END;
+    Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
+    Local:    0    1    2
+         0    size:     0
     END
-      is_deeply $e->out, <<END if $testSet >  2;
-    1
-    1=[0, 1, 2]
-    Stack trace:
-        1     6 dump
-    END
+      is_deeply $e->outLines, [0..2];
      }
     
 
@@ -929,12 +922,12 @@ Else block.
         1     0     0         trace
         2     1     1           jNe
         3     5     0         label
-        4     6     1           mov  [1, 3, stackArea] = 3
-        5     7     1           mov  [1, 4, stackArea] = 4
+        4     6     1           mov  [0, 3, stackArea] = 3
+        5     7     1           mov  [0, 4, stackArea] = 4
         6     8     0         label
         7     9     1           jNe
-        8    10     1           mov  [1, 1, stackArea] = 1
-        9    11     1           mov  [1, 2, stackArea] = 1
+        8    10     1           mov  [0, 1, stackArea] = 1
+        9    11     1           mov  [0, 2, stackArea] = 1
        10    12     1           jmp
        11    16     0         label
     END
@@ -944,12 +937,12 @@ Else block.
         1     0     0         trace
         2     1     1           jNe
         3     5     0         label
-        4     6     1           mov  [1, 3, stackArea] = 3
-        5     7     1           mov  [1, 4, stackArea] = 4
+        4     6     1           mov  [0, 3, stackArea] = 3
+        5     7     1           mov  [0, 4, stackArea] = 4
         6     8     0         label
         7     9     1           jNe
-        8    10     1           mov  [1, 1, stackArea] = 1
-        9    11     1           mov  [1, 2, stackArea] = 1
+        8    10     1           mov  [0, 1, stackArea] = 1
+        9    11     1           mov  [0, 2, stackArea] = 1
        10    12     1           jmp
        11    16     0         label
     END
@@ -1081,7 +1074,7 @@ For loop to process each element of the named area.
       Nop;
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->heap(1), [1, 22, 333];
+      is_deeply $e->Heap->($e, 0), [1, 22, 333];
       is_deeply $e->out, <<END if $testSet <= 2;
     Array size:
     3
@@ -1161,24 +1154,19 @@ Free the memory area named by the target operand after confirming that it has th
       Out $a;
       Mov [$a, 1, 'node'], 1;
       Mov [$a, 2, 'node'], 2;
-      Mov 1, [$a, \1, 'node'];
-      Dump;
+      Out Mov [$a, \1, 'node'];
+      Out Mov [$a, \2, 'node'];
     
       Free $a, "node";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->out, <<END if $testSet <= 2;
-    1
-    1=bless([undef, 1, 2], "node")
-    Stack trace:
-        1     6 dump
+      #say STDERR $e->PrintMemory->($e); exit;
+      is_deeply $e->PrintMemory->($e), <<END;
+    Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
+    Local:    0    1    2
+         0    size:     0
     END
-      is_deeply $e->out, <<END if $testSet >  2;
-    1
-    1=[0, 1, 2]
-    Stack trace:
-        1     6 dump
-    END
+      is_deeply $e->outLines, [0..2];
      }
     
 
@@ -1232,18 +1220,18 @@ Execute then or else clause depending on whether two memory locations are equal.
       my $a = Mov 1;
       my $b = Mov 2;
     
-      IfEq $a, $a, Then {Out "Eq"};  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      IfEq $a, $a, Then {Out 111};  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      IfNe $a, $a, Then {Out "Ne"};
-      IfLe $a, $a, Then {Out "Le"};
-      IfLt $a, $a, Then {Out "Lt"};
-      IfGe $a, $a, Then {Out "Ge"};
-      IfGt $a, $a, Then {Out "Gt"};
+      IfNe $a, $a, Then {Out 222};
+      IfLe $a, $a, Then {Out 333};
+      IfLt $a, $a, Then {Out 444};
+      IfGe $a, $a, Then {Out 555};
+      IfGt $a, $a, Then {Out 666};
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    Eq
-    Le
-    Ge
+    111
+    333
+    555
     END
      }
     
@@ -1329,19 +1317,19 @@ Execute then or else clause depending on whether two memory locations are greate
      {Start 1;
       my $a = Mov 1;
       my $b = Mov 2;
-      IfEq $a, $a, Then {Out "Eq"};
-      IfNe $a, $a, Then {Out "Ne"};
-      IfLe $a, $a, Then {Out "Le"};
-      IfLt $a, $a, Then {Out "Lt"};
+      IfEq $a, $a, Then {Out 111};
+      IfNe $a, $a, Then {Out 222};
+      IfLe $a, $a, Then {Out 333};
+      IfLt $a, $a, Then {Out 444};
     
-      IfGe $a, $a, Then {Out "Ge"};  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      IfGe $a, $a, Then {Out 555};  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      IfGt $a, $a, Then {Out "Gt"};
+      IfGt $a, $a, Then {Out 666};
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    Eq
-    Le
-    Ge
+    111
+    333
+    555
     END
      }
     
@@ -1401,19 +1389,19 @@ Execute then or else clause depending on whether two memory locations are greate
      {Start 1;
       my $a = Mov 1;
       my $b = Mov 2;
-      IfEq $a, $a, Then {Out "Eq"};
-      IfNe $a, $a, Then {Out "Ne"};
-      IfLe $a, $a, Then {Out "Le"};
-      IfLt $a, $a, Then {Out "Lt"};
-      IfGe $a, $a, Then {Out "Ge"};
+      IfEq $a, $a, Then {Out 111};
+      IfNe $a, $a, Then {Out 222};
+      IfLe $a, $a, Then {Out 333};
+      IfLt $a, $a, Then {Out 444};
+      IfGe $a, $a, Then {Out 555};
     
-      IfGt $a, $a, Then {Out "Gt"};  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      IfGt $a, $a, Then {Out 666};  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    Eq
-    Le
-    Ge
+    111
+    333
+    555
     END
      }
     
@@ -1473,19 +1461,19 @@ Execute then or else clause depending on whether two memory locations are not eq
      {Start 1;
       my $a = Mov 1;
       my $b = Mov 2;
-      IfEq $a, $a, Then {Out "Eq"};
+      IfEq $a, $a, Then {Out 111};
     
-      IfNe $a, $a, Then {Out "Ne"};  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      IfNe $a, $a, Then {Out 222};  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      IfLe $a, $a, Then {Out "Le"};
-      IfLt $a, $a, Then {Out "Lt"};
-      IfGe $a, $a, Then {Out "Ge"};
-      IfGt $a, $a, Then {Out "Gt"};
+      IfLe $a, $a, Then {Out 333};
+      IfLt $a, $a, Then {Out 444};
+      IfGe $a, $a, Then {Out 555};
+      IfGt $a, $a, Then {Out 666};
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    Eq
-    Le
-    Ge
+    111
+    333
+    555
     END
      }
     
@@ -1545,19 +1533,19 @@ Execute then or else clause depending on whether two memory locations are less t
      {Start 1;
       my $a = Mov 1;
       my $b = Mov 2;
-      IfEq $a, $a, Then {Out "Eq"};
-      IfNe $a, $a, Then {Out "Ne"};
+      IfEq $a, $a, Then {Out 111};
+      IfNe $a, $a, Then {Out 222};
     
-      IfLe $a, $a, Then {Out "Le"};  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      IfLe $a, $a, Then {Out 333};  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      IfLt $a, $a, Then {Out "Lt"};
-      IfGe $a, $a, Then {Out "Ge"};
-      IfGt $a, $a, Then {Out "Gt"};
+      IfLt $a, $a, Then {Out 444};
+      IfGe $a, $a, Then {Out 555};
+      IfGt $a, $a, Then {Out 666};
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    Eq
-    Le
-    Ge
+    111
+    333
+    555
     END
      }
     
@@ -1617,19 +1605,19 @@ Execute then or else clause depending on whether two memory locations are less t
      {Start 1;
       my $a = Mov 1;
       my $b = Mov 2;
-      IfEq $a, $a, Then {Out "Eq"};
-      IfNe $a, $a, Then {Out "Ne"};
-      IfLe $a, $a, Then {Out "Le"};
+      IfEq $a, $a, Then {Out 111};
+      IfNe $a, $a, Then {Out 222};
+      IfLe $a, $a, Then {Out 333};
     
-      IfLt $a, $a, Then {Out "Lt"};  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      IfLt $a, $a, Then {Out 444};  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      IfGe $a, $a, Then {Out "Ge"};
-      IfGt $a, $a, Then {Out "Gt"};
+      IfGe $a, $a, Then {Out 555};
+      IfGt $a, $a, Then {Out 666};
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    Eq
-    Le
-    Ge
+    111
+    333
+    555
     END
      }
     
@@ -1818,8 +1806,8 @@ Jump to a target label if the first source field is equal to the second source f
       my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
-      is_deeply $e->heap(1), [2];
-      is_deeply $e->heap(2), [99];
+      is_deeply $e->Heap->($e, 0), [1];
+      is_deeply $e->Heap->($e, 1), [99];
      }
     
     if (1)                                                                          
@@ -1928,8 +1916,8 @@ Jump to a target label if the first source field is greater than or equal to the
       my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
-      is_deeply $e->heap(1), [2];
-      is_deeply $e->heap(2), [99];
+      is_deeply $e->Heap->($e, 0), [1];
+      is_deeply $e->Heap->($e, 1), [99];
      }
     
 
@@ -1968,8 +1956,8 @@ Jump to a target label if the first source field is greater than the second sour
       my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
-      is_deeply $e->heap(1), [2];
-      is_deeply $e->heap(2), [99];
+      is_deeply $e->Heap->($e, 0), [1];
+      is_deeply $e->Heap->($e, 1), [99];
      }
     
 
@@ -2008,8 +1996,8 @@ Jump to a target label if the first source field is less than or equal to the se
       my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
-      is_deeply $e->heap(1), [2];
-      is_deeply $e->heap(2), [99];
+      is_deeply $e->Heap->($e, 0), [1];
+      is_deeply $e->Heap->($e, 1), [99];
      }
     
 
@@ -2048,8 +2036,8 @@ Jump to a target label if the first source field is less than the second source 
       my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
-      is_deeply $e->heap(1), [2];
-      is_deeply $e->heap(2), [99];
+      is_deeply $e->Heap->($e, 0), [1];
+      is_deeply $e->Heap->($e, 1), [99];
      }
     
 
@@ -2114,8 +2102,8 @@ Jump to a target label if the first source field is not equal to the second sour
       my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
-      is_deeply $e->heap(1), [2];
-      is_deeply $e->heap(2), [99];
+      is_deeply $e->Heap->($e, 0), [1];
+      is_deeply $e->Heap->($e, 1), [99];
      }
     
 
@@ -2195,8 +2183,8 @@ Load the address component of an address.
     1
     END
     
-      is_deeply $e->heap(1), [undef, undef, 44, undef, undef, 33] if $testSet <= 2;
-      is_deeply $e->heap(1), [0,     0,     44, 0,     0,     33] if $testSet  > 2;
+      is_deeply $e->Heap->($e, 0), [undef, undef, 44, undef, undef, 33] if $testSet <= 2;
+      is_deeply $e->Heap->($e, 0), [0,     0,     44, 0,     0,     33] if $testSet  > 2;
     
       is_deeply $e->widestAreaInArena, [undef, 5, 4];
       is_deeply $e->namesOfWidestArrays, [undef, "array", "stackArea"]   if $testSet % 2;
@@ -2233,8 +2221,8 @@ Load the area component of an address.
     1
     END
     
-      is_deeply $e->heap(1), [undef, undef, 44, undef, undef, 33] if $testSet <= 2;
-      is_deeply $e->heap(1), [0,     0,     44, 0,     0,     33] if $testSet  > 2;
+      is_deeply $e->Heap->($e, 0), [undef, undef, 44, undef, undef, 33] if $testSet <= 2;
+      is_deeply $e->Heap->($e, 0), [0,     0,     44, 0,     0,     33] if $testSet  > 2;
     
       is_deeply $e->widestAreaInArena, [undef, 5, 4];
       is_deeply $e->namesOfWidestArrays, [undef, "array", "stackArea"]   if $testSet % 2;
@@ -2269,7 +2257,7 @@ Copy a constant or memory address to the target address.
       Mov     [$a,  1, "aaa"],  22;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->heap(1), [11, 22];
+      is_deeply $e->Heap->($e, 0), [11, 22];
       #say STDERR generateVerilogMachineCode("Array_test");  exit;
      }
     
@@ -2304,7 +2292,7 @@ Copy a constant or memory address to the target address.
       Mov [$c, 1, 'alloc'], 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->heap(1), [99, 2];
+      is_deeply $e->Heap->($e, 0), [99, 2];
      }
     
     if (1)                                                                            
@@ -2396,8 +2384,8 @@ Copy a constant or memory address to the target address.
       my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
-      is_deeply $e->heap(1), [2];
-      is_deeply $e->heap(2), [99];
+      is_deeply $e->Heap->($e, 0), [1];
+      is_deeply $e->Heap->($e, 1), [99];
      }
     
     if (1)                                                                           
@@ -2418,8 +2406,8 @@ Copy a constant or memory address to the target address.
       my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       19 instructions executed";
-      is_deeply $e->heap(1), [undef, undef, 1] if $testSet <= 2;
-      is_deeply $e->heap(1), [0,     0,     1] if $testSet  > 2;
+      is_deeply $e->Heap->($e, 0), [undef, undef, 1] if $testSet <= 2;
+      is_deeply $e->Heap->($e, 0), [0,     0,     1] if $testSet  > 2;
      }
     
     if (1)                                                                           
@@ -2487,8 +2475,8 @@ Copy the number of elements specified by the second source operand from the loca
 
     
       my $e = &$ee(suppressOutput=>1, maximumArraySize=>11);
-      is_deeply $e->heap(1), [0 .. 9];
-      is_deeply $e->heap(2), [100, 101, 4, 5, 6, 105 .. 109];
+      is_deeply $e->Heap->($e, 0), [0 .. 9];
+      is_deeply $e->Heap->($e, 1), [100, 101, 4, 5, 6, 105 .. 109];
      }
     
 
@@ -2558,7 +2546,7 @@ Do nothing (but do it well!).
 
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->heap(1), [1, 22, 333];
+      is_deeply $e->Heap->($e, 0), [1, 22, 333];
       is_deeply $e->out, <<END if $testSet <= 2;
     Array size:
     3
@@ -2690,7 +2678,7 @@ Pop the memory area specified by the source operand into the memory address spec
 
 **Example:**
 
-    if (1)                                                                           
+    if (1)                                                                          
      {Start 1;
       my $a = Array   "aaa";
       Push $a, 1,     "aaa";
@@ -2705,11 +2693,13 @@ Pop the memory area specified by the source operand into the memory address spec
       Out $c;
       Out $d;
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    2
-    1
+    
+      is_deeply $e->PrintMemory->($e), <<END;
+    Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
+    Local:    0    2    1
+         0    size:     0
     END
-      is_deeply $e->heap(1), [];
+      is_deeply $e->Heap->($e, 0), [];
      }
     
 
@@ -2767,7 +2757,7 @@ Push the value in the current stack frame specified by the source operand onto t
 
 **Example:**
 
-    if (1)                                                                           
+    if (1)                                                                          
      {Start 1;
       my $a = Array   "aaa";
     
@@ -2776,17 +2766,12 @@ Push the value in the current stack frame specified by the source operand onto t
     
       Push $a, 2,     "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $c = Pop $a, "aaa";
-      my $d = Pop $a, "aaa";
-    
-      Out $c;
-      Out $d;
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->out, <<END;
-    2
-    1
+      is_deeply $e->PrintMemory->($e), <<END;
+    Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
+    Local:    0
+         0    1    2    size:     2
     END
-      is_deeply $e->heap(1), [];
      }
     
     if (1)                                                                          
@@ -2812,9 +2797,15 @@ Push the value in the current stack frame specified by the source operand onto t
       Push $b, 33, "bbb";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->GetMemoryHeaps->($e), 3;
-      is_deeply $e->heap(1), [1, 2, 3];
-      is_deeply $e->heap(2), [11, 22, 33];
+      is_deeply $e->GetMemoryArrays->($e), 2;
+    
+      #say STDERR $e->PrintMemory->($e); exit;
+      is_deeply $e->PrintMemory->($e), <<END;
+    Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
+    Local:    0    1
+         0    1    2    3    size:     3
+         1   11   22   33    size:     3
+    END
       is_deeply $e->mostArrays, [undef, 2, 1, 1, 1];
      }
     
@@ -2828,7 +2819,7 @@ Push the value in the current stack frame specified by the source operand onto t
       Push $a, 2,     "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->heap(1), [1..2];
+      is_deeply $e->Heap->($e, 0), [1..2];
       #say STDERR generateVerilogMachineCode("Push_test");
      }
     
@@ -2857,7 +2848,7 @@ Resize the target area to the source size.
       ArrayDump $a;
       my $e = &$ee(suppressOutput=>1);
     
-      is_deeply $e->heap(1), [1, 2];
+      is_deeply $e->Heap->($e, 0), [1, 2];
       is_deeply eval($e->out), [1,2];
      }
     
@@ -2999,7 +2990,7 @@ Shift an element down one in an area.
       Out $b;
     
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->heap(1), [0, 2];
+      is_deeply $e->Heap->($e, 0), [0, 2];
       is_deeply $e->outLines, [99];
      }
     
@@ -3072,7 +3063,7 @@ Shift an element up one in an area.
 
     
       my $e = &$ee(suppressOutput=>0);
-      is_deeply $e->heap(1), [99, 0, 1, 2];
+      is_deeply $e->Heap->($e, 0), [99, 0, 1, 2];
       #say STDERR generateVerilogMachineCode("Shift_up_test");  exit;
      }
     
@@ -3088,7 +3079,7 @@ Shift an element up one in an area.
 
     
       my $e = &$ee(suppressOutput=>0);
-      is_deeply $e->heap(1), [0, 99, 1, 2];
+      is_deeply $e->Heap->($e, 0), [0, 99, 1, 2];
      }
     
     if (1)                                                                           
@@ -3105,7 +3096,7 @@ Shift an element up one in an area.
 
     
       my $e = &$ee(suppressOutput=>0);
-      is_deeply $e->heap(1), [0, 1, 99, 2];
+      is_deeply $e->Heap->($e, 0), [0, 1, 99, 2];
       #say STDERR generateVerilogMachineCode("Shift_up_test_2");  exit;
      }
     
@@ -3123,7 +3114,7 @@ Shift an element up one in an area.
 
     
       my $e = &$ee(suppressOutput=>0);
-      is_deeply $e->heap(1), [0, 1, 2, 99];
+      is_deeply $e->Heap->($e, 0), [0, 1, 2, 99];
       is_deeply [$e->timeParallel, $e->timeSequential], [3,5];
      }
     
@@ -3141,7 +3132,7 @@ Shift an element up one in an area.
       ShiftUp [$a, 2, 'array'], 26;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = &$ee(suppressOutput=>1, maximumArraySize=>8);
-      is_deeply $e->heap(1), bless([10, 20, 26, 30, 40, 50, 60, 70], "array");
+      is_deeply $e->Heap->($e, 0), bless([10, 20, 26, 30, 40, 50, 60, 70], "array");
      }
     
 
@@ -3276,12 +3267,12 @@ Then block.
         1     0     0         trace
         2     1     1           jNe
         3     5     0         label
-        4     6     1           mov  [1, 3, stackArea] = 3
-        5     7     1           mov  [1, 4, stackArea] = 4
+        4     6     1           mov  [0, 3, stackArea] = 3
+        5     7     1           mov  [0, 4, stackArea] = 4
         6     8     0         label
         7     9     1           jNe
-        8    10     1           mov  [1, 1, stackArea] = 1
-        9    11     1           mov  [1, 2, stackArea] = 1
+        8    10     1           mov  [0, 1, stackArea] = 1
+        9    11     1           mov  [0, 2, stackArea] = 1
        10    12     1           jmp
        11    16     0         label
     END
@@ -3291,12 +3282,12 @@ Then block.
         1     0     0         trace
         2     1     1           jNe
         3     5     0         label
-        4     6     1           mov  [1, 3, stackArea] = 3
-        5     7     1           mov  [1, 4, stackArea] = 4
+        4     6     1           mov  [0, 3, stackArea] = 3
+        5     7     1           mov  [0, 4, stackArea] = 4
         6     8     0         label
         7     9     1           jNe
-        8    10     1           mov  [1, 1, stackArea] = 1
-        9    11     1           mov  [1, 2, stackArea] = 1
+        8    10     1           mov  [0, 1, stackArea] = 1
+        9    11     1           mov  [0, 2, stackArea] = 1
        10    12     1           jmp
        11    16     0         label
     END
@@ -3346,12 +3337,12 @@ Start or stop tracing.  Tracing prints each instruction executed and its effect 
         1     0     0         trace
         2     1     1           jNe
         3     5     0         label
-        4     6     1           mov  [1, 3, stackArea] = 3
-        5     7     1           mov  [1, 4, stackArea] = 4
+        4     6     1           mov  [0, 3, stackArea] = 3
+        5     7     1           mov  [0, 4, stackArea] = 4
         6     8     0         label
         7     9     1           jNe
-        8    10     1           mov  [1, 1, stackArea] = 1
-        9    11     1           mov  [1, 2, stackArea] = 1
+        8    10     1           mov  [0, 1, stackArea] = 1
+        9    11     1           mov  [0, 2, stackArea] = 1
        10    12     1           jmp
        11    16     0         label
     END
@@ -3363,12 +3354,12 @@ Start or stop tracing.  Tracing prints each instruction executed and its effect 
         1     0     0         trace
         2     1     1           jNe
         3     5     0         label
-        4     6     1           mov  [1, 3, stackArea] = 3
-        5     7     1           mov  [1, 4, stackArea] = 4
+        4     6     1           mov  [0, 3, stackArea] = 3
+        5     7     1           mov  [0, 4, stackArea] = 4
         6     8     0         label
         7     9     1           jNe
-        8    10     1           mov  [1, 1, stackArea] = 1
-        9    11     1           mov  [1, 2, stackArea] = 1
+        8    10     1           mov  [0, 1, stackArea] = 1
+        9    11     1           mov  [0, 2, stackArea] = 1
        10    12     1           jmp
        11    16     0         label
     END
@@ -3475,7 +3466,7 @@ Watches for changes to the specified memory location.
       Mov $c, 6;
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    Change at watched arena: 2, area: 1(stackArea), address: 1
+    Change at watched arena: 2, area: 0(stackArea), address: 1
         1     6 mov
     Current value: 2 New value: 5
     END
@@ -3505,7 +3496,7 @@ Runs its sub sections in simulated parallel so that we can prove that the sectio
       ShiftUp [$a, 3, 'array'], 99;
     
       my $e = &$ee(suppressOutput=>0);
-      is_deeply $e->heap(1), [0, 1, 2, 99];
+      is_deeply $e->Heap->($e, 0), [0, 1, 2, 99];
       is_deeply [$e->timeParallel, $e->timeSequential], [3,5];
      }
     
@@ -3533,7 +3524,7 @@ Runs its sub sections in sequential order
       ShiftUp [$a, 2, 'array'], 99;
     
       my $e = &$ee(suppressOutput=>0);
-      is_deeply $e->heap(1), [0, 1, 99, 2];
+      is_deeply $e->Heap->($e, 0), [0, 1, 99, 2];
       #say STDERR generateVerilogMachineCode("Shift_up_test_2");  exit;
      }
     
@@ -3672,7 +3663,7 @@ Low level memory access - free an area
 
 Low level memory access - area
 
-#### GetMemoryHeaps
+#### GetMemoryArrays
 
 Low level memory access - arenas in use
 
@@ -3680,9 +3671,17 @@ Low level memory access - arenas in use
 
 Low level memory access - location
 
+#### Heap
+
+Get the contents of the specified array
+
 #### PopMemoryArea
 
 Low level memory access - pop from area
+
+#### PrintMemory
+
+Print memory
 
 #### PushMemoryArea
 
@@ -3776,17 +3775,13 @@ Memory packed into one string
 
 Width in bytes of a memory area element
 
-#### memoryStringSystemElements
-
-Maximum number of elements in the system area of a heap arena if such is required by the memory allocation technique in play
-
-#### memoryStringTotalElements
-
-Maximum number of elements in total in an area in a heap arena if such is required by the memory allocation technique in play
-
-#### memoryStringUserElements
+#### memoryStringElements
 
 Maximum number of elements in the user area of a heap arena if such is required by the memory allocation technique in play
+
+#### memoryStringLengths
+
+Lengths of each array
 
 #### memoryType
 
