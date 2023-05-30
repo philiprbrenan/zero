@@ -8,7 +8,7 @@ use warnings FATAL => qw(all);
 use strict;
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
-use Test::More tests=>9;
+use Test::More tests=>14;
 
 sub bubbleSort($$)                                                              # As described at: https://en.wikipedia.org/wiki/Bubble_sort
  {my ($array, $name) = @_;                                                      # Array, name of array memory
@@ -92,5 +92,35 @@ if (1)                                                                          
 
   is_deeply $e->out, <<END;
 [1 .. 32]
+END
+ }
+
+if (1)                                                                          # Small array
+ {Start 1;
+  my $a = Array 'array';
+  my @a = qw(6 8 4 2 1 3 5 7);
+  Push $a, $_, 'array' for @a;                                                  # Load array
+
+  bubbleSort $a, 'array';                                                       # Sort
+
+  my $e = Execute(suppressOutput=>1, trace=>0);                                 # Execute a disassembled copy of the program just to show that we can
+  #say STDERR generateVerilogMachineCode("Bubble_sort");
+
+  is_deeply $e->heap(0), [1..8];
+
+  is_deeply $e->count,  244;                                                    # Instructions executed
+  is_deeply $e->timeParallel,   184;
+  is_deeply $e->timeSequential, 244;
+
+  is_deeply formatTable($e->counts), <<END;
+add        44
+array       1
+arraySize   1
+jFalse      5
+jGe        60
+jmp        29
+mov        91
+push        8
+subtract    5
 END
  }
