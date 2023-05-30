@@ -7,42 +7,40 @@ module fpga_tb;                                                                 
 endmodule
 
 module fpga;                                                                    // The cpu executes one step in the computation per input clock. We can also put values into memory and get values out again to test each program.
-  parameter integer NSteps         =  400;                                      // Maximum number of instruction executions
-  parameter integer NInstructions  = 2000;                                      // Number of instruction slots in code memory
-  parameter integer NHeap          = 1000;                                      // Amount of heap memory
-  parameter integer NArea          =   10;                                      // Size of each area on the heap
-  parameter integer NLocal         = 1000;                                      // Size of local memory
-  parameter integer NOut           = 1000;                                      // Size of output area
-  parameter integer NFreedArrays   = 1000;                                      // Size of output area
-  parameter integer NTestPrograms  =   14;                                      // Number of test programs to run
-  parameter integer NTestsExpected =   51;                                      // Number of test passes expected
+  parameter integer signed NTestPrograms  =    8;                               // Number of test programs to run
+  parameter integer signed NTestsExpected =   51;                               // Number of test passes expected
+  parameter integer signed showInstructionDetails = 0;                          // Show details of each instruction as it is executed
 
-  parameter integer ElementWidth   = 4;                                         // Width of each element in an an area
-  parameter integer UserElements   = 5;                                         // User width of a heap area
-  parameter integer SystemElements = 1;                                         // System width of a heap area
-  parameter integer TotalElements  = UserElements + SystemElements;             // Total width of a heap area
+  parameter integer signed NSteps         =  400;                               // Maximum number of instruction executions
+  parameter integer signed NInstructions  = 2000;                               // Number of instruction slots in code memory
+  parameter integer signed NArea          =   10;                               // Size of each area on the heap
+  parameter integer signed NArrays        = 1000;                               // Amount of heap memory
+  parameter integer signed NHeap          = NArea*NArrays;                      // Amount of heap memory
+  parameter integer signed NLocal         = 1000;                               // Size of local memory
+  parameter integer signed NOut           = 1000;                               // Size of output area
+  parameter integer signed NFreedArrays   = 1000;                               // Size of output area
 
-  parameter integer showInstructionDetails = 1;                                 // Show details of each instruction as it is executed
+  reg signed [255:0] code[NInstructions];                                       // Code memory
+  reg signed [ 32:0] arraySizes[NArrays];                                       // Size of each array
+  reg signed [ 32:0] heapMem [NHeap];                                           // Heap memory
+  reg signed [ 32:0] localMem[NLocal];                                          // Local memory
+  reg signed [ 32:0] outMem[NOut];                                              // Out channel
+  reg signed [ 32:0] freedArrays[NFreedArrays];                                 // Freed arrays list implemented as a stack
+  reg signed [ 32:0] arrayShift[NArea];                                         // Array shift area
 
-  reg signed [255:0] code[NInstructions];                                               // Code memory
-  reg signed [ 32:0] heapMem [NHeap];                                                   // Heap memory
-  reg signed [ 32:0] localMem[NLocal];                                                  // Local memory
-  reg signed [ 32:0] outMem[NOut];                                                      // Out channel
-  reg signed [ 32:0] freedArrays[NFreedArrays];                                         // Freed arrays list implemented as a stack
-  reg signed [ 32:0] arrayShift[NArea];                                                 // Array shift area
-
-  integer nSteps;                                                               // Number of instructions executed
-  integer NInstructionEnd;                                                      // Limit of instructions for the current program
-  integer outMemPos;                                                            // Position in output channel
-  integer result;                                                               // Result of an instruction execution
-  integer allocs;                                                               // Maximum number of array allocations in use at any one time
-  integer freedArraysTop;                                                       // Position in freed arrays stack
-  integer test;                                                                 // Tests passed
-  integer testsPassed;                                                          // Tests passed
-  integer testsFailed;                                                          // Tests failed
+  integer signed nSteps;                                                        // Number of instructions executed
+  integer signed NInstructionEnd;                                               // Limit of instructions for the current program
+  integer signed outMemPos;                                                     // Position in output channel
+  integer signed result;                                                        // Result of an instruction execution
+  integer signed allocs;                                                        // Maximum number of array allocations in use at any one time
+  integer signed freedArraysTop;                                                // Position in freed arrays stack
+  integer signed test;                                                          // Tests passed
+  integer signed testsPassed;                                                   // Tests passed
+  integer signed testsFailed;                                                   // Tests failed
   string  lastInstruction;                                                      // Name of the last instruction excuted
 
-  task ok(integer test, string name);                                           // Check a single test result
+//Tests
+  task ok(integer signed test, string name);                                    // Check a single test result
     begin
       if (test == 1) begin
         testsPassed++;
@@ -115,10 +113,10 @@ module fpga;                                                                    
           ok(outMem[2] == 1, "Not 1.3");
         end
         5: begin                                                                // 4 => 10
-          ok(localMem[ 0] ==  1, "Array 1.1");
-          ok( heapMem[10] ==  2, "Array 1.2");
-          ok( heapMem[11] == 11, "Array 1.3");
-          ok( heapMem[12] == 22, "Array 1.4");
+          ok(localMem[0] ==  0, "Array 1.1");
+          ok( heapMem[0] == 11, "Array 1.2");
+          ok( heapMem[1] == 22, "Array 1.3");
+          ok( arraySizes[0] == 2, "Array 1.4");
         end
         6: begin                                                                // 12 => 22
           ok(outMem[0] == 3, "scan 1.1"); ok(outMem[1] == 2, "scan 1.2"); ok(outMem[ 2] == 1, "scan 1.3"); ok(outMem[ 3] == 0, "scan 1.4");
@@ -126,7 +124,7 @@ module fpga;                                                                    
           ok(outMem[8] == 0, "scan 3.1"); ok(outMem[9] == 1, "scan 3.2"); ok(outMem[10] == 2, "scan 3.3"); ok(outMem[11] == 3, "scan 3.4");
         end
         7: begin                                                                // 3    => 25
-          ok(outMem[0] == 1, "Free 1"); ok(outMem[1] == 1, "Free 1"); ok(outMem[2] == 1, "Free 1");
+          ok(outMem[0] == 0, "Free 1"); ok(outMem[1] == 0, "Free 2"); ok(outMem[2] == 0, "Free 3");
         end
         8: begin
           ok(localMem[0] == 2, "ShiftLeft");                                    // 1
@@ -172,6 +170,7 @@ module fpga;                                                                    
     end
   endtask
 
+//Instructions
   wire signed clock;                                                                   // Clock
   integer ip = 0;                                                               // Instruction pointer
   integer i, j, k, l, m, n, o, p, q;                                            // Useful integers
@@ -184,87 +183,94 @@ module fpga;                                                                    
   wire signed [63:0]  source      = instruction[127: 64];
   wire signed [63:0]  target      = instruction[191:128];
 
-  wire signed [31: 0] source2Area     = source2[63:32];                                // Source 2
+  wire signed [31: 0] source2Area     = source2[63:32];                         // Source 2
   wire signed [15: 0] source2Address  = source2[31:16];
   wire signed [ 2: 0] source2Arena    = source2[13:12];
   wire signed [ 2: 0] source2DArea    = source2[11:10];
   wire signed [ 2: 0] source2DAddress = source2[ 9: 8];
-  wire signed [ 7: 0] source2Delta    = source2[ 7: 0] - 127;
-  wire signed [31: 0] source2Value    =                                                // Source 2 Value
+  wire signed [ 7: 0] source2Delta    = source2[ 7: 0];
+  wire signed [31: 0] source2Value    =                                         // Source 2 as value
     source2Arena      == 0 ? 0 :
     source2Arena      == 1 ?
-     (source2DAddress == 0 ?  source2Address :
-      source2DArea    == 0 && source2DAddress == 1 ? source2Delta + heapMem [source2Area*NArea           + source2Address]           :
-      source2DArea    == 0 && source2DAddress == 2 ? source2Delta + heapMem [source2Area*NArea           + localMem[source2Address]] :
-      source2DArea    == 1 && source2DAddress == 1 ? source2Delta + heapMem [localMem[source2Area]*NArea + source2Address]           :
-      source2DArea    == 1 && source2DAddress == 2 ? source2Delta + heapMem [localMem[source2Area]*NArea + localMem[source2Address]] : 0) :
+     (                        source2DAddress == 0 ? source2Address :
+      source2DArea    == 0 && source2DAddress == 1 ? heapMem [source2Delta + source2Area*NArea           + source2Address]           :
+      source2DArea    == 0 && source2DAddress == 2 ? heapMem [source2Delta + source2Area*NArea           + localMem[source2Address]] :
+      source2DArea    == 1 && source2DAddress == 1 ? heapMem [source2Delta + localMem[source2Area]*NArea + source2Address]           :
+      source2DArea    == 1 && source2DAddress == 2 ? heapMem [source2Delta + localMem[source2Area]*NArea + localMem[source2Address]] : 0) :
     source2Arena      == 2 ?
      (source2DAddress == 0 ? source2Address :
-      source2DAddress == 1 ? source2Delta + localMem[source2Area*NArea + source2Address]           :
-      source2DAddress == 2 ? source2Delta + localMem[source2Area*NArea + localMem[source2Address]] : 0) : 0;
+      source2DAddress == 1 ? localMem[source2Delta + source2Address]           :
+      source2DAddress == 2 ? localMem[source2Delta + localMem[source2Address]] : 0) : 0;
 
-  wire signed [31: 0] source1Area     = source[63:32];                                 // Source 1
+  wire signed [31: 0] source1Area     = source[63:32];                          // Source 1
   wire signed [15: 0] source1Address  = source[31:16];
   wire signed [ 2: 0] source1Arena    = source[13:12];
   wire signed [ 2: 0] source1DArea    = source[11:10];
   wire signed [ 2: 0] source1DAddress = source[ 9: 8];
-  wire signed [ 7: 0] source1Delta    = source[ 7: 0] - 127;
-  wire signed [31: 0] source1Value    =                                                // Source 1 as value
+  wire signed [ 7: 0] source1Delta    = source[ 7: 0];
+  wire signed [31: 0] source1Value    =                                         // Source 1 as value
     source1Arena      == 0 ? 0 :
     source1Arena      == 1 ?
-     (source1DAddress == 0 ?  source1Address :
+     (                        source1DAddress == 0 ? source1Address :
       source1DArea    == 0 && source1DAddress == 1 ? heapMem [source1Delta + source1Area*NArea           + source1Address]           :
       source1DArea    == 0 && source1DAddress == 2 ? heapMem [source1Delta + source1Area*NArea           + localMem[source1Address]] :
       source1DArea    == 1 && source1DAddress == 1 ? heapMem [source1Delta + localMem[source1Area]*NArea + source1Address]           :
       source1DArea    == 1 && source1DAddress == 2 ? heapMem [source1Delta + localMem[source1Area]*NArea + localMem[source1Address]] : 0) :
     source1Arena      == 2 ?
      (source1DAddress == 0 ? source1Address :
-      source1DAddress == 1 ? source1Delta + localMem[source1Area*NArea + source1Address]           :
-      source1DAddress == 2 ? source1Delta + localMem[source1Area*NArea + localMem[source1Address]] : 0) : 0;
-  wire signed [31: 0] sourceLocation  =                                                // Source 1 as a location
-    source1Arena      == 0 ? 0 :                                                // Invalid
-    source1Arena      == 1 ?                                                    // Heap - we have to skip over the array systems elements used to manage the array
-     (source1DAddress == 0 ?  source1Address :
-      source1DArea    == 0 && source1DAddress == 1 ? SystemElements + source1Delta + source1Area*NArea           + source1Address           :
-      source1DArea    == 0 && source1DAddress == 2 ? SystemElements + source1Delta + source1Area*NArea           + localMem[source1Address] :
-      source1DArea    == 1 && source1DAddress == 1 ? SystemElements + source1Delta + localMem[source1Area]*NArea + source1Address           :
-      source1DArea    == 1 && source1DAddress == 2 ? SystemElements + source1Delta + localMem[source1Area]*NArea + localMem[source1Address] : 0) :
-    source1Arena      == 2 ?                                                    // Local
-     (source1DAddress == 0 ?  source1Address :
-      source1DAddress == 1 ?  source1Delta + source1Address           :
-      source1DAddress == 2 ?  source1Delta + localMem[source1Address] : 0) : 0;
+      source1DAddress == 1 ? localMem[source1Delta + source1Address]           :
+      source1DAddress == 2 ? localMem[source1Delta + localMem[source1Address]] : 0) : 0;
+  wire signed [31: 0] sourceLocation  =                                         // Source 1 as a location
+    source1Arena      == 0 ? 0 :
+    source1Arena      == 1 ?
+     (                        source1DAddress == 0 ? source1Address :
+      source1DArea    == 0 && source1DAddress == 1 ? source1Delta + source1Area*NArea           + source1Address           :
+      source1DArea    == 0 && source1DAddress == 2 ? source1Delta + source1Area*NArea           + localMem[source1Address] :
+      source1DArea    == 1 && source1DAddress == 1 ? source1Delta + localMem[source1Area]*NArea + source1Address           :
+      source1DArea    == 1 && source1DAddress == 2 ? source1Delta + localMem[source1Area]*NArea + localMem[source1Address] : 0) :
+    source1Arena      == 2 ?
+     (source1DAddress == 0 ? source1Address :
+      source1DAddress == 1 ? source1Delta + localMem[source1Address]           :
+      source1DAddress == 2 ? source1Delta + localMem[localMem[source1Address]] : 0) : 0;
 
-  wire signed [31: 0] targetArea      = target[63:32];                                 // Target
+  wire signed [31: 0] targetArea      = target[63:32];                          // Target
   wire signed [15: 0] targetAddress   = target[31:16];
   wire signed [ 2: 0] targetArena     = target[13:12];
   wire signed [ 2: 0] targetDArea     = target[11:10];
   wire signed [ 2: 0] targetDAddress  = target[ 9: 8];
-  wire signed [ 7: 0] targetDelta     = target[ 7: 0] - 127;
-  wire signed [31: 0] targetLocation  =                                                // Target as a location
+  wire signed [ 7: 0] targetDelta     = target[ 7: 0];
+  wire signed [31: 0] targetLocation  =                                         // Target as a location
     targetArena      == 0 ? 0 :                                                 // Invalid
-    targetArena      == 1 ?                                                     // Heap - we have to skip over the array systems elements used to manage the array
-     (targetDAddress == 0 ?  targetAddress :
-      targetDArea    == 0 && targetDAddress == 1 ? SystemElements + targetDelta + targetArea*NArea           + targetAddress           :
-      targetDArea    == 0 && targetDAddress == 2 ? SystemElements + targetDelta + targetArea*NArea           + localMem[targetAddress] :
-      targetDArea    == 1 && targetDAddress == 1 ? SystemElements + targetDelta + localMem[targetArea]*NArea + targetAddress           :
-      targetDArea    == 1 && targetDAddress == 2 ? SystemElements + targetDelta + localMem[targetArea]*NArea + localMem[targetAddress] : 0) :
+    targetArena      == 1 ?                                                     // Heap
+     (targetDArea    == 0 && targetDAddress == 1 ? targetDelta + targetArea*NArea           + targetAddress           :
+      targetDArea    == 0 && targetDAddress == 2 ? targetDelta + targetArea*NArea           + localMem[targetAddress] :
+      targetDArea    == 1 && targetDAddress == 1 ? targetDelta + localMem[targetArea]*NArea + targetAddress           :
+      targetDArea    == 1 && targetDAddress == 2 ? targetDelta + localMem[targetArea]*NArea + localMem[targetAddress] : 0) :
     targetArena      == 2 ?                                                     // Local
-     (targetDAddress == 0 ?  targetAddress :
-      targetDAddress == 1 ?  targetDelta + targetAddress           :
+     (targetDAddress == 1 ?  targetDelta + targetAddress           :
       targetDAddress == 2 ?  targetDelta + localMem[targetAddress] : 0) : 0;
 
-  wire signed [31: 0] targetValue =                                                    // Target as a value
+  wire signed [31: 0] targetIndex  =                                            // Target index within array
+    targetArena      == 1 ?                                                     // Heap
+     (targetDAddress == 1 ? targetDelta + targetAddress           :
+      targetDAddress == 2 ? targetDelta + localMem[targetAddress] : 0)  : 0;
+
+  wire signed [31: 0] targetLocationArea =                                      // Number of array containing target
+      targetArena    == 1 && targetDArea == 0 ? targetArea :
+      targetArena    == 1 && targetDArea == 1 ? localMem[targetArea]    : 0;
+
+  wire signed [31: 0] targetValue    =                                          // Target as value
     targetArena      == 0 ? 0 :
     targetArena      == 1 ?
-     (targetDAddress == 0 ?  targetAddress :
-      targetDArea    == 0 && targetDAddress == 1 ? targetDelta + heapMem [targetArea*NArea           + targetAddress]           :
-      targetDArea    == 0 && targetDAddress == 2 ? targetDelta + heapMem [targetArea*NArea           + localMem[targetAddress]] :
-      targetDArea    == 1 && targetDAddress == 1 ? targetDelta + heapMem [localMem[targetArea]*NArea + targetAddress]           :
-      targetDArea    == 1 && targetDAddress == 2 ? targetDelta + heapMem [localMem[targetArea]*NArea + localMem[targetAddress]] : 0) :
+     (                       targetDAddress == 0 ? targetAddress :
+      targetDArea    == 0 && targetDAddress == 1 ? heapMem [targetDelta + targetArea*NArea           + targetAddress]           :
+      targetDArea    == 0 && targetDAddress == 2 ? heapMem [targetDelta + targetArea*NArea           + localMem[targetAddress]] :
+      targetDArea    == 1 && targetDAddress == 1 ? heapMem [targetDelta + localMem[targetArea]*NArea + targetAddress]           :
+      targetDArea    == 1 && targetDAddress == 2 ? heapMem [targetDelta + localMem[targetArea]*NArea + localMem[targetAddress]] : 0) :
     targetArena      == 2 ?
      (targetDAddress == 0 ? targetAddress :
-      targetDAddress == 1 ? targetDelta + localMem[targetArea*NArea + targetAddress]           :
-      targetDAddress == 2 ? targetDelta + localMem[targetArea*NArea + localMem[targetAddress]] : 0) : 0;
+      targetDAddress == 1 ? localMem[targetDelta + targetAddress]           :
+      targetDAddress == 2 ? localMem[targetDelta + localMem[targetAddress]] : 0) : 0;
 
   task printInstruction();                                                      // Print an instruction
     begin;
@@ -279,10 +285,11 @@ module fpga;                                                                    
     end
   endtask
 
+//Execute
   initial begin                                                                 // Load, run confirm
     testsPassed = 0;                                                            // Passed tests
     testsFailed = 0;                                                            // Failed tests
-    for(test = NTestPrograms; test <= NTestPrograms; ++test) begin                          // Run the tests from bewest to oldest
+    for(test = 1; test <= NTestPrograms; ++test) begin                          // Run the tests from bewest to oldest
 //if (test == 11) begin
       allocs         = 0;                                                       // Largest number of arrays in use at any one time so far
       freedArraysTop = 0;                                                       // Start freed arrays stack
@@ -296,11 +303,11 @@ module fpga;                                                                    
 
       for(ip = 0; ip >= 0 && ip < NInstructionEnd; ++ip)                        // Each instruction
       begin
-        #1;                                                                      // Let the ip update its assigns
-        //if (showInstructionDetails) printInstruction();                         // Print Instruction details
+        #1;                                                                     // Let the ip update its assigns
+        if (showInstructionDetails) printInstruction();                         // Print Instruction details
 
         executeInstruction();
-        //$display("%5d  %4d  %8s  %4d", nSteps, ip, lastInstruction, result);
+        $display("%5d  %4d  %8s  %4d", nSteps, ip, lastInstruction, result);
         //printMemory();
         if (nSteps++ > NSteps) begin                                            // Count instructions executed
           $display("Out of instructions after %d steps", NSteps);
@@ -578,83 +585,87 @@ module fpga;                                                                    
     end
   endtask
 
-// Tests
+//Programs
   task Mov_test();                                                              // Load program 'Mov_test' into code memory
     begin
-      NInstructionEnd = 2;
-      code[   0] = 'h0000002200000000000000000000217f000000000001207f000000000000007f;
-      code[   1] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
+      NInstructionEnd = 6;
+      code[   0] = 'h0000002200000000000000000000210000000000000120000000000000000000;
+      code[   1] = 'h0000002200000000000000000001210000000000000220000000000000000000;
+      code[   2] = 'h0000002200000000000000000002210000000000000320000000000000000000;
+      code[   3] = 'h0000002600000000000000000000010000000000000021000000000000000000;
+      code[   4] = 'h0000002600000000000000000000010000000000000121000000000000000000;
+      code[   5] = 'h0000002600000000000000000000010000000000000221000000000000000000;
     end
   endtask
 
   task Add_test();                                                              // Load program 'Add_test' into code memory    begin
     begin
       NInstructionEnd = 2;
-      code[   0] = 'h0000000000000000000000000000217f000000000003207f000000000002207f;
-      code[   1] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
+      code[   0] = 'h0000000000000000000000000000210000000000000320000000000000022000;
+      code[   1] = 'h0000002600000000000000000000010000000000000021000000000000000000;
     end
   endtask
 
   task Not_test();                                                              // Load program 'Not_test' into code memory
     begin
       NInstructionEnd = 6;
-      code[   0] = 'h0000002200000000000000000000217f000000000003207f000000000000007f;
-      code[   1] = 'h0000002500000000000000000001217f000000000000217f000000000000007f;
-      code[   2] = 'h0000002500000000000000000002217f000000000001217f000000000000007f;
-      code[   3] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
-      code[   4] = 'h0000002600000000000000000000017f000000000001217f000000000000007f;
-      code[   5] = 'h0000002600000000000000000000017f000000000002217f000000000000007f;
+      code[   0] = 'h0000002200000000000000000000210000000000000320000000000000000000;
+      code[   1] = 'h0000002500000000000000000001210000000000000021000000000000000000;
+      code[   2] = 'h0000002500000000000000000002210000000000000121000000000000000000;
+      code[   3] = 'h0000002600000000000000000000010000000000000021000000000000000000;
+      code[   4] = 'h0000002600000000000000000000010000000000000121000000000000000000;
+      code[   5] = 'h0000002600000000000000000000010000000000000221000000000000000000;
     end
   endtask
 
   task Subtract_test();                                                         // Load program 'Subtract_test' into code memory
     begin
       NInstructionEnd = 2;
-      code[   0] = 'h0000003800000000000000000000217f000000000004207f000000000002207f;
-      code[   1] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
+      code[   0] = 'h0000003800000000000000000000210000000000000420000000000000022000;
+      code[   1] = 'h0000002600000000000000000000010000000000000021000000000000000000;
     end
   endtask
 
   task Array_test();                                                            // Load program 'Array_test' into code memory
     begin
       NInstructionEnd = 3;
-      code[   0] = 'h0000000100000000000000000000217f000000000003207f000000000000007f;
-      code[   1] = 'h0000002200000000000000000000157f00000000000b207f000000000000007f;
-      code[   2] = 'h0000002200000000000000000001157f000000000016207f000000000000007f;
+      code[   0] = 'h0000000100000000000000000000210000000000000320000000000000000000;
+      code[   1] = 'h0000002200000000000000000000150000000000000b20000000000000000000;
+      code[   2] = 'h0000002200000000000000000001150000000000001620000000000000000000;
     end
   endtask
                                                                                 // Load program 'Array_scans' into code memory
   task Array_scans();
     begin
       NInstructionEnd = 28;
-      code[   0] = 'h0000000100000000000000000000217f000000000003207f000000000000007f;
-      code[   1] = 'h0000002200000000000000000000157f00000000000a207f000000000000007f;
-      code[   2] = 'h0000002200000000000000000001157f000000000014207f000000000000007f;
-      code[   3] = 'h0000002200000000000000000002157f00000000001e207f000000000000007f;
-      code[   4] = 'h0000000500000000000000000001217f000000000000217f00000000001e207f;
-      code[   5] = 'h0000002600000000000000000000017f000000000001217f000000000000007f;
-      code[   6] = 'h0000000500000000000000000002217f000000000000217f000000000014207f;
-      code[   7] = 'h0000002600000000000000000000017f000000000002217f000000000000007f;
-      code[   8] = 'h0000000500000000000000000003217f000000000000217f00000000000a207f;
-      code[   9] = 'h0000002600000000000000000000017f000000000003217f000000000000007f;
-      code[  10] = 'h0000000500000000000000000004217f000000000000217f00000000000f207f;
-      code[  11] = 'h0000002600000000000000000000017f000000000004217f000000000000007f;
-      code[  12] = 'h0000000300000000000000000005217f000000000000217f000000000023207f;
-      code[  13] = 'h0000002600000000000000000000017f000000000005217f000000000000007f;
-      code[  14] = 'h0000000300000000000000000006217f000000000000217f000000000019207f;
-      code[  15] = 'h0000002600000000000000000000017f000000000006217f000000000000007f;
-      code[  16] = 'h0000000300000000000000000007217f000000000000217f00000000000f207f;
-      code[  17] = 'h0000002600000000000000000000017f000000000007217f000000000000007f;
-      code[  18] = 'h0000000300000000000000000008217f000000000000217f000000000005207f;
-      code[  19] = 'h0000002600000000000000000000017f000000000008217f000000000000007f;
-      code[  20] = 'h0000000200000000000000000009217f000000000000217f000000000023207f;
-      code[  21] = 'h0000002600000000000000000000017f000000000009217f000000000000007f;
-      code[  22] = 'h000000020000000000000000000a217f000000000000217f000000000019207f;
-      code[  23] = 'h0000002600000000000000000000017f00000000000a217f000000000000007f;
-      code[  24] = 'h000000020000000000000000000b217f000000000000217f00000000000f207f;
-      code[  25] = 'h0000002600000000000000000000017f00000000000b217f000000000000007f;
-      code[  26] = 'h000000020000000000000000000c217f000000000000217f000000000005207f;
-      code[  27] = 'h0000002600000000000000000000017f00000000000c217f000000000000007f;
+      code[   0] = 'h0000000100000000000000000000210000000000000320000000000000000000;
+      code[   1] = 'h0000002200000000000000000000150000000000000a20000000000000000000;
+      code[   2] = 'h0000002200000000000000000001150000000000001420000000000000000000;
+      code[   3] = 'h0000002200000000000000000002150000000000001e20000000000000000000;
+      code[   4] = 'h00000005000000000000000000012100000000000000210000000000001e2000;
+      code[   5] = 'h0000002600000000000000000000010000000000000121000000000000000000;
+      code[   6] = 'h0000000500000000000000000002210000000000000021000000000000142000;
+      code[   7] = 'h0000002600000000000000000000010000000000000221000000000000000000;
+      code[   8] = 'h00000005000000000000000000032100000000000000210000000000000a2000;
+      code[   9] = 'h0000002600000000000000000000010000000000000321000000000000000000;
+      code[  10] = 'h00000005000000000000000000042100000000000000210000000000000f2000;
+      code[  11] = 'h0000002600000000000000000000010000000000000421000000000000000000;
+      code[  12] = 'h0000000300000000000000000005210000000000000021000000000000232000;
+      code[  13] = 'h0000002600000000000000000000010000000000000521000000000000000000;
+      code[  14] = 'h0000000300000000000000000006210000000000000021000000000000192000;
+      code[  15] = 'h0000002600000000000000000000010000000000000621000000000000000000;
+      code[  16] = 'h00000003000000000000000000072100000000000000210000000000000f2000;
+      code[  17] = 'h0000002600000000000000000000010000000000000721000000000000000000;
+      code[  18] = 'h0000000300000000000000000008210000000000000021000000000000052000;
+      code[  19] = 'h0000002600000000000000000000010000000000000821000000000000000000;
+      code[  20] = 'h0000000200000000000000000009210000000000000021000000000000232000;
+      code[  21] = 'h0000002600000000000000000000010000000000000921000000000000000000;
+      code[  22] = 'h000000020000000000000000000a210000000000000021000000000000192000;
+      code[  23] = 'h0000002600000000000000000000010000000000000a21000000000000000000;
+      code[  24] = 'h000000020000000000000000000b2100000000000000210000000000000f2000;
+      code[  25] = 'h0000002600000000000000000000010000000000000b21000000000000000000;
+      code[  26] = 'h000000020000000000000000000c210000000000000021000000000000052000;
+      code[  27] = 'h0000002600000000000000000000010000000000000c21000000000000000000;
     end
   endtask
 
@@ -676,18 +687,18 @@ module fpga;                                                                    
   task ShiftLeft_test();
     begin
       NInstructionEnd = 3;
-      code[   0] = 'h0000002200000000000000000000217f000000000001207f000000000000007f;
-      code[   1] = 'h0000003500000000000000000000217f000000000000217f000000000000007f;
-      code[   2] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
+      code[   0] = 'h0000002200000000000000000000210000000000000120000000000000000000;
+      code[   1] = 'h0000003500000000000000000000210000000000000021000000000000000000;
+      code[   2] = 'h0000002600000000000000000000010000000000000021000000000000000000;
     end
   endtask
                                                                                 // Load program 'ShiftRight_test' into code memory
   task ShiftRight_test();
     begin
       NInstructionEnd = 3;
-      code[   0] = 'h0000002200000000000000000000217f000000000004207f000000000000007f;
-      code[   1] = 'h0000003600000000000000000000217f000000000001207f000000000000007f;
-      code[   2] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
+      code[   0] = 'h0000002200000000000000000000210000000000000120000000000000000000;
+      code[   1] = 'h0000003500000000000000000000210000000000000021000000000000000000;
+      code[   2] = 'h0000002600000000000000000000010000000000000021000000000000000000;
     end
   endtask
 
@@ -796,14 +807,13 @@ module fpga;                                                                    
   task setMemory();                                                             // Set the target memory location updating the containing array size if necessary
     begin
       case(targetArena)
-        1: fork
+        1: fork                                                                 // Update array
           heapMem[targetLocation] = result;
-          heapMem[targetLocation - targetLocation % NArea] =
-          heapMem[targetLocation - targetLocation % NArea] >= targetLocation % NArea ?
-          heapMem[targetLocation - targetLocation % NArea] :
-                                                             targetLocation % NArea;
+          arraySizes[targetLocationArea]  =
+          arraySizes[targetLocationArea] >  targetIndex ?
+          arraySizes[targetLocationArea]  : targetIndex + 1;
         join
-        2: localMem[targetLocation] = result;
+        2: localMem[targetLocation] = result;                                   // Local memory
       endcase
     end
   endtask
@@ -827,11 +837,11 @@ module fpga;                                                                    
 
       end
       else begin
-        result = ++allocs;                                                      // Array zero means undefined
+        result = allocs++;                                                      // Array zero means undefined
         //$display("%4d(%4d) = Array new",   targetLocation, result);
       end
 
-      heapMem[result  * NArea] = 0;                                             // Zero array length
+      arraySizes[targetLocationArea] = 0;                                       // Zero array length
       setMemory();                                                              // Save address of array
       lastInstruction = "Array";
     end
@@ -839,8 +849,8 @@ module fpga;                                                                    
 
   task free_instruction();
     begin                                                                       // Free
-     freedArrays[freedArraysTop++] = targetValue;
-      heapMem[result  * NArea] = 0;                                             // Zero array length
+      freedArrays[freedArraysTop++] = targetValue;
+      arraySizes[targetValue] = 0;                                              // Zero array length
       lastInstruction = "Free";
     end
   endtask
@@ -896,58 +906,58 @@ module fpga;                                                                    
 
   task arrayIndex_instruction();
     begin                                                                       // ArrayIndex
-      q = source1Value * NArea;                                                 // Array location
       fork
-        p = heapMem[q];                                                         // Length of array
+        q = source1Value * NArea;                                               // Array location
+        p = arraySizes[source1Value];                                           // Length of array
         result = 0;
       join
       case(p)                                                                   // Arrays can be dynamic but only up to a fixed size so that we can unroll the loop that finds an element
         1:
-            begin if (heapMem[q+1] == source2Value) result = 1; end
+            begin if (heapMem[q+0] == source2Value) result = 1; end
         2:
           fork
-            begin if (heapMem[q+1] == source2Value) result = 1; end
-            begin if (heapMem[q+2] == source2Value) result = 2; end
+            begin if (heapMem[q+0] == source2Value) result = 1; end
+            begin if (heapMem[q+1] == source2Value) result = 2; end
           join
         3:
           fork
-            begin if (heapMem[q+1] == source2Value) result = 1; end
-            begin if (heapMem[q+2] == source2Value) result = 2; end
-            begin if (heapMem[q+3] == source2Value) result = 3; end
+            begin if (heapMem[q+0] == source2Value) result = 1; end
+            begin if (heapMem[q+1] == source2Value) result = 2; end
+            begin if (heapMem[q+2] == source2Value) result = 3; end
           join
         4:
           fork
-            begin if (heapMem[q+1] == source2Value) result = 1; end
-            begin if (heapMem[q+2] == source2Value) result = 2; end
-            begin if (heapMem[q+3] == source2Value) result = 3; end
-            begin if (heapMem[q+4] == source2Value) result = 4; end
+            begin if (heapMem[q+0] == source2Value) result = 1; end
+            begin if (heapMem[q+1] == source2Value) result = 2; end
+            begin if (heapMem[q+2] == source2Value) result = 3; end
+            begin if (heapMem[q+3] == source2Value) result = 4; end
           join
         5:
           fork
-            begin if (heapMem[q+1] == source2Value) result = 1; end
-            begin if (heapMem[q+2] == source2Value) result = 2; end
-            begin if (heapMem[q+3] == source2Value) result = 3; end
-            begin if (heapMem[q+4] == source2Value) result = 4; end
-            begin if (heapMem[q+5] == source2Value) result = 5; end
+            begin if (heapMem[q+0] == source2Value) result = 1; end
+            begin if (heapMem[q+1] == source2Value) result = 2; end
+            begin if (heapMem[q+2] == source2Value) result = 3; end
+            begin if (heapMem[q+3] == source2Value) result = 4; end
+            begin if (heapMem[q+4] == source2Value) result = 5; end
           join
         6:
           fork
-            begin if (heapMem[q+1] == source2Value) result = 1; end
-            begin if (heapMem[q+2] == source2Value) result = 2; end
-            begin if (heapMem[q+3] == source2Value) result = 3; end
-            begin if (heapMem[q+4] == source2Value) result = 4; end
-            begin if (heapMem[q+5] == source2Value) result = 5; end
-            begin if (heapMem[q+6] == source2Value) result = 6; end
+            begin if (heapMem[q+0] == source2Value) result = 1; end
+            begin if (heapMem[q+1] == source2Value) result = 2; end
+            begin if (heapMem[q+2] == source2Value) result = 3; end
+            begin if (heapMem[q+3] == source2Value) result = 4; end
+            begin if (heapMem[q+4] == source2Value) result = 5; end
+            begin if (heapMem[q+5] == source2Value) result = 6; end
           join
         7:
           fork
-            begin if (heapMem[q+1] == source2Value) result = 1; end
-            begin if (heapMem[q+2] == source2Value) result = 2; end
-            begin if (heapMem[q+3] == source2Value) result = 3; end
-            begin if (heapMem[q+4] == source2Value) result = 4; end
-            begin if (heapMem[q+5] == source2Value) result = 5; end
-            begin if (heapMem[q+6] == source2Value) result = 6; end
-            begin if (heapMem[q+7] == source2Value) result = 7; end
+            begin if (heapMem[q+0] == source2Value) result = 1; end
+            begin if (heapMem[q+1] == source2Value) result = 2; end
+            begin if (heapMem[q+2] == source2Value) result = 3; end
+            begin if (heapMem[q+3] == source2Value) result = 4; end
+            begin if (heapMem[q+4] == source2Value) result = 5; end
+            begin if (heapMem[q+5] == source2Value) result = 6; end
+            begin if (heapMem[q+6] == source2Value) result = 7; end
           join
       endcase
       setMemory();
@@ -960,59 +970,59 @@ module fpga;                                                                    
       //$display("arrayIndex");
       //printMemory();
       //printInstruction();
-      fork;
+      fork
         q = source1Value * NArea;                                               // Array location
-        p = heapMem[q];                                                         // Length of array
+        p = arraySizes[source1Value];                                           // Length of array
         result = 0;
         r1 = 0; r2 = 0; r3 = 0; r4 = 0; r5 = 0; r6 = 0; r7 = 0; r8 = 0;
       join;
       case(p)                                                                   // Arrays can be dynamic but only up to a fixed size so that we can unroll the loop that finds an element
         1:
-            begin if (heapMem[q+1] > source2Value) r1 = 1; end
+            begin if (heapMem[q+0] > source2Value) r1 = 1; end
         2:
           fork
-            begin if (heapMem[q+1] > source2Value) r1 = 1; end
-            begin if (heapMem[q+2] > source2Value) r2 = 1; end
+            begin if (heapMem[q+0] > source2Value) r1 = 1; end
+            begin if (heapMem[q+1] > source2Value) r2 = 1; end
           join
         3:
           fork
-            begin if (heapMem[q+1] > source2Value) r1 = 1; end
-            begin if (heapMem[q+2] > source2Value) r2 = 1; end
-            begin if (heapMem[q+3] > source2Value) r3 = 1; end
+            begin if (heapMem[q+0] > source2Value) r1 = 1; end
+            begin if (heapMem[q+1] > source2Value) r2 = 1; end
+            begin if (heapMem[q+2] > source2Value) r3 = 1; end
           join
         4:
           fork
-            begin if (heapMem[q+1] > source2Value) r1 = 1; end
-            begin if (heapMem[q+2] > source2Value) r2 = 1; end
-            begin if (heapMem[q+3] > source2Value) r3 = 1; end
-            begin if (heapMem[q+4] > source2Value) r4 = 1; end
+            begin if (heapMem[q+0] > source2Value) r1 = 1; end
+            begin if (heapMem[q+1] > source2Value) r2 = 1; end
+            begin if (heapMem[q+2] > source2Value) r3 = 1; end
+            begin if (heapMem[q+3] > source2Value) r4 = 1; end
           join
         5:
           fork
-            begin if (heapMem[q+1] > source2Value) r1 = 1; end
-            begin if (heapMem[q+2] > source2Value) r2 = 1; end
-            begin if (heapMem[q+3] > source2Value) r3 = 1; end
-            begin if (heapMem[q+4] > source2Value) r4 = 1; end
-            begin if (heapMem[q+5] > source2Value) r5 = 1; end
+            begin if (heapMem[q+0] > source2Value) r1 = 1; end
+            begin if (heapMem[q+1] > source2Value) r2 = 1; end
+            begin if (heapMem[q+2] > source2Value) r3 = 1; end
+            begin if (heapMem[q+3] > source2Value) r4 = 1; end
+            begin if (heapMem[q+4] > source2Value) r5 = 1; end
           join
         6:
           fork
-            begin if (heapMem[q+1] > source2Value) r1 = 1; end
-            begin if (heapMem[q+2] > source2Value) r2 = 1; end
-            begin if (heapMem[q+3] > source2Value) r3 = 1; end
-            begin if (heapMem[q+4] > source2Value) r4 = 1; end
-            begin if (heapMem[q+5] > source2Value) r5 = 1; end
-            begin if (heapMem[q+6] > source2Value) r6 = 1; end
+            begin if (heapMem[q+0] > source2Value) r1 = 1; end
+            begin if (heapMem[q+1] > source2Value) r2 = 1; end
+            begin if (heapMem[q+2] > source2Value) r3 = 1; end
+            begin if (heapMem[q+3] > source2Value) r4 = 1; end
+            begin if (heapMem[q+4] > source2Value) r5 = 1; end
+            begin if (heapMem[q+5] > source2Value) r6 = 1; end
           join
         7:
           fork
-            begin if (heapMem[q+1] > source2Value) r1 = 1; end
-            begin if (heapMem[q+2] > source2Value) r2 = 1; end
-            begin if (heapMem[q+3] > source2Value) r3 = 1; end
-            begin if (heapMem[q+4] > source2Value) r4 = 1; end
-            begin if (heapMem[q+5] > source2Value) r5 = 1; end
-            begin if (heapMem[q+6] > source2Value) r6 = 1; end
-            begin if (heapMem[q+7] > source2Value) r7 = 1; end
+            begin if (heapMem[q+0] > source2Value) r1 = 1; end
+            begin if (heapMem[q+1] > source2Value) r2 = 1; end
+            begin if (heapMem[q+2] > source2Value) r3 = 1; end
+            begin if (heapMem[q+3] > source2Value) r4 = 1; end
+            begin if (heapMem[q+4] > source2Value) r5 = 1; end
+            begin if (heapMem[q+5] > source2Value) r6 = 1; end
+            begin if (heapMem[q+6] > source2Value) r7 = 1; end
           join
       endcase
       result = r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8;
@@ -1025,57 +1035,57 @@ module fpga;                                                                    
     begin                                                                       // ArrayIndex
       fork
         q = source1Value * NArea;                                               // Array location
-        p = heapMem[q];                                                         // Length of array
+        p = arraySizes[source1Value];                                           // Length of array
         result = 0;
         r1 = 0; r2 = 0; r3 = 0; r4 = 0; r5 = 0; r6 = 0; r7 = 0; r8 = 0;
       join
       case(p)                                                                   // Arrays can be dynamic but only up to a fixed size so that we can unroll the loop that finds an element
         1:
-            begin if (heapMem[q+1] < source2Value) r1 = 1; end
+            begin if (heapMem[q+0] < source2Value) r1 = 1; end
         2:
           fork
-            begin if (heapMem[q+1] < source2Value) r1 = 1; end
-            begin if (heapMem[q+2] < source2Value) r2 = 1; end
+            begin if (heapMem[q+0] < source2Value) r1 = 1; end
+            begin if (heapMem[q+1] < source2Value) r2 = 1; end
           join
         3:
           fork
-            begin if (heapMem[q+1] < source2Value) r1 = 1; end
-            begin if (heapMem[q+2] < source2Value) r2 = 1; end
-            begin if (heapMem[q+3] < source2Value) r3 = 1; end
+            begin if (heapMem[q+0] < source2Value) r1 = 1; end
+            begin if (heapMem[q+1] < source2Value) r2 = 1; end
+            begin if (heapMem[q+2] < source2Value) r3 = 1; end
           join
         4:
           fork
-            begin if (heapMem[q+1] < source2Value) r1 = 1; end
-            begin if (heapMem[q+2] < source2Value) r2 = 1; end
-            begin if (heapMem[q+3] < source2Value) r3 = 1; end
-            begin if (heapMem[q+4] < source2Value) r4 = 1; end
+            begin if (heapMem[q+0] < source2Value) r1 = 1; end
+            begin if (heapMem[q+1] < source2Value) r2 = 1; end
+            begin if (heapMem[q+2] < source2Value) r3 = 1; end
+            begin if (heapMem[q+3] < source2Value) r4 = 1; end
           join
         5:
           fork
-            begin if (heapMem[q+1] < source2Value) r1 = 1; end
-            begin if (heapMem[q+2] < source2Value) r2 = 1; end
-            begin if (heapMem[q+3] < source2Value) r3 = 1; end
-            begin if (heapMem[q+4] < source2Value) r4 = 1; end
-            begin if (heapMem[q+5] < source2Value) r5 = 1; end
+            begin if (heapMem[q+0] < source2Value) r1 = 1; end
+            begin if (heapMem[q+1] < source2Value) r2 = 1; end
+            begin if (heapMem[q+2] < source2Value) r3 = 1; end
+            begin if (heapMem[q+3] < source2Value) r4 = 1; end
+            begin if (heapMem[q+4] < source2Value) r5 = 1; end
           join
         6:
           fork
-            begin if (heapMem[q+1] < source2Value) r1 = 1; end
-            begin if (heapMem[q+2] < source2Value) r2 = 1; end
-            begin if (heapMem[q+3] < source2Value) r3 = 1; end
-            begin if (heapMem[q+4] < source2Value) r4 = 1; end
-            begin if (heapMem[q+5] < source2Value) r5 = 1; end
-            begin if (heapMem[q+6] < source2Value) r6 = 1; end
+            begin if (heapMem[q+0] < source2Value) r1 = 1; end
+            begin if (heapMem[q+1] < source2Value) r2 = 1; end
+            begin if (heapMem[q+2] < source2Value) r3 = 1; end
+            begin if (heapMem[q+3] < source2Value) r4 = 1; end
+            begin if (heapMem[q+4] < source2Value) r5 = 1; end
+            begin if (heapMem[q+5] < source2Value) r6 = 1; end
           join
         7:
           fork
-            begin if (heapMem[q+1] < source2Value) r1 = 1; end
-            begin if (heapMem[q+2] < source2Value) r2 = 1; end
-            begin if (heapMem[q+3] < source2Value) r3 = 1; end
-            begin if (heapMem[q+4] < source2Value) r4 = 1; end
-            begin if (heapMem[q+5] < source2Value) r5 = 1; end
-            begin if (heapMem[q+6] < source2Value) r6 = 1; end
-            begin if (heapMem[q+7] < source2Value) r7 = 1; end
+            begin if (heapMem[q+0] < source2Value) r1 = 1; end
+            begin if (heapMem[q+1] < source2Value) r2 = 1; end
+            begin if (heapMem[q+2] < source2Value) r3 = 1; end
+            begin if (heapMem[q+3] < source2Value) r4 = 1; end
+            begin if (heapMem[q+4] < source2Value) r5 = 1; end
+            begin if (heapMem[q+5] < source2Value) r6 = 1; end
+            begin if (heapMem[q+6] < source2Value) r7 = 1; end
           join
       endcase
       result = r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8;
