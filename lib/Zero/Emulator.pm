@@ -1853,7 +1853,7 @@ sub traceMemory($$)                                                             
   my $L = $instruction->line;
   my $S = $instruction->step;
   my $m  = sprintf "%5d  %4d  %4d  %12s", $S, $n, $e, $a;
-     $m .= sprintf "  %20s", $f if $f;
+     $m .= sprintf "  %20s", $f;
      $m .= sprintf "  at %s line %d", $F, $L unless $s;
   say STDERR $m unless $s;
   $exec->output("$m\n");
@@ -2973,7 +2973,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 @ISA         = qw(Exporter);
 @EXPORT      = qw();
-@EXPORT_OK   = qw(Add Array ArrayCountGreater ArrayCountLess ArrayDump ArrayIndex ArraySize Assert AssertEq AssertFalse AssertGe AssertGt AssertLe AssertNe AssertTrue Bad Block Call Clear Confess Dec Dump Else Execute For ForArray ForIn Free GenerateMachineCodeDisAssembleExecute Good IfEq IfFalse IfGe IfGt IfLe IfLt IfNe IfTrue In InSize Inc JFalse JTrue Jeq Jge Jgt Jle Jlt Jmp Jne LoadAddress LoadArea Mov MoveLong Nop Not Out Parallel ParamsGet ParamsPut Pop Procedure Push Random RandomSeed Resize Return ReturnGet ReturnPut Sequential ShiftDown ShiftLeft ShiftRight ShiftUp Start Subtract Tally Then Trace TraceLabels Var Watch);
+@EXPORT_OK   = qw(Add Array ArrayCountGreater ArrayCountLess ArrayDump ArrayIndex ArraySize Assert AssertEq AssertFalse AssertGe AssertGt AssertLe AssertNe AssertTrue Bad Block Call Clear Confess Dec Dump Else Execute For ForArray ForIn Free GenerateMachineCodeDisAssembleExecute generateVerilogMachineCode Good IfEq IfFalse IfGe IfGt IfLe IfLt IfNe IfTrue In InSize Inc JFalse JTrue Jeq Jge Jgt Jle Jlt Jmp Jne LoadAddress LoadArea Mov MoveLong Nop Not Out Parallel ParamsGet ParamsPut Pop Procedure Push Random RandomSeed Resize Return ReturnGet ReturnPut Sequential ShiftDown ShiftLeft ShiftRight ShiftUp Start Subtract Tally Then Trace TraceLabels Var Watch);
 %EXPORT_TAGS = (all=>[@EXPORT, @EXPORT_OK]);
 
 return 1 if caller;
@@ -4464,7 +4464,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          ##Push ##Pop
+if (1)                                                                          ##Push
  {Start 1;
   my $a = Array   "aaa";
   Push $a, 1,     "aaa";
