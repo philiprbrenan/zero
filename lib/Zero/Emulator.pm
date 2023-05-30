@@ -3146,7 +3146,7 @@ END
  }
 
 #latest:;
-if (1)                                                                          ##ShiftLeft
+if (1)                                                                          ##ShiftLeft  ##generateVerilogMachineCode
  {Start 1;
   my $a = Mov 1;
   ShiftLeft $a, $a;
