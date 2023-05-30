@@ -13,8 +13,8 @@ module fpga;                                                                    
   parameter integer NLocal         = 1000;                                      // Size of local memory
   parameter integer NOut           = 1000;                                      // Size of output area
   parameter integer NFreedArrays   = 1000;                                      // Size of output area
-  parameter integer NTestPrograms  =   10;                                      // Number of test programs to run
-  parameter integer NTestsExpected =   29;                                      // Number of test passes expected
+  parameter integer NTestPrograms  =   12;                                      // Number of test programs to run
+  parameter integer NTestsExpected =   39;                                      // Number of test passes expected
 
   parameter integer ElementWidth   = 4;                                         // Width of each element in an an area
   parameter integer UserElements   = 5;                                         // User width of a heap area
@@ -25,9 +25,10 @@ module fpga;                                                                    
 
   reg[255:0] code[NInstructions];                                               // Code memory
   reg[ 32:0] heapMem [NHeap];                                                   // Heap memory
-  reg[255:0] localMem[NLocal];                                                  // Local memory
+  reg[ 32:0] localMem[NLocal];                                                  // Local memory
   reg[ 32:0] outMem[NOut];                                                      // Out channel
   reg[ 32:0] freedArrays[NFreedArrays];                                         // Freed arrays list implemented as a stack
+  reg[ 32:0] arrayShift[NArea];                                                 // Array shift area
 
   integer NInstructionEnd;                                                      // Limit of instructions for the current program
   integer outMemPos;                                                            // Position in output channel
@@ -45,6 +46,7 @@ module fpga;                                                                    
       end
       else begin
         $display("Assertion %s FAILED", name);
+        printMemory();
         testsFailed++;
       end
     end
@@ -63,6 +65,8 @@ module fpga;                                                                    
         8: ShiftLeft_test();
         9: ShiftRight_test();
        10: Jeq_test();
+       11: Shift_up_test();
+       12: Shift_up_test_2();
       endcase
     end
   endtask
@@ -107,9 +111,9 @@ module fpga;                                                                    
         end
         5: begin                                                                // 4 => 10
           ok(localMem[ 0] ==  1, "Array 1.1");
-          ok( heapMem[10] ==  0, "Array 1.1");
-          ok( heapMem[11] == 11, "Array 1.2");
-          ok( heapMem[12] == 22, "Array 1.3");
+          ok( heapMem[10] ==  2, "Array 1.2");
+          ok( heapMem[11] == 11, "Array 1.3");
+          ok( heapMem[12] == 22, "Array 1.4");
         end
         6: begin                                                                // 12 => 22
           ok(outMem[0] == 3, "scan 1.1"); ok(outMem[1] == 2, "scan 1.2"); ok(outMem[ 2] == 1, "scan 1.3"); ok(outMem[ 3] == 0, "scan 1.4");
@@ -127,7 +131,21 @@ module fpga;                                                                    
         end
        10: begin
           ok(outMem[0] == 111, "Jeq_test 1");                                   // 1
-          ok(outMem[1] == 333, "Jeq_test 2");                                   // 1    => 29
+          ok(outMem[1] == 333, "Jeq_test 2");                                   // 1 => 29
+        end
+       11: begin
+          ok(heapMem[10] ==  4, "ShiftUp 1 length");                            // 5 => 34
+          ok(heapMem[11] == 99, "ShiftUp 1 new");
+          ok(heapMem[12] ==  0, "ShiftUp 1 0");
+          ok(heapMem[13] ==  1, "ShiftUp 1 1");
+          ok(heapMem[14] ==  2, "ShiftUp 1 2");
+        end
+       12: begin
+          ok(heapMem[10] ==  4, "ShiftUp 2 length");                            // 5 => 39
+          ok(heapMem[11] ==  0, "ShiftUp 2 new");
+          ok(heapMem[12] ==  1, "ShiftUp 2 0");
+          ok(heapMem[13] == 99, "ShiftUp 2 1");
+          ok(heapMem[14] ==  2, "ShiftUp 2 2");
         end
       endcase
     end
@@ -232,8 +250,9 @@ module fpga;                                                                    
     testsPassed    = 0;                                                         // Passed tests
     testsFailed    = 0;                                                         // Failed tests
     for(test = NTestPrograms; test > 0; --test) begin                           // Run the tests from bewest to oldest
+//if (test == 11) begin
       allocs         = 0;                                                       // Largest number of arrays in use at any one time so far
-      freedArraysTop = 0;                                                       // Start freed arrays stack
+      freedArraysTop = 0;                                                      // Start freed arrays stack
       loadCode(test);                                                           // Load the program
       $display("Test %d", test);
       outMemPos = 0;                                                            // Output channel position
@@ -248,6 +267,7 @@ module fpga;                                                                    
         executeInstruction();
       end
       checkResults(test);                                                       // Check results
+//end
     end
     if (testsPassed > 0 && testsFailed > 0) begin
        $display("Passed %1d tests, FAILED %1d tests out of %d tests", testsPassed, testsFailed, NTestsExpected);
@@ -505,11 +525,6 @@ module fpga;                                                                    
      $display("shiftDown");
     end
   endtask
-  task shiftUp_instruction();
-    begin                                                                       // shiftUp
-     $display("shiftUp");
-    end
-  endtask
   task tally_instruction();
     begin                                                                       // tally
      $display("tally");
@@ -579,36 +594,35 @@ module fpga;                                                                    
                                                                                 // Load program 'Array_scans' into code memory
   task Array_scans();
     begin
-      NInstructionEnd = 29;
+      NInstructionEnd = 28;
       code[   0] = 'h0000000100000000000000000000217f000000000003207f000000000000007f;
       code[   1] = 'h0000002200000000000000000000157f00000000000a207f000000000000007f;
       code[   2] = 'h0000002200000000000000000001157f000000000014207f000000000000007f;
       code[   3] = 'h0000002200000000000000000002157f00000000001e207f000000000000007f;
-      code[   4] = 'h0000003000000000000000000000217f000000000003207f000000000003207f;
-      code[   5] = 'h0000000500000000000000000001217f000000000000217f00000000001e207f;
-      code[   6] = 'h0000002600000000000000000000017f000000000001217f000000000000007f;
-      code[   7] = 'h0000000500000000000000000002217f000000000000217f000000000014207f;
-      code[   8] = 'h0000002600000000000000000000017f000000000002217f000000000000007f;
-      code[   9] = 'h0000000500000000000000000003217f000000000000217f00000000000a207f;
-      code[  10] = 'h0000002600000000000000000000017f000000000003217f000000000000007f;
-      code[  11] = 'h0000000500000000000000000004217f000000000000217f00000000000f207f;
-      code[  12] = 'h0000002600000000000000000000017f000000000004217f000000000000007f;
-      code[  13] = 'h0000000300000000000000000005217f000000000000217f000000000023207f;
-      code[  14] = 'h0000002600000000000000000000017f000000000005217f000000000000007f;
-      code[  15] = 'h0000000300000000000000000006217f000000000000217f000000000019207f;
-      code[  16] = 'h0000002600000000000000000000017f000000000006217f000000000000007f;
-      code[  17] = 'h0000000300000000000000000007217f000000000000217f00000000000f207f;
-      code[  18] = 'h0000002600000000000000000000017f000000000007217f000000000000007f;
-      code[  19] = 'h0000000300000000000000000008217f000000000000217f000000000005207f;
-      code[  20] = 'h0000002600000000000000000000017f000000000008217f000000000000007f;
-      code[  21] = 'h0000000200000000000000000009217f000000000000217f000000000023207f;
-      code[  22] = 'h0000002600000000000000000000017f000000000009217f000000000000007f;
-      code[  23] = 'h000000020000000000000000000a217f000000000000217f000000000019207f;
-      code[  24] = 'h0000002600000000000000000000017f00000000000a217f000000000000007f;
-      code[  25] = 'h000000020000000000000000000b217f000000000000217f00000000000f207f;
-      code[  26] = 'h0000002600000000000000000000017f00000000000b217f000000000000007f;
-      code[  27] = 'h000000020000000000000000000c217f000000000000217f000000000005207f;
-      code[  28] = 'h0000002600000000000000000000017f00000000000c217f000000000000007f;
+      code[   4] = 'h0000000500000000000000000001217f000000000000217f00000000001e207f;
+      code[   5] = 'h0000002600000000000000000000017f000000000001217f000000000000007f;
+      code[   6] = 'h0000000500000000000000000002217f000000000000217f000000000014207f;
+      code[   7] = 'h0000002600000000000000000000017f000000000002217f000000000000007f;
+      code[   8] = 'h0000000500000000000000000003217f000000000000217f00000000000a207f;
+      code[   9] = 'h0000002600000000000000000000017f000000000003217f000000000000007f;
+      code[  10] = 'h0000000500000000000000000004217f000000000000217f00000000000f207f;
+      code[  11] = 'h0000002600000000000000000000017f000000000004217f000000000000007f;
+      code[  12] = 'h0000000300000000000000000005217f000000000000217f000000000023207f;
+      code[  13] = 'h0000002600000000000000000000017f000000000005217f000000000000007f;
+      code[  14] = 'h0000000300000000000000000006217f000000000000217f000000000019207f;
+      code[  15] = 'h0000002600000000000000000000017f000000000006217f000000000000007f;
+      code[  16] = 'h0000000300000000000000000007217f000000000000217f00000000000f207f;
+      code[  17] = 'h0000002600000000000000000000017f000000000007217f000000000000007f;
+      code[  18] = 'h0000000300000000000000000008217f000000000000217f000000000005207f;
+      code[  19] = 'h0000002600000000000000000000017f000000000008217f000000000000007f;
+      code[  20] = 'h0000000200000000000000000009217f000000000000217f000000000023207f;
+      code[  21] = 'h0000002600000000000000000000017f000000000009217f000000000000007f;
+      code[  22] = 'h000000020000000000000000000a217f000000000000217f000000000019207f;
+      code[  23] = 'h0000002600000000000000000000017f00000000000a217f000000000000007f;
+      code[  24] = 'h000000020000000000000000000b217f000000000000217f00000000000f207f;
+      code[  25] = 'h0000002600000000000000000000017f00000000000b217f000000000000007f;
+      code[  26] = 'h000000020000000000000000000c217f000000000000217f000000000005207f;
+      code[  27] = 'h0000002600000000000000000000017f00000000000c217f000000000000007f;
     end
   endtask
 
@@ -662,13 +676,40 @@ module fpga;                                                                    
       code[  11] = 'h0000001f00000000000000000000017f000000000004207f000000000000007f;
     end
   endtask
-
+                                                                                // Load program 'Shift_up_test' into code memory
+  task Shift_up_test();
+    begin
+      NInstructionEnd = 5;
+      code[   0] = 'h0000000100000000000000000000217f000000000003207f000000000000007f;
+      code[   1] = 'h0000002200000000000000000000157f000000000000207f000000000000007f;
+      code[   2] = 'h0000002200000000000000000001157f000000000001207f000000000000007f;
+      code[   3] = 'h0000002200000000000000000002157f000000000002207f000000000000007f;
+      code[   4] = 'h0000003700000000000000000000157f000000000063207f000000000000007f;
+    end
+  endtask
+                                                                                // Load program 'Shift_up_test_2' into code memory
+  task Shift_up_test_2();
+    begin
+      NInstructionEnd = 5;
+      code[   0] = 'h0000000100000000000000000000217f000000000003207f000000000000007f;
+      code[   1] = 'h0000002200000000000000000000157f000000000000207f000000000000007f;
+      code[   2] = 'h0000002200000000000000000001157f000000000001207f000000000000007f;
+      code[   3] = 'h0000002200000000000000000002157f000000000002207f000000000000007f;
+      code[   4] = 'h0000003700000000000000000002157f000000000063207f000000000000007f;
+    end
+  endtask
 // Instruction memory access functions
 
-  task setMemory();                                                             // Set the target memory location
+  task setMemory();                                                             // Set the target memory location updating the containing array size if necessary
     begin
       case(targetArena)
-        1: heapMem [targetLocation] = result;
+        1: fork
+          heapMem[targetLocation] = result;
+          heapMem[targetLocation - targetLocation % NArea] =
+          heapMem[targetLocation - targetLocation % NArea] >= targetLocation % NArea ?
+          heapMem[targetLocation - targetLocation % NArea] :
+                                                             targetLocation % NArea;
+        join
         2: localMem[targetLocation] = result;
       endcase
     end
@@ -1022,4 +1063,104 @@ module fpga;                                                                    
       ip += targetArea;
     end
   endtask
+
+  task shiftUp_instruction();
+    begin
+      p = targetLocation - targetLocation % NArea;                              // Array length
+      case(NArea)                                                               // shiftUp
+        10: begin
+          fork
+            heapMem[p]    = heapMem[p]+ 1;                                      // New length
+            arrayShift[0] = heapMem[p + 1];                                     // Move data into staging area
+            arrayShift[1] = heapMem[p + 2];
+            arrayShift[2] = heapMem[p + 3];
+            arrayShift[3] = heapMem[p + 4];
+            arrayShift[4] = heapMem[p + 5];
+            arrayShift[5] = heapMem[p + 6];
+            arrayShift[6] = heapMem[p + 7];
+            arrayShift[7] = heapMem[p + 8];
+            arrayShift[8] = heapMem[p + 9];
+          join
+          case(targetLocation % NArea - 1)                                      // Destage data into one position higher
+            0: fork
+              heapMem[p +  1] = source1Value;
+              heapMem[p +  2] = arrayShift[0];
+              heapMem[p +  3] = arrayShift[1];
+              heapMem[p +  4] = arrayShift[2];
+              heapMem[p +  5] = arrayShift[3];
+              heapMem[p +  6] = arrayShift[4];
+              heapMem[p +  7] = arrayShift[5];
+              heapMem[p +  8] = arrayShift[6];
+              heapMem[p +  9] = arrayShift[7];
+              heapMem[p + 10] = arrayShift[8];
+            join
+            1: fork
+              heapMem[p +  2] = source1Value;
+              heapMem[p +  3] = arrayShift[1];
+              heapMem[p +  4] = arrayShift[2];
+              heapMem[p +  5] = arrayShift[3];
+              heapMem[p +  6] = arrayShift[4];
+              heapMem[p +  7] = arrayShift[5];
+              heapMem[p +  8] = arrayShift[6];
+              heapMem[p +  9] = arrayShift[7];
+              heapMem[p + 10] = arrayShift[8];
+            join
+            2: fork
+              heapMem[p +  3] = source1Value;
+              heapMem[p +  4] = arrayShift[2];
+              heapMem[p +  5] = arrayShift[3];
+              heapMem[p +  6] = arrayShift[4];
+              heapMem[p +  7] = arrayShift[5];
+              heapMem[p +  8] = arrayShift[6];
+              heapMem[p +  9] = arrayShift[7];
+              heapMem[p + 10] = arrayShift[8];
+            join
+            3: fork
+              heapMem[p +  4] = source1Value;
+              heapMem[p +  5] = arrayShift[3];
+              heapMem[p +  6] = arrayShift[4];
+              heapMem[p +  7] = arrayShift[5];
+              heapMem[p +  8] = arrayShift[6];
+              heapMem[p +  9] = arrayShift[7];
+              heapMem[p + 10] = arrayShift[8];
+            join
+            4: fork
+              heapMem[p +  5] = source1Value;
+              heapMem[p +  6] = arrayShift[4];
+              heapMem[p +  7] = arrayShift[5];
+              heapMem[p +  8] = arrayShift[6];
+              heapMem[p +  9] = arrayShift[7];
+              heapMem[p + 10] = arrayShift[8];
+            join
+            5: fork
+              heapMem[p +  6] = source1Value;
+              heapMem[p +  7] = arrayShift[5];
+              heapMem[p +  8] = arrayShift[6];
+              heapMem[p +  9] = arrayShift[7];
+              heapMem[p + 10] = arrayShift[8];
+            join
+            6: fork
+              heapMem[p +  7] = source1Value;
+              heapMem[p +  8] = arrayShift[6];
+              heapMem[p +  9] = arrayShift[7];
+              heapMem[p + 10] = arrayShift[8];
+            join
+            7: fork
+              heapMem[p +  8] = source1Value;
+              heapMem[p +  9] = arrayShift[7];
+              heapMem[p + 10] = arrayShift[8];
+            join
+            8: fork
+              heapMem[p +  9] = source1Value;
+              heapMem[p + 10] = arrayShift[8];
+            join
+            9: fork
+              heapMem[p + 10] = source1Value;
+            join
+          endcase
+        end
+      endcase
+    end
+  endtask
+
 endmodule
