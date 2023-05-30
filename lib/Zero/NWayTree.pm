@@ -910,7 +910,7 @@ my sub printNode($$$$$)                                                         
 
 my sub printTree($$)                                                            # Print a tree
  {my ($m, $keyNotData) = @_;                                                    # Memory, key or data
-  my $t = $$m[1];
+  my $t = $$m[0];
   my $r = $$m[$$t[$Tree->offset(q(root))]];
   my $o = printNode($m, $r, 0, [], $keyNotData);
 
@@ -991,9 +991,9 @@ if (1)                                                                          
   Out New(3);
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, <<END;
-1
+0
 END
-  is_deeply $e->heap(1), [ 0, 0, 3, 0];
+  is_deeply $e->heap(0), [ 0, 0, 3, 0];
  }
 
 #latest:;
@@ -1018,7 +1018,7 @@ if (1)                                                                          
 3
 5
 END
-  is_deeply $e->heap(1), [ 3, 5, 3, 1];
+  is_deeply $e->heap(0), [ 3, 5, 3, 1];
  }
 
 #latest:;
@@ -1028,10 +1028,10 @@ if (1)                                                                          
   my $n = Node_new($t);                                                         # Create node
   my $e = Execute(suppressOutput=>1);
 
-  is_deeply $e->heap(1), [0, 1, 7, 0];
-  is_deeply $e->heap(2), [0, 1, 0, 1, 3, 4, 0];
+  is_deeply $e->heap(0), [0, 1, 7, 0];
+  is_deeply $e->heap(1), [0, 1, 0, 0, 2, 3, 0];
+  is_deeply $e->heap(2), [];
   is_deeply $e->heap(3), [];
-  is_deeply $e->heap(4), [];
  }
 
 #latest:;
@@ -1055,11 +1055,11 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1);
 
-  is_deeply $e->heap(1), bless([0, 1, 7, 0], "Tree");
-  is_deeply $e->heap(2), bless([7, 1, 0, 1, 3, 4, 5], "Node");
-  is_deeply $e->heap(3), bless([10, 20, 30, 40, 50, 60, 70], "Keys");
-  is_deeply $e->heap(4), bless([10, 20, 30, 40, 50, 60, 70], "Data");
-  is_deeply $e->heap(5), bless([5, 15, 25, 35, 45, 55, 65, 75], "Down");
+  is_deeply $e->heap(0), bless([0, 1, 7, 0], "Tree");
+  is_deeply $e->heap(1), bless([7, 1, 0, 0, 2, 3, 4], "Node");
+  is_deeply $e->heap(2), bless([10, 20, 30, 40, 50, 60, 70], "Keys");
+  is_deeply $e->heap(3), bless([10, 20, 30, 40, 50, 60, 70], "Data");
+  is_deeply $e->heap(4), bless([5, 15, 25, 35, 45, 55, 65, 75], "Down");
  }
 
 #latest:;
@@ -1084,11 +1084,11 @@ if (1)                                                                          
   Node_open($n, 2, 26, 26, 26);
   my $e = Execute(suppressOutput=>1);
 
-  is_deeply $e->heap(1), bless([0, 1, 7, 0], "Tree");
-  is_deeply $e->heap(2), bless([8, 1, 0, 1, 3, 4, 5], "Node");
-  is_deeply $e->heap(3), bless([10, 20, 26, 30, 40, 50, 60, 70], "Keys");
-  is_deeply $e->heap(4), bless([10, 20, 26, 30, 40, 50, 60, 70], "Data");
-  is_deeply $e->heap(5), bless([5, 15, 25, 26, 35, 45, 55, 65, 75], "Down");
+  is_deeply $e->heap(0), bless([0, 1, 7, 0], "Tree");
+  is_deeply $e->heap(1), bless([8, 1, 0, 0, 2, 3, 4], "Node");
+  is_deeply $e->heap(2), bless([10, 20, 26, 30, 40, 50, 60, 70], "Keys");
+  is_deeply $e->heap(3), bless([10, 20, 26, 30, 40, 50, 60, 70], "Data");
+  is_deeply $e->heap(4), bless([5, 15, 25, 26, 35, 45, 55, 65, 75], "Down");
  }
 
 #latest:;
@@ -1116,15 +1116,15 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1);
 
-  is_deeply $e->heap(1), bless([0, 2, 7, 0], "Tree");
-  is_deeply $e->heap(2), bless([7, 1, 0, 1, 3, 4, 5], "Node");
-  is_deeply $e->heap(3), bless([1000, 2000, 3000, 4000, 5000, 6000, 7000], "Keys");
-  is_deeply $e->heap(4), bless([1000, 2000, 3000, 4000, 5000, 6000, 7000], "Data");
-  is_deeply $e->heap(5), bless([6, 1050, 2050, 3050, 4050, 5050, 6050, 7500], "Down");
-  is_deeply $e->heap(6), bless([7, 2, 2, 1, 7, 8, 9], "Node");
-  is_deeply $e->heap(7), bless([2010, 2020, 2030, 2040, 2050, 2060, 2070], "Keys");
-  is_deeply $e->heap(8), bless([2010, 2020, 2030, 2040, 2050, 2060, 2070], "Data");
-  is_deeply $e->heap(9), bless([2005, 2015, 2025, 2035, 2045, 2055, 2065, 2075], "Down");
+  is_deeply $e->heap(0), bless([0, 2, 7, 0], "Tree");
+  is_deeply $e->heap(1), bless([7, 1, 0, 0, 2, 3, 4], "Node");
+  is_deeply $e->heap(2), bless([1000, 2000, 3000, 4000, 5000, 6000, 7000], "Keys");
+  is_deeply $e->heap(3), bless([1000, 2000, 3000, 4000, 5000, 6000, 7000], "Data");
+  is_deeply $e->heap(4), bless([6, 1050, 2050, 3050, 4050, 5050, 6050, 7500], "Down");
+  is_deeply $e->heap(5), bless([7, 2, 1, 0, 6, 7, 8], "Node");
+  is_deeply $e->heap(6), bless([2010, 2020, 2030, 2040, 2050, 2060, 2070], "Keys");
+  is_deeply $e->heap(7), bless([2010, 2020, 2030, 2040, 2050, 2060, 2070], "Data");
+  is_deeply $e->heap(8), bless([2005, 2015, 2025, 2035, 2045, 2055, 2065, 2075], "Down");
  }
 
 #latest:;
@@ -1149,15 +1149,15 @@ if (1)                                                                          
   Node_copy($q, $p, 3, 2);
 
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->heap(1), bless([0, 2, 7, 0], "Tree");
-  is_deeply $e->heap(2), bless([0, 1, 0, 1, 3, 4, 5], "Node");
-  is_deeply $e->heap(3), bless([11 .. 17], "Keys");
-  is_deeply $e->heap(4), bless([21 .. 27], "Data");
-  is_deeply $e->heap(5), bless([31 .. 37, 97], "Down");
-  is_deeply $e->heap(6), bless([0, 2, 0, 1, 7, 8, 9], "Node");
-  is_deeply $e->heap(7), bless([14, 15, 43 .. 47], "Keys");
-  is_deeply $e->heap(8), bless([24, 25, 53 .. 57], "Data");
-  is_deeply $e->heap(9), bless([34, 35, 36, 64 .. 67, 99], "Down");
+  is_deeply $e->heap(0), bless([0, 2, 7, 0], "Tree");
+  is_deeply $e->heap(1), bless([0, 1, 0, 0, 2, 3, 4], "Node");
+  is_deeply $e->heap(2), bless([11 .. 17], "Keys");
+  is_deeply $e->heap(3), bless([21 .. 27], "Data");
+  is_deeply $e->heap(4), bless([31 .. 37, 97], "Down");
+  is_deeply $e->heap(5), bless([0, 2, 0, 0, 6, 7, 8], "Node");
+  is_deeply $e->heap(6), bless([14, 15, 43 .. 47], "Keys");
+  is_deeply $e->heap(7), bless([24, 25, 53 .. 57], "Data");
+  is_deeply $e->heap(8), bless([34, 35, 36, 64 .. 67, 99], "Down");
  }
 
 #latest:;
@@ -1177,10 +1177,11 @@ if (1)                                                                          
   my $t = New(3);
   Insert($t, 1, 11);
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->heap(1), bless([1, 1, 3, 3], "Tree");
-  is_deeply $e->heap(3), bless([1, 1, 0, 1, 4, 5, 0], "Node");
-  is_deeply $e->heap(4), bless([1], "Keys");
-  is_deeply $e->heap(5), bless([11], "Data");
+
+  is_deeply $e->heap(0), bless([1, 1, 3, 2], "Tree");
+  is_deeply $e->heap(2), bless([1, 1, 0, 0, 3, 4, 0], "Node");
+  is_deeply $e->heap(3), bless([1], "Keys");
+  is_deeply $e->heap(4), bless([11], "Data");
  }
 
 #latest:;
@@ -1191,10 +1192,10 @@ if (1)                                                                          
   Insert($t, 2, 22);
   my $e = Execute(suppressOutput=>1);
 
-  is_deeply $e->heap(1), bless([2, 1, 3, 3], "Tree");
-  is_deeply $e->heap(3), bless([2, 1, 0, 1, 4, 5, 0], "Node");
-  is_deeply $e->heap(4), bless([1, 2], "Keys");
-  is_deeply $e->heap(5), bless([11, 22], "Data");
+  is_deeply $e->heap(0), bless([2, 1, 3, 2], "Tree");
+  is_deeply $e->heap(2), bless([2, 1, 0, 0, 3, 4, 0], "Node");
+  is_deeply $e->heap(3), bless([1, 2], "Keys");
+  is_deeply $e->heap(4), bless([11, 22], "Data");
  }
 
 #latest:;
@@ -1204,10 +1205,10 @@ if (1)                                                                          
   Insert($t, $_, "$_$_") for 1..3;
   my $e = Execute(suppressOutput=>1);
 
-  is_deeply $e->heap(1), bless([3, 1, 3, 3], "Tree");
-  is_deeply $e->heap(3), bless([3, 1, 0, 1, 4, 5, 0], "Node");
-  is_deeply $e->heap(4), bless([1, 2, 3], "Keys");
-  is_deeply $e->heap(5), bless([11, 22, 33], "Data");
+  is_deeply $e->heap(0), bless([3, 1, 3, 2], "Tree");
+  is_deeply $e->heap(2), bless([3, 1, 0, 0, 3, 4, 0], "Node");
+  is_deeply $e->heap(3), bless([1, 2, 3], "Keys");
+  is_deeply $e->heap(4), bless([11, 22, 33], "Data");
  }
 
 #latest:;
@@ -1217,17 +1218,17 @@ if (1)                                                                          
   Insert($t, $_, "$_$_") for 1..4;
   my $e = Execute(suppressOutput=>1);
 
-  is_deeply $e->heap(1 ), bless([4, 3, 3, 3], "Tree");
-  is_deeply $e->heap(3 ), bless([1, 1, 0, 1, 4, 5, 12], "Node");
-  is_deeply $e->heap(4 ), bless([2], "Keys");
-  is_deeply $e->heap(5 ), bless([22], "Data");
-  is_deeply $e->heap(6 ), bless([1, 2, 3, 1, 7, 8, 0], "Node"),;
-  is_deeply $e->heap(7 ), bless([1], "Keys");
-  is_deeply $e->heap(8 ), bless([11], "Data");
-  is_deeply $e->heap(9 ), bless([2, 3, 3, 1, 10, 11, 0], "Node"),;
-  is_deeply $e->heap(10), bless([3, 4], "Keys");
-  is_deeply $e->heap(11), bless([33, 44], "Data");
-  is_deeply $e->heap(12), bless([6, 9], "Down");
+  is_deeply $e->heap(0 ), bless([4, 3, 3, 2], "Tree");
+  is_deeply $e->heap(2 ), bless([1, 1, 0, 0, 3, 4, 11], "Node");
+  is_deeply $e->heap(3 ), bless([2], "Keys");
+  is_deeply $e->heap(4 ), bless([22], "Data");
+  is_deeply $e->heap(5 ), bless([1, 2, 2, 0, 6, 7, 0], "Node");
+  is_deeply $e->heap(6 ), bless([1], "Keys");
+  is_deeply $e->heap(7 ), bless([11], "Data");
+  is_deeply $e->heap(8 ), bless([2, 3, 2, 0, 9, 10, 0], "Node");
+  is_deeply $e->heap(9 ), bless([3, 4], "Keys");
+  is_deeply $e->heap(10), bless([33, 44], "Data");
+  is_deeply $e->heap(11), bless([5, 8], "Down");
  }
 
 #latest:;
@@ -1238,20 +1239,20 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1);
 
-  is_deeply $e->heap(1 ), bless([5, 4, 3, 3], "Tree");
-  is_deeply $e->heap(3 ), bless([2, 1, 0, 1, 4, 5, 12], "Node"),;
-  is_deeply $e->heap(4 ), bless([2, 4], "Keys");
-  is_deeply $e->heap(5 ), bless([22, 44], "Data");
-  is_deeply $e->heap(6 ), bless([1, 2, 3, 1, 7, 8, 0], "Node"),;
-  is_deeply $e->heap(7 ), bless([1], "Keys");
-  is_deeply $e->heap(8 ), bless([11], "Data");
-  is_deeply $e->heap(9 ), bless([1, 3, 3, 1, 10, 11, 0], "Node"),;
-  is_deeply $e->heap(10), bless([3], "Keys");
-  is_deeply $e->heap(11), bless([33], "Data");
-  is_deeply $e->heap(12), bless([6, 9, 13], "Down"),;
-  is_deeply $e->heap(13), bless([1, 4, 3, 1, 14, 15, 0], "Node"),;
-  is_deeply $e->heap(14), bless([5], "Keys");
-  is_deeply $e->heap(15), bless([55], "Data");
+  is_deeply $e->heap(0 ), bless([5, 4, 3, 2], "Tree");
+  is_deeply $e->heap(2 ), bless([2, 1, 0, 0, 3, 4, 11], "Node");
+  is_deeply $e->heap(3 ), bless([2, 4], "Keys");
+  is_deeply $e->heap(4 ), bless([22, 44], "Data");
+  is_deeply $e->heap(5 ), bless([1, 2, 2, 0, 6, 7, 0], "Node");
+  is_deeply $e->heap(6 ), bless([1], "Keys");
+  is_deeply $e->heap(7 ), bless([11], "Data");
+  is_deeply $e->heap(8 ), bless([1, 3, 2, 0, 9, 10, 0], "Node");
+  is_deeply $e->heap(9 ), bless([3], "Keys");
+  is_deeply $e->heap(10), bless([33], "Data");
+  is_deeply $e->heap(11), bless([5, 8, 12], "Down");
+  is_deeply $e->heap(12), bless([1, 4, 2, 0, 13, 14, 0], "Node");
+  is_deeply $e->heap(13), bless([5], "Keys");
+  is_deeply $e->heap(14), bless([55], "Data");
  }
 
 #latest:;
@@ -1261,20 +1262,20 @@ if (1)                                                                          
   Insert($t, $_, "$_$_") for 1..6;
   my $e = Execute(suppressOutput=>1);
 
-  is_deeply $e->heap(1 ), bless([6, 4, 3, 3], "Tree");
-  is_deeply $e->heap(3 ), bless([2, 1, 0, 1, 4, 5, 12], "Node"),;
-  is_deeply $e->heap(4 ), bless([2, 4], "Keys");
-  is_deeply $e->heap(5 ), bless([22, 44], "Data");
-  is_deeply $e->heap(6 ), bless([1, 2, 3, 1, 7, 8, 0], "Node"),;
-  is_deeply $e->heap(7 ), bless([1], "Keys");
-  is_deeply $e->heap(8 ), bless([11], "Data");
-  is_deeply $e->heap(9 ), bless([1, 3, 3, 1, 10, 11, 0], "Node"),;
-  is_deeply $e->heap(10), bless([3], "Keys");
-  is_deeply $e->heap(11), bless([33], "Data");
-  is_deeply $e->heap(12), bless([6, 9, 13], "Down"),;
-  is_deeply $e->heap(13), bless([2, 4, 3, 1, 14, 15, 0], "Node"),;
-  is_deeply $e->heap(14), bless([5, 6], "Keys");
-  is_deeply $e->heap(15), bless([55, 66], "Data");
+  is_deeply $e->heap(0 ), bless([6, 4, 3, 2], "Tree");
+  is_deeply $e->heap(2 ), bless([2, 1, 0, 0, 3, 4, 11], "Node");
+  is_deeply $e->heap(3 ), bless([2, 4], "Keys");
+  is_deeply $e->heap(4 ), bless([22, 44], "Data");
+  is_deeply $e->heap(5 ), bless([1, 2, 2, 0, 6, 7, 0], "Node");
+  is_deeply $e->heap(6 ), bless([1], "Keys");
+  is_deeply $e->heap(7 ), bless([11], "Data");
+  is_deeply $e->heap(8 ), bless([1, 3, 2, 0, 9, 10, 0], "Node");
+  is_deeply $e->heap(9 ), bless([3], "Keys");
+  is_deeply $e->heap(10), bless([33], "Data");
+  is_deeply $e->heap(11), bless([5, 8, 12], "Down");
+  is_deeply $e->heap(12), bless([2, 4, 2, 0, 13, 14, 0], "Node");
+  is_deeply $e->heap(13), bless([5, 6], "Keys");
+  is_deeply $e->heap(14), bless([55, 66], "Data");
  }
 
 #latest:;
