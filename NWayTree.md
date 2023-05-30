@@ -168,9 +168,9 @@ Create a variable referring to a new tree descriptor.
 
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, <<END;
-    1
+    0
     END
-      is_deeply $e->heap(1), [ 0, 0, 3, 0];
+      is_deeply $e->heap(0), [ 0, 0, 3, 0];
      }
     
     if (1)                                                                          
@@ -196,7 +196,7 @@ Create a variable referring to a new tree descriptor.
     3
     5
     END
-      is_deeply $e->heap(1), [ 3, 5, 3, 1];
+      is_deeply $e->heap(0), [ 3, 5, 3, 1];
      }
     
     if (1)                                                                             
@@ -906,10 +906,11 @@ Insert a key and its associated data into a tree.
       Insert($t, 1, 11);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->heap(1), bless([1, 1, 3, 3], "Tree");
-      is_deeply $e->heap(3), bless([1, 1, 0, 1, 4, 5, 0], "Node");
-      is_deeply $e->heap(4), bless([1], "Keys");
-      is_deeply $e->heap(5), bless([11], "Data");
+    
+      is_deeply $e->heap(0), bless([1, 1, 3, 2], "Tree");
+      is_deeply $e->heap(2), bless([1, 1, 0, 0, 3, 4, 0], "Node");
+      is_deeply $e->heap(3), bless([1], "Keys");
+      is_deeply $e->heap(4), bless([11], "Data");
      }
     
     if (1)                                                                          
@@ -923,10 +924,10 @@ Insert a key and its associated data into a tree.
 
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->heap(1), bless([2, 1, 3, 3], "Tree");
-      is_deeply $e->heap(3), bless([2, 1, 0, 1, 4, 5, 0], "Node");
-      is_deeply $e->heap(4), bless([1, 2], "Keys");
-      is_deeply $e->heap(5), bless([11, 22], "Data");
+      is_deeply $e->heap(0), bless([2, 1, 3, 2], "Tree");
+      is_deeply $e->heap(2), bless([2, 1, 0, 0, 3, 4, 0], "Node");
+      is_deeply $e->heap(3), bless([1, 2], "Keys");
+      is_deeply $e->heap(4), bless([11, 22], "Data");
      }
     
     if (1)                                                                          
@@ -937,10 +938,10 @@ Insert a key and its associated data into a tree.
 
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->heap(1), bless([3, 1, 3, 3], "Tree");
-      is_deeply $e->heap(3), bless([3, 1, 0, 1, 4, 5, 0], "Node");
-      is_deeply $e->heap(4), bless([1, 2, 3], "Keys");
-      is_deeply $e->heap(5), bless([11, 22, 33], "Data");
+      is_deeply $e->heap(0), bless([3, 1, 3, 2], "Tree");
+      is_deeply $e->heap(2), bless([3, 1, 0, 0, 3, 4, 0], "Node");
+      is_deeply $e->heap(3), bless([1, 2, 3], "Keys");
+      is_deeply $e->heap(4), bless([11, 22, 33], "Data");
      }
     
     if (1)                                                                          
@@ -951,17 +952,17 @@ Insert a key and its associated data into a tree.
 
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->heap(1 ), bless([4, 3, 3, 3], "Tree");
-      is_deeply $e->heap(3 ), bless([1, 1, 0, 1, 4, 5, 12], "Node");
-      is_deeply $e->heap(4 ), bless([2], "Keys");
-      is_deeply $e->heap(5 ), bless([22], "Data");
-      is_deeply $e->heap(6 ), bless([1, 2, 3, 1, 7, 8, 0], "Node"),;
-      is_deeply $e->heap(7 ), bless([1], "Keys");
-      is_deeply $e->heap(8 ), bless([11], "Data");
-      is_deeply $e->heap(9 ), bless([2, 3, 3, 1, 10, 11, 0], "Node"),;
-      is_deeply $e->heap(10), bless([3, 4], "Keys");
-      is_deeply $e->heap(11), bless([33, 44], "Data");
-      is_deeply $e->heap(12), bless([6, 9], "Down");
+      is_deeply $e->heap(0 ), bless([4, 3, 3, 2], "Tree");
+      is_deeply $e->heap(2 ), bless([1, 1, 0, 0, 3, 4, 11], "Node");
+      is_deeply $e->heap(3 ), bless([2], "Keys");
+      is_deeply $e->heap(4 ), bless([22], "Data");
+      is_deeply $e->heap(5 ), bless([1, 2, 2, 0, 6, 7, 0], "Node");
+      is_deeply $e->heap(6 ), bless([1], "Keys");
+      is_deeply $e->heap(7 ), bless([11], "Data");
+      is_deeply $e->heap(8 ), bless([2, 3, 2, 0, 9, 10, 0], "Node");
+      is_deeply $e->heap(9 ), bless([3, 4], "Keys");
+      is_deeply $e->heap(10), bless([33, 44], "Data");
+      is_deeply $e->heap(11), bless([5, 8], "Down");
      }
     
     if (1)                                                                          
@@ -973,20 +974,20 @@ Insert a key and its associated data into a tree.
     
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->heap(1 ), bless([5, 4, 3, 3], "Tree");
-      is_deeply $e->heap(3 ), bless([2, 1, 0, 1, 4, 5, 12], "Node"),;
-      is_deeply $e->heap(4 ), bless([2, 4], "Keys");
-      is_deeply $e->heap(5 ), bless([22, 44], "Data");
-      is_deeply $e->heap(6 ), bless([1, 2, 3, 1, 7, 8, 0], "Node"),;
-      is_deeply $e->heap(7 ), bless([1], "Keys");
-      is_deeply $e->heap(8 ), bless([11], "Data");
-      is_deeply $e->heap(9 ), bless([1, 3, 3, 1, 10, 11, 0], "Node"),;
-      is_deeply $e->heap(10), bless([3], "Keys");
-      is_deeply $e->heap(11), bless([33], "Data");
-      is_deeply $e->heap(12), bless([6, 9, 13], "Down"),;
-      is_deeply $e->heap(13), bless([1, 4, 3, 1, 14, 15, 0], "Node"),;
-      is_deeply $e->heap(14), bless([5], "Keys");
-      is_deeply $e->heap(15), bless([55], "Data");
+      is_deeply $e->heap(0 ), bless([5, 4, 3, 3], "Tree");
+      is_deeply $e->heap(2 ), bless([2, 1, 0, 1, 4, 5, 12], "Node"),;
+      is_deeply $e->heap(3 ), bless([2, 4], "Keys");
+      is_deeply $e->heap(4 ), bless([22, 44], "Data");
+      is_deeply $e->heap(5 ), bless([1, 2, 3, 1, 7, 8, 0], "Node"),;
+      is_deeply $e->heap(6 ), bless([1], "Keys");
+      is_deeply $e->heap(7 ), bless([11], "Data");
+      is_deeply $e->heap(8 ), bless([1, 3, 3, 1, 10, 11, 0], "Node"),;
+      is_deeply $e->heap(9 ), bless([3], "Keys");
+      is_deeply $e->heap(10), bless([33], "Data");
+      is_deeply $e->heap(11), bless([6, 9, 13], "Down"),;
+      is_deeply $e->heap(12), bless([1, 4, 3, 1, 14, 15, 0], "Node"),;
+      is_deeply $e->heap(13), bless([5], "Keys");
+      is_deeply $e->heap(14), bless([55], "Data");
      }
     
     if (1)                                                                          
