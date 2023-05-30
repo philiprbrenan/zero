@@ -3005,7 +3005,7 @@ Shift left within an element.
 
 **Example:**
 
-    if (1)                                                                          
+    if (1)                                                                            
      {Start 1;
       my $a = Mov 1;
     
@@ -3625,6 +3625,21 @@ Generate machine code and print it out in Verilog format
 
        Parameter  Description
     1  $name      Name of subroutine to contain generated code
+
+**Example:**
+
+    if (1)                                                                            
+     {Start 1;
+      my $a = Mov 1;
+      ShiftLeft $a, $a;
+      Out $a;
+      my $e = &$ee(suppressOutput=>1);
+      is_deeply $e->outLines, [2];
+    
+      #say STDERR generateVerilogMachineCode("ShiftLeft_test"); exit;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+     }
+    
 
 # Hash Definitions
 
