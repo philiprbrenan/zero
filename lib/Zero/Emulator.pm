@@ -41,8 +41,9 @@ sub ExecutionEnvironment(%)                                                     
     freedArrays=>           [],                                                 # Arrays that have been recently freed and can thus be reused
     FreeMemoryArea=>       \&freeMemoryArea,                                    # Low level memory access - free an area
     GetMemoryArea=>        \&getMemoryArea,                                     # Low level memory access - area
-    GetMemoryHeaps=>       \&getMemoryHeaps,                                    # Low level memory access - arenas in use
+    GetMemoryArrays=>       \&getMemoryArrays,                                  # Low level memory access - arenas in use
     GetMemoryLocation=>    \&getMemoryLocation,                                 # Low level memory access - location
+    Heap=>                 \&heap,                                              # Get the contents of the specified array
     in=>                    $options{in}//[],                                   # The input chnnel.  the L<In> instruction reads one element at a time from this array.
     instructionCounts=>     {},                                                 # The number of times each actual instruction is executed
     instructionPointer=>    0,                                                  # Current instruction
@@ -55,9 +56,8 @@ sub ExecutionEnvironment(%)                                                     
     memory=>                [],                                                 # Memory contents at the end of execution
     memoryStringElementWidth=>   0,                                             # Width in bytes of a memory area element
     memoryString=>          '',                                                 # Memory packed into one string
-    memoryStringSystemElements=> 0,                                             # Maximum number of elements in the system area of a heap arena if such is required by the memory allocation technique in play
-    memoryStringTotalElements=>  0,                                             # Maximum number of elements in total in an area in a heap arena if such is required by the memory allocation technique in play
-    memoryStringUserElements=>   0,                                             # Maximum number of elements in the user area of a heap arena if such is required by the memory allocation technique in play
+    memoryStringLengths=>   [],                                                 # Lengths of each array
+    memoryStringElements=>   0,                                                 # Maximum number of elements in the user area of a heap arena if such is required by the memory allocation technique in play
     memoryType=>            [],                                                 # Memory contents at the end of execution
     mostArrays=>            [],                                                 # The maximum number of arrays active at any point during the execution in each arena
     namesOfWidestArrays=>   [],                                                 # The name of the widest arrays in each arena
@@ -68,6 +68,7 @@ sub ExecutionEnvironment(%)                                                     
     pointlessAssign=>       {},                                                 # Location already has the specified value
     PopMemoryArea=>        \&popMemoryArea,                                     # Low level memory access - pop from area
     printDoubleWrite=>      $options{doubleWrite},                              # Double writes: earlier instruction number to later instruction number
+    PrintMemory=>           \&printMemory,                                      # Print memory
     printPointlessAssign=>  $options{pointlessAssign},                          # Pointless assigns {instruction number} to count - address already has the specified value
     PushMemoryArea=>       \&pushMemoryArea,                                    # Low level memory access - push onto area
     read=>                  [],                                                 # Records whether a memory address was ever read allowing us to find all the unused locations
@@ -94,8 +95,7 @@ sub ExecutionEnvironment(%)                                                     
   $exec->setStringMemoryTechnique if $options{stringMemory};                    # Optionally overrLoad memory handlers if a different memory handling system has been requested
 
   if (defined(my $n = $options{maximumArraySize}))                              # Override the maximum number of elements in an array from the default setting if requested
-   {$exec->memoryStringUserElements  = $n;
-    $exec->memoryStringTotalElements = $n + $exec->memoryStringSystemElements;
+   {$exec->memoryStringElements  = $n;
    }
 
   $exec
@@ -420,11 +420,6 @@ sub Zero::Emulator::Assembly::assemble($%)                                      
   $Block
  }
 
-sub heap($$)                                                                    #P Return a heap entry.
- {my ($exec, $area) = @_;                                                       # Execution environment, area
-  $exec->GetMemoryArea->($exec, arenaHeap, $area);
- }
-
 my sub currentStackFrame($)                                                     #P Address of current stack frame.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
@@ -469,7 +464,7 @@ my sub dumpMemory($)                                                            
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my @m;
-  my $m = $exec->GetMemoryHeaps->($exec);                                       # Memory areas
+  my $m = $exec->GetMemoryArrays->($exec);                                       # Memory areas
   for my $area(1..$m)                                                           # Each memory area except memory area 0 - which might once have been reserved for some purpose
    {my $h = $exec->heap($area);
     next unless defined $h and @$h;
@@ -497,7 +492,12 @@ my sub getMemory($$$$$)                                                         
 
 # These methods provide the original unlimited memory mechanism using multidimensional arrays
 
-sub getMemoryHeaps($)                                                           #P Heaps.
+sub heap($$)                                                                    #P Return a heap entry.
+ {my ($exec, $area) = @_;                                                       # Execution environment, area
+  $exec->GetMemoryArea->($exec, arenaHeap, $area);
+ }
+
+sub getMemoryArrays($)                                                          #P Heaps.
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   scalar($exec->memory->[arenaHeap]->@*)
@@ -550,10 +550,38 @@ sub popMemoryArea($$)                                                           
   pop @$a;                                                                      # Pop
  }
 
+sub printMemory($)                                                              #P Print memory
+ {my ($exec) = @_;                                                              # Execution environment
+  @_ == 1 or confess "One parameter";
+  my @p = join ' ', "Memory", map {sprintf "%4d", $_} 0..31;
+
+  if (my $l = $exec->memory->[arenaLocal]->[0])                                 # Local storage
+   {my @l = map {defined($_) ? sprintf "%4d", $_ : "****"} @$l;
+    push @p, join " ", "Local:", @l;
+   }
+
+  if (my $h = $exec->memory->[arenaHeap])                                       # Heap storage
+   {my @heap = @$h;
+    for my $area(0..$#heap)
+     {my @area = $heap[$area]->@*;
+      my @q = sprintf "%6d", $area;
+      for my $address(keys @area)
+       {my $v = $area[$address];
+        push @q, sprintf "%4d", $v if defined $v;
+        push @q, q(****)       unless defined $v;
+       }
+      push @q,  sprintf "   size: %5d", scalar(@area);
+      push @p, join ' ', @q;
+     }
+   }
+  join "\n", @p, '';
+ }
+
 sub setOriginalMemoryTechnique($)                                               #P Set the handlers for the original memory allocation technique.
  {my ($exec) = @_;                                                              # Execution environment
+  $exec->Heap              = \&heap;                                            # Low level memory access - content of an array
   $exec->SetMemory         = \&setMemory;                                       # Low level memory access - set memory
-  $exec->GetMemoryHeaps    = \&getMemoryHeaps;                                  # Low level memory access - arena
+  $exec->GetMemoryArrays    = \&getMemoryArrays;                                # Low level memory access - arena
   $exec->GetMemoryArea     = \&getMemoryArea;                                   # Low level memory access - area
   $exec->GetMemoryLocation = \&getMemoryLocation;                               # Low level memory access - location
   $exec->AllocMemoryArea   = \&allocMemoryArea;                                 # Low level memory access - allocate new area
@@ -561,42 +589,36 @@ sub setOriginalMemoryTechnique($)                                               
   $exec->ResizeMemoryArea  = \&resizeMemoryArea;                                # Low level memory access - resize a memory area
   $exec->PushMemoryArea    = \&pushMemoryArea;                                  # Low level memory access - push onto area
   $exec->PopMemoryArea     = \&popMemoryArea;                                   # Low level memory access - pop from area
+  $exec->PrintMemory       = \&printMemory;                                     # Low level memory access - print memory
  }
 
 # These methods place the heap arena in a vector string. Each area is up to a prespecified width wide. The current length of each such array is held in the first element.
 
-sub stringMemoryAreaLength($$$)                                                 #P Get the current length of a string memory area n area in.
- {my ($exec, $arena, $area) = @_;                                               # Execution environment, arena, array,
-
+sub stringHeap($$)                                                              #P Return a heap entry.
+ {my ($exec, $area) = @_;                                                       # Execution environment, area
+  my @p;
   my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
-  my $u = $exec->memoryStringUserElements;                                      # User width of a heap area
-  my $s = $exec->memoryStringSystemElements;                                    # System width of a heap area
-  my $t = $exec->memoryStringTotalElements;                                     # Total width of a heap area
-  my $o = $area * $t;                                                           # Offset of heap area in arena
-  my $l = vec($exec->memoryString, $o, $w * 8);                                 # Zero current length of area so we can push and pop
-    $l > 0 or confess "Area underflow, arena: $arena, area: $area";             # Check we are within the area
-  --$l;                                                                         # Pop
-  my $O = $o + $s + $l;                                                         # Offset of element in area
-  my $v = vec($exec->memoryString, $O, $w * 8);                                 # Pop element
-          vec($exec->memoryString, $o, $w * 8) = $l;                            # Decrease size of area
-  $v
+  my $t = $exec->memoryStringElements;                                          # User width of a heap area
+  my $l = vec($exec->memoryStringLengths, $area, $w);
+  for my $address(0..$l-1)
+   {push @p, vec($exec->memoryString, $area * $t + $address, $w)                # Memory containing one element
+   }
+  \@p
  }
 
-sub stringGetMemoryHeaps($)                                                     #P Get number of heaps.
+sub stringGetMemoryArrays($)                                                    #P Get number of arrays allocated in heap memory.
  {my ($exec) = @_;                                                              # Execution environment, arena
   @_ == 1 or confess "One parameter";
 
   my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
-  my $u = $exec->memoryStringUserElements;                                      # User width of a heap area
-  my $s = $exec->memoryStringSystemElements;                                    # System width of a heap area
-  my $t = $exec->memoryStringTotalElements;                                     # Total width of a heap area
-  my $a = $w * $t;                                                              # Offset of heap area in arena
-  my $l = length $exec->memoryString;
-  my $n = int($l / $a);                                                         # Heap objects must be smaller than a maximum size so that we can calculate their offset in the memory string
-  if ($n * $a < $l)                                                             # Last heap might not be full
-   {++$n;
-   }
-  $n
+  length($exec->memoryStringLengths) / ($w >> 3);                               # Number of arrays allocted in heap memory
+ }
+
+sub stringAreaSize($$)                                                          #P Current size of array
+ {my ($exec, $area) = @_;                                                       # Execution environment, area
+  @_ == 2 or confess "Two parameters";
+  my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
+  vec $exec->memoryStringLengths, $area, $w;                                    # Size array
  }
 
 sub stringGetMemoryArea($$$$)                                                   #P Lowest level memory access to an area.
@@ -604,13 +626,7 @@ sub stringGetMemoryArea($$$$)                                                   
   @_ == 3 or confess "Three parameters";
   return getMemoryArea($exec, $arena, $area) if $arena != arenaHeap;            # Non heap objects continue as normal because the number of local variables and subroutines a human can produce in one lifetime are limited,
 
-  my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
-  my $u = $exec->memoryStringUserElements;                                      # User width of a heap area
-  my $s = $exec->memoryStringSystemElements;                                    # System width of a heap area
-  my $t = $exec->memoryStringTotalElements;                                     # Total width of a heap area
-  my $o = $area * $t;                                                           # Offset of heap area in arena
-
-  my $l = vec($exec->memoryString, $o, $w * 8);                                 # Length of area so we can push and pop
+  my $l = stringAreaSize $exec, $area;                                          # Size of array
   my @o;
   for my $i(0..$l-1)                                                            # Check we are within the area
    {push @o, ${$exec->stringGetMemoryLocation($arena, $area, $i)};
@@ -626,17 +642,13 @@ sub stringGetMemoryLocation($$$$)                                               
    }
 
   my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
-  my $u = $exec->memoryStringUserElements;                                      # User width of a heap area
-  my $s = $exec->memoryStringSystemElements;                                    # System width of a heap area
-  my $t = $exec->memoryStringTotalElements;                                     # Total width of a heap area
-  my $o = $area * $t;                                                           # Offset into memory of area
-  $address < $u or confess "Address $address >= $u";                            # Check we are within the area
-  my $O = $o + $s + $address;                                                   # Offset into memory of element
+  my $t = $exec->memoryStringElements;                                          # User width of a heap area
+  $address < $t or confess "Address $address >= $t";                            # Check we are within the area
 
-  if ($address+1 > vec($exec->memoryString, $o, $w * 8))                        # Extend length of array if necessary
-   {vec($exec->memoryString, $o, $w * 8) = $address+1;
+  if ($address+1 > vec($exec->memoryStringLengths, $area, $w))                    # Extend length of array if necessary
+   {vec($exec->memoryStringLengths, $area, $w) = $address+1;
    }
-  \vec($exec->memoryString, $O, $w * 8)                                         # Memory containing one element
+  \vec($exec->memoryString, $area * $t + $address, $w)                          # Memory containing one element
  }
 
 sub stringAllocMemoryArea($$$$)                                                 #P Allocate a memory area.
@@ -645,11 +657,7 @@ sub stringAllocMemoryArea($$$$)                                                 
   return allocMemoryArea($exec, $number, $arena, $area) if $arena != arenaHeap; # Non heap  objects continue as normal because the number of local variables and subroutines a human can produce in one lifetime are limited,
 
   my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
-  my $u = $exec->memoryStringUserElements;                                      # User width of a heap area
-  my $s = $exec->memoryStringSystemElements;                                    # System width of a heap area
-  my $t = $exec->memoryStringTotalElements;                                     # Total width of a heap area
-  my $o = $area * $t;                                                           # Offset of heap area in arena
-  vec($exec->memoryString, $o, $w * 8) = 0;                                     # Zero current length of area so we can push and pop
+  vec($exec->memoryStringLengths, $area, $w) = 0;                               # Zero current length of area
  }
 
 sub stringFreeMemoryArea($$$)                                                   #P Free a memory area.
@@ -658,12 +666,7 @@ sub stringFreeMemoryArea($$$)                                                   
   return freeMemoryArea($exec, $arena, $area) if $arena != arenaHeap;           # Non heap  objects continue as normal because the number of local variables and subroutines a human can produce in one lifetime are limited,
 
   my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
-  my $u = $exec->memoryStringUserElements;                                      # User width of a heap area
-  my $s = $exec->memoryStringSystemElements;                                    # System width of a heap area
-  my $t = $exec->memoryStringTotalElements;                                     # Total width of a heap area
-  my $o = $area * $t;                                                           # Offset of heap area in arena
-
-  vec($exec->memoryString, $o, $w * 8) = 0;                                     # Zero current length of area so we can push and pop
+  vec($exec->memoryStringLengths, $area, $w) = 0;                               # Zero current length of area
  }
 
 sub stringResizeMemoryArea($$$)                                                 #P Resize a heap memory area.
@@ -671,12 +674,7 @@ sub stringResizeMemoryArea($$$)                                                 
   @_ == 3 or confess "Three parameters";
 
   my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
-  my $u = $exec->memoryStringUserElements;                                      # User width of a heap area
-  my $s = $exec->memoryStringSystemElements;                                    # System width of a heap area
-  my $t = $exec->memoryStringTotalElements;                                     # Total width of a heap area
-  my $o = $area * $t;                                                           # Offset of heap area in arena
-
-  vec($exec->memoryString, $o, $w * 8) = $size;                                 # Set new size
+  vec($exec->memoryStringLengths, $area, $w) = $size;                           # Set new size
  }
 
 sub stringPushMemoryArea($$$)                                                   #P Push a value onto the specified array.
@@ -684,39 +682,61 @@ sub stringPushMemoryArea($$$)                                                   
   @_ == 3 or confess "Three parameters";
 
   my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
-  my $u = $exec->memoryStringUserElements;                                      # User width of a heap area
-  my $s = $exec->memoryStringSystemElements;                                    # System width of a heap area
-  my $t = $exec->memoryStringTotalElements;                                     # Total width of a heap area
-  my $o = $area * $t;                                                           # Offset of heap area in arena
-  my $l = vec($exec->memoryString, $o, $w * 8);                                 # Zero current length of area so we can push and pop
-  $l < $u-1 or                                                                  # Check we are within the area
+  my $t = $exec->memoryStringElements;                                          # User width of a heap area
+  my $l = vec($exec->memoryStringLengths, $area, $w);                           # Length of area
+  $l < $t-1 or                                                                  # Check ther is enough space available
     confess "Area overflow, area: $area, "
     ."position: $l, value: $value";
-  my $O = $o + ($s + $l);                                                       # Offset of element in area
-  vec($exec->memoryString, $O, $w * 8) = $value;                                # Push element
-  vec($exec->memoryString, $o, $w * 8) = $l + 1;                                # Increase size of area
+  vec($exec->memoryString, $area*$t + $l, $w) = $value;                         # Push element
+  vec($exec->memoryStringLengths, $area,  $w) = $l + 1;                         # Increase size of area
  }
 
 sub stringPopMemoryArea($$)                                                     #P Pop a value from the specified memory area if possible else confess.
  {my ($exec, $area) = @_;                                                       # Execution environment, arena, array,
   @_ == 2 or confess "Two parameters";
   my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
-  my $u = $exec->memoryStringUserElements;                                      # User width of a heap area
-  my $s = $exec->memoryStringSystemElements;                                    # System width of a heap area
-  my $t = $exec->memoryStringTotalElements;                                     # Total width of a heap area
-  my $o = $area * $t;                                                           # Offset of heap area in arena
-  my $l = vec($exec->memoryString, $o, $w * 8);                                 # Zero current length of area so we can push and pop
-    $l > 0 or confess "Arrray underflow, array: $area";                         # Check we are within the area
-  --$l;                                                                         # Pop
-  my $O = $o + $s + $l;                                                         # Offset of element in area
-  my $v = vec($exec->memoryString, $O, $w * 8);                                 # Pop element
-          vec($exec->memoryString, $o, $w * 8) = $l;                            # Decrease size of area
+  my $t = $exec->memoryStringElements;                                          # User width of a heap area
+  my $l = vec($exec->memoryStringLengths, $area, $w);                           # Length of area
+     $l-- > 0 or confess "Array underflow, array: $area";                       # Check we are within the area and pop
+  my $v = vec($exec->memoryString,        $area*$t+$l, $w);                     # Pop element
+          vec($exec->memoryStringLengths, $area,       $w) = $l;                # Decrease size of area
   $v
+ }
+
+sub stringPrintMemory($)                                                        #P Print string memory
+ {my ($exec) = @_;                                                              # Execution environment
+  @_ == 1 or confess "One parameter";
+  my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
+  my $t = $exec->memoryStringElements;                                          # User width of a heap area
+
+  my @p = join ' ', "Memory", map {sprintf "%4d", $_} 0..31;
+
+  if (my $l = $exec->memory->[arenaLocal]->[0])
+   {my @l = map {defined($_) ? sprintf "%4d", $_ : "****"} @$l;
+    push @p, join " ", "Local:", @l;
+   }
+
+  my $s = $exec->memoryString;
+
+  my $nArea = stringGetMemoryArrays $exec;                                      # Number of arrays in heap memory
+  for my $a(0..$nArea-1)                                                        # Each array
+   {my $l = stringAreaSize $exec, $a;                                           # Number of integers in array
+
+    my @q = sprintf "%6d", $a;
+    for my $address(0..$l-1)                                                    # Active elements
+     {push @q, sprintf "%4d", vec($s, $a*$t+$address, $w);
+     }
+    push @q,  sprintf "   size: %5d", $l;
+    push @p, join ' ', @q;
+   }
+
+  join "\n", @p, '';
  }
 
 sub setStringMemoryTechnique($)                                                 #P Set the handlers for the string memory allocation technique.
  {my ($exec) = @_;                                                              # Execution environment
-  $exec->GetMemoryHeaps    = \&stringGetMemoryHeaps;                            # Low level memory access - arena
+  $exec->Heap              = \&stringHeap;                                      # Low level memory access - content of an array
+  $exec->GetMemoryArrays   = \&stringGetMemoryArrays;                           # Low level memory access - arena
   $exec->GetMemoryArea     = \&stringGetMemoryArea;                             # Low level memory access - area
   $exec->GetMemoryLocation = \&stringGetMemoryLocation;                         # Low level memory access - location
   $exec->AllocMemoryArea   = \&stringAllocMemoryArea;                           # Low level memory access - allocate new area
@@ -724,10 +744,11 @@ sub setStringMemoryTechnique($)                                                 
   $exec->ResizeMemoryArea  = \&stringResizeMemoryArea;                          # Low level memory access - resize a memory area
   $exec->PushMemoryArea    = \&stringPushMemoryArea;                            # Low level memory access - push onto area
   $exec->PopMemoryArea     = \&stringPopMemoryArea;                             # Low level memory access - pop from area
-  $exec->memoryStringElementWidth   = my $e = 4;                                # Each element is 32 bits wide
-  $exec->memoryStringUserElements   = my $u = 5;                                # User part of a heap area
-  $exec->memoryStringSystemElements = my $s = 1;                                # System part of a heap area
-  $exec->memoryStringTotalElements  =    $u + $s;                               # Total width of a heap area
+  $exec->memoryStringElementWidth = 32;                                         # Each element is 32 bits wide
+  $exec->memoryStringElements     = 10;                                         # Number of elements on heap
+  $exec->PrintMemory       = \&stringPrintMemory;                               # Low level memory access - print memory
+  $exec->memoryString        = '';                                              # Low level memory access - array memory
+  $exec->memoryStringLengths = '';                                              # Low level memory access - array lengths
  }
 
 # End of memory implementation
@@ -827,7 +848,7 @@ my sub allocMemory($$$)                                                         
   @_ == 3 or confess "Three parameters";
   $number =~ m(\A\d+\Z) or confess "Array name must be numeric not : $number";
   my $f = $exec->freedArrays->[$arena];                                         # Reuse recently freed array if possible
-  my $a = $f && @$f ? pop @$f : ++$$allocs[$arena];                             # Area id to reuse or use for the first time
+  my $a = $f && @$f ? pop @$f : $$allocs[$arena]++;                             # Area id to reuse or use for the first time
   my $n = $exec->block->ArrayNumberToName($number);                             # Convert array name to number if possible
   $exec->AllocMemoryArea->($exec, $n, $arena, $a);                              # Create new area
   $exec->memoryType->[$arena][$a] = $number;
@@ -979,8 +1000,7 @@ my sub right($$)                                                                
    {$m = $address + $delta;
    }
   else                                                                          # Indirect
-   {#say STDERR "AAAA", dump(arenaLocal, $stackArea, $address, $stackAN);
-    my $d = getMemory($exec, arenaLocal, $stackArea, $address, $stackAN);
+   {my $d = getMemory($exec, arenaLocal, $stackArea, $address, $stackAN);
        $m = $d + $delta;
    }
 
@@ -1781,22 +1801,23 @@ sub Zero::Emulator::Assembly::execute($%)                                       
       $instruction->step = $step;                                               # Execution step number facilitates debugging
       $exec->timeDelta = undef;                                                 # Record elapsed time for instruction
 
-#say STDERR "AAAA $a";
+#say STDERR "XXXX $a";
       $exec->latestLeftTarget  = left  $exec, $instruction->target;             # Precompute this useful value if possible
       $exec->latestRightSource = right $exec, $instruction->source;             # Precompute this useful value if possible
-      $implementation->($instruction);                                          # Execute instruction
 
+# EEEE Execute
+      $implementation->($instruction);                                          # Execute instruction
       $exec->tallyInstructionCounts($instruction);                              # Instruction counts
 
       $exec->traceMemory($instruction);                                         # Trace changes to memory
-#say STDERR "AAAA", dump($a, $exec->timeDelta, $exec->timeParallel, $exec->timeSequential, $exec->count);
+#say STDERR "XXXX", dump($a, $exec->timeDelta, $exec->timeParallel, $exec->timeSequential, $exec->count);
      }
     if ($step >= maximumInstructionsToExecute)
      {confess "Out of instructions after $step";
      }
    }
 
-  freeSystemAreas($exec, $exec->calls->[0]);                                    # Free first stack frame
+# freeSystemAreas($exec, $exec->calls->[0]);                                    # Free first stack frame
 
   $exec->completionStatistics;
 
@@ -1816,7 +1837,6 @@ sub completionStatistics($)                                                     
 sub tallyInstructionCounts($$)                                                  #P Tally instruction counts.
  {my ($exec, $instruction) = @_;                                                # Execution environment, instruction being executed
   my $a = $instruction->action;
-# if ($a !~ m(\A(assert.*|label|parallel(Start|Continue|Stop)|tally|trace(Points?)?)\Z))                      # Omit instructions that are not tally-able
   if (!defined($exec->timeDelta) or $exec->timeDelta > 0)
    {if (my $t = $exec->tally)                                                   # Tally instruction counts
      {$exec->tallyCount++;
@@ -1827,7 +1847,6 @@ sub tallyInstructionCounts($$)                                                  
     $exec->timeParallel   += $exec->timeDelta // 1;                             # Each instruction takes one step in time unless we are told otherwise
     $exec->timeSequential += $exec->timeDelta // 1;                             # Each instruction takes one step in time unless we are told otherwise
 
-      #say STDERR "AAAA", unpack "h*", $exec->memoryString if $a =~ m(mov);     # Print memory
     $exec->instructionCounts->{$instruction->number}++;                         # Execution count by actual instruction
 
    }
@@ -1855,6 +1874,7 @@ sub traceMemory($$)                                                             
   my $m  = sprintf "%5d  %4d  %4d  %12s", $S, $n, $e, $a;
      $m .= sprintf "  %20s", $f;
      $m .= sprintf "  at %s line %d", $F, $L unless $s;
+     $m =~ s(\s+\Z) ();
   say STDERR $m unless $s;
   $exec->output("$m\n");
  }
@@ -2710,7 +2730,7 @@ sub Sequential(@)                                                               
 my $instructions = Zero::Emulator::Assembly::execute(undef);
 my @instructions = sort keys %$instructions;
 my %instructions = map {$instructions[$_]=>$_} keys @instructions;
-#say STDERR "AAAA", dump(\%instructions), formatTable(\@instructions); exit;
+#say STDERR "IIII\n", dump(\%instructions), formatTable(\@instructions); exit;
 
 my sub instructionList()                                                        #P Create a list of instructions.
  {my @i = grep {m(\s+#i)} readFile $0;
@@ -2874,7 +2894,6 @@ sub disAssemble($)                                                              
       source=>  $C->unpackRef    (substr($c, 16, 8), 1),
       source2=> $C->unpackRef    (substr($c, 24, 8), 2));
    }
-#say STDERR "AAAA", dump($C);
   $C
  }
 
@@ -3208,7 +3227,7 @@ if (1)                                                                          
   Mov     [$a,  0, "aaa"],  11;
   Mov     [$a,  1, "aaa"],  22;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->heap(1), [11, 22];
+  is_deeply $e->Heap->($e, 0), [11, 22];
   #say STDERR generateVerilogMachineCode("Array_test");  exit;
  }
 
@@ -3297,7 +3316,21 @@ END
  }
 
 #latest:;
-if (1)                                                                          ##Push ##Pop
+if (1)                                                                          ##Push
+ {Start 1;
+  my $a = Array   "aaa";
+  Push $a, 1,     "aaa";
+  Push $a, 2,     "aaa";
+  my $e = &$ee(suppressOutput=>1);
+  is_deeply $e->PrintMemory->($e), <<END;
+Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
+Local:    0
+     0    1    2    size:     2
+END
+ }
+
+#latest:;
+if (1)                                                                          ##Pop
  {Start 1;
   my $a = Array   "aaa";
   Push $a, 1,     "aaa";
@@ -3308,11 +3341,13 @@ if (1)                                                                          
   Out $c;
   Out $d;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-2
-1
+
+  is_deeply $e->PrintMemory->($e), <<END;
+Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
+Local:    0    2    1
+     0    size:     0
 END
-  is_deeply $e->heap(1), [];
+  is_deeply $e->Heap->($e, 0), [];
  }
 
 #latest:;
@@ -3327,9 +3362,15 @@ if (1)                                                                          
   Push $b, 22, "bbb";
   Push $b, 33, "bbb";
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->GetMemoryHeaps->($e), 3;
-  is_deeply $e->heap(1), [1, 2, 3];
-  is_deeply $e->heap(2), [11, 22, 33];
+  is_deeply $e->GetMemoryArrays->($e), 2;
+
+  #say STDERR $e->PrintMemory->($e); exit;
+  is_deeply $e->PrintMemory->($e), <<END;
+Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
+Local:    0    1
+     0    1    2    3    size:     3
+     1   11   22   33    size:     3
+END
   is_deeply $e->mostArrays, [undef, 2, 1, 1, 1];
  }
 
@@ -3342,7 +3383,7 @@ if (1)                                                                          
   Mov [$a, 0, 'alloc'], $b;
   Mov [$c, 1, 'alloc'], 2;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->heap(1), [99, 2];
+  is_deeply $e->Heap->($e, 0), [99, 2];
  }
 
 #latest:;
@@ -3364,39 +3405,17 @@ if (1)                                                                          
   Out $a;
   Mov [$a, 1, 'node'], 1;
   Mov [$a, 2, 'node'], 2;
-  Mov 1, [$a, \1, 'node'];
-  Dump;
+  Out Mov [$a, \1, 'node'];
+  Out Mov [$a, \2, 'node'];
   Free $a, "node";
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, <<END if $testSet <= 2;
-1
-1=bless([undef, 1, 2], "node")
-Stack trace:
-    1     6 dump
+  #say STDERR $e->PrintMemory->($e); exit;
+  is_deeply $e->PrintMemory->($e), <<END;
+Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
+Local:    0    1    2
+     0    size:     0
 END
-  is_deeply $e->out, <<END if $testSet >  2;
-1
-1=[0, 1, 2]
-Stack trace:
-    1     6 dump
-END
- }
-
-#latest:;
-if (1)                                                                          # Layout
- {Start 1;
-  my $a = Mov 'A';
-  my $b = Mov 'B';
-  my $c = Mov 'C';
-  Out $c;
-  Out $b;
-  Out $a;
-  my $e = Execute(suppressOutput=>1);
- is_deeply $e->out, <<END;
-C
-B
-A
-END
+  is_deeply $e->outLines, [0..2];
  }
 
 #latest:;
@@ -3404,17 +3423,17 @@ if (1)                                                                          
  {Start 1;
   my $a = Mov 1;
   my $b = Mov 2;
-  IfEq $a, $a, Then {Out "Eq"};
-  IfNe $a, $a, Then {Out "Ne"};
-  IfLe $a, $a, Then {Out "Le"};
-  IfLt $a, $a, Then {Out "Lt"};
-  IfGe $a, $a, Then {Out "Ge"};
-  IfGt $a, $a, Then {Out "Gt"};
+  IfEq $a, $a, Then {Out 111};
+  IfNe $a, $a, Then {Out 222};
+  IfLe $a, $a, Then {Out 333};
+  IfLt $a, $a, Then {Out 444};
+  IfGe $a, $a, Then {Out 555};
+  IfGt $a, $a, Then {Out 666};
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, <<END;
-Eq
-Le
-Ge
+111
+333
+555
 END
  }
 
@@ -3686,7 +3705,7 @@ if (0)                                                                          
   my $a = Array "aaa";
   #Clear $a, 10, 'aaa';
   my $e = &$ee(suppressOutput=>1, maximumArraySize=>10);
-  is_deeply $e->heap(1), [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  is_deeply $e->Heap->($e, 0), [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
  }
 
 #latest:;
@@ -3820,8 +3839,8 @@ if (0)                                                                          
 1
 END
 
-  is_deeply $e->heap(1), [undef, undef, 44, undef, undef, 33] if $testSet <= 2;
-  is_deeply $e->heap(1), [0,     0,     44, 0,     0,     33] if $testSet  > 2;
+  is_deeply $e->Heap->($e, 0), [undef, undef, 44, undef, undef, 33] if $testSet <= 2;
+  is_deeply $e->Heap->($e, 0), [0,     0,     44, 0,     0,     33] if $testSet  > 2;
 
   is_deeply $e->widestAreaInArena, [undef, 5, 4];
   is_deeply $e->namesOfWidestArrays, [undef, "array", "stackArea"]   if $testSet % 2;
@@ -3838,7 +3857,7 @@ if (1)                                                                          
   ShiftUp [$a, 0, 'array'], 99;
 
   my $e = &$ee(suppressOutput=>0);
-  is_deeply $e->heap(1), [99, 0, 1, 2];
+  is_deeply $e->Heap->($e, 0), [99, 0, 1, 2];
   #say STDERR generateVerilogMachineCode("Shift_up_test");  exit;
  }
 
@@ -3853,7 +3872,7 @@ if (1)                                                                          
   ShiftUp [$a, 1, 'array'], 99;
 
   my $e = &$ee(suppressOutput=>0);
-  is_deeply $e->heap(1), [0, 99, 1, 2];
+  is_deeply $e->Heap->($e, 0), [0, 99, 1, 2];
  }
 
 #latest:;
@@ -3869,7 +3888,7 @@ if (1)                                                                          
   ShiftUp [$a, 2, 'array'], 99;
 
   my $e = &$ee(suppressOutput=>0);
-  is_deeply $e->heap(1), [0, 1, 99, 2];
+  is_deeply $e->Heap->($e, 0), [0, 1, 99, 2];
   #say STDERR generateVerilogMachineCode("Shift_up_test_2");  exit;
  }
 
@@ -3886,7 +3905,7 @@ if (1)                                                                          
   ShiftUp [$a, 3, 'array'], 99;
 
   my $e = &$ee(suppressOutput=>0);
-  is_deeply $e->heap(1), [0, 1, 2, 99];
+  is_deeply $e->Heap->($e, 0), [0, 1, 2, 99];
   is_deeply [$e->timeParallel, $e->timeSequential], [3,5];
  }
 
@@ -3903,7 +3922,7 @@ if (1)                                                                          
 
   ShiftUp [$a, 2, 'array'], 26;
   my $e = &$ee(suppressOutput=>1, maximumArraySize=>8);
-  is_deeply $e->heap(1), bless([10, 20, 26, 30, 40, 50, 60, 70], "array");
+  is_deeply $e->Heap->($e, 0), bless([10, 20, 26, 30, 40, 50, 60, 70], "array");
  }
 
 #latest:;
@@ -3920,7 +3939,7 @@ if (1)                                                                          
   Out $b;
 
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->heap(1), [0, 2];
+  is_deeply $e->Heap->($e, 0), [0, 2];
   is_deeply $e->outLines, [99];
  }
 
@@ -3947,8 +3966,8 @@ if (1)                                                                          
   my $e = &$ee(suppressOutput=>1);
 
   is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
-  is_deeply $e->heap(1), [2];
-  is_deeply $e->heap(2), [99];
+  is_deeply $e->Heap->($e, 0), [1];
+  is_deeply $e->Heap->($e, 1), [99];
  }
 
 #latest:;
@@ -3998,8 +4017,8 @@ if (1)                                                                          
   my $e = &$ee(suppressOutput=>1);
 
   is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       19 instructions executed";
-  is_deeply $e->heap(1), [undef, undef, 1] if $testSet <= 2;
-  is_deeply $e->heap(1), [0,     0,     1] if $testSet  > 2;
+  is_deeply $e->Heap->($e, 0), [undef, undef, 1] if $testSet <= 2;
+  is_deeply $e->Heap->($e, 0), [0,     0,     1] if $testSet  > 2;
  }
 
 #latest:;
@@ -4041,7 +4060,7 @@ if (1)                                                                          
   ArrayDump $a;
   my $e = &$ee(suppressOutput=>1);
 
-  is_deeply $e->heap(1), [1, 2];
+  is_deeply $e->Heap->($e, 0), [1, 2];
   is_deeply eval($e->out), [1,2];
  }
 
@@ -4073,12 +4092,12 @@ Trace: 1
     1     0     0         trace
     2     1     1           jNe
     3     5     0         label
-    4     6     1           mov  [1, 3, stackArea] = 3
-    5     7     1           mov  [1, 4, stackArea] = 4
+    4     6     1           mov  [0, 3, stackArea] = 3
+    5     7     1           mov  [0, 4, stackArea] = 4
     6     8     0         label
     7     9     1           jNe
-    8    10     1           mov  [1, 1, stackArea] = 1
-    9    11     1           mov  [1, 2, stackArea] = 1
+    8    10     1           mov  [0, 1, stackArea] = 1
+    9    11     1           mov  [0, 2, stackArea] = 1
    10    12     1           jmp
    11    16     0         label
 END
@@ -4088,12 +4107,12 @@ Trace: 1
     1     0     0         trace
     2     1     1           jNe
     3     5     0         label
-    4     6     1           mov  [1, 3, stackArea] = 3
-    5     7     1           mov  [1, 4, stackArea] = 4
+    4     6     1           mov  [0, 3, stackArea] = 3
+    5     7     1           mov  [0, 4, stackArea] = 4
     6     8     0         label
     7     9     1           jNe
-    8    10     1           mov  [1, 1, stackArea] = 1
-    9    11     1           mov  [1, 2, stackArea] = 1
+    8    10     1           mov  [0, 1, stackArea] = 1
+    9    11     1           mov  [0, 2, stackArea] = 1
    10    12     1           jmp
    11    16     0         label
 END
@@ -4114,7 +4133,7 @@ if (1)                                                                          
   Mov $c, 6;
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, <<END;
-Change at watched arena: 2, area: 1(stackArea), address: 1
+Change at watched arena: 2, area: 0(stackArea), address: 1
     1     6 mov
 Current value: 2 New value: 5
 END
@@ -4142,7 +4161,7 @@ if (1)                                                                          
   Nop;
   my $e = Execute(suppressOutput=>1);
 
-  is_deeply $e->heap(1), [1, 22, 333];
+  is_deeply $e->Heap->($e, 0), [1, 22, 333];
   is_deeply $e->out, <<END if $testSet <= 2;
 Array size:
 3
@@ -4188,7 +4207,7 @@ if (1)                                                                          
   Push $a, $_, "array" for @a;                                                  # Load array
   ArrayDump $a;
   my $e = &$ee(suppressOutput=>1, maximumArraySize=>9);
-  is_deeply $e->heap(1),  [6, 8, 4, 2, 1, 3, 5, 7];
+  is_deeply $e->Heap->($e, 0),  [6, 8, 4, 2, 1, 3, 5, 7];
  }
 
 #latest:;
@@ -4238,8 +4257,8 @@ if (1)                                                                          
   MoveLong [$b, \2, 'bbb'], [$a, \4, 'aaa'], 3;
 
   my $e = &$ee(suppressOutput=>1, maximumArraySize=>11);
-  is_deeply $e->heap(1), [0 .. 9];
-  is_deeply $e->heap(2), [100, 101, 4, 5, 6, 105 .. 109];
+  is_deeply $e->Heap->($e, 0), [0 .. 9];
+  is_deeply $e->Heap->($e, 1), [100, 101, 4, 5, 6, 105 .. 109];
  }
 
 #      0     1     2
@@ -4414,14 +4433,12 @@ if (1)                                                                          
   Out $b3;
 
   my $e = Execute(suppressOutput=>1, stringMemory=>1);
-#  say STDERR $e->out;
   is_deeply $e->outLines, [qw(1 2 3 11 22 33)];
 
   my $E = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
   is_deeply $e->outLines, [qw(1 2 3 11 22 33)];
   is_deeply $e->mostArrays, [undef, 2, 1, 1, 1];
  }
-
 
 #latest:;
 if (1)
@@ -4438,7 +4455,7 @@ if (1)
   Free $c, 'ccc';
 
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->outLines, [1,1,1];
+  is_deeply $e->outLines, [0,0,0];
   #say STDERR generateVerilogMachineCode("Free");
  }
 
@@ -4470,7 +4487,7 @@ if (1)                                                                          
   Push $a, 1,     "aaa";
   Push $a, 2,     "aaa";
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->heap(1), [1..2];
+  is_deeply $e->Heap->($e, 0), [1..2];
   #say STDERR generateVerilogMachineCode("Push_test");
  }
 
