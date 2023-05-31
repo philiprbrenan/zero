@@ -3341,6 +3341,7 @@ if (1)                                                                          
   Out $c;
   Out $d;
   my $e = &$ee(suppressOutput=>1);
+  #say STDERR generateVerilogMachineCode("Pop_test");  exit;
 
   is_deeply $e->PrintMemory->($e), <<END;
 Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
@@ -4466,7 +4467,7 @@ if (1)                                                                          
    };
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [111, 333];
-  #say STDERR generateVerilogMachineCode("Jeq_test");
+  #say STDERR generateVerilogMachineCode("Jeq_test"); exit;
  }
 
 #latest:;
@@ -4477,7 +4478,7 @@ if (1)                                                                          
   Push $a, 2,     "aaa";
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->Heap->($e, 0), [1..2];
-  #say STDERR generateVerilogMachineCode("Push_test");
+  #say STDERR generateVerilogMachineCode("Push_test"); exit;
  }
 
 #latest:;
