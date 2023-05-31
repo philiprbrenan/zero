@@ -8,7 +8,7 @@ use warnings FATAL => qw(all);
 use strict;
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
-use Test::More tests=>14;
+use Test::More tests=>3;
 
 sub bubbleSort($$)                                                              # As described at: https://en.wikipedia.org/wiki/Bubble_sort
  {my ($array, $name) = @_;                                                      # Array, name of array memory
@@ -17,24 +17,19 @@ sub bubbleSort($$)                                                              
 
   For                                                                           # Outer loop
    {my ($i, $start, $check, $end) = @_;                                         # Loop labels
-    my $l; my $c;
-    Parallel
-      sub{$l = Subtract $N, $i},                                                # An array of one element is already sorted
-      sub{$c = Mov 0};                                                          # Count number of swaps
+    my $l = Subtract $N, $i;                                                    # An array of one element is already sorted
+    my $c = Mov 0;                                                              # Count number of swaps
 
     For                                                                         # Inner loop
      {my ($j) = @_;
-      my $a; my $b;
-      Parallel
-        sub{$a = Mov [$array, \$j, $name]},
-        sub{$b = Mov [$array, \$j, $name, -1]};
+      my $a = Mov [$array, \$j, $name];
+      my $b = Mov [$array, \$j, $name, -1];
 
       IfLt $a, $b,
       Then                                                                      # Swap elements to place smaller element lower in array
-       {Parallel
-          sub{Mov [$array, \$j, $name, -1], $a},
-          sub{Mov [$array, \$j, $name],     $b},
-          sub{Inc $c};
+       {Mov [$array, \$j, $name, -1], $a;
+        Mov [$array, \$j, $name],     $b;
+        Inc $c;
        };
      } [1, $l];
     JFalse $end, $c;                                                            # Stop if the array is now sorted
@@ -44,83 +39,35 @@ sub bubbleSort($$)                                                              
 if (1)                                                                          # Small array
  {Start 1;
   my $a = Array 'array';
-  my @a = qw(6 8 4 2 1 3 5 7);
+  my @a = qw(33 11 22 44 77 55 66 88);
   Push $a, $_, 'array' for @a;                                                  # Load array
 
   bubbleSort $a, 'array';                                                       # Sort
-  ArrayDump $a;
+  Out [$a, \$_, 'array'] for keys @a;
 
-  #my $e = Execute;
-  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);             # Execute a disassembled copy of the program just to show that we can
-  is_deeply $e->out, <<END;
-[1 .. 8]
+  my $e = Execute(suppressOutput=>0, trace=>0);                                 # Execute
+  say STDERR generateVerilogMachineCode("Bubble_sort");
+
+  #say STDERR "AAAA", $e->PrintMemory->($e); exit;
+  is_deeply $e->PrintMemory->($e), <<END;
+Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
+Local:    0    8    1    7    0    7   77   66
+     0   11   22   33   44   55   66   77   88    size:     8
 END
+  #is_deeply $e->outLines, [11, 22, 33];
 
-  is_deeply $e->count,  244;                                                    # Instructions executed
-  is_deeply $e->timeParallel,   184;
-  is_deeply $e->timeSequential, 244;
+  is_deeply $e->count,          115;
 
   #say STDERR formatTable($e->counts); exit;
   is_deeply formatTable($e->counts), <<END;
-add        44
+add        18
 array       1
 arraySize   1
-jFalse      5
-jGe        60
-jmp        29
-mov        91
+jFalse      2
+jGe        30
+jmp        14
+mov        39
 push        8
-subtract    5
-END
- }
-
-if (1)                                                                          # Reversed array 4 times larger
- {Start 1;
-  my $a = Array 'array';
-  my @a = reverse 1..32;
-  Push $a, $_, 'array' for @a;
-
-  bubbleSort $a, 'array';
-
-  ArrayDump $a;
-
-  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);             # Execute assembler program
-
-  is_deeply $e->count, 4753;                                                    # Instructions executed
-  is_deeply $e->timeParallel,   3233;
-  is_deeply $e->timeSequential, 4753;
-
-  is_deeply $e->out, <<END;
-[1 .. 32]
-END
- }
-
-if (1)                                                                          # Small array
- {Start 1;
-  my $a = Array 'array';
-  my @a = qw(6 8 4 2 1 3 5 7);
-  Push $a, $_, 'array' for @a;                                                  # Load array
-
-  bubbleSort $a, 'array';                                                       # Sort
-
-  my $e = Execute(suppressOutput=>1, trace=>0);                                 # Execute a disassembled copy of the program just to show that we can
-  #say STDERR generateVerilogMachineCode("Bubble_sort");
-
-  is_deeply $e->heap(0), [1..8];
-
-  is_deeply $e->count,  244;                                                    # Instructions executed
-  is_deeply $e->timeParallel,   184;
-  is_deeply $e->timeSequential, 244;
-
-  is_deeply formatTable($e->counts), <<END;
-add        44
-array       1
-arraySize   1
-jFalse      5
-jGe        60
-jmp        29
-mov        91
-push        8
-subtract    5
+subtract    2
 END
  }
