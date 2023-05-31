@@ -75,7 +75,7 @@ my $t = <<END;
       run:  sudo apt -y install iverilog
 
     - name: Verilog Version
-      run:  iverilog -v
+      run:  iverilog -V
 
     - name: fpga
       run:  rm -f fpga; #iverilog -g2012 -o fpga verilog/fpga.sv && timeout 1m ./fpga
