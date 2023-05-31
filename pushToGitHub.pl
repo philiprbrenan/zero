@@ -71,6 +71,12 @@ my $t = <<END;
     - name: Cpan
       run:  sudo cpan install -T Data::Dump Data::Table::Text
 
+    - name: Verilog
+      run:  sudo apt -y install iverilog
+
+    - name: fpga
+      run:  rm -f fpga; iverilog -g2012 -o fpga verilog/fpga.sv && timeout 1m ./fpga
+
     - name: Emulator
       run:  perl lib/Zero/Emulator.pm
 
