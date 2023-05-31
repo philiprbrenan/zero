@@ -7,7 +7,7 @@ Open the __Actions__ [tab](https://en.wikipedia.org/wiki/Tab_key) to see the [co
 
 ## Installation
 
-Install [Zero assembler programming language](https://github.com/philiprbrenan/zero) by downloading this repo and then following the [steps](http://docs.oasis-open.org/dita/dita/v1.3/errata02/os/complete/part3-all-inclusive/contentmodels/cmlts.html#cmlts__steps) shown in this
+Install the [Zero assembler programming language](https://github.com/philiprbrenan/zero) by downloading this repo and then following the [steps](http://docs.oasis-open.org/dita/dita/v1.3/errata02/os/complete/part3-all-inclusive/contentmodels/cmlts.html#cmlts__steps) shown in this
 [validating action](https://github.com/philiprbrenan/zero/blob/main/.github/workflows/main.yml)
 
 ## Application
@@ -186,7 +186,7 @@ being accessed.
 
 Every [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) needs a macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) to generate [code](https://en.wikipedia.org/wiki/Computer_program) from macro
 specifications as writing each instruction by hand is hard work. Using a [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) saves programmer time by allowing common instruction sequences to
-be captured as macros which can then be called upon as needed to generate the [code](https://en.wikipedia.org/wiki/Computer_program) for an application. The [Zero assembler programming language](https://github.com/philiprbrenan/zero) uses [Perl](http://www.perl.org/) as its macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor). Using [Perl](http://www.perl.org/) as the macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) for [Zero assembler programming language](https://github.com/philiprbrenan/zero) enables macro libraries to be
+be captured as macros which can then be called upon as needed to generate the [code](https://en.wikipedia.org/wiki/Computer_program) for an application. The [Zero assembler programming language](https://github.com/philiprbrenan/zero) uses [Perl](http://www.perl.org/) as its macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor). Using [Perl](http://www.perl.org/) as the macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) for the [Zero assembler programming language](https://github.com/philiprbrenan/zero) enables macro libraries to be
 published and distributed on [CPAN](https://metacpan.org/author/PRBRENAN) as [Perl](http://www.perl.org/) modules.
 
 ## Machine [code](https://en.wikipedia.org/wiki/Computer_program) 
@@ -305,7 +305,7 @@ instruction.
 
 ### N-Way-Tree
 
-An implementation of N-Way-Trees in [Zero assembler programming language](https://github.com/philiprbrenan/zero) .
+An implementation of N-Way-Trees in the [Zero assembler programming language](https://github.com/philiprbrenan/zero) .
 
 [Documentation](https://metacpan.org/dist/Zero-Emulator/view/NWayTree.pod)
 [Code](https://github.com/philiprbrenan/zero/blob/main/lib/Zero/NWayTree.pm)
@@ -338,7 +338,7 @@ so stating the licence for your enhancement.
 
 ### Sort [programs](https://en.wikipedia.org/wiki/Computer_program) 
 [The examples folder](https://github.com/philiprbrenan/zero/tree/main/examples)
-contains some [sort](https://en.wikipedia.org/wiki/Sorting) [programs](https://en.wikipedia.org/wiki/Computer_program) written in [Zero assembler programming language](https://github.com/philiprbrenan/zero) . The total number of instructions
+contains some [sort](https://en.wikipedia.org/wiki/Sorting) [programs](https://en.wikipedia.org/wiki/Computer_program) written in the [Zero assembler programming language](https://github.com/philiprbrenan/zero) . The total number of instructions
 executed for each [sort](https://en.wikipedia.org/wiki/Sorting) [program](https://en.wikipedia.org/wiki/Computer_program) on each of two sample sets of data are shown
 below. Various prototype solutions were developed for each [sort](https://en.wikipedia.org/wiki/Sorting) [program](https://en.wikipedia.org/wiki/Computer_program): the
 one with the lowest emulated instruction count was retained as the optimal
@@ -355,7 +355,7 @@ solution.
 
 #### Bubblesort
  [Bubble Sort](https://en.wikipedia.org/wiki/Bubble_sort) is easy to optimize by overlapping instruction execution across
-three channels. Doing so gives it the best performance of the **O(n^2)** [sort](https://en.wikipedia.org/wiki/Sorting) algorithms implemented in [Zero assembler programming language](https://github.com/philiprbrenan/zero) so far. Of course, with unlimited parallelism,
+three channels. Doing so gives it the best performance of the **O(n^2)** [sort](https://en.wikipedia.org/wiki/Sorting) algorithms implemented in the [Zero assembler programming language](https://github.com/philiprbrenan/zero) so far. Of course, with unlimited parallelism,
 bubble [sort](https://en.wikipedia.org/wiki/Sorting) can [sort](https://en.wikipedia.org/wiki/Sorting) an [array](https://en.wikipedia.org/wiki/Dynamic_array) in **O(N)** time: just let each of **N** [processes](https://en.wikipedia.org/wiki/Process_management_(computing)) perform one pass each on the [array](https://en.wikipedia.org/wiki/Dynamic_array) of length **N** to be sorted.
 
 # Optimization space
