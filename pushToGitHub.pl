@@ -19,7 +19,7 @@ my $user    = q(philiprbrenan);                                                 
 my $repo    = q(zero);                                                          # Store code here so it can be referenced from a browser
 my $wf      = q(.github/workflows/main.yml);                                    # Work flow on Ubuntu
 my $repoUrl = q(https://github.com/philiprbrenan/zero);
-my $perlXmp = 1;                                                                # Perl examples if true
+my $perlXmp = 0;                                                                # Perl examples if true
 my $macos   = 0;                                                                # Macos if true
 my $windows = 0;                                                                # Windows if true
 my $openBsd = 0;                                                                # OpenBsd if true
@@ -70,6 +70,9 @@ my $d = dateTimeStamp;
 my $t = <<END;
     - name: Cpan
       run:  sudo cpan install -T Data::Dump Data::Table::Text
+
+    - name: Ubuntu update
+      run:  sudo apt update
 
     - name: Verilog
       run:  sudo apt -y install iverilog
