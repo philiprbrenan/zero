@@ -3,18 +3,18 @@
 // Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
 module fpga;                                                                    // Run test programs
-  parameter integer signed NTestPrograms  =   15;                               // Number of test programs to run
-  parameter integer signed NTestsExpected =   54;                               // Number of test passes expected
-  parameter integer signed showInstructionDetails = 0;                          // Show details of each instruction as it is executed
+  parameter integer NTestPrograms  =   15;                                      // Number of test programs to run
+  parameter integer NTestsExpected =   54;                                      // Number of test passes expected
+  parameter integer showInstructionDetails = 0;                                 // Show details of each instruction as it is executed
 
-  parameter integer signed NSteps         = 200;                                // Maximum number of instruction executions
-  parameter integer signed NInstructions  = 2000;                               // Number of instruction slots in code memory
-  parameter integer signed NArea          =   10;                               // Size of each area on the heap
-  parameter integer signed NArrays        = 1000;                               // Amount of heap memory
-  parameter integer signed NHeap          = NArea*NArrays;                      // Amount of heap memory
-  parameter integer signed NLocal         = 1000;                               // Size of local memory
-  parameter integer signed NOut           = 1000;                               // Size of output area
-  parameter integer signed NFreedArrays   = 1000;                               // Size of output area
+  parameter integer NSteps         = 200;                                       // Maximum number of instruction executions
+  parameter integer NInstructions  = 2000;                                      // Number of instruction slots in code memory
+  parameter integer NArea          =   10;                                      // Size of each area on the heap
+  parameter integer NArrays        = 1000;                                      // Amount of heap memory
+  parameter integer NHeap          = NArea*NArrays;                             // Amount of heap memory
+  parameter integer NLocal         = 1000;                                      // Size of local memory
+  parameter integer NOut           = 1000;                                      // Size of output area
+  parameter integer NFreedArrays   = 1000;                                      // Size of output area
 
   reg signed [255:0] code[NInstructions];                                       // Code memory
   reg signed [ 32:0] arraySizes[NArrays];                                       // Size of each array
