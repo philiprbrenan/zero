@@ -1,3340 +1,1344 @@
-//----------------------------------------------------------------------------
-// NWayTree CPU
+//-----------------------------------------------------------------------------
+// Fpga implementation and testing of NWay Trees
 // Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
-`timescale 10ps/1ps
-module cpu(reset, next, clock, diA, doA, dI, dO, dcI, dcO, stop,                // The cpu executes one step in the computation per input clock. We can also put values into memory and get values out again to test each program.
-  programCounter, rs, rt);
-  input      reset;                                                             // Reset the cpu so that we can run the programs one after another
-  input      next;                                                              // Run the next program
-  input      clock;                                                             // Program counter
-  input      dcI, dcO;                                                          // Data in and out clocks
-  input [7:0]diA;                                                               // Data input address
-  input [7:0]doA;                                                               // Data  output address
-  input [7:0]dI;                                                                // Data input value
-  output[7:0]dO;                                                                // Data output value
-  output     stop;                                                              // Program has finished - stop was executed
-  output [11:0]programCounter;                                                  // Program counter output
-  output [15:0]rs;                                                              // Source register
-  output [15:0]rt;                                                              // Target register
-  always begin #1 $display("Memory in hex:"); end
-  reg stopped;                                                                  // Set when we stop
+module fpga;                                                                    // Run test programs
+  parameter integer signed NTestPrograms  =   15;                               // Number of test programs to run
+  parameter integer signed NTestsExpected =   54;                               // Number of test passes expected
+  parameter integer signed showInstructionDetails = 0;                          // Show details of each instruction as it is executed
 
-//  reg [ 7:0] dia;                                                               // Data input address
-  reg [ 7:0] doa;                                                               // Data output address
+  parameter integer signed NSteps         = 200;                                // Maximum number of instruction executions
+  parameter integer signed NInstructions  = 2000;                               // Number of instruction slots in code memory
+  parameter integer signed NArea          =   10;                               // Size of each area on the heap
+  parameter integer signed NArrays        = 1000;                               // Amount of heap memory
+  parameter integer signed NHeap          = NArea*NArrays;                      // Amount of heap memory
+  parameter integer signed NLocal         = 1000;                               // Size of local memory
+  parameter integer signed NOut           = 1000;                               // Size of output area
+  parameter integer signed NFreedArrays   = 1000;                               // Size of output area
 
-  reg [15:0] R [0:15];                                                          // Registers
-  reg [ 7:0] D [0:2**8-1];                                                      // Data during program execution
-  reg [ 7:0] DI[0:2**8-1];                                                      // Data as input - then copied to the actual data  at program start
-  reg [ 7:0] DO[0:2**8-1];                                                      // Data as output - copied from actual memory after program execution
-  reg [ 8:0] P [0:2**11-1];                                                     // Program
+  reg signed [255:0] code[NInstructions];                                       // Code memory
+  reg signed [ 32:0] arraySizes[NArrays];                                       // Size of each array
+  reg signed [ 32:0] heapMem [NHeap];                                           // Heap memory
+  reg signed [ 32:0] localMem[NLocal];                                          // Local memory
+  reg signed [ 32:0] outMem[NOut];                                              // Out channel
+  reg signed [ 32:0] freedArrays[NFreedArrays];                                 // Freed arrays list implemented as a stack
+  reg signed [ 32:0] arrayShift[NArea];                                         // Array shift area
 
-  reg [ 8:0] C;                                                                 // Constant
-  reg [ 8:0] S;                                                                 // Source
-  reg [ 8:0] T;                                                                 // Target
+  integer signed nSteps;                                                        // Number of instructions executed
+  integer signed NInstructionEnd;                                               // Limit of instructions for the current program
+  integer signed outMemPos;                                                     // Position in output channel
+  integer signed result;                                                        // Result of an instruction execution
+  integer signed allocs;                                                        // Maximum number of array allocations in use at any one time
+  integer signed freedArraysTop;                                                // Position in freed arrays stack
+  integer signed test;                                                          // Tests passed
+  integer signed testsPassed;                                                   // Tests passed
+  integer signed testsFailed;                                                   // Tests failed
+  string  lastInstruction;                                                      // Name of the last instruction excuted
 
-  integer pc = 0;                                                               // Program counter, next change in program counter
-//  integer j = 0;                                                                // Jump target
-  integer i = 0;                                                                // Current instruction
-//  integer z = 0;                                                                // Instruction count
-  integer idi, ido;                                                             // Input and output indices for data memeory
-  integer iprogram = 0;                                                         // Number of the program to run
-
-  integer resetN = 0, resetL = 0;
-  integer nextN  = 0, nextL  = 0;
-
-  assign dO   = DO[doa];                                                        // Assign the completed memory output value to the output pins
-  assign stop = stopped > 0 ? 1 : 0;                                            // Show whether we have stopped yet or not
-  assign programCounter = pc;                                                   // Show the program counter
-  assign rs   = R[S];                                                           // Show the source register
-  assign rt   = R[T];                                                           // Show the target register
-
-  always @ (posedge dcI)   DI[diA]   <= dI;                                     // Write into data memory
-  always @ (posedge dcO)   doa       <= doA;                                    // Read from data memory
-
-  always @ (posedge reset) resetN <= resetN + 1;                                // Restart at the first program
-  always @ (posedge next)  nextN   =  nextN + 1;                                // Run the next program
-
-  always @ (posedge clock) begin                                                // Execute next step in program
-
-    if (resetN != resetL) begin;                                                // Reset
-      resetL <= resetN;
-      iprogram <= 0;
-      pc <= 0;
+//Tests
+  task ok(integer signed test, string name);                                    // Check a single test result
+    begin
+      if (test == 1) begin
+        testsPassed++;
+      end
+      else begin
+        $display("Assertion %s FAILED", name);
+        printMemory();
+        testsFailed++;
+      end
     end
+  endtask
 
-    else if (nextN != nextL) begin;                                             // Next
-      nextL <= nextN;
-
-      R[0] = 0; R[1] = 0; R[ 2] = 0; R[ 3] = 0; R[ 4] = 0; R[ 5] = 0; R[ 6] = 0; R[ 7] = 0;
-      R[8] = 0; R[9] = 0; R[10] = 0; R[11] = 0; R[12] = 0; R[13] = 0; R[14] = 0; R[15] = 0;
-
-      for(idi = 0; idi < 2**8; idi = idi + 1) D[idi] = DI[idi];                // Load clocked in data
-
-      C  <= 0;                                                                  // Clear constant box
-      S  <= 0;                                                                  // Clear source box
-      T  <= 0;                                                                  // Clear target box
-
-      if (iprogram == 0) load_Program1;                                         // Load program 1
-      if (iprogram == 1) load_Program2;                                         // Load program 2
-      if (iprogram == 2) load_Program3;                                         // Load program 3
-      if (iprogram == 3) load_Instructions;                                     // Load test programs
-      if (iprogram == 4) load_1_to_3;
-      if (iprogram == 5) load_For_Loop;
-      if (iprogram == 6) load_If;
-      if (iprogram == 7) load_ParityBits;
-
-      iprogram <= iprogram + 1;                                                 // Select the next program
-
-      stopped <= 0;                                                             // We are now executing the program so we are not stopped
-      pc <= 0;                                                                  // Start at the first instruction allowing for the clock going negative
+  task loadCode();                                                              // Load code to be tested for test
+    begin
+      case(test)
+        1: Mov_test();
+        2: Add_test();
+        3: Subtract_test();
+        4: Not_test();
+        5: Array_test();
+        6: Array_scans();
+        7: Free_test();
+        8: ShiftLeft_test();
+        9: ShiftRight_test();
+       10: Jeq_test();
+       11: Shift_up_test();
+       12: Shift_up_test_2();
+       13: Push_test();
+       14: Pop_test();
+       15: Bubble_sort();
+      endcase
     end
+  endtask
 
-    else if (P[pc] <= 9'b0_1111_1111) begin; C <= P[pc];                  ppc(); end  // Constant
-    else if (P[pc] <= 9'b1_0111_1111) begin; S <= P[pc] & 9'b0_0011_1111; ppc(); end  // Source
-    else if (P[pc] <= 9'b1_1011_1111) begin; T <= P[pc] & 9'b0_0011_1111; ppc(); end  // Target
-    else begin                                                                        // Decode opcode
-      case(P[pc] & 6'h1f)
-         0 : begin; R[T]    <=   rt  + rs;                                ppc(); end  // add
-         1 : begin; R[T]    <=   rt  & rs;                                ppc(); end  // and
-         2 : begin; R[T]    <=   rs == rt ? 1 : 0;                        ppc(); end  // cmpEq
-         3 : begin; R[S]    <=   rs  >   C  ? 1 : 0;                      ppc(); end  // cmpGt
-         4 : begin; R[S]    <=   rs  <   C  ? 1 : 0;                      ppc(); end  // cmpLt
-         5 : begin; R[S]    <=   rs  - 1;                                 ppc(); end  // dec
-         6 : begin; R[S]    <=   rs  + 1;                                 ppc(); end  // inc
-         7 : begin; pc      <=   rs  > 0    ? (C << 3 ) - 2 : pc + 1;            end  // jumpIfNotZero - the minus three compensates for the fact that we are going to increment the program counter
-         8 : begin; pc      <=   rs == 0    ? (C << 3 ) - 2 : pc + 1;            end  // jumpIfZero
-         9 : begin; ppc();                                                       end  // label
-        10 : begin; R[S]    <=   C;                                       ppc(); end  // ldrc
-        11 : begin; R[S]    <=   D[C];                                    ppc(); end  // ldrd
-        12 : begin; R[T]    <=   D[rs];                                   ppc(); end  // ldri
-        13 : begin; R[T]    <=   rs;                                      ppc(); end  // ldrr
-        14 : begin; R[S]    <= ! rs;                                      ppc(); end  // not
-        15 : begin; R[T]    <=   rt | rs;                                 ppc(); end  // or
-        16 : begin; R[S]    <=   rs << C;                                 ppc(); end  // sl
-        17 : begin; R[S]    <=   rs >> C;                                 ppc(); end  // sr
-        18 : begin; D[C]    <=   rs;                                      ppc(); end  // strd
-        19 : begin; D[R[S]] <=   rt;                                      ppc(); end  // stri
-        20 : begin; R[T]    <=   rt  - rs;                                ppc(); end  // sub
-        21 : begin; R[S]    <=   rs  ^   C;                               ppc(); end  // xor
-        22 : begin                                                                   // stop
-          //$display("Memory in decimal:");
-          //for(i = 0; i < 2**8; i = i + 16) begin                                // Print memory in decimal
-          //  $display(i, " ", D[i+0], " ", D[i+1], " ", D[i+2], " ", D[i+3], "  ", D[i+4], " ", D[i+5], " ", D[i+6], " ", D[i+7], "   ", D[i+8], " ", D[i+9], " ", D[i+10], " ", D[i+11], "  ", D[i+12], " ", D[i+13], " ", D[i+14], " ", D[i+15]);
-          //end
-          //$display("Memory in hex:");
-          //for(i = 0; i < 2**8; i = i + 16) begin                                // Print memory in hexadecimal
-          //  $displayh(i, " ", D[i+0], " ", D[i+1], " ", D[i+2], " ", D[i+3], "  ", D[i+4], " ", D[i+5], " ", D[i+6], " ", D[i+7], "   ", D[i+8], " ", D[i+9], " ", D[i+10], " ", D[i+11], "  ", D[i+12], " ", D[i+13], " ", D[i+14], " ", D[i+15]);
-          //end
-          //$display("Finished");
-          for(ido = 0; ido < 2**8; ido = ido + 1) DO[ido] <= D[ido];            // Place data in output area
-          stopped <= 1;
+  task printMemory();                                                           // Print memory so we now what to chec
+    begin
+      $display("          0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31   32");
+      $write("Local:");
+      for(i = 0; i < 32; ++i) begin
+        $write(" %4d", localMem[i]);
+      end
+      $display("");
+      $write("Heap: ");
+      for(i = 0; i < 32; ++i) begin
+        $write(" %4d", heapMem[i]);
+      end
+      $display("");
+    end
+  endtask
+
+  task printOut();                                                              // Print the output channel
+    begin
+      $display("Out %d", outMemPos);
+      $display("    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31   32");
+      for(i = 0; i < outMemPos; ++i) begin
+        $write(" %4d", outMem[i]);
+      end
+      $display("");
+    end
+  endtask
+
+  task checkResults();                                                          // Check results of test
+    begin
+      case(test)
+        1: ok(outMem[0] == 1, "Mov 1");                                         // 1
+        2: ok(outMem[0] == 5, "Add 1");                                         // 1
+        3: ok(outMem[0] == 2, "Subtract 1");                                    // 1
+        4: begin                                                                // 3
+          ok(outMem[0] == 3, "Not 1.1");
+          ok(outMem[1] == 0, "Not 1.2");
+          ok(outMem[2] == 1, "Not 1.3");
+        end
+        5: begin                                                                // 4 => 10
+          ok(localMem[0] ==  0, "Array 1.1");
+          ok( heapMem[0] == 11, "Array 1.2");
+          ok( heapMem[1] == 22, "Array 1.3");
+          ok( arraySizes[0] == 2, "Array 1.4");
+        end
+        6: begin                                                                // 12 => 22
+          ok(outMem[0] == 3, "scan 1.1"); ok(outMem[1] == 2, "scan 1.2"); ok(outMem[ 2] == 1, "scan 1.3"); ok(outMem[ 3] == 0, "scan 1.4");
+          ok(outMem[4] == 3, "scan 2.1"); ok(outMem[5] == 2, "scan 2.2"); ok(outMem[ 6] == 1, "scan 2.3"); ok(outMem[ 7] == 0, "scan 2.4");
+          ok(outMem[8] == 0, "scan 3.1"); ok(outMem[9] == 1, "scan 3.2"); ok(outMem[10] == 2, "scan 3.3"); ok(outMem[11] == 3, "scan 3.4");
+        end
+        7: begin                                                                // 3    => 25
+          ok(outMem[0] == 0, "Free 1"); ok(outMem[1] == 0, "Free 2"); ok(outMem[2] == 0, "Free 3");
+        end
+        8: begin
+          ok(localMem[0] == 2, "ShiftLeft");                                    // 1
+        end
+        9: begin
+          ok(localMem[0] == 2, "ShiftRight");                                   // 1
+        end
+       10: begin
+          ok(outMem[0] == 111, "Jeq_test 1");                                   // 1
+          ok(outMem[1] == 333, "Jeq_test 2");                                   // 1 => 29
+        end
+       11: begin
+          ok(arraySizes[0] ==  4, "ShiftUp 1 length");                          // 5 => 34
+          ok(heapMem[0]    == 99, "ShiftUp 1 new");
+          ok(heapMem[1]    ==  0, "ShiftUp 1 0");
+          ok(heapMem[2]    ==  1, "ShiftUp 1 1");
+          ok(heapMem[3]    ==  2, "ShiftUp 1 2");
+        end
+       12: begin
+          ok(arraySizes[0] ==  4, "ShiftUp 2 length");                          // 5 => 39
+          ok(heapMem[0]    ==  0, "ShiftUp 2 new");
+          ok(heapMem[1]    ==  1, "ShiftUp 2 0");
+          ok(heapMem[2]    == 99, "ShiftUp 2 1");
+          ok(heapMem[3]    ==  2, "ShiftUp 2 2");
+        end
+       13: begin
+          ok(arraySizes[0] ==  2, "Push 1 length");                             // 3 => 42
+          ok(heapMem[0]    ==  1, "Push 1 1");
+          ok(heapMem[1]    ==  2, "Push 1 2");
+        end
+       14: begin
+          ok(arraySizes[0] ==  0, "Pop 1 length");                              // 3 => 45
+          ok(outMem[0]     ==  2, "Pop 1.1");
+          ok(outMem[1]     ==  1, "Pop 1.2");
+        end
+       15: begin
+          ok(arraySizes[0] ==  8, "Bubble Sort length");                        // 9 => 54
+          ok(heapMem[0]    ==  11, "Bubble Sort 1");
+          ok(heapMem[1]    ==  22, "Bubble Sort 2");
+          ok(heapMem[2]    ==  33, "Bubble Sort 3");
+          ok(heapMem[3]    ==  44, "Bubble Sort 4");
+          ok(heapMem[4]    ==  55, "Bubble Sort 5");
+          ok(heapMem[5]    ==  66, "Bubble Sort 6");
+          ok(heapMem[6]    ==  77, "Bubble Sort 7");
+          ok(heapMem[7]    ==  88, "Bubble Sort 8");
         end
       endcase
     end
+  endtask
+
+//Instructions
+  wire signed clock;                                                                   // Clock
+  integer ip = 0;                                                               // Instruction pointer
+  integer i, j, k, l, m, n, o, p, q;                                            // Useful integers
+  integer r1, r2, r3, r4, r5, r6, r7, r8;                                       // Intermediate array results
+
+  wire signed [255:0] instruction = code[ip];
+//wire signed [31:0]  operator    = instruction[255:223];
+  wire signed [31:0]  operator    = instruction[255:224];
+  wire signed [63:0]  source2     = instruction[ 63:  0];
+  wire signed [63:0]  source      = instruction[127: 64];
+  wire signed [63:0]  target      = instruction[191:128];
+
+  wire signed [31: 0] source2Area     = source2[63:32];                         // Source 2
+  wire signed [15: 0] source2Address  = source2[31:16];
+  wire signed [ 2: 0] source2Arena    = source2[13:12];
+  wire signed [ 2: 0] source2DArea    = source2[11:10];
+  wire signed [ 2: 0] source2DAddress = source2[ 9: 8];
+  wire signed [ 7: 0] source2Delta    = source2[ 7: 0];
+  wire signed [31: 0] source2Value    =                                         // Source 2 as value
+    source2Arena      == 0 ? 0 :
+    source2Arena      == 1 ?
+     (                        source2DAddress == 0 ? source2Address :
+      source2DArea    == 0 && source2DAddress == 1 ? heapMem [source2Delta + source2Area*NArea           + source2Address]           :
+      source2DArea    == 0 && source2DAddress == 2 ? heapMem [source2Delta + source2Area*NArea           + localMem[source2Address]] :
+      source2DArea    == 1 && source2DAddress == 1 ? heapMem [source2Delta + localMem[source2Area]*NArea + source2Address]           :
+      source2DArea    == 1 && source2DAddress == 2 ? heapMem [source2Delta + localMem[source2Area]*NArea + localMem[source2Address]] : 0) :
+    source2Arena      == 2 ?
+     (source2DAddress == 0 ? source2Address :
+      source2DAddress == 1 ? localMem[source2Delta + source2Address]           :
+      source2DAddress == 2 ? localMem[source2Delta + localMem[source2Address]] : 0) : 0;
+
+  wire signed [31: 0] source1Area     = source[63:32];                          // Source 1
+  wire signed [15: 0] source1Address  = source[31:16];
+  wire signed [ 2: 0] source1Arena    = source[13:12];
+  wire signed [ 2: 0] source1DArea    = source[11:10];
+  wire signed [ 2: 0] source1DAddress = source[ 9: 8];
+  wire signed [ 7: 0] source1Delta    = source[ 7: 0];
+  wire signed [31: 0] source1Value    =                                         // Source 1 as value
+    source1Arena      == 0 ? 0 :
+    source1Arena      == 1 ?
+     (                        source1DAddress == 0 ? source1Address :
+      source1DArea    == 0 && source1DAddress == 1 ? heapMem [source1Delta + source1Area*NArea           + source1Address]           :
+      source1DArea    == 0 && source1DAddress == 2 ? heapMem [source1Delta + source1Area*NArea           + localMem[source1Address]] :
+      source1DArea    == 1 && source1DAddress == 1 ? heapMem [source1Delta + localMem[source1Area]*NArea + source1Address]           :
+      source1DArea    == 1 && source1DAddress == 2 ? heapMem [source1Delta + localMem[source1Area]*NArea + localMem[source1Address]] : 0) :
+    source1Arena      == 2 ?
+     (source1DAddress == 0 ? source1Address :
+      source1DAddress == 1 ? localMem[source1Delta + source1Address]           :
+      source1DAddress == 2 ? localMem[source1Delta + localMem[source1Address]] : 0) : 0;
+  wire signed [31: 0] sourceLocation  =                                         // Source 1 as a location
+    source1Arena      == 0 ? 0 :
+    source1Arena      == 1 ?
+     (                        source1DAddress == 0 ? source1Address :
+      source1DArea    == 0 && source1DAddress == 1 ? source1Delta + source1Area*NArea           + source1Address           :
+      source1DArea    == 0 && source1DAddress == 2 ? source1Delta + source1Area*NArea           + localMem[source1Address] :
+      source1DArea    == 1 && source1DAddress == 1 ? source1Delta + localMem[source1Area]*NArea + source1Address           :
+      source1DArea    == 1 && source1DAddress == 2 ? source1Delta + localMem[source1Area]*NArea + localMem[source1Address] : 0) :
+    source1Arena      == 2 ?
+     (source1DAddress == 0 ? source1Address :
+      source1DAddress == 1 ? source1Delta + localMem[source1Address]           :
+      source1DAddress == 2 ? source1Delta + localMem[localMem[source1Address]] : 0) : 0;
+
+  wire signed [31: 0] targetArea      = target[63:32];                          // Target
+  wire signed [15: 0] targetAddress   = target[31:16];
+  wire signed [ 2: 0] targetArena     = target[13:12];
+  wire signed [ 2: 0] targetDArea     = target[11:10];
+  wire signed [ 2: 0] targetDAddress  = target[ 9: 8];
+  wire signed [ 7: 0] targetDelta     = target[ 7: 0];
+  wire signed [31: 0] targetLocation  =                                         // Target as a location
+    targetArena      == 0 ? 0 :                                                 // Invalid
+    targetArena      == 1 ?                                                     // Heap
+     (targetDArea    == 0 && targetDAddress == 1 ? targetDelta + targetArea*NArea           + targetAddress           :
+      targetDArea    == 0 && targetDAddress == 2 ? targetDelta + targetArea*NArea           + localMem[targetAddress] :
+      targetDArea    == 1 && targetDAddress == 1 ? targetDelta + localMem[targetArea]*NArea + targetAddress           :
+      targetDArea    == 1 && targetDAddress == 2 ? targetDelta + localMem[targetArea]*NArea + localMem[targetAddress] : 0) :
+    targetArena      == 2 ?                                                     // Local
+     (targetDAddress == 1 ?  targetDelta + targetAddress           :
+      targetDAddress == 2 ?  targetDelta + localMem[targetAddress] : 0) : 0;
+
+  wire signed [31: 0] targetIndex  =                                            // Target index within array
+    targetArena      == 1 ?                                                     // Heap
+     (targetDAddress == 1 ? targetDelta + targetAddress           :
+      targetDAddress == 2 ? targetDelta + localMem[targetAddress] : 0)  : 0;
+
+  wire signed [31: 0] targetLocationArea =                                      // Number of array containing target
+      targetArena    == 1 && targetDArea == 0 ? targetArea :
+      targetArena    == 1 && targetDArea == 1 ? localMem[targetArea]    : 0;
+
+  wire signed [31: 0] targetValue    =                                          // Target as value
+    targetArena      == 0 ? 0 :
+    targetArena      == 1 ?
+     (                       targetDAddress == 0 ? targetAddress :
+      targetDArea    == 0 && targetDAddress == 1 ? heapMem [targetDelta + targetArea*NArea           + targetAddress]           :
+      targetDArea    == 0 && targetDAddress == 2 ? heapMem [targetDelta + targetArea*NArea           + localMem[targetAddress]] :
+      targetDArea    == 1 && targetDAddress == 1 ? heapMem [targetDelta + localMem[targetArea]*NArea + targetAddress]           :
+      targetDArea    == 1 && targetDAddress == 2 ? heapMem [targetDelta + localMem[targetArea]*NArea + localMem[targetAddress]] : 0) :
+    targetArena      == 2 ?
+     (targetDAddress == 0 ? targetAddress :
+      targetDAddress == 1 ? localMem[targetDelta + targetAddress]           :
+      targetDAddress == 2 ? localMem[targetDelta + localMem[targetAddress]] : 0) : 0;
+
+  task printInstruction();                                                      // Print an instruction
+    begin;
+      $display("targetAddress =%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Location=%4x value=%4x",
+        targetAddress, targetArea, targetDAddress, targetDArea, targetArena, targetDelta, targetLocation, targetValue);
+
+      $display("source1Address=%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Value   =%4x",
+        source1Address, source1Area, source1DAddress, source1DArea, source1Arena, source1Delta, source1Value);
+
+      $display("source2Address=%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Value   =%4x",
+        source2Address, source2Area, source2DAddress, source2DArea, source2Arena, source2Delta, source2Value);
+    end
+  endtask
+
+//Execute
+  initial begin                                                                 // Load, run confirm
+    testsPassed = 0;                                                            // Passed tests
+    testsFailed = 0;                                                            // Failed tests
+    for(test = 1; test <= NTestPrograms; ++test) begin                          // Run the tests from bewest to oldest
+//if (test == 15) begin
+      allocs         = 0;                                                       // Largest number of arrays in use at any one time so far
+      freedArraysTop = 0;                                                       // Start freed arrays stack
+      loadCode(test);                                                           // Load the program
+      $display("Test %d", test);
+      outMemPos = 0;                                                            // Output channel position
+      nSteps    = 1;                                                            // Number of instructions executed
+      for(i = 0; i < NOut;   ++i)   outMem[i] = 'bx;                            // Reset the output channel
+      for(i = 0; i < NHeap;  ++i)  heapMem[i] = 'bx;                            // Reset heap memory
+      for(i = 0; i < NLocal; ++i) localMem[i] = 'bx;                            // Reset local memory
+
+      for(ip = 0; ip >= 0 && ip < NInstructionEnd; ++ip)                        // Each instruction
+      begin
+        #1;                                                                     // Let the ip update its assigns
+        if (showInstructionDetails) printInstruction();                         // Print Instruction details
+
+        executeInstruction();
+        //$display("%5d  %4d  %8s  %4d", nSteps, ip, lastInstruction, result);
+        //printMemory();
+        if (nSteps++ > NSteps) begin                                            // Count instructions executed
+          $display("Out of instructions after %d steps", NSteps);
+          printMemory();
+          $finish;
+        end
+      end
+      checkResults(test);                                                       // Check results
+//end
+    end
+    if (testsPassed > 0 && testsFailed > 0) begin
+       $display("Passed %1d tests, FAILED %1d tests out of %d tests", testsPassed, testsFailed, NTestsExpected);
+    end
+    else if (testsFailed > 0) begin
+       $display("FAILED %1d tests out of %1d tests", testsFailed, NTestsExpected);
+    end
+    else if (testsPassed > 0 && testsPassed != NTestsExpected) begin
+       $display("Passed %1d tests out of %1d tests with no failures ", testsPassed, NTestsExpected);
+    end
+    else if (testsPassed == NTestsExpected) begin                               // Testing summary
+       $display("All %1d tests passed successfully in %1d programs", NTestsExpected, NTestPrograms);
+    end
+    else begin
+       $display("No tests run passed: %1d, failed: %1d, expected %1d, programs: %1d", testsPassed, testsFailed, NTestsExpected, NTestPrograms);
+    end
+    $finish;
   end
 
-  task ppc;                                                                     // Increment program counter
+  task executeInstruction();                                                    // Execute an instruction
     begin
-      pc <= pc + 1;
+      result = 'bx;
+      case(operator)
+         0: begin; add_instruction();                                       end // add_instruction
+         1: begin; array_instruction();                                     end // array_instruction
+         2: begin; arrayCountGreater_instruction();                         end // arrayCountGreater_instruction
+         3: begin; arrayCountLess_instruction();                            end // arrayCountLess_instruction
+         4: begin; arrayDump_instruction();                                 end // arrayDump_instruction
+         5: begin; arrayIndex_instruction();                                end // arrayIndex_instruction
+         6: begin; arraySize_instruction();                                 end // arraySize_instruction
+         7: begin; assert_instruction();                                    end // assert_instruction
+         8: begin; assertEq_instruction();                                  end // assertEq_instruction
+         9: begin; assertFalse_instruction();                               end // assertFalse_instruction
+        10: begin; assertGe_instruction();                                  end // assertGe_instruction
+        11: begin; assertGt_instruction();                                  end // assertGt_instruction
+        12: begin; assertLe_instruction();                                  end // assertLe_instruction
+        13: begin; assertLt_instruction();                                  end // assertLt_instruction
+        14: begin; assertNe_instruction();                                  end // assertNe_instruction
+        15: begin; assertTrue_instruction();                                end // assertTrue_instruction
+        16: begin; call_instruction();                                      end // call_instruction
+        17: begin; confess_instruction();                                   end // confess_instruction
+        18: begin; dump_instruction();                                      end // dump_instruction
+        19: begin; free_instruction();                                      end // free_instruction
+        20: begin; in_instruction();                                        end // in_instruction
+        21: begin; inSize_instruction();                                    end // inSize_instruction
+        22: begin; jEq_instruction();                                       end // jEq_instruction
+        23: begin; jFalse_instruction();                                    end // jFalse_instruction
+        24: begin; jGe_instruction();                                       end // jGe_instruction
+        25: begin; jGt_instruction();                                       end // jGt_instruction
+        26: begin; jLe_instruction();                                       end // jLe_instruction
+        27: begin; jLt_instruction();                                       end // jLt_instruction
+        28: begin; jNe_instruction();                                       end // jNe_instruction
+        29: begin; jTrue_instruction();                                     end // jTrue_instruction
+        30: begin; jmp_instruction();                                       end // jmp_instruction
+        31: begin; label_instruction();                                     end // label_instruction
+        32: begin; loadAddress_instruction();                               end // loadAddress_instruction
+        33: begin; loadArea_instruction();                                  end // loadArea_instruction
+        34: begin; mov_instruction();                                       end // mov_instruction
+        35: begin; moveLong_instruction();                                  end // moveLong_instruction
+        36: begin; nop_instruction();                                       end // nop_instruction
+        37: begin; not_instruction();                                       end // not_instruction
+        38: begin; out_instruction();                                       end // out_instruction
+        39: begin; parallelContinue_instruction();                          end // parallelContinue_instruction
+        40: begin; parallelStart_instruction();                             end // parallelStart_instruction
+        41: begin; parallelStop_instruction();                              end // parallelStop_instruction
+        42: begin; paramsGet_instruction();                                 end // paramsGet_instruction
+        43: begin; paramsPut_instruction();                                 end // paramsPut_instruction
+        44: begin; pop_instruction();                                       end // pop_instruction
+        45: begin; push_instruction();                                      end // push_instruction
+        46: begin; random_instruction();                                    end // random_instruction
+        47: begin; randomSeed_instruction();                                end // randomSeed_instruction
+        48: begin; resize_instruction();                                    end // resize_instruction
+        49: begin; return_instruction();                                    end // return_instruction
+        50: begin; returnGet_instruction();                                 end // returnGet_instruction
+        51: begin; returnPut_instruction();                                 end // returnPut_instruction
+        52: begin; shiftDown_instruction();                                 end // shiftDown_instruction
+        53: begin; shiftLeft_instruction();                                 end // shiftLeft_instruction
+        54: begin; shiftRight_instruction();                                end // shiftRight_instruction
+        55: begin; shiftUp_instruction();                                   end // shiftUp_instruction
+        56: begin; subtract_instruction();                                  end // subtract_instruction
+        57: begin; tally_instruction();                                     end // tally_instruction
+        58: begin; trace_instruction();                                     end // trace_instruction
+        59: begin; traceLabels_instruction();                               end // traceLabels_instruction
+        60: begin; watch_instruction();                                     end // watch_instruction
+      endcase
+    end
+  endtask
+  task arrayDump_instruction();
+    begin                                                                       // arrayDump
+     $display("arrayDump");
+    end
+  endtask
+  task assert_instruction();
+    begin                                                                       // assert
+     $display("assert");
+    end
+  endtask
+  task assertEq_instruction();
+    begin                                                                       // assertEq
+     $display("assertEq");
+    end
+  endtask
+  task assertFalse_instruction();
+    begin                                                                       // assertFalse
+     $display("assertFalse");
+    end
+  endtask
+  task assertGe_instruction();
+    begin                                                                       // assertGe
+     $display("assertGe");
+    end
+  endtask
+  task assertGt_instruction();
+    begin                                                                       // assertGt
+     $display("assertGt");
+    end
+  endtask
+  task assertLe_instruction();
+    begin                                                                       // assertLe
+     $display("assertLe");
+    end
+  endtask
+  task assertLt_instruction();
+    begin                                                                       // assertLt
+     $display("assertLt");
+    end
+  endtask
+  task assertNe_instruction();
+    begin                                                                       // assertNe
+     $display("assertNe");
+    end
+  endtask
+  task assertTrue_instruction();
+    begin                                                                       // assertTrue
+     $display("assertTrue");
+    end
+  endtask
+  task call_instruction();
+    begin                                                                       // call
+     $display("call");
+    end
+  endtask
+  task confess_instruction();
+    begin                                                                       // confess
+     $display("confess");
+    end
+  endtask
+  task dump_instruction();
+    begin                                                                       // dump
+     $display("dump");
+    end
+  endtask
+  task in_instruction();
+    begin                                                                       // in
+     $display("in");
+    end
+  endtask
+  task inSize_instruction();
+    begin                                                                       // inSize
+     $display("inSize");
+    end
+  endtask
+  task label_instruction();
+    begin                                                                       // label
+     lastInstruction = "label";
+    end
+  endtask
+  task loadAddress_instruction();
+    begin                                                                       // loadAddress
+     $display("loadAddress");
+    end
+  endtask
+  task loadArea_instruction();
+    begin                                                                       // loadArea
+     $display("loadArea");
+    end
+  endtask
+  task moveLong_instruction();
+    begin                                                                       // moveLong
+     $display("moveLong");
+    end
+  endtask
+  task nop_instruction();
+    begin                                                                       // nop
+     $display("nop");
+    end
+  endtask
+  task parallelContinue_instruction();
+    begin                                                                       // parallelContinue
+     $display("parallelContinue");
+    end
+  endtask
+  task parallelStart_instruction();
+    begin                                                                       // parallelStart
+     $display("parallelStart");
+    end
+  endtask
+  task parallelStop_instruction();
+    begin                                                                       // parallelStop
+     $display("parallelStop");
+    end
+  endtask
+  task paramsGet_instruction();
+    begin                                                                       // paramsGet
+     $display("paramsGet");
+    end
+  endtask
+  task paramsPut_instruction();
+    begin                                                                       // paramsPut
+     $display("paramsPut");
+    end
+  endtask
+  task random_instruction();
+    begin                                                                       // random
+     $display("random");
+    end
+  endtask
+  task randomSeed_instruction();
+    begin                                                                       // randomSeed
+     $display("randomSeed");
+    end
+  endtask
+  task return_instruction();
+    begin                                                                       // return
+     $display("return");
+    end
+  endtask
+  task returnGet_instruction();
+    begin                                                                       // returnGet
+     $display("returnGet");
+    end
+  endtask
+  task returnPut_instruction();
+    begin                                                                       // returnPut
+     $display("returnPut");
+    end
+  endtask
+  task shiftDown_instruction();
+    begin                                                                       // shiftDown
+     $display("shiftDown");
+    end
+  endtask
+  task tally_instruction();
+    begin                                                                       // tally
+     $display("tally");
+    end
+  endtask
+  task trace_instruction();
+    begin                                                                       // trace
+     $display("trace");
+    end
+  endtask
+  task traceLabels_instruction();
+    begin                                                                       // traceLabels
+     $display("traceLabels");
+    end
+  endtask
+  task watch_instruction();
+    begin                                                                       // watch
+     $display("watch");
     end
   endtask
 
-//  always @ (negedge clock) begin                                              // Trace program execution
-//    $displayh("%08d  %05d   %8x   %3x %3x %3x   %4x %4x %4x %4x   %4x %4x %4x %4x     %4x %4x %4x %4x   %4x %4x %4x %4x",
-//        z, pc, i,   C, S, T, R[0], R[1], R[2], R[3], R[4], R[5], R[6], R[7], R[8], R[9], R[10], R[11], R[12], R[13], R[14], R[15]);
-//    z = z + 1;
-//  end
-
-  task  automatic load_Instructions;                                                       // Load instructions
+//Programs
+  task Mov_test();                                                              // Load program 'Mov_test' into code memory
     begin
-      $display("Instructions");
-      P[   0] <= 9'b000000001; // Load the constant box with 1
-      P[   1] <= 9'b101001110; // Load the source box with 14
-      P[   2] <= 9'b110000000; // Load the target box with 0
-      P[   3] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[   4] <= 9'b000000010; // Load the constant box with 2
-      P[   5] <= 9'b101001111; // Load the source box with 15
-      P[   6] <= 9'b110000000; // Load the target box with 0
-      P[   7] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[   8] <= 9'b000000000; // Load the constant box with 0
-      P[   9] <= 9'b101001111; // Load the source box with 15
-      P[  10] <= 9'b110001110; // Load the target box with 14
-      P[  11] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[  12] <= 9'b000000000; // Load the constant box with 0
-      P[  13] <= 9'b101001110; // Load the source box with 14
-      P[  14] <= 9'b110000000; // Load the target box with 0
-      P[  15] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[  16] <= 9'b000010101; // Load the constant box with 21
-      P[  17] <= 9'b101001111; // Load the source box with 15
-      P[  18] <= 9'b110000000; // Load the target box with 0
-      P[  19] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[  20] <= 9'b000000000; // Load the constant box with 0
-      P[  21] <= 9'b101001111; // Load the source box with 15
-      P[  22] <= 9'b110000000; // Load the target box with 0
-      P[  23] <= 9'b111001110; // not: Invert the bits in a register
-      P[  24] <= 9'b000000001; // Load the constant box with 1
-      P[  25] <= 9'b101001111; // Load the source box with 15
-      P[  26] <= 9'b110000000; // Load the target box with 0
-      P[  27] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[  28] <= 9'b000000101; // Load the constant box with 5
-      P[  29] <= 9'b101001110; // Load the source box with 14
-      P[  30] <= 9'b110000000; // Load the target box with 0
-      P[  31] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[  32] <= 9'b000001001; // Load the constant box with 9
-      P[  33] <= 9'b101001111; // Load the source box with 15
-      P[  34] <= 9'b110000000; // Load the target box with 0
-      P[  35] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[  36] <= 9'b000000000; // Load the constant box with 0
-      P[  37] <= 9'b101001111; // Load the source box with 15
-      P[  38] <= 9'b110001110; // Load the target box with 14
-      P[  39] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[  40] <= 9'b000000010; // Load the constant box with 2
-      P[  41] <= 9'b101001110; // Load the source box with 14
-      P[  42] <= 9'b110000000; // Load the target box with 0
-      P[  43] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[  44] <= 9'b000000101; // Load the constant box with 5
-      P[  45] <= 9'b101001110; // Load the source box with 14
-      P[  46] <= 9'b110000000; // Load the target box with 0
-      P[  47] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[  48] <= 9'b000001001; // Load the constant box with 9
-      P[  49] <= 9'b101001111; // Load the source box with 15
-      P[  50] <= 9'b110000000; // Load the target box with 0
-      P[  51] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[  52] <= 9'b000000000; // Load the constant box with 0
-      P[  53] <= 9'b101001111; // Load the source box with 15
-      P[  54] <= 9'b110001110; // Load the target box with 14
-      P[  55] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[  56] <= 9'b000000011; // Load the constant box with 3
-      P[  57] <= 9'b101001110; // Load the source box with 14
-      P[  58] <= 9'b110000000; // Load the target box with 0
-      P[  59] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[  60] <= 9'b000010101; // Load the constant box with 21
-      P[  61] <= 9'b101000010; // Load the source box with 2
-      P[  62] <= 9'b110000000; // Load the target box with 0
-      P[  63] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[  64] <= 9'b000000000; // Load the constant box with 0
-      P[  65] <= 9'b101000010; // Load the source box with 2
-      P[  66] <= 9'b110000000; // Load the target box with 0
-      P[  67] <= 9'b111000110; // inc: Increment a register by one
-      P[  68] <= 9'b000000100; // Load the constant box with 4
-      P[  69] <= 9'b101000010; // Load the source box with 2
-      P[  70] <= 9'b110000000; // Load the target box with 0
-      P[  71] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[  72] <= 9'b000000000; // Load the constant box with 0
-      P[  73] <= 9'b101000010; // Load the source box with 2
-      P[  74] <= 9'b110000011; // Load the target box with 3
-      P[  75] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  76] <= 9'b000000000; // Load the constant box with 0
-      P[  77] <= 9'b101000011; // Load the source box with 3
-      P[  78] <= 9'b110000000; // Load the target box with 0
-      P[  79] <= 9'b111000101; // dec: Decrement a register by one
-      P[  80] <= 9'b000000101; // Load the constant box with 5
-      P[  81] <= 9'b101000011; // Load the source box with 3
-      P[  82] <= 9'b110000000; // Load the target box with 0
-      P[  83] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[  84] <= 9'b000000011; // Load the constant box with 3
-      P[  85] <= 9'b101000010; // Load the source box with 2
-      P[  86] <= 9'b110000000; // Load the target box with 0
-      P[  87] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[  88] <= 9'b000000001; // Load the constant box with 1
-      P[  89] <= 9'b101000010; // Load the source box with 2
-      P[  90] <= 9'b110000000; // Load the target box with 0
-      P[  91] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  92] <= 9'b000000110; // Load the constant box with 6
-      P[  93] <= 9'b101000010; // Load the source box with 2
-      P[  94] <= 9'b110000000; // Load the target box with 0
-      P[  95] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[  96] <= 9'b000000011; // Load the constant box with 3
-      P[  97] <= 9'b101000010; // Load the source box with 2
-      P[  98] <= 9'b110000000; // Load the target box with 0
-      P[  99] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 100] <= 9'b000000010; // Load the constant box with 2
-      P[ 101] <= 9'b101000010; // Load the source box with 2
-      P[ 102] <= 9'b110000000; // Load the target box with 0
-      P[ 103] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 104] <= 9'b000000111; // Load the constant box with 7
-      P[ 105] <= 9'b101000010; // Load the source box with 2
-      P[ 106] <= 9'b110000000; // Load the target box with 0
-      P[ 107] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 108] <= 9'b000010100; // Load the constant box with 20
-      P[ 109] <= 9'b101000100; // Load the source box with 4
-      P[ 110] <= 9'b110000000; // Load the target box with 0
-      P[ 111] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 112] <= 9'b000001001; // Load the constant box with 9
-      P[ 113] <= 9'b101000101; // Load the source box with 5
-      P[ 114] <= 9'b110000000; // Load the target box with 0
-      P[ 115] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 116] <= 9'b000000000; // Load the constant box with 0
-      P[ 117] <= 9'b101000101; // Load the source box with 5
-      P[ 118] <= 9'b110000100; // Load the target box with 4
-      P[ 119] <= 9'b111010100; // sub: Subtract the second register from the first register replace the first register with the result
-      P[ 120] <= 9'b000001000; // Load the constant box with 8
-      P[ 121] <= 9'b101000100; // Load the source box with 4
-      P[ 122] <= 9'b110000000; // Load the target box with 0
-      P[ 123] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 124] <= 9'b000001001; // Load the constant box with 9
-      P[ 125] <= 9'b101000001; // Load the source box with 1
-      P[ 126] <= 9'b110000000; // Load the target box with 0
-      P[ 127] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 128] <= 9'b001100011; // Load the constant box with 99
-      P[ 129] <= 9'b101000010; // Load the source box with 2
-      P[ 130] <= 9'b110000000; // Load the target box with 0
-      P[ 131] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 132] <= 9'b000000000; // Load the constant box with 0
-      P[ 133] <= 9'b101000001; // Load the source box with 1
-      P[ 134] <= 9'b110000010; // Load the target box with 2
-      P[ 135] <= 9'b111010011; // stri: Store the contents of the first register in the location specified by the second register
-      P[ 136] <= 9'b000000000; // Load the constant box with 0
-      P[ 137] <= 9'b101000000; // Load the source box with 0
-      P[ 138] <= 9'b110000000; // Load the target box with 0
-      P[ 139] <= 9'b111010110; // stop: Stop program execution
+      NInstructionEnd = 6;
+      code[   0] = 'h0000002200000000000000000000210000000000000120000000000000000000;
+      code[   1] = 'h0000002200000000000000000001210000000000000220000000000000000000;
+      code[   2] = 'h0000002200000000000000000002210000000000000320000000000000000000;
+      code[   3] = 'h0000002600000000000000000000010000000000000021000000000000000000;
+      code[   4] = 'h0000002600000000000000000000010000000000000121000000000000000000;
+      code[   5] = 'h0000002600000000000000000000010000000000000221000000000000000000;
     end
   endtask
 
-  task  automatic load_1_to_3;                                                             // Test program
+  task Add_test();                                                              // Load program 'Add_test' into code memory    begin
     begin
-      $display("Program 1_to_3");
-      P[     0] <= 9'b000000000; // Load the constant box with 0
-      P[     1] <= 9'b101000000; // Load the source box with 0
-      P[     2] <= 9'b110000000; // Load the target box with 0
-      P[     3] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[     4] <= 9'b000000000; // Load the constant box with 0
-      P[     5] <= 9'b101000000; // Load the source box with 0
-      P[     6] <= 9'b110000000; // Load the target box with 0
-      P[     7] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[     8] <= 9'b000000000; // Load the constant box with 0
-      P[     9] <= 9'b101000000; // Load the source box with 0
-      P[    10] <= 9'b110000000; // Load the target box with 0
-      P[    11] <= 9'b111000110; // inc: Increment a register by one
-      P[    12] <= 9'b000000001; // Load the constant box with 1
-      P[    13] <= 9'b101000000; // Load the source box with 0
-      P[    14] <= 9'b110000000; // Load the target box with 0
-      P[    15] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[    16] <= 9'b000000000; // Load the constant box with 0
-      P[    17] <= 9'b101000000; // Load the source box with 0
-      P[    18] <= 9'b110000000; // Load the target box with 0
-      P[    19] <= 9'b111000110; // inc: Increment a register by one
-      P[    20] <= 9'b000000010; // Load the constant box with 2
-      P[    21] <= 9'b101000000; // Load the source box with 0
-      P[    22] <= 9'b110000000; // Load the target box with 0
-      P[    23] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[    24] <= 9'b000000000; // Load the constant box with 0
-      P[    25] <= 9'b101000000; // Load the source box with 0
-      P[    26] <= 9'b110000000; // Load the target box with 0
-      P[    27] <= 9'b111010110; // stop: Stop program execution
+      NInstructionEnd = 2;
+      code[   0] = 'h0000000000000000000000000000210000000000000320000000000000022000;
+      code[   1] = 'h0000002600000000000000000000010000000000000021000000000000000000;
     end
   endtask
 
-  task  automatic load_For_Loop;                                                           // For Loop low
+  task Not_test();                                                              // Load program 'Not_test' into code memory
     begin
-      $display("Program For_Loop");
-      P[   0] <= 9'b011111111; // Load the constant box with 255
-      P[   1] <= 9'b101000000; // Load the source box with 0
-      P[   2] <= 9'b110000000; // Load the target box with 0
-      P[   3] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[   4] <= 9'b000000001; // Load the constant box with 1
-      P[   5] <= 9'b101000000; // Load the source box with 0
-      P[   6] <= 9'b110000000; // Load the target box with 0
-      P[   7] <= 9'b111001001; // label: Create and set a label
-      P[   8] <= 9'b000000000; // Load the constant box with 0
-      P[   9] <= 9'b101000000; // Load the source box with 0
-      P[  10] <= 9'b110000000; // Load the target box with 0
-      P[  11] <= 9'b111010011; // stri: Store the contents of the first register in the location specified by the second register
-      P[  12] <= 9'b000000000; // Load the constant box with 0
-      P[  13] <= 9'b101000000; // Load the source box with 0
-      P[  14] <= 9'b110000000; // Load the target box with 0
-      P[  15] <= 9'b111000101; // dec: Decrement a register by one
-      P[  16] <= 9'b000000001; // Load the constant box with 1
-      P[  17] <= 9'b101000000; // Load the source box with 0
-      P[  18] <= 9'b110000000; // Load the target box with 0
-      P[  19] <= 9'b111000111; // jumpIfNotZero: Jump backwards to the specified location in the program if the register is not zero - useful for constructing for loops
-      P[  20] <= 9'b000000000; // Load the constant box with 0
-      P[  21] <= 9'b101000000; // Load the source box with 0
-      P[  22] <= 9'b110000000; // Load the target box with 0
-      P[  23] <= 9'b111010110; // stop: Stop program execution
+      NInstructionEnd = 6;
+      code[   0] = 'h0000002200000000000000000000210000000000000320000000000000000000;
+      code[   1] = 'h0000002500000000000000000001210000000000000021000000000000000000;
+      code[   2] = 'h0000002500000000000000000002210000000000000121000000000000000000;
+      code[   3] = 'h0000002600000000000000000000010000000000000021000000000000000000;
+      code[   4] = 'h0000002600000000000000000000010000000000000121000000000000000000;
+      code[   5] = 'h0000002600000000000000000000010000000000000221000000000000000000;
     end
   endtask
 
-  task  automatic load_If;                                                                 // If low
+  task Subtract_test();                                                         // Load program 'Subtract_test' into code memory
     begin
-      $display("Program If");
-      P[   0] <= 9'b011111111; // Load the constant box with 255
-      P[   1] <= 9'b101000000; // Load the source box with 0
-      P[   2] <= 9'b110000000; // Load the target box with 0
-      P[   3] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[   4] <= 9'b000000010; // Load the constant box with 2
-      P[   5] <= 9'b101000000; // Load the source box with 0
-      P[   6] <= 9'b110000000; // Load the target box with 0
-      P[   7] <= 9'b111001001; // label: Create and set a label
-      P[   8] <= 9'b000000000; // Load the constant box with 0
-      P[   9] <= 9'b101000000; // Load the source box with 0
-      P[  10] <= 9'b110000001; // Load the target box with 1
-      P[  11] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  12] <= 9'b000001111; // Load the constant box with 15
-      P[  13] <= 9'b101000001; // Load the source box with 1
-      P[  14] <= 9'b110000000; // Load the target box with 0
-      P[  15] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  16] <= 9'b000001111; // Load the constant box with 15
-      P[  17] <= 9'b101000001; // Load the source box with 1
-      P[  18] <= 9'b110000000; // Load the target box with 0
-      P[  19] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  20] <= 9'b000000100; // Load the constant box with 4
-      P[  21] <= 9'b101000001; // Load the source box with 1
-      P[  22] <= 9'b110000000; // Load the target box with 0
-      P[  23] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[  24] <= 9'b000000000; // Load the constant box with 0
-      P[  25] <= 9'b101000000; // Load the source box with 0
-      P[  26] <= 9'b110000000; // Load the target box with 0
-      P[  27] <= 9'b111010011; // stri: Store the contents of the first register in the location specified by the second register
-      P[  28] <= 9'b000000010; // Load the constant box with 2
-      P[  29] <= 9'b101000000; // Load the source box with 0
-      P[  30] <= 9'b110000000; // Load the target box with 0
-      P[  31] <= 9'b111001001; // label: Set a label
-      P[  32] <= 9'b000000000; // Load the constant box with 0
-      P[  33] <= 9'b101000000; // Load the source box with 0
-      P[  34] <= 9'b110000000; // Load the target box with 0
-      P[  35] <= 9'b111000101; // dec: Decrement a register by one
-      P[  36] <= 9'b000000001; // Load the constant box with 1
-      P[  37] <= 9'b101000000; // Load the source box with 0
-      P[  38] <= 9'b110000000; // Load the target box with 0
-      P[  39] <= 9'b111000111; // jumpIfNotZero: Jump backwards to the specified location in the program if the register is not zero - useful for constructing for loops
-      P[  40] <= 9'b000000000; // Load the constant box with 0
-      P[  41] <= 9'b101000000; // Load the source box with 0
-      P[  42] <= 9'b110000000; // Load the target box with 0
-      P[  43] <= 9'b111010110; // stop: Stop program execution
+      NInstructionEnd = 2;
+      code[   0] = 'h0000003800000000000000000000210000000000000420000000000000022000;
+      code[   1] = 'h0000002600000000000000000000010000000000000021000000000000000000;
     end
   endtask
 
-  task automatic load_ParityBits;                                                         // ParityBits
+  task Array_test();                                                            // Load program 'Array_test' into code memory
     begin
-      $display("ParityBits");
-      P[   0] <= 9'b011111110; // Load the constant box with 254
-      P[   1] <= 9'b101000001; // Load the source box with 1
-      P[   2] <= 9'b110000000; // Load the target box with 0
-      P[   3] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[   4] <= 9'b011111101; // Load the constant box with 253
-      P[   5] <= 9'b101000010; // Load the source box with 2
-      P[   6] <= 9'b110000000; // Load the target box with 0
-      P[   7] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[   8] <= 9'b000001000; // Load the constant box with 8
-      P[   9] <= 9'b101000001; // Load the source box with 1
-      P[  10] <= 9'b110000000; // Load the target box with 0
-      P[  11] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  12] <= 9'b000000000; // Load the constant box with 0
-      P[  13] <= 9'b101000010; // Load the source box with 2
-      P[  14] <= 9'b110000001; // Load the target box with 1
-      P[  15] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[  16] <= 9'b000000000; // Load the constant box with 0
-      P[  17] <= 9'b101000001; // Load the source box with 1
-      P[  18] <= 9'b110000010; // Load the target box with 2
-      P[  19] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  20] <= 9'b000000101; // Load the constant box with 5
-      P[  21] <= 9'b101000010; // Load the source box with 2
-      P[  22] <= 9'b110000000; // Load the target box with 0
-      P[  23] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  24] <= 9'b000001111; // Load the constant box with 15
-      P[  25] <= 9'b101000010; // Load the source box with 2
-      P[  26] <= 9'b110000000; // Load the target box with 0
-      P[  27] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  28] <= 9'b000000000; // Load the constant box with 0
-      P[  29] <= 9'b101000001; // Load the source box with 1
-      P[  30] <= 9'b110000011; // Load the target box with 3
-      P[  31] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  32] <= 9'b000000110; // Load the constant box with 6
-      P[  33] <= 9'b101000011; // Load the source box with 3
-      P[  34] <= 9'b110000000; // Load the target box with 0
-      P[  35] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  36] <= 9'b000001111; // Load the constant box with 15
-      P[  37] <= 9'b101000011; // Load the source box with 3
-      P[  38] <= 9'b110000000; // Load the target box with 0
-      P[  39] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  40] <= 9'b000000000; // Load the constant box with 0
-      P[  41] <= 9'b101000001; // Load the source box with 1
-      P[  42] <= 9'b110000100; // Load the target box with 4
-      P[  43] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  44] <= 9'b000000111; // Load the constant box with 7
-      P[  45] <= 9'b101000100; // Load the source box with 4
-      P[  46] <= 9'b110000000; // Load the target box with 0
-      P[  47] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  48] <= 9'b000001111; // Load the constant box with 15
-      P[  49] <= 9'b101000100; // Load the source box with 4
-      P[  50] <= 9'b110000000; // Load the target box with 0
-      P[  51] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  52] <= 9'b000000000; // Load the constant box with 0
-      P[  53] <= 9'b101000001; // Load the source box with 1
-      P[  54] <= 9'b110000101; // Load the target box with 5
-      P[  55] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  56] <= 9'b000001000; // Load the constant box with 8
-      P[  57] <= 9'b101000101; // Load the source box with 5
-      P[  58] <= 9'b110000000; // Load the target box with 0
-      P[  59] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  60] <= 9'b000001111; // Load the constant box with 15
-      P[  61] <= 9'b101000101; // Load the source box with 5
-      P[  62] <= 9'b110000000; // Load the target box with 0
-      P[  63] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  64] <= 9'b000000000; // Load the constant box with 0
-      P[  65] <= 9'b101000001; // Load the source box with 1
-      P[  66] <= 9'b110000110; // Load the target box with 6
-      P[  67] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  68] <= 9'b000001001; // Load the constant box with 9
-      P[  69] <= 9'b101000110; // Load the source box with 6
-      P[  70] <= 9'b110000000; // Load the target box with 0
-      P[  71] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  72] <= 9'b000001111; // Load the constant box with 15
-      P[  73] <= 9'b101000110; // Load the source box with 6
-      P[  74] <= 9'b110000000; // Load the target box with 0
-      P[  75] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  76] <= 9'b000000000; // Load the constant box with 0
-      P[  77] <= 9'b101000001; // Load the source box with 1
-      P[  78] <= 9'b110000111; // Load the target box with 7
-      P[  79] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  80] <= 9'b000001010; // Load the constant box with 10
-      P[  81] <= 9'b101000111; // Load the source box with 7
-      P[  82] <= 9'b110000000; // Load the target box with 0
-      P[  83] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  84] <= 9'b000001111; // Load the constant box with 15
-      P[  85] <= 9'b101000111; // Load the source box with 7
-      P[  86] <= 9'b110000000; // Load the target box with 0
-      P[  87] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  88] <= 9'b000000000; // Load the constant box with 0
-      P[  89] <= 9'b101000001; // Load the source box with 1
-      P[  90] <= 9'b110001000; // Load the target box with 8
-      P[  91] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  92] <= 9'b000001011; // Load the constant box with 11
-      P[  93] <= 9'b101001000; // Load the source box with 8
-      P[  94] <= 9'b110000000; // Load the target box with 0
-      P[  95] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  96] <= 9'b000001111; // Load the constant box with 15
-      P[  97] <= 9'b101001000; // Load the source box with 8
-      P[  98] <= 9'b110000000; // Load the target box with 0
-      P[  99] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 100] <= 9'b000000000; // Load the constant box with 0
-      P[ 101] <= 9'b101000001; // Load the source box with 1
-      P[ 102] <= 9'b110001001; // Load the target box with 9
-      P[ 103] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 104] <= 9'b000001100; // Load the constant box with 12
-      P[ 105] <= 9'b101001001; // Load the source box with 9
-      P[ 106] <= 9'b110000000; // Load the target box with 0
-      P[ 107] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 108] <= 9'b000001111; // Load the constant box with 15
-      P[ 109] <= 9'b101001001; // Load the source box with 9
-      P[ 110] <= 9'b110000000; // Load the target box with 0
-      P[ 111] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 112] <= 9'b000000000; // Load the constant box with 0
-      P[ 113] <= 9'b101000001; // Load the source box with 1
-      P[ 114] <= 9'b110001010; // Load the target box with 10
-      P[ 115] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 116] <= 9'b000001101; // Load the constant box with 13
-      P[ 117] <= 9'b101001010; // Load the source box with 10
-      P[ 118] <= 9'b110000000; // Load the target box with 0
-      P[ 119] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 120] <= 9'b000001111; // Load the constant box with 15
-      P[ 121] <= 9'b101001010; // Load the source box with 10
-      P[ 122] <= 9'b110000000; // Load the target box with 0
-      P[ 123] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 124] <= 9'b000000000; // Load the constant box with 0
-      P[ 125] <= 9'b101000001; // Load the source box with 1
-      P[ 126] <= 9'b110001011; // Load the target box with 11
-      P[ 127] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 128] <= 9'b000001110; // Load the constant box with 14
-      P[ 129] <= 9'b101001011; // Load the source box with 11
-      P[ 130] <= 9'b110000000; // Load the target box with 0
-      P[ 131] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 132] <= 9'b000001111; // Load the constant box with 15
-      P[ 133] <= 9'b101001011; // Load the source box with 11
-      P[ 134] <= 9'b110000000; // Load the target box with 0
-      P[ 135] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 136] <= 9'b000000000; // Load the constant box with 0
-      P[ 137] <= 9'b101000001; // Load the source box with 1
-      P[ 138] <= 9'b110001100; // Load the target box with 12
-      P[ 139] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 140] <= 9'b000001111; // Load the constant box with 15
-      P[ 141] <= 9'b101001100; // Load the source box with 12
-      P[ 142] <= 9'b110000000; // Load the target box with 0
-      P[ 143] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 144] <= 9'b000001111; // Load the constant box with 15
-      P[ 145] <= 9'b101001100; // Load the source box with 12
-      P[ 146] <= 9'b110000000; // Load the target box with 0
-      P[ 147] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 148] <= 9'b000000000; // Load the constant box with 0
-      P[ 149] <= 9'b101000001; // Load the source box with 1
-      P[ 150] <= 9'b110001101; // Load the target box with 13
-      P[ 151] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 152] <= 9'b000000101; // Load the constant box with 5
-      P[ 153] <= 9'b101001101; // Load the source box with 13
-      P[ 154] <= 9'b110000000; // Load the target box with 0
-      P[ 155] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 156] <= 9'b000001001; // Load the constant box with 9
-      P[ 157] <= 9'b101001101; // Load the source box with 13
-      P[ 158] <= 9'b110000000; // Load the target box with 0
-      P[ 159] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 160] <= 9'b000000001; // Load the constant box with 1
-      P[ 161] <= 9'b101001101; // Load the source box with 13
-      P[ 162] <= 9'b110000000; // Load the target box with 0
-      P[ 163] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 164] <= 9'b000000000; // Load the constant box with 0
-      P[ 165] <= 9'b101000001; // Load the source box with 1
-      P[ 166] <= 9'b110001110; // Load the target box with 14
-      P[ 167] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 168] <= 9'b000001000; // Load the constant box with 8
-      P[ 169] <= 9'b101001110; // Load the source box with 14
-      P[ 170] <= 9'b110000000; // Load the target box with 0
-      P[ 171] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 172] <= 9'b000001101; // Load the constant box with 13
-      P[ 173] <= 9'b101001110; // Load the source box with 14
-      P[ 174] <= 9'b110000000; // Load the target box with 0
-      P[ 175] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 176] <= 9'b000000101; // Load the constant box with 5
-      P[ 177] <= 9'b101001110; // Load the source box with 14
-      P[ 178] <= 9'b110000000; // Load the target box with 0
-      P[ 179] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 180] <= 9'b000000000; // Load the constant box with 0
-      P[ 181] <= 9'b101000001; // Load the source box with 1
-      P[ 182] <= 9'b110001111; // Load the target box with 15
-      P[ 183] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 184] <= 9'b000001111; // Load the constant box with 15
-      P[ 185] <= 9'b101001111; // Load the source box with 15
-      P[ 186] <= 9'b110000000; // Load the target box with 0
-      P[ 187] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 188] <= 9'b000001100; // Load the constant box with 12
-      P[ 189] <= 9'b101001111; // Load the source box with 15
-      P[ 190] <= 9'b110000000; // Load the target box with 0
-      P[ 191] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 192] <= 9'b000000000; // Load the constant box with 0
-      P[ 193] <= 9'b101001111; // Load the source box with 15
-      P[ 194] <= 9'b110001110; // Load the target box with 14
-      P[ 195] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 196] <= 9'b000000000; // Load the constant box with 0
-      P[ 197] <= 9'b101000010; // Load the source box with 2
-      P[ 198] <= 9'b110001111; // Load the target box with 15
-      P[ 199] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 200] <= 9'b000000000; // Load the constant box with 0
-      P[ 201] <= 9'b101000011; // Load the source box with 3
-      P[ 202] <= 9'b110001111; // Load the target box with 15
-      P[ 203] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 204] <= 9'b000000000; // Load the constant box with 0
-      P[ 205] <= 9'b101000100; // Load the source box with 4
-      P[ 206] <= 9'b110001111; // Load the target box with 15
-      P[ 207] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 208] <= 9'b000000000; // Load the constant box with 0
-      P[ 209] <= 9'b101000101; // Load the source box with 5
-      P[ 210] <= 9'b110001111; // Load the target box with 15
-      P[ 211] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 212] <= 9'b000000000; // Load the constant box with 0
-      P[ 213] <= 9'b101000110; // Load the source box with 6
-      P[ 214] <= 9'b110001111; // Load the target box with 15
-      P[ 215] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 216] <= 9'b000000000; // Load the constant box with 0
-      P[ 217] <= 9'b101000111; // Load the source box with 7
-      P[ 218] <= 9'b110001111; // Load the target box with 15
-      P[ 219] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 220] <= 9'b000000000; // Load the constant box with 0
-      P[ 221] <= 9'b101001000; // Load the source box with 8
-      P[ 222] <= 9'b110001111; // Load the target box with 15
-      P[ 223] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 224] <= 9'b000000001; // Load the constant box with 1
-      P[ 225] <= 9'b101000000; // Load the source box with 0
-      P[ 226] <= 9'b110000000; // Load the target box with 0
-      P[ 227] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 228] <= 9'b000000000; // Load the constant box with 0
-      P[ 229] <= 9'b101001111; // Load the source box with 15
-      P[ 230] <= 9'b110000000; // Load the target box with 0
-      P[ 231] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 232] <= 9'b011110111; // Load the constant box with 247
-      P[ 233] <= 9'b101000000; // Load the source box with 0
-      P[ 234] <= 9'b110000000; // Load the target box with 0
-      P[ 235] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 236] <= 9'b000000000; // Load the constant box with 0
-      P[ 237] <= 9'b101000000; // Load the source box with 0
-      P[ 238] <= 9'b110000001; // Load the target box with 1
-      P[ 239] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 240] <= 9'b000000000; // Load the constant box with 0
-      P[ 241] <= 9'b101000000; // Load the source box with 0
-      P[ 242] <= 9'b110001101; // Load the target box with 13
-      P[ 243] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 244] <= 9'b000000000; // Load the constant box with 0
-      P[ 245] <= 9'b101000010; // Load the source box with 2
-      P[ 246] <= 9'b110001111; // Load the target box with 15
-      P[ 247] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 248] <= 9'b000000000; // Load the constant box with 0
-      P[ 249] <= 9'b101000011; // Load the source box with 3
-      P[ 250] <= 9'b110001111; // Load the target box with 15
-      P[ 251] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 252] <= 9'b000000000; // Load the constant box with 0
-      P[ 253] <= 9'b101000100; // Load the source box with 4
-      P[ 254] <= 9'b110001111; // Load the target box with 15
-      P[ 255] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 256] <= 9'b000000000; // Load the constant box with 0
-      P[ 257] <= 9'b101000101; // Load the source box with 5
-      P[ 258] <= 9'b110001111; // Load the target box with 15
-      P[ 259] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 260] <= 9'b000000000; // Load the constant box with 0
-      P[ 261] <= 9'b101001001; // Load the source box with 9
-      P[ 262] <= 9'b110001111; // Load the target box with 15
-      P[ 263] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 264] <= 9'b000000000; // Load the constant box with 0
-      P[ 265] <= 9'b101001010; // Load the source box with 10
-      P[ 266] <= 9'b110001111; // Load the target box with 15
-      P[ 267] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 268] <= 9'b000000000; // Load the constant box with 0
-      P[ 269] <= 9'b101001011; // Load the source box with 11
-      P[ 270] <= 9'b110001111; // Load the target box with 15
-      P[ 271] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 272] <= 9'b000000001; // Load the constant box with 1
-      P[ 273] <= 9'b101000000; // Load the source box with 0
-      P[ 274] <= 9'b110000000; // Load the target box with 0
-      P[ 275] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 276] <= 9'b000000000; // Load the constant box with 0
-      P[ 277] <= 9'b101001111; // Load the source box with 15
-      P[ 278] <= 9'b110000000; // Load the target box with 0
-      P[ 279] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 280] <= 9'b011111000; // Load the constant box with 248
-      P[ 281] <= 9'b101000000; // Load the source box with 0
-      P[ 282] <= 9'b110000000; // Load the target box with 0
-      P[ 283] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 284] <= 9'b000000000; // Load the constant box with 0
-      P[ 285] <= 9'b101000000; // Load the source box with 0
-      P[ 286] <= 9'b110000001; // Load the target box with 1
-      P[ 287] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 288] <= 9'b000000100; // Load the constant box with 4
-      P[ 289] <= 9'b101000000; // Load the source box with 0
-      P[ 290] <= 9'b110000000; // Load the target box with 0
-      P[ 291] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 292] <= 9'b000000000; // Load the constant box with 0
-      P[ 293] <= 9'b101000000; // Load the source box with 0
-      P[ 294] <= 9'b110001110; // Load the target box with 14
-      P[ 295] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 296] <= 9'b000000000; // Load the constant box with 0
-      P[ 297] <= 9'b101000010; // Load the source box with 2
-      P[ 298] <= 9'b110001111; // Load the target box with 15
-      P[ 299] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 300] <= 9'b000000000; // Load the constant box with 0
-      P[ 301] <= 9'b101000011; // Load the source box with 3
-      P[ 302] <= 9'b110001111; // Load the target box with 15
-      P[ 303] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 304] <= 9'b000000000; // Load the constant box with 0
-      P[ 305] <= 9'b101000110; // Load the source box with 6
-      P[ 306] <= 9'b110001111; // Load the target box with 15
-      P[ 307] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 308] <= 9'b000000000; // Load the constant box with 0
-      P[ 309] <= 9'b101000111; // Load the source box with 7
-      P[ 310] <= 9'b110001111; // Load the target box with 15
-      P[ 311] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 312] <= 9'b000000000; // Load the constant box with 0
-      P[ 313] <= 9'b101001001; // Load the source box with 9
-      P[ 314] <= 9'b110001111; // Load the target box with 15
-      P[ 315] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 316] <= 9'b000000000; // Load the constant box with 0
-      P[ 317] <= 9'b101001010; // Load the source box with 10
-      P[ 318] <= 9'b110001111; // Load the target box with 15
-      P[ 319] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 320] <= 9'b000000000; // Load the constant box with 0
-      P[ 321] <= 9'b101001100; // Load the source box with 12
-      P[ 322] <= 9'b110001111; // Load the target box with 15
-      P[ 323] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 324] <= 9'b000000001; // Load the constant box with 1
-      P[ 325] <= 9'b101000000; // Load the source box with 0
-      P[ 326] <= 9'b110000000; // Load the target box with 0
-      P[ 327] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 328] <= 9'b000000000; // Load the constant box with 0
-      P[ 329] <= 9'b101001111; // Load the source box with 15
-      P[ 330] <= 9'b110000000; // Load the target box with 0
-      P[ 331] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 332] <= 9'b011111001; // Load the constant box with 249
-      P[ 333] <= 9'b101000000; // Load the source box with 0
-      P[ 334] <= 9'b110000000; // Load the target box with 0
-      P[ 335] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 336] <= 9'b000000000; // Load the constant box with 0
-      P[ 337] <= 9'b101000000; // Load the source box with 0
-      P[ 338] <= 9'b110000001; // Load the target box with 1
-      P[ 339] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 340] <= 9'b000000010; // Load the constant box with 2
-      P[ 341] <= 9'b101000000; // Load the source box with 0
-      P[ 342] <= 9'b110000000; // Load the target box with 0
-      P[ 343] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 344] <= 9'b000000000; // Load the constant box with 0
-      P[ 345] <= 9'b101000000; // Load the source box with 0
-      P[ 346] <= 9'b110001110; // Load the target box with 14
-      P[ 347] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 348] <= 9'b000000000; // Load the constant box with 0
-      P[ 349] <= 9'b101000010; // Load the source box with 2
-      P[ 350] <= 9'b110001111; // Load the target box with 15
-      P[ 351] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 352] <= 9'b000000000; // Load the constant box with 0
-      P[ 353] <= 9'b101000100; // Load the source box with 4
-      P[ 354] <= 9'b110001111; // Load the target box with 15
-      P[ 355] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 356] <= 9'b000000000; // Load the constant box with 0
-      P[ 357] <= 9'b101000110; // Load the source box with 6
-      P[ 358] <= 9'b110001111; // Load the target box with 15
-      P[ 359] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 360] <= 9'b000000000; // Load the constant box with 0
-      P[ 361] <= 9'b101001000; // Load the source box with 8
-      P[ 362] <= 9'b110001111; // Load the target box with 15
-      P[ 363] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 364] <= 9'b000000000; // Load the constant box with 0
-      P[ 365] <= 9'b101001001; // Load the source box with 9
-      P[ 366] <= 9'b110001111; // Load the target box with 15
-      P[ 367] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 368] <= 9'b000000000; // Load the constant box with 0
-      P[ 369] <= 9'b101001011; // Load the source box with 11
-      P[ 370] <= 9'b110001111; // Load the target box with 15
-      P[ 371] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 372] <= 9'b000000000; // Load the constant box with 0
-      P[ 373] <= 9'b101001100; // Load the source box with 12
-      P[ 374] <= 9'b110001111; // Load the target box with 15
-      P[ 375] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 376] <= 9'b000000001; // Load the constant box with 1
-      P[ 377] <= 9'b101000000; // Load the source box with 0
-      P[ 378] <= 9'b110000000; // Load the target box with 0
-      P[ 379] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 380] <= 9'b000000000; // Load the constant box with 0
-      P[ 381] <= 9'b101001111; // Load the source box with 15
-      P[ 382] <= 9'b110000000; // Load the target box with 0
-      P[ 383] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 384] <= 9'b011111010; // Load the constant box with 250
-      P[ 385] <= 9'b101000000; // Load the source box with 0
-      P[ 386] <= 9'b110000000; // Load the target box with 0
-      P[ 387] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 388] <= 9'b000000000; // Load the constant box with 0
-      P[ 389] <= 9'b101000000; // Load the source box with 0
-      P[ 390] <= 9'b110000001; // Load the target box with 1
-      P[ 391] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 392] <= 9'b000000001; // Load the constant box with 1
-      P[ 393] <= 9'b101000000; // Load the source box with 0
-      P[ 394] <= 9'b110000000; // Load the target box with 0
-      P[ 395] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 396] <= 9'b000000000; // Load the constant box with 0
-      P[ 397] <= 9'b101000000; // Load the source box with 0
-      P[ 398] <= 9'b110001110; // Load the target box with 14
-      P[ 399] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 400] <= 9'b000000000; // Load the constant box with 0
-      P[ 401] <= 9'b101000010; // Load the source box with 2
-      P[ 402] <= 9'b110000001; // Load the target box with 1
-      P[ 403] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 404] <= 9'b000000000; // Load the constant box with 0
-      P[ 405] <= 9'b101000011; // Load the source box with 3
-      P[ 406] <= 9'b110000001; // Load the target box with 1
-      P[ 407] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 408] <= 9'b000000000; // Load the constant box with 0
-      P[ 409] <= 9'b101000100; // Load the source box with 4
-      P[ 410] <= 9'b110000001; // Load the target box with 1
-      P[ 411] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 412] <= 9'b000000000; // Load the constant box with 0
-      P[ 413] <= 9'b101000101; // Load the source box with 5
-      P[ 414] <= 9'b110000001; // Load the target box with 1
-      P[ 415] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 416] <= 9'b000000000; // Load the constant box with 0
-      P[ 417] <= 9'b101000110; // Load the source box with 6
-      P[ 418] <= 9'b110000001; // Load the target box with 1
-      P[ 419] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 420] <= 9'b000000000; // Load the constant box with 0
-      P[ 421] <= 9'b101000111; // Load the source box with 7
-      P[ 422] <= 9'b110000001; // Load the target box with 1
-      P[ 423] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 424] <= 9'b000000000; // Load the constant box with 0
-      P[ 425] <= 9'b101001000; // Load the source box with 8
-      P[ 426] <= 9'b110000001; // Load the target box with 1
-      P[ 427] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 428] <= 9'b000000000; // Load the constant box with 0
-      P[ 429] <= 9'b101001001; // Load the source box with 9
-      P[ 430] <= 9'b110000001; // Load the target box with 1
-      P[ 431] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 432] <= 9'b000000000; // Load the constant box with 0
-      P[ 433] <= 9'b101001010; // Load the source box with 10
-      P[ 434] <= 9'b110000001; // Load the target box with 1
-      P[ 435] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 436] <= 9'b000000000; // Load the constant box with 0
-      P[ 437] <= 9'b101001011; // Load the source box with 11
-      P[ 438] <= 9'b110000001; // Load the target box with 1
-      P[ 439] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 440] <= 9'b000000000; // Load the constant box with 0
-      P[ 441] <= 9'b101001100; // Load the source box with 12
-      P[ 442] <= 9'b110000001; // Load the target box with 1
-      P[ 443] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 444] <= 9'b000000001; // Load the constant box with 1
-      P[ 445] <= 9'b101000000; // Load the source box with 0
-      P[ 446] <= 9'b110000000; // Load the target box with 0
-      P[ 447] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 448] <= 9'b000000000; // Load the constant box with 0
-      P[ 449] <= 9'b101000001; // Load the source box with 1
-      P[ 450] <= 9'b110000000; // Load the target box with 0
-      P[ 451] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 452] <= 9'b011110110; // Load the constant box with 246
-      P[ 453] <= 9'b101000000; // Load the source box with 0
-      P[ 454] <= 9'b110000000; // Load the target box with 0
-      P[ 455] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 456] <= 9'b000000000; // Load the constant box with 0
-      P[ 457] <= 9'b101000000; // Load the source box with 0
-      P[ 458] <= 9'b110001110; // Load the target box with 14
-      P[ 459] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 460] <= 9'b011111100; // Load the constant box with 252
-      P[ 461] <= 9'b101001101; // Load the source box with 13
-      P[ 462] <= 9'b110000000; // Load the target box with 0
-      P[ 463] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 464] <= 9'b011111011; // Load the constant box with 251
-      P[ 465] <= 9'b101001110; // Load the source box with 14
-      P[ 466] <= 9'b110000000; // Load the target box with 0
-      P[ 467] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 468] <= 9'b000000000; // Load the constant box with 0
-      P[ 469] <= 9'b101000000; // Load the source box with 0
-      P[ 470] <= 9'b110000000; // Load the target box with 0
-      P[ 471] <= 9'b111010110; // stop: Stop program execution
+      NInstructionEnd = 3;
+      code[   0] = 'h0000000100000000000000000000210000000000000320000000000000000000;
+      code[   1] = 'h0000002200000000000000000000150000000000000b20000000000000000000;
+      code[   2] = 'h0000002200000000000000000001150000000000001620000000000000000000;
+    end
+  endtask
+                                                                                // Load program 'Array_scans' into code memory
+  task Array_scans();
+    begin
+      NInstructionEnd = 28;
+      code[   0] = 'h0000000100000000000000000000210000000000000320000000000000000000;
+      code[   1] = 'h0000002200000000000000000000150000000000000a20000000000000000000;
+      code[   2] = 'h0000002200000000000000000001150000000000001420000000000000000000;
+      code[   3] = 'h0000002200000000000000000002150000000000001e20000000000000000000;
+      code[   4] = 'h00000005000000000000000000012100000000000000210000000000001e2000;
+      code[   5] = 'h0000002600000000000000000000010000000000000121000000000000000000;
+      code[   6] = 'h0000000500000000000000000002210000000000000021000000000000142000;
+      code[   7] = 'h0000002600000000000000000000010000000000000221000000000000000000;
+      code[   8] = 'h00000005000000000000000000032100000000000000210000000000000a2000;
+      code[   9] = 'h0000002600000000000000000000010000000000000321000000000000000000;
+      code[  10] = 'h00000005000000000000000000042100000000000000210000000000000f2000;
+      code[  11] = 'h0000002600000000000000000000010000000000000421000000000000000000;
+      code[  12] = 'h0000000300000000000000000005210000000000000021000000000000232000;
+      code[  13] = 'h0000002600000000000000000000010000000000000521000000000000000000;
+      code[  14] = 'h0000000300000000000000000006210000000000000021000000000000192000;
+      code[  15] = 'h0000002600000000000000000000010000000000000621000000000000000000;
+      code[  16] = 'h00000003000000000000000000072100000000000000210000000000000f2000;
+      code[  17] = 'h0000002600000000000000000000010000000000000721000000000000000000;
+      code[  18] = 'h0000000300000000000000000008210000000000000021000000000000052000;
+      code[  19] = 'h0000002600000000000000000000010000000000000821000000000000000000;
+      code[  20] = 'h0000000200000000000000000009210000000000000021000000000000232000;
+      code[  21] = 'h0000002600000000000000000000010000000000000921000000000000000000;
+      code[  22] = 'h000000020000000000000000000a210000000000000021000000000000192000;
+      code[  23] = 'h0000002600000000000000000000010000000000000a21000000000000000000;
+      code[  24] = 'h000000020000000000000000000b2100000000000000210000000000000f2000;
+      code[  25] = 'h0000002600000000000000000000010000000000000b21000000000000000000;
+      code[  26] = 'h000000020000000000000000000c210000000000000021000000000000052000;
+      code[  27] = 'h0000002600000000000000000000010000000000000c21000000000000000000;
     end
   endtask
 
-  task automatic load_Program1;                                                 // Program 1 low
+  task Free_test();
     begin
-      $display("Program 1");
-      P[   0] <= 9'b000011110; // Load the constant box with 30
-      P[   1] <= 9'b101000000; // Load the source box with 0
-      P[   2] <= 9'b110000000; // Load the target box with 0
-      P[   3] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[   4] <= 9'b000000001; // Load the constant box with 1
-      P[   5] <= 9'b101000000; // Load the source box with 0
-      P[   6] <= 9'b110000000; // Load the target box with 0
-      P[   7] <= 9'b111001001; // label: Create and set a label
-      P[   8] <= 9'b000000000; // Load the constant box with 0
-      P[   9] <= 9'b101000000; // Load the source box with 0
-      P[  10] <= 9'b110000000; // Load the target box with 0
-      P[  11] <= 9'b111000101; // dec: Decrement a register by one
-      P[  12] <= 9'b000000000; // Load the constant box with 0
-      P[  13] <= 9'b101000000; // Load the source box with 0
-      P[  14] <= 9'b110000001; // Load the target box with 1
-      P[  15] <= 9'b111001100; // ldri: Load the first register from the memory location specified by the second register
-      P[  16] <= 9'b000000000; // Load the constant box with 0
-      P[  17] <= 9'b101000000; // Load the source box with 0
-      P[  18] <= 9'b110000000; // Load the target box with 0
-      P[  19] <= 9'b111000101; // dec: Decrement a register by one
-      P[  20] <= 9'b000000000; // Load the constant box with 0
-      P[  21] <= 9'b101000000; // Load the source box with 0
-      P[  22] <= 9'b110000010; // Load the target box with 2
-      P[  23] <= 9'b111001100; // ldri: Load the first register from the memory location specified by the second register
-      P[  24] <= 9'b011111111; // Load the constant box with 255
-      P[  25] <= 9'b101000000; // Load the source box with 0
-      P[  26] <= 9'b110000000; // Load the target box with 0
-      P[  27] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[  28] <= 9'b011111110; // Load the constant box with 254
-      P[  29] <= 9'b101000001; // Load the source box with 1
-      P[  30] <= 9'b110000000; // Load the target box with 0
-      P[  31] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[  32] <= 9'b011111101; // Load the constant box with 253
-      P[  33] <= 9'b101000010; // Load the source box with 2
-      P[  34] <= 9'b110000000; // Load the target box with 0
-      P[  35] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[  36] <= 9'b011111110; // Load the constant box with 254
-      P[  37] <= 9'b101000001; // Load the source box with 1
-      P[  38] <= 9'b110000000; // Load the target box with 0
-      P[  39] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[  40] <= 9'b011111101; // Load the constant box with 253
-      P[  41] <= 9'b101000010; // Load the source box with 2
-      P[  42] <= 9'b110000000; // Load the target box with 0
-      P[  43] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[  44] <= 9'b000001000; // Load the constant box with 8
-      P[  45] <= 9'b101000001; // Load the source box with 1
-      P[  46] <= 9'b110000000; // Load the target box with 0
-      P[  47] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  48] <= 9'b000000000; // Load the constant box with 0
-      P[  49] <= 9'b101000010; // Load the source box with 2
-      P[  50] <= 9'b110000001; // Load the target box with 1
-      P[  51] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[  52] <= 9'b000000000; // Load the constant box with 0
-      P[  53] <= 9'b101000001; // Load the source box with 1
-      P[  54] <= 9'b110000010; // Load the target box with 2
-      P[  55] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  56] <= 9'b000000101; // Load the constant box with 5
-      P[  57] <= 9'b101000010; // Load the source box with 2
-      P[  58] <= 9'b110000000; // Load the target box with 0
-      P[  59] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  60] <= 9'b000001111; // Load the constant box with 15
-      P[  61] <= 9'b101000010; // Load the source box with 2
-      P[  62] <= 9'b110000000; // Load the target box with 0
-      P[  63] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  64] <= 9'b000000000; // Load the constant box with 0
-      P[  65] <= 9'b101000001; // Load the source box with 1
-      P[  66] <= 9'b110000011; // Load the target box with 3
-      P[  67] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  68] <= 9'b000000110; // Load the constant box with 6
-      P[  69] <= 9'b101000011; // Load the source box with 3
-      P[  70] <= 9'b110000000; // Load the target box with 0
-      P[  71] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  72] <= 9'b000001111; // Load the constant box with 15
-      P[  73] <= 9'b101000011; // Load the source box with 3
-      P[  74] <= 9'b110000000; // Load the target box with 0
-      P[  75] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  76] <= 9'b000000000; // Load the constant box with 0
-      P[  77] <= 9'b101000001; // Load the source box with 1
-      P[  78] <= 9'b110000100; // Load the target box with 4
-      P[  79] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  80] <= 9'b000000111; // Load the constant box with 7
-      P[  81] <= 9'b101000100; // Load the source box with 4
-      P[  82] <= 9'b110000000; // Load the target box with 0
-      P[  83] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  84] <= 9'b000001111; // Load the constant box with 15
-      P[  85] <= 9'b101000100; // Load the source box with 4
-      P[  86] <= 9'b110000000; // Load the target box with 0
-      P[  87] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  88] <= 9'b000000000; // Load the constant box with 0
-      P[  89] <= 9'b101000001; // Load the source box with 1
-      P[  90] <= 9'b110000101; // Load the target box with 5
-      P[  91] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  92] <= 9'b000001000; // Load the constant box with 8
-      P[  93] <= 9'b101000101; // Load the source box with 5
-      P[  94] <= 9'b110000000; // Load the target box with 0
-      P[  95] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  96] <= 9'b000001111; // Load the constant box with 15
-      P[  97] <= 9'b101000101; // Load the source box with 5
-      P[  98] <= 9'b110000000; // Load the target box with 0
-      P[  99] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 100] <= 9'b000000000; // Load the constant box with 0
-      P[ 101] <= 9'b101000001; // Load the source box with 1
-      P[ 102] <= 9'b110000110; // Load the target box with 6
-      P[ 103] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 104] <= 9'b000001001; // Load the constant box with 9
-      P[ 105] <= 9'b101000110; // Load the source box with 6
-      P[ 106] <= 9'b110000000; // Load the target box with 0
-      P[ 107] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 108] <= 9'b000001111; // Load the constant box with 15
-      P[ 109] <= 9'b101000110; // Load the source box with 6
-      P[ 110] <= 9'b110000000; // Load the target box with 0
-      P[ 111] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 112] <= 9'b000000000; // Load the constant box with 0
-      P[ 113] <= 9'b101000001; // Load the source box with 1
-      P[ 114] <= 9'b110000111; // Load the target box with 7
-      P[ 115] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 116] <= 9'b000001010; // Load the constant box with 10
-      P[ 117] <= 9'b101000111; // Load the source box with 7
-      P[ 118] <= 9'b110000000; // Load the target box with 0
-      P[ 119] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 120] <= 9'b000001111; // Load the constant box with 15
-      P[ 121] <= 9'b101000111; // Load the source box with 7
-      P[ 122] <= 9'b110000000; // Load the target box with 0
-      P[ 123] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 124] <= 9'b000000000; // Load the constant box with 0
-      P[ 125] <= 9'b101000001; // Load the source box with 1
-      P[ 126] <= 9'b110001000; // Load the target box with 8
-      P[ 127] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 128] <= 9'b000001011; // Load the constant box with 11
-      P[ 129] <= 9'b101001000; // Load the source box with 8
-      P[ 130] <= 9'b110000000; // Load the target box with 0
-      P[ 131] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 132] <= 9'b000001111; // Load the constant box with 15
-      P[ 133] <= 9'b101001000; // Load the source box with 8
-      P[ 134] <= 9'b110000000; // Load the target box with 0
-      P[ 135] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 136] <= 9'b000000000; // Load the constant box with 0
-      P[ 137] <= 9'b101000001; // Load the source box with 1
-      P[ 138] <= 9'b110001001; // Load the target box with 9
-      P[ 139] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 140] <= 9'b000001100; // Load the constant box with 12
-      P[ 141] <= 9'b101001001; // Load the source box with 9
-      P[ 142] <= 9'b110000000; // Load the target box with 0
-      P[ 143] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 144] <= 9'b000001111; // Load the constant box with 15
-      P[ 145] <= 9'b101001001; // Load the source box with 9
-      P[ 146] <= 9'b110000000; // Load the target box with 0
-      P[ 147] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 148] <= 9'b000000000; // Load the constant box with 0
-      P[ 149] <= 9'b101000001; // Load the source box with 1
-      P[ 150] <= 9'b110001010; // Load the target box with 10
-      P[ 151] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 152] <= 9'b000001101; // Load the constant box with 13
-      P[ 153] <= 9'b101001010; // Load the source box with 10
-      P[ 154] <= 9'b110000000; // Load the target box with 0
-      P[ 155] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 156] <= 9'b000001111; // Load the constant box with 15
-      P[ 157] <= 9'b101001010; // Load the source box with 10
-      P[ 158] <= 9'b110000000; // Load the target box with 0
-      P[ 159] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 160] <= 9'b000000000; // Load the constant box with 0
-      P[ 161] <= 9'b101000001; // Load the source box with 1
-      P[ 162] <= 9'b110001011; // Load the target box with 11
-      P[ 163] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 164] <= 9'b000001110; // Load the constant box with 14
-      P[ 165] <= 9'b101001011; // Load the source box with 11
-      P[ 166] <= 9'b110000000; // Load the target box with 0
-      P[ 167] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 168] <= 9'b000001111; // Load the constant box with 15
-      P[ 169] <= 9'b101001011; // Load the source box with 11
-      P[ 170] <= 9'b110000000; // Load the target box with 0
-      P[ 171] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 172] <= 9'b000000000; // Load the constant box with 0
-      P[ 173] <= 9'b101000001; // Load the source box with 1
-      P[ 174] <= 9'b110001100; // Load the target box with 12
-      P[ 175] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 176] <= 9'b000001111; // Load the constant box with 15
-      P[ 177] <= 9'b101001100; // Load the source box with 12
-      P[ 178] <= 9'b110000000; // Load the target box with 0
-      P[ 179] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 180] <= 9'b000001111; // Load the constant box with 15
-      P[ 181] <= 9'b101001100; // Load the source box with 12
-      P[ 182] <= 9'b110000000; // Load the target box with 0
-      P[ 183] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 184] <= 9'b000000000; // Load the constant box with 0
-      P[ 185] <= 9'b101000001; // Load the source box with 1
-      P[ 186] <= 9'b110001101; // Load the target box with 13
-      P[ 187] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 188] <= 9'b000000101; // Load the constant box with 5
-      P[ 189] <= 9'b101001101; // Load the source box with 13
-      P[ 190] <= 9'b110000000; // Load the target box with 0
-      P[ 191] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 192] <= 9'b000001001; // Load the constant box with 9
-      P[ 193] <= 9'b101001101; // Load the source box with 13
-      P[ 194] <= 9'b110000000; // Load the target box with 0
-      P[ 195] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 196] <= 9'b000000001; // Load the constant box with 1
-      P[ 197] <= 9'b101001101; // Load the source box with 13
-      P[ 198] <= 9'b110000000; // Load the target box with 0
-      P[ 199] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 200] <= 9'b000000000; // Load the constant box with 0
-      P[ 201] <= 9'b101000001; // Load the source box with 1
-      P[ 202] <= 9'b110001110; // Load the target box with 14
-      P[ 203] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 204] <= 9'b000001000; // Load the constant box with 8
-      P[ 205] <= 9'b101001110; // Load the source box with 14
-      P[ 206] <= 9'b110000000; // Load the target box with 0
-      P[ 207] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 208] <= 9'b000001101; // Load the constant box with 13
-      P[ 209] <= 9'b101001110; // Load the source box with 14
-      P[ 210] <= 9'b110000000; // Load the target box with 0
-      P[ 211] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 212] <= 9'b000000101; // Load the constant box with 5
-      P[ 213] <= 9'b101001110; // Load the source box with 14
-      P[ 214] <= 9'b110000000; // Load the target box with 0
-      P[ 215] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 216] <= 9'b000000000; // Load the constant box with 0
-      P[ 217] <= 9'b101000001; // Load the source box with 1
-      P[ 218] <= 9'b110001111; // Load the target box with 15
-      P[ 219] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 220] <= 9'b000001111; // Load the constant box with 15
-      P[ 221] <= 9'b101001111; // Load the source box with 15
-      P[ 222] <= 9'b110000000; // Load the target box with 0
-      P[ 223] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 224] <= 9'b000001100; // Load the constant box with 12
-      P[ 225] <= 9'b101001111; // Load the source box with 15
-      P[ 226] <= 9'b110000000; // Load the target box with 0
-      P[ 227] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 228] <= 9'b000000000; // Load the constant box with 0
-      P[ 229] <= 9'b101001111; // Load the source box with 15
-      P[ 230] <= 9'b110001110; // Load the target box with 14
-      P[ 231] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 232] <= 9'b000000000; // Load the constant box with 0
-      P[ 233] <= 9'b101000010; // Load the source box with 2
-      P[ 234] <= 9'b110001111; // Load the target box with 15
-      P[ 235] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 236] <= 9'b000000000; // Load the constant box with 0
-      P[ 237] <= 9'b101000011; // Load the source box with 3
-      P[ 238] <= 9'b110001111; // Load the target box with 15
-      P[ 239] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 240] <= 9'b000000000; // Load the constant box with 0
-      P[ 241] <= 9'b101000100; // Load the source box with 4
-      P[ 242] <= 9'b110001111; // Load the target box with 15
-      P[ 243] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 244] <= 9'b000000000; // Load the constant box with 0
-      P[ 245] <= 9'b101000101; // Load the source box with 5
-      P[ 246] <= 9'b110001111; // Load the target box with 15
-      P[ 247] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 248] <= 9'b000000000; // Load the constant box with 0
-      P[ 249] <= 9'b101000110; // Load the source box with 6
-      P[ 250] <= 9'b110001111; // Load the target box with 15
-      P[ 251] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 252] <= 9'b000000000; // Load the constant box with 0
-      P[ 253] <= 9'b101000111; // Load the source box with 7
-      P[ 254] <= 9'b110001111; // Load the target box with 15
-      P[ 255] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 256] <= 9'b000000000; // Load the constant box with 0
-      P[ 257] <= 9'b101001000; // Load the source box with 8
-      P[ 258] <= 9'b110001111; // Load the target box with 15
-      P[ 259] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 260] <= 9'b000000001; // Load the constant box with 1
-      P[ 261] <= 9'b101000000; // Load the source box with 0
-      P[ 262] <= 9'b110000000; // Load the target box with 0
-      P[ 263] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 264] <= 9'b000000000; // Load the constant box with 0
-      P[ 265] <= 9'b101001111; // Load the source box with 15
-      P[ 266] <= 9'b110000000; // Load the target box with 0
-      P[ 267] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 268] <= 9'b011110111; // Load the constant box with 247
-      P[ 269] <= 9'b101000000; // Load the source box with 0
-      P[ 270] <= 9'b110000000; // Load the target box with 0
-      P[ 271] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 272] <= 9'b000000000; // Load the constant box with 0
-      P[ 273] <= 9'b101000000; // Load the source box with 0
-      P[ 274] <= 9'b110000001; // Load the target box with 1
-      P[ 275] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 276] <= 9'b000000000; // Load the constant box with 0
-      P[ 277] <= 9'b101000000; // Load the source box with 0
-      P[ 278] <= 9'b110001101; // Load the target box with 13
-      P[ 279] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 280] <= 9'b000000000; // Load the constant box with 0
-      P[ 281] <= 9'b101000010; // Load the source box with 2
-      P[ 282] <= 9'b110001111; // Load the target box with 15
-      P[ 283] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 284] <= 9'b000000000; // Load the constant box with 0
-      P[ 285] <= 9'b101000011; // Load the source box with 3
-      P[ 286] <= 9'b110001111; // Load the target box with 15
-      P[ 287] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 288] <= 9'b000000000; // Load the constant box with 0
-      P[ 289] <= 9'b101000100; // Load the source box with 4
-      P[ 290] <= 9'b110001111; // Load the target box with 15
-      P[ 291] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 292] <= 9'b000000000; // Load the constant box with 0
-      P[ 293] <= 9'b101000101; // Load the source box with 5
-      P[ 294] <= 9'b110001111; // Load the target box with 15
-      P[ 295] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 296] <= 9'b000000000; // Load the constant box with 0
-      P[ 297] <= 9'b101001001; // Load the source box with 9
-      P[ 298] <= 9'b110001111; // Load the target box with 15
-      P[ 299] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 300] <= 9'b000000000; // Load the constant box with 0
-      P[ 301] <= 9'b101001010; // Load the source box with 10
-      P[ 302] <= 9'b110001111; // Load the target box with 15
-      P[ 303] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 304] <= 9'b000000000; // Load the constant box with 0
-      P[ 305] <= 9'b101001011; // Load the source box with 11
-      P[ 306] <= 9'b110001111; // Load the target box with 15
-      P[ 307] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 308] <= 9'b000000001; // Load the constant box with 1
-      P[ 309] <= 9'b101000000; // Load the source box with 0
-      P[ 310] <= 9'b110000000; // Load the target box with 0
-      P[ 311] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 312] <= 9'b000000000; // Load the constant box with 0
-      P[ 313] <= 9'b101001111; // Load the source box with 15
-      P[ 314] <= 9'b110000000; // Load the target box with 0
-      P[ 315] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 316] <= 9'b011111000; // Load the constant box with 248
-      P[ 317] <= 9'b101000000; // Load the source box with 0
-      P[ 318] <= 9'b110000000; // Load the target box with 0
-      P[ 319] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 320] <= 9'b000000000; // Load the constant box with 0
-      P[ 321] <= 9'b101000000; // Load the source box with 0
-      P[ 322] <= 9'b110000001; // Load the target box with 1
-      P[ 323] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 324] <= 9'b000000100; // Load the constant box with 4
-      P[ 325] <= 9'b101000000; // Load the source box with 0
-      P[ 326] <= 9'b110000000; // Load the target box with 0
-      P[ 327] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 328] <= 9'b000000000; // Load the constant box with 0
-      P[ 329] <= 9'b101000000; // Load the source box with 0
-      P[ 330] <= 9'b110001110; // Load the target box with 14
-      P[ 331] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 332] <= 9'b000000000; // Load the constant box with 0
-      P[ 333] <= 9'b101000010; // Load the source box with 2
-      P[ 334] <= 9'b110001111; // Load the target box with 15
-      P[ 335] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 336] <= 9'b000000000; // Load the constant box with 0
-      P[ 337] <= 9'b101000011; // Load the source box with 3
-      P[ 338] <= 9'b110001111; // Load the target box with 15
-      P[ 339] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 340] <= 9'b000000000; // Load the constant box with 0
-      P[ 341] <= 9'b101000110; // Load the source box with 6
-      P[ 342] <= 9'b110001111; // Load the target box with 15
-      P[ 343] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 344] <= 9'b000000000; // Load the constant box with 0
-      P[ 345] <= 9'b101000111; // Load the source box with 7
-      P[ 346] <= 9'b110001111; // Load the target box with 15
-      P[ 347] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 348] <= 9'b000000000; // Load the constant box with 0
-      P[ 349] <= 9'b101001001; // Load the source box with 9
-      P[ 350] <= 9'b110001111; // Load the target box with 15
-      P[ 351] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 352] <= 9'b000000000; // Load the constant box with 0
-      P[ 353] <= 9'b101001010; // Load the source box with 10
-      P[ 354] <= 9'b110001111; // Load the target box with 15
-      P[ 355] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 356] <= 9'b000000000; // Load the constant box with 0
-      P[ 357] <= 9'b101001100; // Load the source box with 12
-      P[ 358] <= 9'b110001111; // Load the target box with 15
-      P[ 359] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 360] <= 9'b000000001; // Load the constant box with 1
-      P[ 361] <= 9'b101000000; // Load the source box with 0
-      P[ 362] <= 9'b110000000; // Load the target box with 0
-      P[ 363] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 364] <= 9'b000000000; // Load the constant box with 0
-      P[ 365] <= 9'b101001111; // Load the source box with 15
-      P[ 366] <= 9'b110000000; // Load the target box with 0
-      P[ 367] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 368] <= 9'b011111001; // Load the constant box with 249
-      P[ 369] <= 9'b101000000; // Load the source box with 0
-      P[ 370] <= 9'b110000000; // Load the target box with 0
-      P[ 371] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 372] <= 9'b000000000; // Load the constant box with 0
-      P[ 373] <= 9'b101000000; // Load the source box with 0
-      P[ 374] <= 9'b110000001; // Load the target box with 1
-      P[ 375] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 376] <= 9'b000000010; // Load the constant box with 2
-      P[ 377] <= 9'b101000000; // Load the source box with 0
-      P[ 378] <= 9'b110000000; // Load the target box with 0
-      P[ 379] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 380] <= 9'b000000000; // Load the constant box with 0
-      P[ 381] <= 9'b101000000; // Load the source box with 0
-      P[ 382] <= 9'b110001110; // Load the target box with 14
-      P[ 383] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 384] <= 9'b000000000; // Load the constant box with 0
-      P[ 385] <= 9'b101000010; // Load the source box with 2
-      P[ 386] <= 9'b110001111; // Load the target box with 15
-      P[ 387] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 388] <= 9'b000000000; // Load the constant box with 0
-      P[ 389] <= 9'b101000100; // Load the source box with 4
-      P[ 390] <= 9'b110001111; // Load the target box with 15
-      P[ 391] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 392] <= 9'b000000000; // Load the constant box with 0
-      P[ 393] <= 9'b101000110; // Load the source box with 6
-      P[ 394] <= 9'b110001111; // Load the target box with 15
-      P[ 395] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 396] <= 9'b000000000; // Load the constant box with 0
-      P[ 397] <= 9'b101001000; // Load the source box with 8
-      P[ 398] <= 9'b110001111; // Load the target box with 15
-      P[ 399] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 400] <= 9'b000000000; // Load the constant box with 0
-      P[ 401] <= 9'b101001001; // Load the source box with 9
-      P[ 402] <= 9'b110001111; // Load the target box with 15
-      P[ 403] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 404] <= 9'b000000000; // Load the constant box with 0
-      P[ 405] <= 9'b101001011; // Load the source box with 11
-      P[ 406] <= 9'b110001111; // Load the target box with 15
-      P[ 407] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 408] <= 9'b000000000; // Load the constant box with 0
-      P[ 409] <= 9'b101001100; // Load the source box with 12
-      P[ 410] <= 9'b110001111; // Load the target box with 15
-      P[ 411] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 412] <= 9'b000000001; // Load the constant box with 1
-      P[ 413] <= 9'b101000000; // Load the source box with 0
-      P[ 414] <= 9'b110000000; // Load the target box with 0
-      P[ 415] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 416] <= 9'b000000000; // Load the constant box with 0
-      P[ 417] <= 9'b101001111; // Load the source box with 15
-      P[ 418] <= 9'b110000000; // Load the target box with 0
-      P[ 419] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 420] <= 9'b011111010; // Load the constant box with 250
-      P[ 421] <= 9'b101000000; // Load the source box with 0
-      P[ 422] <= 9'b110000000; // Load the target box with 0
-      P[ 423] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 424] <= 9'b000000000; // Load the constant box with 0
-      P[ 425] <= 9'b101000000; // Load the source box with 0
-      P[ 426] <= 9'b110000001; // Load the target box with 1
-      P[ 427] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 428] <= 9'b000000001; // Load the constant box with 1
-      P[ 429] <= 9'b101000000; // Load the source box with 0
-      P[ 430] <= 9'b110000000; // Load the target box with 0
-      P[ 431] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 432] <= 9'b000000000; // Load the constant box with 0
-      P[ 433] <= 9'b101000000; // Load the source box with 0
-      P[ 434] <= 9'b110001110; // Load the target box with 14
-      P[ 435] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 436] <= 9'b000000000; // Load the constant box with 0
-      P[ 437] <= 9'b101000010; // Load the source box with 2
-      P[ 438] <= 9'b110000001; // Load the target box with 1
-      P[ 439] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 440] <= 9'b000000000; // Load the constant box with 0
-      P[ 441] <= 9'b101000011; // Load the source box with 3
-      P[ 442] <= 9'b110000001; // Load the target box with 1
-      P[ 443] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 444] <= 9'b000000000; // Load the constant box with 0
-      P[ 445] <= 9'b101000100; // Load the source box with 4
-      P[ 446] <= 9'b110000001; // Load the target box with 1
-      P[ 447] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 448] <= 9'b000000000; // Load the constant box with 0
-      P[ 449] <= 9'b101000101; // Load the source box with 5
-      P[ 450] <= 9'b110000001; // Load the target box with 1
-      P[ 451] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 452] <= 9'b000000000; // Load the constant box with 0
-      P[ 453] <= 9'b101000110; // Load the source box with 6
-      P[ 454] <= 9'b110000001; // Load the target box with 1
-      P[ 455] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 456] <= 9'b000000000; // Load the constant box with 0
-      P[ 457] <= 9'b101000111; // Load the source box with 7
-      P[ 458] <= 9'b110000001; // Load the target box with 1
-      P[ 459] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 460] <= 9'b000000000; // Load the constant box with 0
-      P[ 461] <= 9'b101001000; // Load the source box with 8
-      P[ 462] <= 9'b110000001; // Load the target box with 1
-      P[ 463] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 464] <= 9'b000000000; // Load the constant box with 0
-      P[ 465] <= 9'b101001001; // Load the source box with 9
-      P[ 466] <= 9'b110000001; // Load the target box with 1
-      P[ 467] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 468] <= 9'b000000000; // Load the constant box with 0
-      P[ 469] <= 9'b101001010; // Load the source box with 10
-      P[ 470] <= 9'b110000001; // Load the target box with 1
-      P[ 471] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 472] <= 9'b000000000; // Load the constant box with 0
-      P[ 473] <= 9'b101001011; // Load the source box with 11
-      P[ 474] <= 9'b110000001; // Load the target box with 1
-      P[ 475] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 476] <= 9'b000000000; // Load the constant box with 0
-      P[ 477] <= 9'b101001100; // Load the source box with 12
-      P[ 478] <= 9'b110000001; // Load the target box with 1
-      P[ 479] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 480] <= 9'b000000001; // Load the constant box with 1
-      P[ 481] <= 9'b101000000; // Load the source box with 0
-      P[ 482] <= 9'b110000000; // Load the target box with 0
-      P[ 483] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 484] <= 9'b000000000; // Load the constant box with 0
-      P[ 485] <= 9'b101000001; // Load the source box with 1
-      P[ 486] <= 9'b110000000; // Load the target box with 0
-      P[ 487] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 488] <= 9'b011110110; // Load the constant box with 246
-      P[ 489] <= 9'b101000000; // Load the source box with 0
-      P[ 490] <= 9'b110000000; // Load the target box with 0
-      P[ 491] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 492] <= 9'b000000000; // Load the constant box with 0
-      P[ 493] <= 9'b101000000; // Load the source box with 0
-      P[ 494] <= 9'b110001110; // Load the target box with 14
-      P[ 495] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 496] <= 9'b011111100; // Load the constant box with 252
-      P[ 497] <= 9'b101001101; // Load the source box with 13
-      P[ 498] <= 9'b110000000; // Load the target box with 0
-      P[ 499] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 500] <= 9'b011111011; // Load the constant box with 251
-      P[ 501] <= 9'b101001110; // Load the source box with 14
-      P[ 502] <= 9'b110000000; // Load the target box with 0
-      P[ 503] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 504] <= 9'b011111111; // Load the constant box with 255
-      P[ 505] <= 9'b101000000; // Load the source box with 0
-      P[ 506] <= 9'b110000000; // Load the target box with 0
-      P[ 507] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[ 508] <= 9'b011111100; // Load the constant box with 252
-      P[ 509] <= 9'b101001101; // Load the source box with 13
-      P[ 510] <= 9'b110000000; // Load the target box with 0
-      P[ 511] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[ 512] <= 9'b011111011; // Load the constant box with 251
-      P[ 513] <= 9'b101001110; // Load the source box with 14
-      P[ 514] <= 9'b110000000; // Load the target box with 0
-      P[ 515] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[ 516] <= 9'b000011110; // Load the constant box with 30
-      P[ 517] <= 9'b101000001; // Load the source box with 1
-      P[ 518] <= 9'b110000000; // Load the target box with 0
-      P[ 519] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 520] <= 9'b000000000; // Load the constant box with 0
-      P[ 521] <= 9'b101000000; // Load the source box with 0
-      P[ 522] <= 9'b110000001; // Load the target box with 1
-      P[ 523] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 524] <= 9'b000000000; // Load the constant box with 0
-      P[ 525] <= 9'b101000001; // Load the source box with 1
-      P[ 526] <= 9'b110001110; // Load the target box with 14
-      P[ 527] <= 9'b111010011; // stri: Store the contents of the first register in the location specified by the second register
-      P[ 528] <= 9'b000000000; // Load the constant box with 0
-      P[ 529] <= 9'b101000001; // Load the source box with 1
-      P[ 530] <= 9'b110000000; // Load the target box with 0
-      P[ 531] <= 9'b111000110; // inc: Increment a register by one
-      P[ 532] <= 9'b000000000; // Load the constant box with 0
-      P[ 533] <= 9'b101000001; // Load the source box with 1
-      P[ 534] <= 9'b110001101; // Load the target box with 13
-      P[ 535] <= 9'b111010011; // stri: Store the contents of the first register in the location specified by the second register
-      P[ 536] <= 9'b000000001; // Load the constant box with 1
-      P[ 537] <= 9'b101000000; // Load the source box with 0
-      P[ 538] <= 9'b110000000; // Load the target box with 0
-      P[ 539] <= 9'b111000111; // jumpIfNotZero: Jump backwards to the specified location in the program if the register is not zero - useful for constructing for loops
-      P[ 540] <= 9'b000000000; // Load the constant box with 0
-      P[ 541] <= 9'b101000000; // Load the source box with 0
-      P[ 542] <= 9'b110000000; // Load the target box with 0
-      P[ 543] <= 9'b111010110; // stop: Stop program execution
+      NInstructionEnd = 9;
+      code[   0] = 'h0000000100000000000000000000217f000000000003207f000000000000007f;
+      code[   1] = 'h0000002600000000000000000000017f000000000000217f000000000000007f;
+      code[   2] = 'h0000001300000000000000000000217f000000000003207f000000000000007f;
+      code[   3] = 'h0000000100000000000000000001217f000000000004207f000000000000007f;
+      code[   4] = 'h0000002600000000000000000000017f000000000001217f000000000000007f;
+      code[   5] = 'h0000001300000000000000000001217f000000000004207f000000000000007f;
+      code[   6] = 'h0000000100000000000000000002217f000000000005207f000000000000007f;
+      code[   7] = 'h0000002600000000000000000000017f000000000002217f000000000000007f;
+      code[   8] = 'h0000001300000000000000000002217f000000000005207f000000000000007f;
+    end
+  endtask
+                                                                                // Load program 'ShiftLeft_test' into code memory
+  task ShiftLeft_test();
+    begin
+      NInstructionEnd = 3;
+      code[   0] = 'h0000002200000000000000000000210000000000000120000000000000000000;
+      code[   1] = 'h0000003500000000000000000000210000000000000021000000000000000000;
+      code[   2] = 'h0000002600000000000000000000010000000000000021000000000000000000;
+    end
+  endtask
+                                                                                // Load program 'ShiftRight_test' into code memory
+  task ShiftRight_test();
+    begin
+      NInstructionEnd = 3;
+      code[   0] = 'h0000002200000000000000000000210000000000000120000000000000000000;
+      code[   1] = 'h0000003500000000000000000000210000000000000021000000000000000000;
+      code[   2] = 'h0000002600000000000000000000010000000000000021000000000000000000;
     end
   endtask
 
-  task automatic load_Program2;                                                           // Program 2
+  task Jeq_test();
     begin
-      $display("Program 2");
-      P[   0] <= 9'b001011110; // Load the constant box with 94
-      P[   1] <= 9'b101000000; // Load the source box with 0
-      P[   2] <= 9'b110000000; // Load the target box with 0
-      P[   3] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[   4] <= 9'b000001101; // Load the constant box with 13
-      P[   5] <= 9'b101000000; // Load the source box with 0
-      P[   6] <= 9'b110000000; // Load the target box with 0
-      P[   7] <= 9'b111001001; // label: Create and set a label
-      P[   8] <= 9'b000000000; // Load the constant box with 0
-      P[   9] <= 9'b101000000; // Load the source box with 0
-      P[  10] <= 9'b110000000; // Load the target box with 0
-      P[  11] <= 9'b111000101; // dec: Decrement a register by one
-      P[  12] <= 9'b000000000; // Load the constant box with 0
-      P[  13] <= 9'b101000000; // Load the source box with 0
-      P[  14] <= 9'b110000010; // Load the target box with 2
-      P[  15] <= 9'b111001100; // ldri: Load the first register from the memory location specified by the second register
-      P[  16] <= 9'b000000000; // Load the constant box with 0
-      P[  17] <= 9'b101000000; // Load the source box with 0
-      P[  18] <= 9'b110000000; // Load the target box with 0
-      P[  19] <= 9'b111000101; // dec: Decrement a register by one
-      P[  20] <= 9'b000000000; // Load the constant box with 0
-      P[  21] <= 9'b101000000; // Load the source box with 0
-      P[  22] <= 9'b110000001; // Load the target box with 1
-      P[  23] <= 9'b111001100; // ldri: Load the first register from the memory location specified by the second register
-      P[  24] <= 9'b000000000; // Load the constant box with 0
-      P[  25] <= 9'b101000010; // Load the source box with 2
-      P[  26] <= 9'b110000011; // Load the target box with 3
-      P[  27] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  28] <= 9'b000000101; // Load the constant box with 5
-      P[  29] <= 9'b101000011; // Load the source box with 3
-      P[  30] <= 9'b110000000; // Load the target box with 0
-      P[  31] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  32] <= 9'b000000000; // Load the constant box with 0
-      P[  33] <= 9'b101000010; // Load the source box with 2
-      P[  34] <= 9'b110000100; // Load the target box with 4
-      P[  35] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  36] <= 9'b000000001; // Load the constant box with 1
-      P[  37] <= 9'b101000100; // Load the source box with 4
-      P[  38] <= 9'b110000000; // Load the target box with 0
-      P[  39] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  40] <= 9'b000001100; // Load the constant box with 12
-      P[  41] <= 9'b101000100; // Load the source box with 4
-      P[  42] <= 9'b110000000; // Load the target box with 0
-      P[  43] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  44] <= 9'b000001000; // Load the constant box with 8
-      P[  45] <= 9'b101000100; // Load the source box with 4
-      P[  46] <= 9'b110000000; // Load the target box with 0
-      P[  47] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  48] <= 9'b000000000; // Load the constant box with 0
-      P[  49] <= 9'b101000001; // Load the source box with 1
-      P[  50] <= 9'b110000101; // Load the target box with 5
-      P[  51] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  52] <= 9'b000000101; // Load the constant box with 5
-      P[  53] <= 9'b101000101; // Load the source box with 5
-      P[  54] <= 9'b110000000; // Load the target box with 0
-      P[  55] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  56] <= 9'b000000001; // Load the constant box with 1
-      P[  57] <= 9'b101000101; // Load the source box with 5
-      P[  58] <= 9'b110000000; // Load the target box with 0
-      P[  59] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  60] <= 9'b000000000; // Load the constant box with 0
-      P[  61] <= 9'b101000101; // Load the source box with 5
-      P[  62] <= 9'b110000100; // Load the target box with 4
-      P[  63] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[  64] <= 9'b000000000; // Load the constant box with 0
-      P[  65] <= 9'b101000001; // Load the source box with 1
-      P[  66] <= 9'b110000101; // Load the target box with 5
-      P[  67] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  68] <= 9'b000001100; // Load the constant box with 12
-      P[  69] <= 9'b101000101; // Load the source box with 5
-      P[  70] <= 9'b110000000; // Load the target box with 0
-      P[  71] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  72] <= 9'b000001111; // Load the constant box with 15
-      P[  73] <= 9'b101000101; // Load the source box with 5
-      P[  74] <= 9'b110000000; // Load the target box with 0
-      P[  75] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  76] <= 9'b000000000; // Load the constant box with 0
-      P[  77] <= 9'b101000101; // Load the source box with 5
-      P[  78] <= 9'b110000100; // Load the target box with 4
-      P[  79] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[  80] <= 9'b011111111; // Load the constant box with 255
-      P[  81] <= 9'b101000000; // Load the source box with 0
-      P[  82] <= 9'b110000000; // Load the target box with 0
-      P[  83] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[  84] <= 9'b011111110; // Load the constant box with 254
-      P[  85] <= 9'b101000011; // Load the source box with 3
-      P[  86] <= 9'b110000000; // Load the target box with 0
-      P[  87] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[  88] <= 9'b011111101; // Load the constant box with 253
-      P[  89] <= 9'b101000100; // Load the source box with 4
-      P[  90] <= 9'b110000000; // Load the target box with 0
-      P[  91] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[  92] <= 9'b000000000; // Load the constant box with 0
-      P[  93] <= 9'b101000010; // Load the source box with 2
-      P[  94] <= 9'b110000011; // Load the target box with 3
-      P[  95] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  96] <= 9'b000000001; // Load the constant box with 1
-      P[  97] <= 9'b101000100; // Load the source box with 4
-      P[  98] <= 9'b110000000; // Load the target box with 0
-      P[  99] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 100] <= 9'b000000000; // Load the constant box with 0
-      P[ 101] <= 9'b101000011; // Load the source box with 3
-      P[ 102] <= 9'b110000100; // Load the target box with 4
-      P[ 103] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 104] <= 9'b011110010; // Load the constant box with 242
-      P[ 105] <= 9'b101000100; // Load the source box with 4
-      P[ 106] <= 9'b110000000; // Load the target box with 0
-      P[ 107] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 108] <= 9'b000000000; // Load the constant box with 0
-      P[ 109] <= 9'b101000001; // Load the source box with 1
-      P[ 110] <= 9'b110000011; // Load the target box with 3
-      P[ 111] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 112] <= 9'b000000100; // Load the constant box with 4
-      P[ 113] <= 9'b101000011; // Load the source box with 3
-      P[ 114] <= 9'b110000000; // Load the target box with 0
-      P[ 115] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 116] <= 9'b000000001; // Load the constant box with 1
-      P[ 117] <= 9'b101000100; // Load the source box with 4
-      P[ 118] <= 9'b110000000; // Load the target box with 0
-      P[ 119] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 120] <= 9'b000000000; // Load the constant box with 0
-      P[ 121] <= 9'b101000011; // Load the source box with 3
-      P[ 122] <= 9'b110000100; // Load the target box with 4
-      P[ 123] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 124] <= 9'b011110011; // Load the constant box with 243
-      P[ 125] <= 9'b101000100; // Load the source box with 4
-      P[ 126] <= 9'b110000000; // Load the target box with 0
-      P[ 127] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 128] <= 9'b000000000; // Load the constant box with 0
-      P[ 129] <= 9'b101000001; // Load the source box with 1
-      P[ 130] <= 9'b110000011; // Load the target box with 3
-      P[ 131] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 132] <= 9'b000000010; // Load the constant box with 2
-      P[ 133] <= 9'b101000011; // Load the source box with 3
-      P[ 134] <= 9'b110000000; // Load the target box with 0
-      P[ 135] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 136] <= 9'b000000001; // Load the constant box with 1
-      P[ 137] <= 9'b101000100; // Load the source box with 4
-      P[ 138] <= 9'b110000000; // Load the target box with 0
-      P[ 139] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 140] <= 9'b000000000; // Load the constant box with 0
-      P[ 141] <= 9'b101000011; // Load the source box with 3
-      P[ 142] <= 9'b110000100; // Load the target box with 4
-      P[ 143] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 144] <= 9'b011110100; // Load the constant box with 244
-      P[ 145] <= 9'b101000100; // Load the source box with 4
-      P[ 146] <= 9'b110000000; // Load the target box with 0
-      P[ 147] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 148] <= 9'b000000000; // Load the constant box with 0
-      P[ 149] <= 9'b101000001; // Load the source box with 1
-      P[ 150] <= 9'b110000011; // Load the target box with 3
-      P[ 151] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 152] <= 9'b000000001; // Load the constant box with 1
-      P[ 153] <= 9'b101000011; // Load the source box with 3
-      P[ 154] <= 9'b110000000; // Load the target box with 0
-      P[ 155] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 156] <= 9'b000000001; // Load the constant box with 1
-      P[ 157] <= 9'b101000100; // Load the source box with 4
-      P[ 158] <= 9'b110000000; // Load the target box with 0
-      P[ 159] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 160] <= 9'b000000000; // Load the constant box with 0
-      P[ 161] <= 9'b101000011; // Load the source box with 3
-      P[ 162] <= 9'b110000100; // Load the target box with 4
-      P[ 163] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 164] <= 9'b011110101; // Load the constant box with 245
-      P[ 165] <= 9'b101000100; // Load the source box with 4
-      P[ 166] <= 9'b110000000; // Load the target box with 0
-      P[ 167] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 168] <= 9'b000000000; // Load the constant box with 0
-      P[ 169] <= 9'b101000001; // Load the source box with 1
-      P[ 170] <= 9'b110000011; // Load the target box with 3
-      P[ 171] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 172] <= 9'b000000001; // Load the constant box with 1
-      P[ 173] <= 9'b101000100; // Load the source box with 4
-      P[ 174] <= 9'b110000000; // Load the target box with 0
-      P[ 175] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 176] <= 9'b000000000; // Load the constant box with 0
-      P[ 177] <= 9'b101000011; // Load the source box with 3
-      P[ 178] <= 9'b110000100; // Load the target box with 4
-      P[ 179] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 180] <= 9'b011110001; // Load the constant box with 241
-      P[ 181] <= 9'b101000100; // Load the source box with 4
-      P[ 182] <= 9'b110000000; // Load the target box with 0
-      P[ 183] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 184] <= 9'b011111110; // Load the constant box with 254
-      P[ 185] <= 9'b101000001; // Load the source box with 1
-      P[ 186] <= 9'b110000000; // Load the target box with 0
-      P[ 187] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[ 188] <= 9'b011111101; // Load the constant box with 253
-      P[ 189] <= 9'b101000010; // Load the source box with 2
-      P[ 190] <= 9'b110000000; // Load the target box with 0
-      P[ 191] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[ 192] <= 9'b000001000; // Load the constant box with 8
-      P[ 193] <= 9'b101000001; // Load the source box with 1
-      P[ 194] <= 9'b110000000; // Load the target box with 0
-      P[ 195] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 196] <= 9'b000000000; // Load the constant box with 0
-      P[ 197] <= 9'b101000010; // Load the source box with 2
-      P[ 198] <= 9'b110000001; // Load the target box with 1
-      P[ 199] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 200] <= 9'b000000000; // Load the constant box with 0
-      P[ 201] <= 9'b101000001; // Load the source box with 1
-      P[ 202] <= 9'b110000010; // Load the target box with 2
-      P[ 203] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 204] <= 9'b000000101; // Load the constant box with 5
-      P[ 205] <= 9'b101000010; // Load the source box with 2
-      P[ 206] <= 9'b110000000; // Load the target box with 0
-      P[ 207] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 208] <= 9'b000001111; // Load the constant box with 15
-      P[ 209] <= 9'b101000010; // Load the source box with 2
-      P[ 210] <= 9'b110000000; // Load the target box with 0
-      P[ 211] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 212] <= 9'b000000000; // Load the constant box with 0
-      P[ 213] <= 9'b101000001; // Load the source box with 1
-      P[ 214] <= 9'b110000011; // Load the target box with 3
-      P[ 215] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 216] <= 9'b000000110; // Load the constant box with 6
-      P[ 217] <= 9'b101000011; // Load the source box with 3
-      P[ 218] <= 9'b110000000; // Load the target box with 0
-      P[ 219] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 220] <= 9'b000001111; // Load the constant box with 15
-      P[ 221] <= 9'b101000011; // Load the source box with 3
-      P[ 222] <= 9'b110000000; // Load the target box with 0
-      P[ 223] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 224] <= 9'b000000000; // Load the constant box with 0
-      P[ 225] <= 9'b101000001; // Load the source box with 1
-      P[ 226] <= 9'b110000100; // Load the target box with 4
-      P[ 227] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 228] <= 9'b000000111; // Load the constant box with 7
-      P[ 229] <= 9'b101000100; // Load the source box with 4
-      P[ 230] <= 9'b110000000; // Load the target box with 0
-      P[ 231] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 232] <= 9'b000001111; // Load the constant box with 15
-      P[ 233] <= 9'b101000100; // Load the source box with 4
-      P[ 234] <= 9'b110000000; // Load the target box with 0
-      P[ 235] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 236] <= 9'b000000000; // Load the constant box with 0
-      P[ 237] <= 9'b101000001; // Load the source box with 1
-      P[ 238] <= 9'b110000101; // Load the target box with 5
-      P[ 239] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 240] <= 9'b000001000; // Load the constant box with 8
-      P[ 241] <= 9'b101000101; // Load the source box with 5
-      P[ 242] <= 9'b110000000; // Load the target box with 0
-      P[ 243] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 244] <= 9'b000001111; // Load the constant box with 15
-      P[ 245] <= 9'b101000101; // Load the source box with 5
-      P[ 246] <= 9'b110000000; // Load the target box with 0
-      P[ 247] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 248] <= 9'b000000000; // Load the constant box with 0
-      P[ 249] <= 9'b101000001; // Load the source box with 1
-      P[ 250] <= 9'b110000110; // Load the target box with 6
-      P[ 251] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 252] <= 9'b000001001; // Load the constant box with 9
-      P[ 253] <= 9'b101000110; // Load the source box with 6
-      P[ 254] <= 9'b110000000; // Load the target box with 0
-      P[ 255] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 256] <= 9'b000001111; // Load the constant box with 15
-      P[ 257] <= 9'b101000110; // Load the source box with 6
-      P[ 258] <= 9'b110000000; // Load the target box with 0
-      P[ 259] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 260] <= 9'b000000000; // Load the constant box with 0
-      P[ 261] <= 9'b101000001; // Load the source box with 1
-      P[ 262] <= 9'b110000111; // Load the target box with 7
-      P[ 263] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 264] <= 9'b000001010; // Load the constant box with 10
-      P[ 265] <= 9'b101000111; // Load the source box with 7
-      P[ 266] <= 9'b110000000; // Load the target box with 0
-      P[ 267] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 268] <= 9'b000001111; // Load the constant box with 15
-      P[ 269] <= 9'b101000111; // Load the source box with 7
-      P[ 270] <= 9'b110000000; // Load the target box with 0
-      P[ 271] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 272] <= 9'b000000000; // Load the constant box with 0
-      P[ 273] <= 9'b101000001; // Load the source box with 1
-      P[ 274] <= 9'b110001000; // Load the target box with 8
-      P[ 275] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 276] <= 9'b000001011; // Load the constant box with 11
-      P[ 277] <= 9'b101001000; // Load the source box with 8
-      P[ 278] <= 9'b110000000; // Load the target box with 0
-      P[ 279] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 280] <= 9'b000001111; // Load the constant box with 15
-      P[ 281] <= 9'b101001000; // Load the source box with 8
-      P[ 282] <= 9'b110000000; // Load the target box with 0
-      P[ 283] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 284] <= 9'b000000000; // Load the constant box with 0
-      P[ 285] <= 9'b101000001; // Load the source box with 1
-      P[ 286] <= 9'b110001001; // Load the target box with 9
-      P[ 287] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 288] <= 9'b000001100; // Load the constant box with 12
-      P[ 289] <= 9'b101001001; // Load the source box with 9
-      P[ 290] <= 9'b110000000; // Load the target box with 0
-      P[ 291] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 292] <= 9'b000001111; // Load the constant box with 15
-      P[ 293] <= 9'b101001001; // Load the source box with 9
-      P[ 294] <= 9'b110000000; // Load the target box with 0
-      P[ 295] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 296] <= 9'b000000000; // Load the constant box with 0
-      P[ 297] <= 9'b101000001; // Load the source box with 1
-      P[ 298] <= 9'b110001010; // Load the target box with 10
-      P[ 299] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 300] <= 9'b000001101; // Load the constant box with 13
-      P[ 301] <= 9'b101001010; // Load the source box with 10
-      P[ 302] <= 9'b110000000; // Load the target box with 0
-      P[ 303] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 304] <= 9'b000001111; // Load the constant box with 15
-      P[ 305] <= 9'b101001010; // Load the source box with 10
-      P[ 306] <= 9'b110000000; // Load the target box with 0
-      P[ 307] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 308] <= 9'b000000000; // Load the constant box with 0
-      P[ 309] <= 9'b101000001; // Load the source box with 1
-      P[ 310] <= 9'b110001011; // Load the target box with 11
-      P[ 311] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 312] <= 9'b000001110; // Load the constant box with 14
-      P[ 313] <= 9'b101001011; // Load the source box with 11
-      P[ 314] <= 9'b110000000; // Load the target box with 0
-      P[ 315] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 316] <= 9'b000001111; // Load the constant box with 15
-      P[ 317] <= 9'b101001011; // Load the source box with 11
-      P[ 318] <= 9'b110000000; // Load the target box with 0
-      P[ 319] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 320] <= 9'b000000000; // Load the constant box with 0
-      P[ 321] <= 9'b101000001; // Load the source box with 1
-      P[ 322] <= 9'b110001100; // Load the target box with 12
-      P[ 323] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 324] <= 9'b000001111; // Load the constant box with 15
-      P[ 325] <= 9'b101001100; // Load the source box with 12
-      P[ 326] <= 9'b110000000; // Load the target box with 0
-      P[ 327] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 328] <= 9'b000001111; // Load the constant box with 15
-      P[ 329] <= 9'b101001100; // Load the source box with 12
-      P[ 330] <= 9'b110000000; // Load the target box with 0
-      P[ 331] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 332] <= 9'b000000000; // Load the constant box with 0
-      P[ 333] <= 9'b101000001; // Load the source box with 1
-      P[ 334] <= 9'b110001101; // Load the target box with 13
-      P[ 335] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 336] <= 9'b000000101; // Load the constant box with 5
-      P[ 337] <= 9'b101001101; // Load the source box with 13
-      P[ 338] <= 9'b110000000; // Load the target box with 0
-      P[ 339] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 340] <= 9'b000001001; // Load the constant box with 9
-      P[ 341] <= 9'b101001101; // Load the source box with 13
-      P[ 342] <= 9'b110000000; // Load the target box with 0
-      P[ 343] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 344] <= 9'b000000001; // Load the constant box with 1
-      P[ 345] <= 9'b101001101; // Load the source box with 13
-      P[ 346] <= 9'b110000000; // Load the target box with 0
-      P[ 347] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 348] <= 9'b000000000; // Load the constant box with 0
-      P[ 349] <= 9'b101000001; // Load the source box with 1
-      P[ 350] <= 9'b110001110; // Load the target box with 14
-      P[ 351] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 352] <= 9'b000001000; // Load the constant box with 8
-      P[ 353] <= 9'b101001110; // Load the source box with 14
-      P[ 354] <= 9'b110000000; // Load the target box with 0
-      P[ 355] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 356] <= 9'b000001101; // Load the constant box with 13
-      P[ 357] <= 9'b101001110; // Load the source box with 14
-      P[ 358] <= 9'b110000000; // Load the target box with 0
-      P[ 359] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 360] <= 9'b000000101; // Load the constant box with 5
-      P[ 361] <= 9'b101001110; // Load the source box with 14
-      P[ 362] <= 9'b110000000; // Load the target box with 0
-      P[ 363] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 364] <= 9'b000000000; // Load the constant box with 0
-      P[ 365] <= 9'b101000001; // Load the source box with 1
-      P[ 366] <= 9'b110001111; // Load the target box with 15
-      P[ 367] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 368] <= 9'b000001111; // Load the constant box with 15
-      P[ 369] <= 9'b101001111; // Load the source box with 15
-      P[ 370] <= 9'b110000000; // Load the target box with 0
-      P[ 371] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 372] <= 9'b000001100; // Load the constant box with 12
-      P[ 373] <= 9'b101001111; // Load the source box with 15
-      P[ 374] <= 9'b110000000; // Load the target box with 0
-      P[ 375] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 376] <= 9'b000000000; // Load the constant box with 0
-      P[ 377] <= 9'b101001111; // Load the source box with 15
-      P[ 378] <= 9'b110001110; // Load the target box with 14
-      P[ 379] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 380] <= 9'b000000000; // Load the constant box with 0
-      P[ 381] <= 9'b101000010; // Load the source box with 2
-      P[ 382] <= 9'b110001111; // Load the target box with 15
-      P[ 383] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 384] <= 9'b000000000; // Load the constant box with 0
-      P[ 385] <= 9'b101000011; // Load the source box with 3
-      P[ 386] <= 9'b110001111; // Load the target box with 15
-      P[ 387] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 388] <= 9'b000000000; // Load the constant box with 0
-      P[ 389] <= 9'b101000100; // Load the source box with 4
-      P[ 390] <= 9'b110001111; // Load the target box with 15
-      P[ 391] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 392] <= 9'b000000000; // Load the constant box with 0
-      P[ 393] <= 9'b101000101; // Load the source box with 5
-      P[ 394] <= 9'b110001111; // Load the target box with 15
-      P[ 395] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 396] <= 9'b000000000; // Load the constant box with 0
-      P[ 397] <= 9'b101000110; // Load the source box with 6
-      P[ 398] <= 9'b110001111; // Load the target box with 15
-      P[ 399] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 400] <= 9'b000000000; // Load the constant box with 0
-      P[ 401] <= 9'b101000111; // Load the source box with 7
-      P[ 402] <= 9'b110001111; // Load the target box with 15
-      P[ 403] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 404] <= 9'b000000000; // Load the constant box with 0
-      P[ 405] <= 9'b101001000; // Load the source box with 8
-      P[ 406] <= 9'b110001111; // Load the target box with 15
-      P[ 407] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 408] <= 9'b000000001; // Load the constant box with 1
-      P[ 409] <= 9'b101000000; // Load the source box with 0
-      P[ 410] <= 9'b110000000; // Load the target box with 0
-      P[ 411] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 412] <= 9'b000000000; // Load the constant box with 0
-      P[ 413] <= 9'b101001111; // Load the source box with 15
-      P[ 414] <= 9'b110000000; // Load the target box with 0
-      P[ 415] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 416] <= 9'b011110111; // Load the constant box with 247
-      P[ 417] <= 9'b101000000; // Load the source box with 0
-      P[ 418] <= 9'b110000000; // Load the target box with 0
-      P[ 419] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 420] <= 9'b000000000; // Load the constant box with 0
-      P[ 421] <= 9'b101000000; // Load the source box with 0
-      P[ 422] <= 9'b110000001; // Load the target box with 1
-      P[ 423] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 424] <= 9'b000000000; // Load the constant box with 0
-      P[ 425] <= 9'b101000000; // Load the source box with 0
-      P[ 426] <= 9'b110001101; // Load the target box with 13
-      P[ 427] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 428] <= 9'b000000000; // Load the constant box with 0
-      P[ 429] <= 9'b101000010; // Load the source box with 2
-      P[ 430] <= 9'b110001111; // Load the target box with 15
-      P[ 431] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 432] <= 9'b000000000; // Load the constant box with 0
-      P[ 433] <= 9'b101000011; // Load the source box with 3
-      P[ 434] <= 9'b110001111; // Load the target box with 15
-      P[ 435] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 436] <= 9'b000000000; // Load the constant box with 0
-      P[ 437] <= 9'b101000100; // Load the source box with 4
-      P[ 438] <= 9'b110001111; // Load the target box with 15
-      P[ 439] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 440] <= 9'b000000000; // Load the constant box with 0
-      P[ 441] <= 9'b101000101; // Load the source box with 5
-      P[ 442] <= 9'b110001111; // Load the target box with 15
-      P[ 443] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 444] <= 9'b000000000; // Load the constant box with 0
-      P[ 445] <= 9'b101001001; // Load the source box with 9
-      P[ 446] <= 9'b110001111; // Load the target box with 15
-      P[ 447] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 448] <= 9'b000000000; // Load the constant box with 0
-      P[ 449] <= 9'b101001010; // Load the source box with 10
-      P[ 450] <= 9'b110001111; // Load the target box with 15
-      P[ 451] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 452] <= 9'b000000000; // Load the constant box with 0
-      P[ 453] <= 9'b101001011; // Load the source box with 11
-      P[ 454] <= 9'b110001111; // Load the target box with 15
-      P[ 455] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 456] <= 9'b000000001; // Load the constant box with 1
-      P[ 457] <= 9'b101000000; // Load the source box with 0
-      P[ 458] <= 9'b110000000; // Load the target box with 0
-      P[ 459] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 460] <= 9'b000000000; // Load the constant box with 0
-      P[ 461] <= 9'b101001111; // Load the source box with 15
-      P[ 462] <= 9'b110000000; // Load the target box with 0
-      P[ 463] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 464] <= 9'b011111000; // Load the constant box with 248
-      P[ 465] <= 9'b101000000; // Load the source box with 0
-      P[ 466] <= 9'b110000000; // Load the target box with 0
-      P[ 467] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 468] <= 9'b000000000; // Load the constant box with 0
-      P[ 469] <= 9'b101000000; // Load the source box with 0
-      P[ 470] <= 9'b110000001; // Load the target box with 1
-      P[ 471] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 472] <= 9'b000000100; // Load the constant box with 4
-      P[ 473] <= 9'b101000000; // Load the source box with 0
-      P[ 474] <= 9'b110000000; // Load the target box with 0
-      P[ 475] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 476] <= 9'b000000000; // Load the constant box with 0
-      P[ 477] <= 9'b101000000; // Load the source box with 0
-      P[ 478] <= 9'b110001110; // Load the target box with 14
-      P[ 479] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 480] <= 9'b000000000; // Load the constant box with 0
-      P[ 481] <= 9'b101000010; // Load the source box with 2
-      P[ 482] <= 9'b110001111; // Load the target box with 15
-      P[ 483] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 484] <= 9'b000000000; // Load the constant box with 0
-      P[ 485] <= 9'b101000011; // Load the source box with 3
-      P[ 486] <= 9'b110001111; // Load the target box with 15
-      P[ 487] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 488] <= 9'b000000000; // Load the constant box with 0
-      P[ 489] <= 9'b101000110; // Load the source box with 6
-      P[ 490] <= 9'b110001111; // Load the target box with 15
-      P[ 491] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 492] <= 9'b000000000; // Load the constant box with 0
-      P[ 493] <= 9'b101000111; // Load the source box with 7
-      P[ 494] <= 9'b110001111; // Load the target box with 15
-      P[ 495] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 496] <= 9'b000000000; // Load the constant box with 0
-      P[ 497] <= 9'b101001001; // Load the source box with 9
-      P[ 498] <= 9'b110001111; // Load the target box with 15
-      P[ 499] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 500] <= 9'b000000000; // Load the constant box with 0
-      P[ 501] <= 9'b101001010; // Load the source box with 10
-      P[ 502] <= 9'b110001111; // Load the target box with 15
-      P[ 503] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 504] <= 9'b000000000; // Load the constant box with 0
-      P[ 505] <= 9'b101001100; // Load the source box with 12
-      P[ 506] <= 9'b110001111; // Load the target box with 15
-      P[ 507] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 508] <= 9'b000000001; // Load the constant box with 1
-      P[ 509] <= 9'b101000000; // Load the source box with 0
-      P[ 510] <= 9'b110000000; // Load the target box with 0
-      P[ 511] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 512] <= 9'b000000000; // Load the constant box with 0
-      P[ 513] <= 9'b101001111; // Load the source box with 15
-      P[ 514] <= 9'b110000000; // Load the target box with 0
-      P[ 515] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 516] <= 9'b011111001; // Load the constant box with 249
-      P[ 517] <= 9'b101000000; // Load the source box with 0
-      P[ 518] <= 9'b110000000; // Load the target box with 0
-      P[ 519] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 520] <= 9'b000000000; // Load the constant box with 0
-      P[ 521] <= 9'b101000000; // Load the source box with 0
-      P[ 522] <= 9'b110000001; // Load the target box with 1
-      P[ 523] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 524] <= 9'b000000010; // Load the constant box with 2
-      P[ 525] <= 9'b101000000; // Load the source box with 0
-      P[ 526] <= 9'b110000000; // Load the target box with 0
-      P[ 527] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 528] <= 9'b000000000; // Load the constant box with 0
-      P[ 529] <= 9'b101000000; // Load the source box with 0
-      P[ 530] <= 9'b110001110; // Load the target box with 14
-      P[ 531] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 532] <= 9'b000000000; // Load the constant box with 0
-      P[ 533] <= 9'b101000010; // Load the source box with 2
-      P[ 534] <= 9'b110001111; // Load the target box with 15
-      P[ 535] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 536] <= 9'b000000000; // Load the constant box with 0
-      P[ 537] <= 9'b101000100; // Load the source box with 4
-      P[ 538] <= 9'b110001111; // Load the target box with 15
-      P[ 539] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 540] <= 9'b000000000; // Load the constant box with 0
-      P[ 541] <= 9'b101000110; // Load the source box with 6
-      P[ 542] <= 9'b110001111; // Load the target box with 15
-      P[ 543] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 544] <= 9'b000000000; // Load the constant box with 0
-      P[ 545] <= 9'b101001000; // Load the source box with 8
-      P[ 546] <= 9'b110001111; // Load the target box with 15
-      P[ 547] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 548] <= 9'b000000000; // Load the constant box with 0
-      P[ 549] <= 9'b101001001; // Load the source box with 9
-      P[ 550] <= 9'b110001111; // Load the target box with 15
-      P[ 551] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 552] <= 9'b000000000; // Load the constant box with 0
-      P[ 553] <= 9'b101001011; // Load the source box with 11
-      P[ 554] <= 9'b110001111; // Load the target box with 15
-      P[ 555] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 556] <= 9'b000000000; // Load the constant box with 0
-      P[ 557] <= 9'b101001100; // Load the source box with 12
-      P[ 558] <= 9'b110001111; // Load the target box with 15
-      P[ 559] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 560] <= 9'b000000001; // Load the constant box with 1
-      P[ 561] <= 9'b101000000; // Load the source box with 0
-      P[ 562] <= 9'b110000000; // Load the target box with 0
-      P[ 563] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 564] <= 9'b000000000; // Load the constant box with 0
-      P[ 565] <= 9'b101001111; // Load the source box with 15
-      P[ 566] <= 9'b110000000; // Load the target box with 0
-      P[ 567] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 568] <= 9'b011111010; // Load the constant box with 250
-      P[ 569] <= 9'b101000000; // Load the source box with 0
-      P[ 570] <= 9'b110000000; // Load the target box with 0
-      P[ 571] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 572] <= 9'b000000000; // Load the constant box with 0
-      P[ 573] <= 9'b101000000; // Load the source box with 0
-      P[ 574] <= 9'b110000001; // Load the target box with 1
-      P[ 575] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 576] <= 9'b000000001; // Load the constant box with 1
-      P[ 577] <= 9'b101000000; // Load the source box with 0
-      P[ 578] <= 9'b110000000; // Load the target box with 0
-      P[ 579] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 580] <= 9'b000000000; // Load the constant box with 0
-      P[ 581] <= 9'b101000000; // Load the source box with 0
-      P[ 582] <= 9'b110001110; // Load the target box with 14
-      P[ 583] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 584] <= 9'b000000000; // Load the constant box with 0
-      P[ 585] <= 9'b101000010; // Load the source box with 2
-      P[ 586] <= 9'b110000001; // Load the target box with 1
-      P[ 587] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 588] <= 9'b000000000; // Load the constant box with 0
-      P[ 589] <= 9'b101000011; // Load the source box with 3
-      P[ 590] <= 9'b110000001; // Load the target box with 1
-      P[ 591] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 592] <= 9'b000000000; // Load the constant box with 0
-      P[ 593] <= 9'b101000100; // Load the source box with 4
-      P[ 594] <= 9'b110000001; // Load the target box with 1
-      P[ 595] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 596] <= 9'b000000000; // Load the constant box with 0
-      P[ 597] <= 9'b101000101; // Load the source box with 5
-      P[ 598] <= 9'b110000001; // Load the target box with 1
-      P[ 599] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 600] <= 9'b000000000; // Load the constant box with 0
-      P[ 601] <= 9'b101000110; // Load the source box with 6
-      P[ 602] <= 9'b110000001; // Load the target box with 1
-      P[ 603] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 604] <= 9'b000000000; // Load the constant box with 0
-      P[ 605] <= 9'b101000111; // Load the source box with 7
-      P[ 606] <= 9'b110000001; // Load the target box with 1
-      P[ 607] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 608] <= 9'b000000000; // Load the constant box with 0
-      P[ 609] <= 9'b101001000; // Load the source box with 8
-      P[ 610] <= 9'b110000001; // Load the target box with 1
-      P[ 611] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 612] <= 9'b000000000; // Load the constant box with 0
-      P[ 613] <= 9'b101001001; // Load the source box with 9
-      P[ 614] <= 9'b110000001; // Load the target box with 1
-      P[ 615] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 616] <= 9'b000000000; // Load the constant box with 0
-      P[ 617] <= 9'b101001010; // Load the source box with 10
-      P[ 618] <= 9'b110000001; // Load the target box with 1
-      P[ 619] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 620] <= 9'b000000000; // Load the constant box with 0
-      P[ 621] <= 9'b101001011; // Load the source box with 11
-      P[ 622] <= 9'b110000001; // Load the target box with 1
-      P[ 623] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 624] <= 9'b000000000; // Load the constant box with 0
-      P[ 625] <= 9'b101001100; // Load the source box with 12
-      P[ 626] <= 9'b110000001; // Load the target box with 1
-      P[ 627] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 628] <= 9'b000000001; // Load the constant box with 1
-      P[ 629] <= 9'b101000000; // Load the source box with 0
-      P[ 630] <= 9'b110000000; // Load the target box with 0
-      P[ 631] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 632] <= 9'b000000000; // Load the constant box with 0
-      P[ 633] <= 9'b101000001; // Load the source box with 1
-      P[ 634] <= 9'b110000000; // Load the target box with 0
-      P[ 635] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 636] <= 9'b011110110; // Load the constant box with 246
-      P[ 637] <= 9'b101000000; // Load the source box with 0
-      P[ 638] <= 9'b110000000; // Load the target box with 0
-      P[ 639] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 640] <= 9'b000000000; // Load the constant box with 0
-      P[ 641] <= 9'b101000000; // Load the source box with 0
-      P[ 642] <= 9'b110001110; // Load the target box with 14
-      P[ 643] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 644] <= 9'b011111100; // Load the constant box with 252
-      P[ 645] <= 9'b101001101; // Load the source box with 13
-      P[ 646] <= 9'b110000000; // Load the target box with 0
-      P[ 647] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 648] <= 9'b011111011; // Load the constant box with 251
-      P[ 649] <= 9'b101001110; // Load the source box with 14
-      P[ 650] <= 9'b110000000; // Load the target box with 0
-      P[ 651] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 652] <= 9'b000000000; // Load the constant box with 0
-      P[ 653] <= 9'b101000000; // Load the source box with 0
-      P[ 654] <= 9'b110000000; // Load the target box with 0
-      P[ 655] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 656] <= 9'b011110110; // Load the constant box with 246
-      P[ 657] <= 9'b101000001; // Load the source box with 1
-      P[ 658] <= 9'b110000000; // Load the target box with 0
-      P[ 659] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[ 660] <= 9'b011110001; // Load the constant box with 241
-      P[ 661] <= 9'b101000010; // Load the source box with 2
-      P[ 662] <= 9'b110000000; // Load the target box with 0
-      P[ 663] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[ 664] <= 9'b000000000; // Load the constant box with 0
-      P[ 665] <= 9'b101000010; // Load the source box with 2
-      P[ 666] <= 9'b110000001; // Load the target box with 1
-      P[ 667] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 668] <= 9'b000000100; // Load the constant box with 4
-      P[ 669] <= 9'b101000001; // Load the source box with 1
-      P[ 670] <= 9'b110000000; // Load the target box with 0
-      P[ 671] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 672] <= 9'b000000000; // Load the constant box with 0
-      P[ 673] <= 9'b101000001; // Load the source box with 1
-      P[ 674] <= 9'b110000000; // Load the target box with 0
-      P[ 675] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 676] <= 9'b011110111; // Load the constant box with 247
-      P[ 677] <= 9'b101000001; // Load the source box with 1
-      P[ 678] <= 9'b110000000; // Load the target box with 0
-      P[ 679] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[ 680] <= 9'b011110010; // Load the constant box with 242
-      P[ 681] <= 9'b101000010; // Load the source box with 2
-      P[ 682] <= 9'b110000000; // Load the target box with 0
-      P[ 683] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[ 684] <= 9'b000000000; // Load the constant box with 0
-      P[ 685] <= 9'b101000010; // Load the source box with 2
-      P[ 686] <= 9'b110000001; // Load the target box with 1
-      P[ 687] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 688] <= 9'b000000011; // Load the constant box with 3
-      P[ 689] <= 9'b101000001; // Load the source box with 1
-      P[ 690] <= 9'b110000000; // Load the target box with 0
-      P[ 691] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 692] <= 9'b000000000; // Load the constant box with 0
-      P[ 693] <= 9'b101000001; // Load the source box with 1
-      P[ 694] <= 9'b110000000; // Load the target box with 0
-      P[ 695] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 696] <= 9'b011111000; // Load the constant box with 248
-      P[ 697] <= 9'b101000001; // Load the source box with 1
-      P[ 698] <= 9'b110000000; // Load the target box with 0
-      P[ 699] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[ 700] <= 9'b011110011; // Load the constant box with 243
-      P[ 701] <= 9'b101000010; // Load the source box with 2
-      P[ 702] <= 9'b110000000; // Load the target box with 0
-      P[ 703] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[ 704] <= 9'b000000000; // Load the constant box with 0
-      P[ 705] <= 9'b101000010; // Load the source box with 2
-      P[ 706] <= 9'b110000001; // Load the target box with 1
-      P[ 707] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 708] <= 9'b000000010; // Load the constant box with 2
-      P[ 709] <= 9'b101000001; // Load the source box with 1
-      P[ 710] <= 9'b110000000; // Load the target box with 0
-      P[ 711] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 712] <= 9'b000000000; // Load the constant box with 0
-      P[ 713] <= 9'b101000001; // Load the source box with 1
-      P[ 714] <= 9'b110000000; // Load the target box with 0
-      P[ 715] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 716] <= 9'b011111001; // Load the constant box with 249
-      P[ 717] <= 9'b101000001; // Load the source box with 1
-      P[ 718] <= 9'b110000000; // Load the target box with 0
-      P[ 719] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[ 720] <= 9'b011110100; // Load the constant box with 244
-      P[ 721] <= 9'b101000010; // Load the source box with 2
-      P[ 722] <= 9'b110000000; // Load the target box with 0
-      P[ 723] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[ 724] <= 9'b000000000; // Load the constant box with 0
-      P[ 725] <= 9'b101000010; // Load the source box with 2
-      P[ 726] <= 9'b110000001; // Load the target box with 1
-      P[ 727] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 728] <= 9'b000000001; // Load the constant box with 1
-      P[ 729] <= 9'b101000001; // Load the source box with 1
-      P[ 730] <= 9'b110000000; // Load the target box with 0
-      P[ 731] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 732] <= 9'b000000000; // Load the constant box with 0
-      P[ 733] <= 9'b101000001; // Load the source box with 1
-      P[ 734] <= 9'b110000000; // Load the target box with 0
-      P[ 735] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 736] <= 9'b011111010; // Load the constant box with 250
-      P[ 737] <= 9'b101000001; // Load the source box with 1
-      P[ 738] <= 9'b110000000; // Load the target box with 0
-      P[ 739] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[ 740] <= 9'b011110101; // Load the constant box with 245
-      P[ 741] <= 9'b101000010; // Load the source box with 2
-      P[ 742] <= 9'b110000000; // Load the target box with 0
-      P[ 743] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[ 744] <= 9'b000000000; // Load the constant box with 0
-      P[ 745] <= 9'b101000010; // Load the source box with 2
-      P[ 746] <= 9'b110000001; // Load the target box with 1
-      P[ 747] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 748] <= 9'b000000000; // Load the constant box with 0
-      P[ 749] <= 9'b101000001; // Load the source box with 1
-      P[ 750] <= 9'b110000000; // Load the target box with 0
-      P[ 751] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 752] <= 9'b000000000; // Load the constant box with 0
-      P[ 753] <= 9'b101000000; // Load the source box with 0
-      P[ 754] <= 9'b110000000; // Load the target box with 0
-      P[ 755] <= 9'b111001110; // not: Invert the bits in a register
-      P[ 756] <= 9'b000011111; // Load the constant box with 31
-      P[ 757] <= 9'b101000001; // Load the source box with 1
-      P[ 758] <= 9'b110000000; // Load the target box with 0
-      P[ 759] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 760] <= 9'b000000000; // Load the constant box with 0
-      P[ 761] <= 9'b101000001; // Load the source box with 1
-      P[ 762] <= 9'b110000000; // Load the target box with 0
-      P[ 763] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 764] <= 9'b010010010; // Load the constant box with 146
-      P[ 765] <= 9'b101000000; // Load the source box with 0
-      P[ 766] <= 9'b110000000; // Load the target box with 0
-      P[ 767] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 768] <= 9'b000000000; // Load the constant box with 0
-      P[ 769] <= 9'b101000000; // Load the source box with 0
-      P[ 770] <= 9'b110000001; // Load the target box with 1
-      P[ 771] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 772] <= 9'b000011111; // Load the constant box with 31
-      P[ 773] <= 9'b101000010; // Load the source box with 2
-      P[ 774] <= 9'b110000000; // Load the target box with 0
-      P[ 775] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 776] <= 9'b000000000; // Load the constant box with 0
-      P[ 777] <= 9'b101000010; // Load the source box with 2
-      P[ 778] <= 9'b110000001; // Load the target box with 1
-      P[ 779] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 780] <= 9'b000001101; // Load the constant box with 13
-      P[ 781] <= 9'b101000000; // Load the source box with 0
-      P[ 782] <= 9'b110000000; // Load the target box with 0
-      P[ 783] <= 9'b111001001; // label: Create and set a label
-      P[ 784] <= 9'b001100100; // Load the constant box with 100
-      P[ 785] <= 9'b101000001; // Load the source box with 1
-      P[ 786] <= 9'b110000000; // Load the target box with 0
-      P[ 787] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 788] <= 9'b011111110; // Load the constant box with 254
-      P[ 789] <= 9'b101000011; // Load the source box with 3
-      P[ 790] <= 9'b110000000; // Load the target box with 0
-      P[ 791] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[ 792] <= 9'b000000100; // Load the constant box with 4
-      P[ 793] <= 9'b101000011; // Load the source box with 3
-      P[ 794] <= 9'b110000000; // Load the target box with 0
-      P[ 795] <= 9'b111010101; // xor: Xor a constant with a register and save the result in the register
-      P[ 796] <= 9'b011111110; // Load the constant box with 254
-      P[ 797] <= 9'b101000011; // Load the source box with 3
-      P[ 798] <= 9'b110000000; // Load the target box with 0
-      P[ 799] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 800] <= 9'b000000011; // Load the constant box with 3
-      P[ 801] <= 9'b101000000; // Load the source box with 0
-      P[ 802] <= 9'b110000000; // Load the target box with 0
-      P[ 803] <= 9'b111001001; // label: Set a label
-      P[ 804] <= 9'b000000000; // Load the constant box with 0
-      P[ 805] <= 9'b101000000; // Load the source box with 0
-      P[ 806] <= 9'b110000001; // Load the target box with 1
-      P[ 807] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 808] <= 9'b000001110; // Load the constant box with 14
-      P[ 809] <= 9'b101000010; // Load the source box with 2
-      P[ 810] <= 9'b110000000; // Load the target box with 0
-      P[ 811] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 812] <= 9'b000000000; // Load the constant box with 0
-      P[ 813] <= 9'b101000010; // Load the source box with 2
-      P[ 814] <= 9'b110000001; // Load the target box with 1
-      P[ 815] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 816] <= 9'b000001101; // Load the constant box with 13
-      P[ 817] <= 9'b101000000; // Load the source box with 0
-      P[ 818] <= 9'b110000000; // Load the target box with 0
-      P[ 819] <= 9'b111001001; // label: Create and set a label
-      P[ 820] <= 9'b001101001; // Load the constant box with 105
-      P[ 821] <= 9'b101000001; // Load the source box with 1
-      P[ 822] <= 9'b110000000; // Load the target box with 0
-      P[ 823] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 824] <= 9'b011111110; // Load the constant box with 254
-      P[ 825] <= 9'b101000011; // Load the source box with 3
-      P[ 826] <= 9'b110000000; // Load the target box with 0
-      P[ 827] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[ 828] <= 9'b000000010; // Load the constant box with 2
-      P[ 829] <= 9'b101000011; // Load the source box with 3
-      P[ 830] <= 9'b110000000; // Load the target box with 0
-      P[ 831] <= 9'b111010101; // xor: Xor a constant with a register and save the result in the register
-      P[ 832] <= 9'b011111110; // Load the constant box with 254
-      P[ 833] <= 9'b101000011; // Load the source box with 3
-      P[ 834] <= 9'b110000000; // Load the target box with 0
-      P[ 835] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 836] <= 9'b000000100; // Load the constant box with 4
-      P[ 837] <= 9'b101000000; // Load the source box with 0
-      P[ 838] <= 9'b110000000; // Load the target box with 0
-      P[ 839] <= 9'b111001001; // label: Set a label
-      P[ 840] <= 9'b000000000; // Load the constant box with 0
-      P[ 841] <= 9'b101000000; // Load the source box with 0
-      P[ 842] <= 9'b110000001; // Load the target box with 1
-      P[ 843] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 844] <= 9'b000001101; // Load the constant box with 13
-      P[ 845] <= 9'b101000010; // Load the source box with 2
-      P[ 846] <= 9'b110000000; // Load the target box with 0
-      P[ 847] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 848] <= 9'b000000000; // Load the constant box with 0
-      P[ 849] <= 9'b101000010; // Load the source box with 2
-      P[ 850] <= 9'b110000001; // Load the target box with 1
-      P[ 851] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 852] <= 9'b000001101; // Load the constant box with 13
-      P[ 853] <= 9'b101000000; // Load the source box with 0
-      P[ 854] <= 9'b110000000; // Load the target box with 0
-      P[ 855] <= 9'b111001001; // label: Create and set a label
-      P[ 856] <= 9'b001101101; // Load the constant box with 109
-      P[ 857] <= 9'b101000001; // Load the source box with 1
-      P[ 858] <= 9'b110000000; // Load the target box with 0
-      P[ 859] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 860] <= 9'b011111110; // Load the constant box with 254
-      P[ 861] <= 9'b101000011; // Load the source box with 3
-      P[ 862] <= 9'b110000000; // Load the target box with 0
-      P[ 863] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[ 864] <= 9'b000000001; // Load the constant box with 1
-      P[ 865] <= 9'b101000011; // Load the source box with 3
-      P[ 866] <= 9'b110000000; // Load the target box with 0
-      P[ 867] <= 9'b111010101; // xor: Xor a constant with a register and save the result in the register
-      P[ 868] <= 9'b011111110; // Load the constant box with 254
-      P[ 869] <= 9'b101000011; // Load the source box with 3
-      P[ 870] <= 9'b110000000; // Load the target box with 0
-      P[ 871] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 872] <= 9'b000000101; // Load the constant box with 5
-      P[ 873] <= 9'b101000000; // Load the source box with 0
-      P[ 874] <= 9'b110000000; // Load the target box with 0
-      P[ 875] <= 9'b111001001; // label: Set a label
-      P[ 876] <= 9'b000000000; // Load the constant box with 0
-      P[ 877] <= 9'b101000000; // Load the source box with 0
-      P[ 878] <= 9'b110000001; // Load the target box with 1
-      P[ 879] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 880] <= 9'b000011100; // Load the constant box with 28
-      P[ 881] <= 9'b101000010; // Load the source box with 2
-      P[ 882] <= 9'b110000000; // Load the target box with 0
-      P[ 883] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 884] <= 9'b000000000; // Load the constant box with 0
-      P[ 885] <= 9'b101000010; // Load the source box with 2
-      P[ 886] <= 9'b110000001; // Load the target box with 1
-      P[ 887] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 888] <= 9'b000001101; // Load the constant box with 13
-      P[ 889] <= 9'b101000000; // Load the source box with 0
-      P[ 890] <= 9'b110000000; // Load the target box with 0
-      P[ 891] <= 9'b111001001; // label: Create and set a label
-      P[ 892] <= 9'b001110010; // Load the constant box with 114
-      P[ 893] <= 9'b101000001; // Load the source box with 1
-      P[ 894] <= 9'b110000000; // Load the target box with 0
-      P[ 895] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 896] <= 9'b011111101; // Load the constant box with 253
-      P[ 897] <= 9'b101000011; // Load the source box with 3
-      P[ 898] <= 9'b110000000; // Load the target box with 0
-      P[ 899] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[ 900] <= 9'b010000000; // Load the constant box with 128
-      P[ 901] <= 9'b101000011; // Load the source box with 3
-      P[ 902] <= 9'b110000000; // Load the target box with 0
-      P[ 903] <= 9'b111010101; // xor: Xor a constant with a register and save the result in the register
-      P[ 904] <= 9'b011111101; // Load the constant box with 253
-      P[ 905] <= 9'b101000011; // Load the source box with 3
-      P[ 906] <= 9'b110000000; // Load the target box with 0
-      P[ 907] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 908] <= 9'b000000110; // Load the constant box with 6
-      P[ 909] <= 9'b101000000; // Load the source box with 0
-      P[ 910] <= 9'b110000000; // Load the target box with 0
-      P[ 911] <= 9'b111001001; // label: Set a label
-      P[ 912] <= 9'b000000000; // Load the constant box with 0
-      P[ 913] <= 9'b101000000; // Load the source box with 0
-      P[ 914] <= 9'b110000001; // Load the target box with 1
-      P[ 915] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 916] <= 9'b000001011; // Load the constant box with 11
-      P[ 917] <= 9'b101000010; // Load the source box with 2
-      P[ 918] <= 9'b110000000; // Load the target box with 0
-      P[ 919] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 920] <= 9'b000000000; // Load the constant box with 0
-      P[ 921] <= 9'b101000010; // Load the source box with 2
-      P[ 922] <= 9'b110000001; // Load the target box with 1
-      P[ 923] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 924] <= 9'b000001101; // Load the constant box with 13
-      P[ 925] <= 9'b101000000; // Load the source box with 0
-      P[ 926] <= 9'b110000000; // Load the target box with 0
-      P[ 927] <= 9'b111001001; // label: Create and set a label
-      P[ 928] <= 9'b001110110; // Load the constant box with 118
-      P[ 929] <= 9'b101000001; // Load the source box with 1
-      P[ 930] <= 9'b110000000; // Load the target box with 0
-      P[ 931] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 932] <= 9'b011111101; // Load the constant box with 253
-      P[ 933] <= 9'b101000011; // Load the source box with 3
-      P[ 934] <= 9'b110000000; // Load the target box with 0
-      P[ 935] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[ 936] <= 9'b001000000; // Load the constant box with 64
-      P[ 937] <= 9'b101000011; // Load the source box with 3
-      P[ 938] <= 9'b110000000; // Load the target box with 0
-      P[ 939] <= 9'b111010101; // xor: Xor a constant with a register and save the result in the register
-      P[ 940] <= 9'b011111101; // Load the constant box with 253
-      P[ 941] <= 9'b101000011; // Load the source box with 3
-      P[ 942] <= 9'b110000000; // Load the target box with 0
-      P[ 943] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 944] <= 9'b000000111; // Load the constant box with 7
-      P[ 945] <= 9'b101000000; // Load the source box with 0
-      P[ 946] <= 9'b110000000; // Load the target box with 0
-      P[ 947] <= 9'b111001001; // label: Set a label
-      P[ 948] <= 9'b000000000; // Load the constant box with 0
-      P[ 949] <= 9'b101000000; // Load the source box with 0
-      P[ 950] <= 9'b110000001; // Load the target box with 1
-      P[ 951] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 952] <= 9'b000011010; // Load the constant box with 26
-      P[ 953] <= 9'b101000010; // Load the source box with 2
-      P[ 954] <= 9'b110000000; // Load the target box with 0
-      P[ 955] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 956] <= 9'b000000000; // Load the constant box with 0
-      P[ 957] <= 9'b101000010; // Load the source box with 2
-      P[ 958] <= 9'b110000001; // Load the target box with 1
-      P[ 959] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 960] <= 9'b000001101; // Load the constant box with 13
-      P[ 961] <= 9'b101000000; // Load the source box with 0
-      P[ 962] <= 9'b110000000; // Load the target box with 0
-      P[ 963] <= 9'b111001001; // label: Create and set a label
-      P[ 964] <= 9'b001111011; // Load the constant box with 123
-      P[ 965] <= 9'b101000001; // Load the source box with 1
-      P[ 966] <= 9'b110000000; // Load the target box with 0
-      P[ 967] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 968] <= 9'b011111101; // Load the constant box with 253
-      P[ 969] <= 9'b101000011; // Load the source box with 3
-      P[ 970] <= 9'b110000000; // Load the target box with 0
-      P[ 971] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[ 972] <= 9'b000100000; // Load the constant box with 32
-      P[ 973] <= 9'b101000011; // Load the source box with 3
-      P[ 974] <= 9'b110000000; // Load the target box with 0
-      P[ 975] <= 9'b111010101; // xor: Xor a constant with a register and save the result in the register
-      P[ 976] <= 9'b011111101; // Load the constant box with 253
-      P[ 977] <= 9'b101000011; // Load the source box with 3
-      P[ 978] <= 9'b110000000; // Load the target box with 0
-      P[ 979] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 980] <= 9'b000001000; // Load the constant box with 8
-      P[ 981] <= 9'b101000000; // Load the source box with 0
-      P[ 982] <= 9'b110000000; // Load the target box with 0
-      P[ 983] <= 9'b111001001; // label: Set a label
-      P[ 984] <= 9'b000000000; // Load the constant box with 0
-      P[ 985] <= 9'b101000000; // Load the source box with 0
-      P[ 986] <= 9'b110000001; // Load the target box with 1
-      P[ 987] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 988] <= 9'b000011001; // Load the constant box with 25
-      P[ 989] <= 9'b101000010; // Load the source box with 2
-      P[ 990] <= 9'b110000000; // Load the target box with 0
-      P[ 991] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 992] <= 9'b000000000; // Load the constant box with 0
-      P[ 993] <= 9'b101000010; // Load the source box with 2
-      P[ 994] <= 9'b110000001; // Load the target box with 1
-      P[ 995] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 996] <= 9'b000001101; // Load the constant box with 13
-      P[ 997] <= 9'b101000000; // Load the source box with 0
-      P[ 998] <= 9'b110000000; // Load the target box with 0
-      P[ 999] <= 9'b111001001; // label: Create and set a label
-      P[1000] <= 9'b001111111; // Load the constant box with 127
-      P[1001] <= 9'b101000001; // Load the source box with 1
-      P[1002] <= 9'b110000000; // Load the target box with 0
-      P[1003] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[1004] <= 9'b011111101; // Load the constant box with 253
-      P[1005] <= 9'b101000011; // Load the source box with 3
-      P[1006] <= 9'b110000000; // Load the target box with 0
-      P[1007] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[1008] <= 9'b000010000; // Load the constant box with 16
-      P[1009] <= 9'b101000011; // Load the source box with 3
-      P[1010] <= 9'b110000000; // Load the target box with 0
-      P[1011] <= 9'b111010101; // xor: Xor a constant with a register and save the result in the register
-      P[1012] <= 9'b011111101; // Load the constant box with 253
-      P[1013] <= 9'b101000011; // Load the source box with 3
-      P[1014] <= 9'b110000000; // Load the target box with 0
-      P[1015] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[1016] <= 9'b000001001; // Load the constant box with 9
-      P[1017] <= 9'b101000000; // Load the source box with 0
-      P[1018] <= 9'b110000000; // Load the target box with 0
-      P[1019] <= 9'b111001001; // label: Set a label
-      P[1020] <= 9'b000000000; // Load the constant box with 0
-      P[1021] <= 9'b101000000; // Load the source box with 0
-      P[1022] <= 9'b110000001; // Load the target box with 1
-      P[1023] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[1024] <= 9'b000000111; // Load the constant box with 7
-      P[1025] <= 9'b101000010; // Load the source box with 2
-      P[1026] <= 9'b110000000; // Load the target box with 0
-      P[1027] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[1028] <= 9'b000000000; // Load the constant box with 0
-      P[1029] <= 9'b101000010; // Load the source box with 2
-      P[1030] <= 9'b110000001; // Load the target box with 1
-      P[1031] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[1032] <= 9'b000001101; // Load the constant box with 13
-      P[1033] <= 9'b101000000; // Load the source box with 0
-      P[1034] <= 9'b110000000; // Load the target box with 0
-      P[1035] <= 9'b111001001; // label: Create and set a label
-      P[1036] <= 9'b010000100; // Load the constant box with 132
-      P[1037] <= 9'b101000001; // Load the source box with 1
-      P[1038] <= 9'b110000000; // Load the target box with 0
-      P[1039] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[1040] <= 9'b011111101; // Load the constant box with 253
-      P[1041] <= 9'b101000011; // Load the source box with 3
-      P[1042] <= 9'b110000000; // Load the target box with 0
-      P[1043] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[1044] <= 9'b000001000; // Load the constant box with 8
-      P[1045] <= 9'b101000011; // Load the source box with 3
-      P[1046] <= 9'b110000000; // Load the target box with 0
-      P[1047] <= 9'b111010101; // xor: Xor a constant with a register and save the result in the register
-      P[1048] <= 9'b011111101; // Load the constant box with 253
-      P[1049] <= 9'b101000011; // Load the source box with 3
-      P[1050] <= 9'b110000000; // Load the target box with 0
-      P[1051] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[1052] <= 9'b000001010; // Load the constant box with 10
-      P[1053] <= 9'b101000000; // Load the source box with 0
-      P[1054] <= 9'b110000000; // Load the target box with 0
-      P[1055] <= 9'b111001001; // label: Set a label
-      P[1056] <= 9'b000000000; // Load the constant box with 0
-      P[1057] <= 9'b101000000; // Load the source box with 0
-      P[1058] <= 9'b110000001; // Load the target box with 1
-      P[1059] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[1060] <= 9'b000010110; // Load the constant box with 22
-      P[1061] <= 9'b101000010; // Load the source box with 2
-      P[1062] <= 9'b110000000; // Load the target box with 0
-      P[1063] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[1064] <= 9'b000000000; // Load the constant box with 0
-      P[1065] <= 9'b101000010; // Load the source box with 2
-      P[1066] <= 9'b110000001; // Load the target box with 1
-      P[1067] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[1068] <= 9'b000001101; // Load the constant box with 13
-      P[1069] <= 9'b101000000; // Load the source box with 0
-      P[1070] <= 9'b110000000; // Load the target box with 0
-      P[1071] <= 9'b111001001; // label: Create and set a label
-      P[1072] <= 9'b010001000; // Load the constant box with 136
-      P[1073] <= 9'b101000001; // Load the source box with 1
-      P[1074] <= 9'b110000000; // Load the target box with 0
-      P[1075] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[1076] <= 9'b011111101; // Load the constant box with 253
-      P[1077] <= 9'b101000011; // Load the source box with 3
-      P[1078] <= 9'b110000000; // Load the target box with 0
-      P[1079] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[1080] <= 9'b000000100; // Load the constant box with 4
-      P[1081] <= 9'b101000011; // Load the source box with 3
-      P[1082] <= 9'b110000000; // Load the target box with 0
-      P[1083] <= 9'b111010101; // xor: Xor a constant with a register and save the result in the register
-      P[1084] <= 9'b011111101; // Load the constant box with 253
-      P[1085] <= 9'b101000011; // Load the source box with 3
-      P[1086] <= 9'b110000000; // Load the target box with 0
-      P[1087] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[1088] <= 9'b000001011; // Load the constant box with 11
-      P[1089] <= 9'b101000000; // Load the source box with 0
-      P[1090] <= 9'b110000000; // Load the target box with 0
-      P[1091] <= 9'b111001001; // label: Set a label
-      P[1092] <= 9'b000000000; // Load the constant box with 0
-      P[1093] <= 9'b101000000; // Load the source box with 0
-      P[1094] <= 9'b110000001; // Load the target box with 1
-      P[1095] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[1096] <= 9'b000010101; // Load the constant box with 21
-      P[1097] <= 9'b101000010; // Load the source box with 2
-      P[1098] <= 9'b110000000; // Load the target box with 0
-      P[1099] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[1100] <= 9'b000000000; // Load the constant box with 0
-      P[1101] <= 9'b101000010; // Load the source box with 2
-      P[1102] <= 9'b110000001; // Load the target box with 1
-      P[1103] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[1104] <= 9'b000001101; // Load the constant box with 13
-      P[1105] <= 9'b101000000; // Load the source box with 0
-      P[1106] <= 9'b110000000; // Load the target box with 0
-      P[1107] <= 9'b111001001; // label: Create and set a label
-      P[1108] <= 9'b010001101; // Load the constant box with 141
-      P[1109] <= 9'b101000001; // Load the source box with 1
-      P[1110] <= 9'b110000000; // Load the target box with 0
-      P[1111] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[1112] <= 9'b011111101; // Load the constant box with 253
-      P[1113] <= 9'b101000011; // Load the source box with 3
-      P[1114] <= 9'b110000000; // Load the target box with 0
-      P[1115] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[1116] <= 9'b000000010; // Load the constant box with 2
-      P[1117] <= 9'b101000011; // Load the source box with 3
-      P[1118] <= 9'b110000000; // Load the target box with 0
-      P[1119] <= 9'b111010101; // xor: Xor a constant with a register and save the result in the register
-      P[1120] <= 9'b011111101; // Load the constant box with 253
-      P[1121] <= 9'b101000011; // Load the source box with 3
-      P[1122] <= 9'b110000000; // Load the target box with 0
-      P[1123] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[1124] <= 9'b000001100; // Load the constant box with 12
-      P[1125] <= 9'b101000000; // Load the source box with 0
-      P[1126] <= 9'b110000000; // Load the target box with 0
-      P[1127] <= 9'b111001001; // label: Set a label
-      P[1128] <= 9'b000000000; // Load the constant box with 0
-      P[1129] <= 9'b101000000; // Load the source box with 0
-      P[1130] <= 9'b110000001; // Load the target box with 1
-      P[1131] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[1132] <= 9'b000010011; // Load the constant box with 19
-      P[1133] <= 9'b101000010; // Load the source box with 2
-      P[1134] <= 9'b110000000; // Load the target box with 0
-      P[1135] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[1136] <= 9'b000000000; // Load the constant box with 0
-      P[1137] <= 9'b101000010; // Load the source box with 2
-      P[1138] <= 9'b110000001; // Load the target box with 1
-      P[1139] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[1140] <= 9'b000001101; // Load the constant box with 13
-      P[1141] <= 9'b101000000; // Load the source box with 0
-      P[1142] <= 9'b110000000; // Load the target box with 0
-      P[1143] <= 9'b111001001; // label: Create and set a label
-      P[1144] <= 9'b010010001; // Load the constant box with 145
-      P[1145] <= 9'b101000001; // Load the source box with 1
-      P[1146] <= 9'b110000000; // Load the target box with 0
-      P[1147] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[1148] <= 9'b011111101; // Load the constant box with 253
-      P[1149] <= 9'b101000011; // Load the source box with 3
-      P[1150] <= 9'b110000000; // Load the target box with 0
-      P[1151] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[1152] <= 9'b000000001; // Load the constant box with 1
-      P[1153] <= 9'b101000011; // Load the source box with 3
-      P[1154] <= 9'b110000000; // Load the target box with 0
-      P[1155] <= 9'b111010101; // xor: Xor a constant with a register and save the result in the register
-      P[1156] <= 9'b011111101; // Load the constant box with 253
-      P[1157] <= 9'b101000011; // Load the source box with 3
-      P[1158] <= 9'b110000000; // Load the target box with 0
-      P[1159] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[1160] <= 9'b000001101; // Load the constant box with 13
-      P[1161] <= 9'b101000000; // Load the source box with 0
-      P[1162] <= 9'b110000000; // Load the target box with 0
-      P[1163] <= 9'b111001001; // label: Set a label
-      P[1164] <= 9'b000000010; // Load the constant box with 2
-      P[1165] <= 9'b101000000; // Load the source box with 0
-      P[1166] <= 9'b110000000; // Load the target box with 0
-      P[1167] <= 9'b111001001; // label: Set a label
-      P[1168] <= 9'b011111111; // Load the constant box with 255
-      P[1169] <= 9'b101000000; // Load the source box with 0
-      P[1170] <= 9'b110000000; // Load the target box with 0
-      P[1171] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[1172] <= 9'b011111110; // Load the constant box with 254
-      P[1173] <= 9'b101000011; // Load the source box with 3
-      P[1174] <= 9'b110000000; // Load the target box with 0
-      P[1175] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[1176] <= 9'b011111101; // Load the constant box with 253
-      P[1177] <= 9'b101000100; // Load the source box with 4
-      P[1178] <= 9'b110000000; // Load the target box with 0
-      P[1179] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[1180] <= 9'b000011110; // Load the constant box with 30
-      P[1181] <= 9'b101000101; // Load the source box with 5
-      P[1182] <= 9'b110000000; // Load the target box with 0
-      P[1183] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[1184] <= 9'b000000000; // Load the constant box with 0
-      P[1185] <= 9'b101000000; // Load the source box with 0
-      P[1186] <= 9'b110000101; // Load the target box with 5
-      P[1187] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[1188] <= 9'b000000000; // Load the constant box with 0
-      P[1189] <= 9'b101000101; // Load the source box with 5
-      P[1190] <= 9'b110000100; // Load the target box with 4
-      P[1191] <= 9'b111010011; // stri: Store the contents of the first register in the location specified by the second register
-      P[1192] <= 9'b000000000; // Load the constant box with 0
-      P[1193] <= 9'b101000101; // Load the source box with 5
-      P[1194] <= 9'b110000000; // Load the target box with 0
-      P[1195] <= 9'b111000110; // inc: Increment a register by one
-      P[1196] <= 9'b000000000; // Load the constant box with 0
-      P[1197] <= 9'b101000101; // Load the source box with 5
-      P[1198] <= 9'b110000011; // Load the target box with 3
-      P[1199] <= 9'b111010011; // stri: Store the contents of the first register in the location specified by the second register
-      P[1200] <= 9'b000000000; // Load the constant box with 0
-      P[1201] <= 9'b101000000; // Load the source box with 0
-      P[1202] <= 9'b110000101; // Load the target box with 5
-      P[1203] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[1204] <= 9'b001000000; // Load the constant box with 64
-      P[1205] <= 9'b101000101; // Load the source box with 5
-      P[1206] <= 9'b110000000; // Load the target box with 0
-      P[1207] <= 9'b111000011; // cmpGt: Compare the first register with the specified constant and place a one in the register if it is greater than the constant else zero
-      P[1208] <= 9'b000000001; // Load the constant box with 1
-      P[1209] <= 9'b101000101; // Load the source box with 5
-      P[1210] <= 9'b110000000; // Load the target box with 0
-      P[1211] <= 9'b111000111; // jumpIfNotZero: Jump backwards to the specified location in the program if the register is not zero - useful for constructing for loops
-      P[1212] <= 9'b000000000; // Load the constant box with 0
-      P[1213] <= 9'b101000000; // Load the source box with 0
-      P[1214] <= 9'b110000000; // Load the target box with 0
-      P[1215] <= 9'b111010110; // stop: Stop program execution
+      NInstructionEnd = 12;
+      code[   0] = 'h0000001f00000000000000000000010000000000000120000000000000000000;
+      code[   1] = 'h0000002200000000000000000000210000000000000120000000000000000000;
+      code[   2] = 'h0000002200000000000000000001210000000000000220000000000000000000;
+      code[   3] = 'h0000001600000000000000050002210000000000000021000000000000012100;
+      code[   4] = 'h0000002600000000000000000000010000000000006f20000000000000000000;
+      code[   5] = 'h0000001600000000000000030002210000000000000021000000000000002100;
+      code[   6] = 'h000000260000000000000000000001000000000000de20000000000000000000;
+      code[   7] = 'h0000001e00000000000000040004210000000000000000000000000000000000;
+      code[   8] = 'h0000001f00000000000000000000010000000000000220000000000000000000;
+      code[   9] = 'h0000002600000000000000000000010000000000014d20000000000000000000;
+      code[  10] = 'h0000001f00000000000000000000010000000000000320000000000000000000;
+      code[  11] = 'h0000001f00000000000000000000010000000000000420000000000000000000;
+    end
+  endtask
+                                                                                // Load program 'Shift_up_test' into code memory
+  task Shift_up_test();
+    begin
+      NInstructionEnd = 5;
+      code[   0] = 'h0000000100000000000000000000210000000000000320000000000000000000;
+      code[   1] = 'h0000002200000000000000000000150000000000000020000000000000000000;
+      code[   2] = 'h0000002200000000000000000001150000000000000120000000000000000000;
+      code[   3] = 'h0000002200000000000000000002150000000000000220000000000000000000;
+      code[   4] = 'h0000003700000000000000000000150000000000006320000000000000000000;
+    end
+  endtask
+                                                                                // Load program 'Shift_up_test_2' into code memory
+  task Shift_up_test_2();
+    begin
+      NInstructionEnd = 5;
+      code[   0] = 'h0000000100000000000000000000210000000000000320000000000000000000;
+      code[   1] = 'h0000002200000000000000000000150000000000000020000000000000000000;
+      code[   2] = 'h0000002200000000000000000001150000000000000120000000000000000000;
+      code[   3] = 'h0000002200000000000000000002150000000000000220000000000000000000;
+      code[   4] = 'h0000003700000000000000000002150000000000006320000000000000000000;
     end
   endtask
 
-  task  automatic load_Program3;                                                // Program 3
+  task Push_test();
     begin
-      $display("Program 3");
-      P[   0] <= 9'b000011111; // Load the constant box with 31
-      P[   1] <= 9'b101000110; // Load the source box with 6
-      P[   2] <= 9'b110000000; // Load the target box with 0
-      P[   3] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[   4] <= 9'b010100000; // Load the constant box with 160
-      P[   5] <= 9'b101000011; // Load the source box with 3
-      P[   6] <= 9'b110000000; // Load the target box with 0
-      P[   7] <= 9'b111001011; // ldrd: Load the first register from a memory location
-      P[   8] <= 9'b000000011; // Load the constant box with 3
-      P[   9] <= 9'b101000011; // Load the source box with 3
-      P[  10] <= 9'b110000000; // Load the target box with 0
-      P[  11] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  12] <= 9'b010011111; // Load the constant box with 159
-      P[  13] <= 9'b101001000; // Load the source box with 8
-      P[  14] <= 9'b110000000; // Load the target box with 0
-      P[  15] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[  16] <= 9'b000010101; // Load the constant box with 21
-      P[  17] <= 9'b101000000; // Load the source box with 0
-      P[  18] <= 9'b110000000; // Load the target box with 0
-      P[  19] <= 9'b111001001; // label: Create and set a label
-      P[  20] <= 9'b000000000; // Load the constant box with 0
-      P[  21] <= 9'b101001101; // Load the source box with 13
-      P[  22] <= 9'b110000000; // Load the target box with 0
-      P[  23] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[  24] <= 9'b000000000; // Load the constant box with 0
-      P[  25] <= 9'b101000101; // Load the source box with 5
-      P[  26] <= 9'b110000000; // Load the target box with 0
-      P[  27] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[  28] <= 9'b000000000; // Load the constant box with 0
-      P[  29] <= 9'b101001000; // Load the source box with 8
-      P[  30] <= 9'b110000111; // Load the target box with 7
-      P[  31] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  32] <= 9'b000000000; // Load the constant box with 0
-      P[  33] <= 9'b101000111; // Load the source box with 7
-      P[  34] <= 9'b110000111; // Load the target box with 7
-      P[  35] <= 9'b111001100; // ldri: Load the first register from the memory location specified by the second register
-      P[  36] <= 9'b000000000; // Load the constant box with 0
-      P[  37] <= 9'b101000111; // Load the source box with 7
-      P[  38] <= 9'b110000101; // Load the target box with 5
-      P[  39] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  40] <= 9'b000000000; // Load the constant box with 0
-      P[  41] <= 9'b101000110; // Load the source box with 6
-      P[  42] <= 9'b110000101; // Load the target box with 5
-      P[  43] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[  44] <= 9'b000000000; // Load the constant box with 0
-      P[  45] <= 9'b101000101; // Load the source box with 5
-      P[  46] <= 9'b110001010; // Load the target box with 10
-      P[  47] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  48] <= 9'b000000000; // Load the constant box with 0
-      P[  49] <= 9'b101000011; // Load the source box with 3
-      P[  50] <= 9'b110001010; // Load the target box with 10
-      P[  51] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[  52] <= 9'b000001000; // Load the constant box with 8
-      P[  53] <= 9'b101001010; // Load the source box with 10
-      P[  54] <= 9'b110000000; // Load the target box with 0
-      P[  55] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[  56] <= 9'b000000000; // Load the constant box with 0
-      P[  57] <= 9'b101001101; // Load the source box with 13
-      P[  58] <= 9'b110000000; // Load the target box with 0
-      P[  59] <= 9'b111000110; // inc: Increment a register by one
-      P[  60] <= 9'b000000010; // Load the constant box with 2
-      P[  61] <= 9'b101000000; // Load the source box with 0
-      P[  62] <= 9'b110000000; // Load the target box with 0
-      P[  63] <= 9'b111001001; // label: Set a label
-      P[  64] <= 9'b000000001; // Load the constant box with 1
-      P[  65] <= 9'b101000111; // Load the source box with 7
-      P[  66] <= 9'b110000000; // Load the target box with 0
-      P[  67] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[  68] <= 9'b000000000; // Load the constant box with 0
-      P[  69] <= 9'b101000111; // Load the source box with 7
-      P[  70] <= 9'b110000101; // Load the target box with 5
-      P[  71] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  72] <= 9'b000000000; // Load the constant box with 0
-      P[  73] <= 9'b101000110; // Load the source box with 6
-      P[  74] <= 9'b110000101; // Load the target box with 5
-      P[  75] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[  76] <= 9'b000000000; // Load the constant box with 0
-      P[  77] <= 9'b101000101; // Load the source box with 5
-      P[  78] <= 9'b110001010; // Load the target box with 10
-      P[  79] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[  80] <= 9'b000000000; // Load the constant box with 0
-      P[  81] <= 9'b101000011; // Load the source box with 3
-      P[  82] <= 9'b110001010; // Load the target box with 10
-      P[  83] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[  84] <= 9'b000001100; // Load the constant box with 12
-      P[  85] <= 9'b101001010; // Load the source box with 10
-      P[  86] <= 9'b110000000; // Load the target box with 0
-      P[  87] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[  88] <= 9'b000000000; // Load the constant box with 0
-      P[  89] <= 9'b101001101; // Load the source box with 13
-      P[  90] <= 9'b110000000; // Load the target box with 0
-      P[  91] <= 9'b111000110; // inc: Increment a register by one
-      P[  92] <= 9'b000000011; // Load the constant box with 3
-      P[  93] <= 9'b101000000; // Load the source box with 0
-      P[  94] <= 9'b110000000; // Load the target box with 0
-      P[  95] <= 9'b111001001; // label: Set a label
-      P[  96] <= 9'b000000001; // Load the constant box with 1
-      P[  97] <= 9'b101000111; // Load the source box with 7
-      P[  98] <= 9'b110000000; // Load the target box with 0
-      P[  99] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 100] <= 9'b000000000; // Load the constant box with 0
-      P[ 101] <= 9'b101000111; // Load the source box with 7
-      P[ 102] <= 9'b110000101; // Load the target box with 5
-      P[ 103] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 104] <= 9'b000000000; // Load the constant box with 0
-      P[ 105] <= 9'b101000110; // Load the source box with 6
-      P[ 106] <= 9'b110000101; // Load the target box with 5
-      P[ 107] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 108] <= 9'b000000000; // Load the constant box with 0
-      P[ 109] <= 9'b101000101; // Load the source box with 5
-      P[ 110] <= 9'b110001010; // Load the target box with 10
-      P[ 111] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 112] <= 9'b000000000; // Load the constant box with 0
-      P[ 113] <= 9'b101000011; // Load the source box with 3
-      P[ 114] <= 9'b110001010; // Load the target box with 10
-      P[ 115] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 116] <= 9'b000010000; // Load the constant box with 16
-      P[ 117] <= 9'b101001010; // Load the source box with 10
-      P[ 118] <= 9'b110000000; // Load the target box with 0
-      P[ 119] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 120] <= 9'b000000000; // Load the constant box with 0
-      P[ 121] <= 9'b101001101; // Load the source box with 13
-      P[ 122] <= 9'b110000000; // Load the target box with 0
-      P[ 123] <= 9'b111000110; // inc: Increment a register by one
-      P[ 124] <= 9'b000000100; // Load the constant box with 4
-      P[ 125] <= 9'b101000000; // Load the source box with 0
-      P[ 126] <= 9'b110000000; // Load the target box with 0
-      P[ 127] <= 9'b111001001; // label: Set a label
-      P[ 128] <= 9'b000000001; // Load the constant box with 1
-      P[ 129] <= 9'b101000111; // Load the source box with 7
-      P[ 130] <= 9'b110000000; // Load the target box with 0
-      P[ 131] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 132] <= 9'b000000000; // Load the constant box with 0
-      P[ 133] <= 9'b101000111; // Load the source box with 7
-      P[ 134] <= 9'b110000101; // Load the target box with 5
-      P[ 135] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 136] <= 9'b000000000; // Load the constant box with 0
-      P[ 137] <= 9'b101000110; // Load the source box with 6
-      P[ 138] <= 9'b110000101; // Load the target box with 5
-      P[ 139] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 140] <= 9'b000000000; // Load the constant box with 0
-      P[ 141] <= 9'b101000101; // Load the source box with 5
-      P[ 142] <= 9'b110001010; // Load the target box with 10
-      P[ 143] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 144] <= 9'b000000000; // Load the constant box with 0
-      P[ 145] <= 9'b101000011; // Load the source box with 3
-      P[ 146] <= 9'b110001010; // Load the target box with 10
-      P[ 147] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 148] <= 9'b000010100; // Load the constant box with 20
-      P[ 149] <= 9'b101001010; // Load the source box with 10
-      P[ 150] <= 9'b110000000; // Load the target box with 0
-      P[ 151] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 152] <= 9'b000000000; // Load the constant box with 0
-      P[ 153] <= 9'b101001101; // Load the source box with 13
-      P[ 154] <= 9'b110000000; // Load the target box with 0
-      P[ 155] <= 9'b111000110; // inc: Increment a register by one
-      P[ 156] <= 9'b000000101; // Load the constant box with 5
-      P[ 157] <= 9'b101000000; // Load the source box with 0
-      P[ 158] <= 9'b110000000; // Load the target box with 0
-      P[ 159] <= 9'b111001001; // label: Set a label
-      P[ 160] <= 9'b000000000; // Load the constant box with 0
-      P[ 161] <= 9'b101001101; // Load the source box with 13
-      P[ 162] <= 9'b110000000; // Load the target box with 0
-      P[ 163] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 164] <= 9'b000010110; // Load the constant box with 22
-      P[ 165] <= 9'b101001101; // Load the source box with 13
-      P[ 166] <= 9'b110000000; // Load the target box with 0
-      P[ 167] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 168] <= 9'b000000000; // Load the constant box with 0
-      P[ 169] <= 9'b101000001; // Load the source box with 1
-      P[ 170] <= 9'b110000000; // Load the target box with 0
-      P[ 171] <= 9'b111000110; // inc: Increment a register by one
-      P[ 172] <= 9'b000000110; // Load the constant box with 6
-      P[ 173] <= 9'b101000000; // Load the source box with 0
-      P[ 174] <= 9'b110000000; // Load the target box with 0
-      P[ 175] <= 9'b111001001; // label: Set a label
-      P[ 176] <= 9'b000000000; // Load the constant box with 0
-      P[ 177] <= 9'b101001000; // Load the source box with 8
-      P[ 178] <= 9'b110001001; // Load the target box with 9
-      P[ 179] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 180] <= 9'b010011111; // Load the constant box with 159
-      P[ 181] <= 9'b101001001; // Load the source box with 9
-      P[ 182] <= 9'b110000000; // Load the target box with 0
-      P[ 183] <= 9'b111000100; // cmpLt: Compare the first register with the specified constant and place a one in the register if it is less than the constant else zero
-      P[ 184] <= 9'b001001100; // Load the constant box with 76
-      P[ 185] <= 9'b101001001; // Load the source box with 9
-      P[ 186] <= 9'b110000000; // Load the target box with 0
-      P[ 187] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 188] <= 9'b000000000; // Load the constant box with 0
-      P[ 189] <= 9'b101001100; // Load the source box with 12
-      P[ 190] <= 9'b110000000; // Load the target box with 0
-      P[ 191] <= 9'b111001010; // ldrc: Load the first register from a constant
-      P[ 192] <= 9'b000000000; // Load the constant box with 0
-      P[ 193] <= 9'b101001000; // Load the source box with 8
-      P[ 194] <= 9'b110000100; // Load the target box with 4
-      P[ 195] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 196] <= 9'b000000000; // Load the constant box with 0
-      P[ 197] <= 9'b101000100; // Load the source box with 4
-      P[ 198] <= 9'b110000000; // Load the target box with 0
-      P[ 199] <= 9'b111000110; // inc: Increment a register by one
-      P[ 200] <= 9'b000000000; // Load the constant box with 0
-      P[ 201] <= 9'b101000100; // Load the source box with 4
-      P[ 202] <= 9'b110000100; // Load the target box with 4
-      P[ 203] <= 9'b111001100; // ldri: Load the first register from the memory location specified by the second register
-      P[ 204] <= 9'b000001000; // Load the constant box with 8
-      P[ 205] <= 9'b101000100; // Load the source box with 4
-      P[ 206] <= 9'b110000000; // Load the target box with 0
-      P[ 207] <= 9'b111010000; // sl: Shift the first register left by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 208] <= 9'b000000000; // Load the constant box with 0
-      P[ 209] <= 9'b101001000; // Load the source box with 8
-      P[ 210] <= 9'b110000101; // Load the target box with 5
-      P[ 211] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 212] <= 9'b000000000; // Load the constant box with 0
-      P[ 213] <= 9'b101000101; // Load the source box with 5
-      P[ 214] <= 9'b110000101; // Load the target box with 5
-      P[ 215] <= 9'b111001100; // ldri: Load the first register from the memory location specified by the second register
-      P[ 216] <= 9'b000000000; // Load the constant box with 0
-      P[ 217] <= 9'b101000101; // Load the source box with 5
-      P[ 218] <= 9'b110000100; // Load the target box with 4
-      P[ 219] <= 9'b111001111; // or: Or the first and second registers together and replace the first register with the result
-      P[ 220] <= 9'b000000000; // Load the constant box with 0
-      P[ 221] <= 9'b101000100; // Load the source box with 4
-      P[ 222] <= 9'b110000101; // Load the target box with 5
-      P[ 223] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 224] <= 9'b000000000; // Load the constant box with 0
-      P[ 225] <= 9'b101000110; // Load the source box with 6
-      P[ 226] <= 9'b110000101; // Load the target box with 5
-      P[ 227] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 228] <= 9'b000000000; // Load the constant box with 0
-      P[ 229] <= 9'b101000101; // Load the source box with 5
-      P[ 230] <= 9'b110001010; // Load the target box with 10
-      P[ 231] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 232] <= 9'b000000000; // Load the constant box with 0
-      P[ 233] <= 9'b101000011; // Load the source box with 3
-      P[ 234] <= 9'b110001010; // Load the target box with 10
-      P[ 235] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 236] <= 9'b000011111; // Load the constant box with 31
-      P[ 237] <= 9'b101001010; // Load the source box with 10
-      P[ 238] <= 9'b110000000; // Load the target box with 0
-      P[ 239] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 240] <= 9'b000000000; // Load the constant box with 0
-      P[ 241] <= 9'b101001100; // Load the source box with 12
-      P[ 242] <= 9'b110000000; // Load the target box with 0
-      P[ 243] <= 9'b111000110; // inc: Increment a register by one
-      P[ 244] <= 9'b000001000; // Load the constant box with 8
-      P[ 245] <= 9'b101000000; // Load the source box with 0
-      P[ 246] <= 9'b110000000; // Load the target box with 0
-      P[ 247] <= 9'b111001001; // label: Set a label
-      P[ 248] <= 9'b000000001; // Load the constant box with 1
-      P[ 249] <= 9'b101000100; // Load the source box with 4
-      P[ 250] <= 9'b110000000; // Load the target box with 0
-      P[ 251] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 252] <= 9'b000000000; // Load the constant box with 0
-      P[ 253] <= 9'b101000100; // Load the source box with 4
-      P[ 254] <= 9'b110000101; // Load the target box with 5
-      P[ 255] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 256] <= 9'b000000000; // Load the constant box with 0
-      P[ 257] <= 9'b101000110; // Load the source box with 6
-      P[ 258] <= 9'b110000101; // Load the target box with 5
-      P[ 259] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 260] <= 9'b000000000; // Load the constant box with 0
-      P[ 261] <= 9'b101000101; // Load the source box with 5
-      P[ 262] <= 9'b110001010; // Load the target box with 10
-      P[ 263] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 264] <= 9'b000000000; // Load the constant box with 0
-      P[ 265] <= 9'b101000011; // Load the source box with 3
-      P[ 266] <= 9'b110001010; // Load the target box with 10
-      P[ 267] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 268] <= 9'b000100011; // Load the constant box with 35
-      P[ 269] <= 9'b101001010; // Load the source box with 10
-      P[ 270] <= 9'b110000000; // Load the target box with 0
-      P[ 271] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 272] <= 9'b000000000; // Load the constant box with 0
-      P[ 273] <= 9'b101001100; // Load the source box with 12
-      P[ 274] <= 9'b110000000; // Load the target box with 0
-      P[ 275] <= 9'b111000110; // inc: Increment a register by one
-      P[ 276] <= 9'b000001001; // Load the constant box with 9
-      P[ 277] <= 9'b101000000; // Load the source box with 0
-      P[ 278] <= 9'b110000000; // Load the target box with 0
-      P[ 279] <= 9'b111001001; // label: Set a label
-      P[ 280] <= 9'b000000001; // Load the constant box with 1
-      P[ 281] <= 9'b101000100; // Load the source box with 4
-      P[ 282] <= 9'b110000000; // Load the target box with 0
-      P[ 283] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 284] <= 9'b000000000; // Load the constant box with 0
-      P[ 285] <= 9'b101000100; // Load the source box with 4
-      P[ 286] <= 9'b110000101; // Load the target box with 5
-      P[ 287] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 288] <= 9'b000000000; // Load the constant box with 0
-      P[ 289] <= 9'b101000110; // Load the source box with 6
-      P[ 290] <= 9'b110000101; // Load the target box with 5
-      P[ 291] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 292] <= 9'b000000000; // Load the constant box with 0
-      P[ 293] <= 9'b101000101; // Load the source box with 5
-      P[ 294] <= 9'b110001010; // Load the target box with 10
-      P[ 295] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 296] <= 9'b000000000; // Load the constant box with 0
-      P[ 297] <= 9'b101000011; // Load the source box with 3
-      P[ 298] <= 9'b110001010; // Load the target box with 10
-      P[ 299] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 300] <= 9'b000100111; // Load the constant box with 39
-      P[ 301] <= 9'b101001010; // Load the source box with 10
-      P[ 302] <= 9'b110000000; // Load the target box with 0
-      P[ 303] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 304] <= 9'b000000000; // Load the constant box with 0
-      P[ 305] <= 9'b101001100; // Load the source box with 12
-      P[ 306] <= 9'b110000000; // Load the target box with 0
-      P[ 307] <= 9'b111000110; // inc: Increment a register by one
-      P[ 308] <= 9'b000001010; // Load the constant box with 10
-      P[ 309] <= 9'b101000000; // Load the source box with 0
-      P[ 310] <= 9'b110000000; // Load the target box with 0
-      P[ 311] <= 9'b111001001; // label: Set a label
-      P[ 312] <= 9'b000000001; // Load the constant box with 1
-      P[ 313] <= 9'b101000100; // Load the source box with 4
-      P[ 314] <= 9'b110000000; // Load the target box with 0
-      P[ 315] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 316] <= 9'b000000000; // Load the constant box with 0
-      P[ 317] <= 9'b101000100; // Load the source box with 4
-      P[ 318] <= 9'b110000101; // Load the target box with 5
-      P[ 319] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 320] <= 9'b000000000; // Load the constant box with 0
-      P[ 321] <= 9'b101000110; // Load the source box with 6
-      P[ 322] <= 9'b110000101; // Load the target box with 5
-      P[ 323] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 324] <= 9'b000000000; // Load the constant box with 0
-      P[ 325] <= 9'b101000101; // Load the source box with 5
-      P[ 326] <= 9'b110001010; // Load the target box with 10
-      P[ 327] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 328] <= 9'b000000000; // Load the constant box with 0
-      P[ 329] <= 9'b101000011; // Load the source box with 3
-      P[ 330] <= 9'b110001010; // Load the target box with 10
-      P[ 331] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 332] <= 9'b000101011; // Load the constant box with 43
-      P[ 333] <= 9'b101001010; // Load the source box with 10
-      P[ 334] <= 9'b110000000; // Load the target box with 0
-      P[ 335] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 336] <= 9'b000000000; // Load the constant box with 0
-      P[ 337] <= 9'b101001100; // Load the source box with 12
-      P[ 338] <= 9'b110000000; // Load the target box with 0
-      P[ 339] <= 9'b111000110; // inc: Increment a register by one
-      P[ 340] <= 9'b000001011; // Load the constant box with 11
-      P[ 341] <= 9'b101000000; // Load the source box with 0
-      P[ 342] <= 9'b110000000; // Load the target box with 0
-      P[ 343] <= 9'b111001001; // label: Set a label
-      P[ 344] <= 9'b000000001; // Load the constant box with 1
-      P[ 345] <= 9'b101000100; // Load the source box with 4
-      P[ 346] <= 9'b110000000; // Load the target box with 0
-      P[ 347] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 348] <= 9'b000000000; // Load the constant box with 0
-      P[ 349] <= 9'b101000100; // Load the source box with 4
-      P[ 350] <= 9'b110000101; // Load the target box with 5
-      P[ 351] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 352] <= 9'b000000000; // Load the constant box with 0
-      P[ 353] <= 9'b101000110; // Load the source box with 6
-      P[ 354] <= 9'b110000101; // Load the target box with 5
-      P[ 355] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 356] <= 9'b000000000; // Load the constant box with 0
-      P[ 357] <= 9'b101000101; // Load the source box with 5
-      P[ 358] <= 9'b110001010; // Load the target box with 10
-      P[ 359] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 360] <= 9'b000000000; // Load the constant box with 0
-      P[ 361] <= 9'b101000011; // Load the source box with 3
-      P[ 362] <= 9'b110001010; // Load the target box with 10
-      P[ 363] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 364] <= 9'b000101111; // Load the constant box with 47
-      P[ 365] <= 9'b101001010; // Load the source box with 10
-      P[ 366] <= 9'b110000000; // Load the target box with 0
-      P[ 367] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 368] <= 9'b000000000; // Load the constant box with 0
-      P[ 369] <= 9'b101001100; // Load the source box with 12
-      P[ 370] <= 9'b110000000; // Load the target box with 0
-      P[ 371] <= 9'b111000110; // inc: Increment a register by one
-      P[ 372] <= 9'b000001100; // Load the constant box with 12
-      P[ 373] <= 9'b101000000; // Load the source box with 0
-      P[ 374] <= 9'b110000000; // Load the target box with 0
-      P[ 375] <= 9'b111001001; // label: Set a label
-      P[ 376] <= 9'b000000001; // Load the constant box with 1
-      P[ 377] <= 9'b101000100; // Load the source box with 4
-      P[ 378] <= 9'b110000000; // Load the target box with 0
-      P[ 379] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 380] <= 9'b000000000; // Load the constant box with 0
-      P[ 381] <= 9'b101000100; // Load the source box with 4
-      P[ 382] <= 9'b110000101; // Load the target box with 5
-      P[ 383] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 384] <= 9'b000000000; // Load the constant box with 0
-      P[ 385] <= 9'b101000110; // Load the source box with 6
-      P[ 386] <= 9'b110000101; // Load the target box with 5
-      P[ 387] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 388] <= 9'b000000000; // Load the constant box with 0
-      P[ 389] <= 9'b101000101; // Load the source box with 5
-      P[ 390] <= 9'b110001010; // Load the target box with 10
-      P[ 391] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 392] <= 9'b000000000; // Load the constant box with 0
-      P[ 393] <= 9'b101000011; // Load the source box with 3
-      P[ 394] <= 9'b110001010; // Load the target box with 10
-      P[ 395] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 396] <= 9'b000110011; // Load the constant box with 51
-      P[ 397] <= 9'b101001010; // Load the source box with 10
-      P[ 398] <= 9'b110000000; // Load the target box with 0
-      P[ 399] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 400] <= 9'b000000000; // Load the constant box with 0
-      P[ 401] <= 9'b101001100; // Load the source box with 12
-      P[ 402] <= 9'b110000000; // Load the target box with 0
-      P[ 403] <= 9'b111000110; // inc: Increment a register by one
-      P[ 404] <= 9'b000001101; // Load the constant box with 13
-      P[ 405] <= 9'b101000000; // Load the source box with 0
-      P[ 406] <= 9'b110000000; // Load the target box with 0
-      P[ 407] <= 9'b111001001; // label: Set a label
-      P[ 408] <= 9'b000000001; // Load the constant box with 1
-      P[ 409] <= 9'b101000100; // Load the source box with 4
-      P[ 410] <= 9'b110000000; // Load the target box with 0
-      P[ 411] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 412] <= 9'b000000000; // Load the constant box with 0
-      P[ 413] <= 9'b101000100; // Load the source box with 4
-      P[ 414] <= 9'b110000101; // Load the target box with 5
-      P[ 415] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 416] <= 9'b000000000; // Load the constant box with 0
-      P[ 417] <= 9'b101000110; // Load the source box with 6
-      P[ 418] <= 9'b110000101; // Load the target box with 5
-      P[ 419] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 420] <= 9'b000000000; // Load the constant box with 0
-      P[ 421] <= 9'b101000101; // Load the source box with 5
-      P[ 422] <= 9'b110001010; // Load the target box with 10
-      P[ 423] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 424] <= 9'b000000000; // Load the constant box with 0
-      P[ 425] <= 9'b101000011; // Load the source box with 3
-      P[ 426] <= 9'b110001010; // Load the target box with 10
-      P[ 427] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 428] <= 9'b000110111; // Load the constant box with 55
-      P[ 429] <= 9'b101001010; // Load the source box with 10
-      P[ 430] <= 9'b110000000; // Load the target box with 0
-      P[ 431] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 432] <= 9'b000000000; // Load the constant box with 0
-      P[ 433] <= 9'b101001100; // Load the source box with 12
-      P[ 434] <= 9'b110000000; // Load the target box with 0
-      P[ 435] <= 9'b111000110; // inc: Increment a register by one
-      P[ 436] <= 9'b000001110; // Load the constant box with 14
-      P[ 437] <= 9'b101000000; // Load the source box with 0
-      P[ 438] <= 9'b110000000; // Load the target box with 0
-      P[ 439] <= 9'b111001001; // label: Set a label
-      P[ 440] <= 9'b000000001; // Load the constant box with 1
-      P[ 441] <= 9'b101000100; // Load the source box with 4
-      P[ 442] <= 9'b110000000; // Load the target box with 0
-      P[ 443] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 444] <= 9'b000000000; // Load the constant box with 0
-      P[ 445] <= 9'b101000100; // Load the source box with 4
-      P[ 446] <= 9'b110000101; // Load the target box with 5
-      P[ 447] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 448] <= 9'b000000000; // Load the constant box with 0
-      P[ 449] <= 9'b101000110; // Load the source box with 6
-      P[ 450] <= 9'b110000101; // Load the target box with 5
-      P[ 451] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 452] <= 9'b000000000; // Load the constant box with 0
-      P[ 453] <= 9'b101000101; // Load the source box with 5
-      P[ 454] <= 9'b110001010; // Load the target box with 10
-      P[ 455] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 456] <= 9'b000000000; // Load the constant box with 0
-      P[ 457] <= 9'b101000011; // Load the source box with 3
-      P[ 458] <= 9'b110001010; // Load the target box with 10
-      P[ 459] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 460] <= 9'b000111011; // Load the constant box with 59
-      P[ 461] <= 9'b101001010; // Load the source box with 10
-      P[ 462] <= 9'b110000000; // Load the target box with 0
-      P[ 463] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 464] <= 9'b000000000; // Load the constant box with 0
-      P[ 465] <= 9'b101001100; // Load the source box with 12
-      P[ 466] <= 9'b110000000; // Load the target box with 0
-      P[ 467] <= 9'b111000110; // inc: Increment a register by one
-      P[ 468] <= 9'b000001111; // Load the constant box with 15
-      P[ 469] <= 9'b101000000; // Load the source box with 0
-      P[ 470] <= 9'b110000000; // Load the target box with 0
-      P[ 471] <= 9'b111001001; // label: Set a label
-      P[ 472] <= 9'b000000001; // Load the constant box with 1
-      P[ 473] <= 9'b101000100; // Load the source box with 4
-      P[ 474] <= 9'b110000000; // Load the target box with 0
-      P[ 475] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 476] <= 9'b000000000; // Load the constant box with 0
-      P[ 477] <= 9'b101000100; // Load the source box with 4
-      P[ 478] <= 9'b110000101; // Load the target box with 5
-      P[ 479] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 480] <= 9'b000000000; // Load the constant box with 0
-      P[ 481] <= 9'b101000110; // Load the source box with 6
-      P[ 482] <= 9'b110000101; // Load the target box with 5
-      P[ 483] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 484] <= 9'b000000000; // Load the constant box with 0
-      P[ 485] <= 9'b101000101; // Load the source box with 5
-      P[ 486] <= 9'b110001010; // Load the target box with 10
-      P[ 487] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 488] <= 9'b000000000; // Load the constant box with 0
-      P[ 489] <= 9'b101000011; // Load the source box with 3
-      P[ 490] <= 9'b110001010; // Load the target box with 10
-      P[ 491] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 492] <= 9'b000111111; // Load the constant box with 63
-      P[ 493] <= 9'b101001010; // Load the source box with 10
-      P[ 494] <= 9'b110000000; // Load the target box with 0
-      P[ 495] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 496] <= 9'b000000000; // Load the constant box with 0
-      P[ 497] <= 9'b101001100; // Load the source box with 12
-      P[ 498] <= 9'b110000000; // Load the target box with 0
-      P[ 499] <= 9'b111000110; // inc: Increment a register by one
-      P[ 500] <= 9'b000010000; // Load the constant box with 16
-      P[ 501] <= 9'b101000000; // Load the source box with 0
-      P[ 502] <= 9'b110000000; // Load the target box with 0
-      P[ 503] <= 9'b111001001; // label: Set a label
-      P[ 504] <= 9'b000000001; // Load the constant box with 1
-      P[ 505] <= 9'b101000100; // Load the source box with 4
-      P[ 506] <= 9'b110000000; // Load the target box with 0
-      P[ 507] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 508] <= 9'b000000000; // Load the constant box with 0
-      P[ 509] <= 9'b101000100; // Load the source box with 4
-      P[ 510] <= 9'b110000101; // Load the target box with 5
-      P[ 511] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 512] <= 9'b000000000; // Load the constant box with 0
-      P[ 513] <= 9'b101000110; // Load the source box with 6
-      P[ 514] <= 9'b110000101; // Load the target box with 5
-      P[ 515] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 516] <= 9'b000000000; // Load the constant box with 0
-      P[ 517] <= 9'b101000101; // Load the source box with 5
-      P[ 518] <= 9'b110001010; // Load the target box with 10
-      P[ 519] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 520] <= 9'b000000000; // Load the constant box with 0
-      P[ 521] <= 9'b101000011; // Load the source box with 3
-      P[ 522] <= 9'b110001010; // Load the target box with 10
-      P[ 523] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 524] <= 9'b001000011; // Load the constant box with 67
-      P[ 525] <= 9'b101001010; // Load the source box with 10
-      P[ 526] <= 9'b110000000; // Load the target box with 0
-      P[ 527] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 528] <= 9'b000000000; // Load the constant box with 0
-      P[ 529] <= 9'b101001100; // Load the source box with 12
-      P[ 530] <= 9'b110000000; // Load the target box with 0
-      P[ 531] <= 9'b111000110; // inc: Increment a register by one
-      P[ 532] <= 9'b000010001; // Load the constant box with 17
-      P[ 533] <= 9'b101000000; // Load the source box with 0
-      P[ 534] <= 9'b110000000; // Load the target box with 0
-      P[ 535] <= 9'b111001001; // label: Set a label
-      P[ 536] <= 9'b000000001; // Load the constant box with 1
-      P[ 537] <= 9'b101000100; // Load the source box with 4
-      P[ 538] <= 9'b110000000; // Load the target box with 0
-      P[ 539] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 540] <= 9'b000000000; // Load the constant box with 0
-      P[ 541] <= 9'b101000100; // Load the source box with 4
-      P[ 542] <= 9'b110000101; // Load the target box with 5
-      P[ 543] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 544] <= 9'b000000000; // Load the constant box with 0
-      P[ 545] <= 9'b101000110; // Load the source box with 6
-      P[ 546] <= 9'b110000101; // Load the target box with 5
-      P[ 547] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 548] <= 9'b000000000; // Load the constant box with 0
-      P[ 549] <= 9'b101000101; // Load the source box with 5
-      P[ 550] <= 9'b110001010; // Load the target box with 10
-      P[ 551] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 552] <= 9'b000000000; // Load the constant box with 0
-      P[ 553] <= 9'b101000011; // Load the source box with 3
-      P[ 554] <= 9'b110001010; // Load the target box with 10
-      P[ 555] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 556] <= 9'b001000111; // Load the constant box with 71
-      P[ 557] <= 9'b101001010; // Load the source box with 10
-      P[ 558] <= 9'b110000000; // Load the target box with 0
-      P[ 559] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 560] <= 9'b000000000; // Load the constant box with 0
-      P[ 561] <= 9'b101001100; // Load the source box with 12
-      P[ 562] <= 9'b110000000; // Load the target box with 0
-      P[ 563] <= 9'b111000110; // inc: Increment a register by one
-      P[ 564] <= 9'b000010010; // Load the constant box with 18
-      P[ 565] <= 9'b101000000; // Load the source box with 0
-      P[ 566] <= 9'b110000000; // Load the target box with 0
-      P[ 567] <= 9'b111001001; // label: Set a label
-      P[ 568] <= 9'b000000001; // Load the constant box with 1
-      P[ 569] <= 9'b101000100; // Load the source box with 4
-      P[ 570] <= 9'b110000000; // Load the target box with 0
-      P[ 571] <= 9'b111010001; // sr: Shift the first register right by the number of bits specified by the constant filling the vacated bits with zeroes.
-      P[ 572] <= 9'b000000000; // Load the constant box with 0
-      P[ 573] <= 9'b101000100; // Load the source box with 4
-      P[ 574] <= 9'b110000101; // Load the target box with 5
-      P[ 575] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 576] <= 9'b000000000; // Load the constant box with 0
-      P[ 577] <= 9'b101000110; // Load the source box with 6
-      P[ 578] <= 9'b110000101; // Load the target box with 5
-      P[ 579] <= 9'b111000001; // and: And the first and second registers together and replace the first register with the result
-      P[ 580] <= 9'b000000000; // Load the constant box with 0
-      P[ 581] <= 9'b101000101; // Load the source box with 5
-      P[ 582] <= 9'b110001010; // Load the target box with 10
-      P[ 583] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 584] <= 9'b000000000; // Load the constant box with 0
-      P[ 585] <= 9'b101000011; // Load the source box with 3
-      P[ 586] <= 9'b110001010; // Load the target box with 10
-      P[ 587] <= 9'b111000010; // cmpEq: Compare two registers and set the first register to one if it is equal to the second register else zero
-      P[ 588] <= 9'b001001011; // Load the constant box with 75
-      P[ 589] <= 9'b101001010; // Load the source box with 10
-      P[ 590] <= 9'b110000000; // Load the target box with 0
-      P[ 591] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 592] <= 9'b000000000; // Load the constant box with 0
-      P[ 593] <= 9'b101001100; // Load the source box with 12
-      P[ 594] <= 9'b110000000; // Load the target box with 0
-      P[ 595] <= 9'b111000110; // inc: Increment a register by one
-      P[ 596] <= 9'b000010011; // Load the constant box with 19
-      P[ 597] <= 9'b101000000; // Load the source box with 0
-      P[ 598] <= 9'b110000000; // Load the target box with 0
-      P[ 599] <= 9'b111001001; // label: Set a label
-      P[ 600] <= 9'b000000000; // Load the constant box with 0
-      P[ 601] <= 9'b101001100; // Load the source box with 12
-      P[ 602] <= 9'b110000010; // Load the target box with 2
-      P[ 603] <= 9'b111000000; // add: Add the first and second registers together and replace the first register with the result
-      P[ 604] <= 9'b000000111; // Load the constant box with 7
-      P[ 605] <= 9'b101000000; // Load the source box with 0
-      P[ 606] <= 9'b110000000; // Load the target box with 0
-      P[ 607] <= 9'b111001001; // label: Set a label
-      P[ 608] <= 9'b000000000; // Load the constant box with 0
-      P[ 609] <= 9'b101001000; // Load the source box with 8
-      P[ 610] <= 9'b110001010; // Load the target box with 10
-      P[ 611] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 612] <= 9'b010011111; // Load the constant box with 159
-      P[ 613] <= 9'b101001010; // Load the source box with 10
-      P[ 614] <= 9'b110000000; // Load the target box with 0
-      P[ 615] <= 9'b111000100; // cmpLt: Compare the first register with the specified constant and place a one in the register if it is less than the constant else zero
-      P[ 616] <= 9'b001010000; // Load the constant box with 80
-      P[ 617] <= 9'b101001010; // Load the source box with 10
-      P[ 618] <= 9'b110000000; // Load the target box with 0
-      P[ 619] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 620] <= 9'b000000000; // Load the constant box with 0
-      P[ 621] <= 9'b101001000; // Load the source box with 8
-      P[ 622] <= 9'b110001010; // Load the target box with 10
-      P[ 623] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 624] <= 9'b010000000; // Load the constant box with 128
-      P[ 625] <= 9'b101001010; // Load the source box with 10
-      P[ 626] <= 9'b110000000; // Load the target box with 0
-      P[ 627] <= 9'b111000011; // cmpGt: Compare the first register with the specified constant and place a one in the register if it is greater than the constant else zero
-      P[ 628] <= 9'b001010000; // Load the constant box with 80
-      P[ 629] <= 9'b101001010; // Load the source box with 10
-      P[ 630] <= 9'b110000000; // Load the target box with 0
-      P[ 631] <= 9'b111001000; // jumpIfZero: Jump forwards to the specified location in the program if the register is zero - useful for constructing if statements
-      P[ 632] <= 9'b000000000; // Load the constant box with 0
-      P[ 633] <= 9'b101001101; // Load the source box with 13
-      P[ 634] <= 9'b110000010; // Load the target box with 2
-      P[ 635] <= 9'b111010100; // sub: Subtract the second register from the first register replace the first register with the result
-      P[ 636] <= 9'b000010101; // Load the constant box with 21
-      P[ 637] <= 9'b101000000; // Load the source box with 0
-      P[ 638] <= 9'b110000000; // Load the target box with 0
-      P[ 639] <= 9'b111001001; // label: Set a label
-      P[ 640] <= 9'b000010100; // Load the constant box with 20
-      P[ 641] <= 9'b101000000; // Load the source box with 0
-      P[ 642] <= 9'b110000000; // Load the target box with 0
-      P[ 643] <= 9'b111001001; // label: Set a label
-      P[ 644] <= 9'b000000000; // Load the constant box with 0
-      P[ 645] <= 9'b101001000; // Load the source box with 8
-      P[ 646] <= 9'b110000000; // Load the target box with 0
-      P[ 647] <= 9'b111000101; // dec: Decrement a register by one
-      P[ 648] <= 9'b000000000; // Load the constant box with 0
-      P[ 649] <= 9'b101001000; // Load the source box with 8
-      P[ 650] <= 9'b110001010; // Load the target box with 10
-      P[ 651] <= 9'b111001101; // ldrr: Load the first register from the second register
-      P[ 652] <= 9'b001111111; // Load the constant box with 127
-      P[ 653] <= 9'b101001010; // Load the source box with 10
-      P[ 654] <= 9'b110000000; // Load the target box with 0
-      P[ 655] <= 9'b111000011; // cmpGt: Compare the first register with the specified constant and place a one in the register if it is greater than the constant else zero
-      P[ 656] <= 9'b000000010; // Load the constant box with 2
-      P[ 657] <= 9'b101001010; // Load the source box with 10
-      P[ 658] <= 9'b110000000; // Load the target box with 0
-      P[ 659] <= 9'b111000111; // jumpIfNotZero: Jump backwards to the specified location in the program if the register is not zero - useful for constructing for loops
-      P[ 660] <= 9'b011000000; // Load the constant box with 192
-      P[ 661] <= 9'b101000000; // Load the source box with 0
-      P[ 662] <= 9'b110000000; // Load the target box with 0
-      P[ 663] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 664] <= 9'b011000001; // Load the constant box with 193
-      P[ 665] <= 9'b101000001; // Load the source box with 1
-      P[ 666] <= 9'b110000000; // Load the target box with 0
-      P[ 667] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 668] <= 9'b011000010; // Load the constant box with 194
-      P[ 669] <= 9'b101000010; // Load the source box with 2
-      P[ 670] <= 9'b110000000; // Load the target box with 0
-      P[ 671] <= 9'b111010010; // strd: Store the contents of the first register in the location specified by the constant
-      P[ 672] <= 9'b000000000; // Load the constant box with 0
-      P[ 673] <= 9'b101000000; // Load the source box with 0
-      P[ 674] <= 9'b110000000; // Load the target box with 0
-      P[ 675] <= 9'b111010110; // stop: Stop program execution
+      NInstructionEnd = 3;
+      code[   0] = 'h0000000100000000000000000000210000000000000320000000000000000000;
+      code[   1] = 'h0000002d00000000000000000000210000000000000120000000000000032000;
+      code[   2] = 'h0000002d00000000000000000000210000000000000220000000000000032000;
     end
   endtask
+
+  task Pop_test();
+    begin
+      NInstructionEnd = 7;
+      code[   0] = 'h0000000100000000000000000000210000000000000320000000000000000000;
+      code[   1] = 'h0000002d00000000000000000000210000000000000120000000000000032000;
+      code[   2] = 'h0000002d00000000000000000000210000000000000220000000000000032000;
+      code[   3] = 'h0000002c00000000000000000001210000000000000021000000000000032000;
+      code[   4] = 'h0000002c00000000000000000002210000000000000021000000000000032000;
+      code[   5] = 'h0000002600000000000000000000010000000000000121000000000000000000;
+      code[   6] = 'h0000002600000000000000000000010000000000000221000000000000000000;
+    end
+  endtask
+                                                                                // Load program 'Bubble_sort' into code memory
+  task Bubble_sort();
+    begin
+      NInstructionEnd = 44;
+      code[   0] = 'h0000000100000000000000000000210000000000000320000000000000000000;
+      code[   1] = 'h0000002d00000000000000000000210000000000002120000000000000032000;
+      code[   2] = 'h0000002d00000000000000000000210000000000000b20000000000000032000;
+      code[   3] = 'h0000002d00000000000000000000210000000000001620000000000000032000;
+      code[   4] = 'h0000002d00000000000000000000210000000000002c20000000000000032000;
+      code[   5] = 'h0000002d00000000000000000000210000000000004d20000000000000032000;
+      code[   6] = 'h0000002d00000000000000000000210000000000003720000000000000032000;
+      code[   7] = 'h0000002d00000000000000000000210000000000004220000000000000032000;
+      code[   8] = 'h0000002d00000000000000000000210000000000005820000000000000032000;
+      code[   9] = 'h0000000600000000000000000001210000000000000021000000000000032000;
+      code[  10] = 'h0000001f00000000000000000000010000000000000120000000000000000000;
+      code[  11] = 'h0000002200000000000000000002210000000000000020000000000000000000;
+      code[  12] = 'h0000001f00000000000000000000010000000000000220000000000000000000;
+      code[  13] = 'h0000001800000000000000160004210000000000000221000000000000012100;
+      code[  14] = 'h0000003800000000000000000003210000000000000121000000000000022100;
+      code[  15] = 'h0000002200000000000000000004210000000000000020000000000000000000;
+      code[  16] = 'h0000001f00000000000000000000010000000000000520000000000000000000;
+      code[  17] = 'h0000002200000000000000000005210000000000000120000000000000000000;
+      code[  18] = 'h0000001f00000000000000000000010000000000000620000000000000000000;
+      code[  19] = 'h00000018000000000000000b0008210000000000000521000000000000032100;
+      code[  20] = 'h0000002200000000000000000006210000000000000516000000000000000000;
+      code[  21] = 'h0000002200000000000000000007210000000000000516ff0000000000000000;
+      code[  22] = 'h0000001800000000000000040009210000000000000621000000000000072100;
+      code[  23] = 'h000000220000000000000000000516ff00000000000621000000000000000000;
+      code[  24] = 'h0000002200000000000000000005160000000000000721000000000000000000;
+      code[  25] = 'h0000000000000000000000000004210000000000000421000000000000012000;
+      code[  26] = 'h0000001f00000000000000000000010000000000000920000000000000000000;
+      code[  27] = 'h0000001f00000000000000000000010000000000000720000000000000000000;
+      code[  28] = 'h0000000000000000000000000005210000000000000521000000000000012000;
+      code[  29] = 'h0000001e00000000fffffff50006210000000000000000000000000000000000;
+      code[  30] = 'h0000001f00000000000000000000010000000000000820000000000000000000;
+      code[  31] = 'h0000001700000000000000040004210000000000000421000000000000000000;
+      code[  32] = 'h0000001f00000000000000000000010000000000000320000000000000000000;
+      code[  33] = 'h0000000000000000000000000002210000000000000221000000000000012000;
+      code[  34] = 'h0000001e00000000ffffffea0002210000000000000000000000000000000000;
+      code[  35] = 'h0000001f00000000000000000000010000000000000420000000000000000000;
+      code[  36] = 'h0000002600000000000000000000010000000000000015000000000000000000;
+      code[  37] = 'h0000002600000000000000000000010000000000000115000000000000000000;
+      code[  38] = 'h0000002600000000000000000000010000000000000215000000000000000000;
+      code[  39] = 'h0000002600000000000000000000010000000000000315000000000000000000;
+      code[  40] = 'h0000002600000000000000000000010000000000000415000000000000000000;
+      code[  41] = 'h0000002600000000000000000000010000000000000515000000000000000000;
+      code[  42] = 'h0000002600000000000000000000010000000000000615000000000000000000;
+      code[  43] = 'h0000002600000000000000000000010000000000000715000000000000000000;
+    end
+  endtask
+
+// Instruction memory access functions
+
+  task setMemory();                                                             // Set the target memory location updating the containing array size if necessary
+    begin
+      case(targetArena)
+        1: fork                                                                 // Update array
+          heapMem[targetLocation] = result;
+          arraySizes[targetLocationArea]  =
+          arraySizes[targetLocationArea] >  targetIndex ?
+          arraySizes[targetLocationArea]  : targetIndex + 1;
+        join
+        2: localMem[targetLocation] = result;                                   // Local memory
+      endcase
+    end
+  endtask
+
+// Instruction implementations
+
+  task add_instruction();                                                       // Add
+    begin
+      result = source1Value + source2Value;
+      //$display("%4d = Add %d(%d), %d, %d", result, targetLocation, targetArena, source1Value, source2Value);
+      setMemory(result);
+      lastInstruction = "Add";
+    end
+  endtask
+
+  task array_instruction();                                                     // Array
+    begin
+      if (freedArraysTop > 0) begin                                             // Reuse an array
+        result = freedArrays[--freedArraysTop];
+        //$display("%4d(%4d) = Array reuse", targetLocation, result);
+
+      end
+      else begin
+        result = allocs++;                                                      // Array zero means undefined
+        //$display("%4d(%4d) = Array new",   targetLocation, result);
+      end
+
+      arraySizes[targetLocationArea] = 0;                                       // Zero array length
+      setMemory();                                                              // Save address of array
+      lastInstruction = "Array";
+    end
+  endtask
+
+  task free_instruction();
+    begin                                                                       // Free
+      freedArrays[freedArraysTop++] = targetValue;
+      arraySizes[targetValue] = 0;                                              // Zero array length
+      lastInstruction = "Free";
+    end
+  endtask
+
+  task mov_instruction();                                                       // Mov
+    begin
+      result = source1Value;
+      //$display("%4d = Mov %d(%d), %d", result, targetLocation, targetArena, source1Value);
+      setMemory();                                                              // Save result in target
+      lastInstruction = "Mov";
+    end
+  endtask
+
+
+  task not_instruction();                                                       // Not
+    begin
+      result = source1Value ? 0 : 1;
+      $display("%4d = Not %d(%d), %d", result, targetLocation, targetArena, source1Value);
+      setMemory();                                                              // Save result in target
+      lastInstruction = "Not";
+    end
+  endtask
+
+  task resize_instruction();                                                    // Resize
+    begin
+      result = source1Value;
+      $display("%4d = Resize %d(%d), %d", result, targetLocation, targetArena, source1Value);
+      p = localMem[targetLocation];
+      fork
+        heapMem[p * NArea] = result;
+        q = heapMem[p * NArea];
+      join
+      lastInstruction = "Resize";
+    end
+  endtask
+
+  task subtract_instruction();                                                  // Subtract
+    begin
+      result = source1Value - source2Value;
+      $display("%4d = Subtract %d(%d), %d, %d", result, targetLocation, targetArena, source1Value, source2Value);
+      setMemory();                                                              // Save result in target
+      lastInstruction = "Subtract";
+    end
+  endtask
+
+  task out_instruction();                                                       // Out
+    begin
+      $display("%4d = Out %d", source1Value, source1Value);
+      outMem[outMemPos++] = source1Value;
+      lastInstruction = "Out";
+    end
+  endtask
+
+  task arrayIndex_instruction();
+    begin                                                                       // ArrayIndex
+      fork
+        q = source1Value * NArea;                                               // Array location
+        p = arraySizes[source1Value];                                           // Length of array
+        result = 0;
+      join
+      case(p)                                                                   // Arrays can be dynamic but only up to a fixed size so that we can unroll the loop that finds an element
+        1:
+            begin if (heapMem[q+0] == source2Value) result = 1; end
+        2:
+          fork
+            begin if (heapMem[q+0] == source2Value) result = 1; end
+            begin if (heapMem[q+1] == source2Value) result = 2; end
+          join
+        3:
+          fork
+            begin if (heapMem[q+0] == source2Value) result = 1; end
+            begin if (heapMem[q+1] == source2Value) result = 2; end
+            begin if (heapMem[q+2] == source2Value) result = 3; end
+          join
+        4:
+          fork
+            begin if (heapMem[q+0] == source2Value) result = 1; end
+            begin if (heapMem[q+1] == source2Value) result = 2; end
+            begin if (heapMem[q+2] == source2Value) result = 3; end
+            begin if (heapMem[q+3] == source2Value) result = 4; end
+          join
+        5:
+          fork
+            begin if (heapMem[q+0] == source2Value) result = 1; end
+            begin if (heapMem[q+1] == source2Value) result = 2; end
+            begin if (heapMem[q+2] == source2Value) result = 3; end
+            begin if (heapMem[q+3] == source2Value) result = 4; end
+            begin if (heapMem[q+4] == source2Value) result = 5; end
+          join
+        6:
+          fork
+            begin if (heapMem[q+0] == source2Value) result = 1; end
+            begin if (heapMem[q+1] == source2Value) result = 2; end
+            begin if (heapMem[q+2] == source2Value) result = 3; end
+            begin if (heapMem[q+3] == source2Value) result = 4; end
+            begin if (heapMem[q+4] == source2Value) result = 5; end
+            begin if (heapMem[q+5] == source2Value) result = 6; end
+          join
+        7:
+          fork
+            begin if (heapMem[q+0] == source2Value) result = 1; end
+            begin if (heapMem[q+1] == source2Value) result = 2; end
+            begin if (heapMem[q+2] == source2Value) result = 3; end
+            begin if (heapMem[q+3] == source2Value) result = 4; end
+            begin if (heapMem[q+4] == source2Value) result = 5; end
+            begin if (heapMem[q+5] == source2Value) result = 6; end
+            begin if (heapMem[q+6] == source2Value) result = 7; end
+          join
+      endcase
+      setMemory();
+      lastInstruction = "ArrayIndex";
+    end
+  endtask
+
+  task arrayCountGreater_instruction();
+    begin                                                                       // ArrayIndex
+      //$display("arrayIndex");
+      //printMemory();
+      //printInstruction();
+      fork
+        q = source1Value * NArea;                                               // Array location
+        p = arraySizes[source1Value];                                           // Length of array
+        result = 0;
+        r1 = 0; r2 = 0; r3 = 0; r4 = 0; r5 = 0; r6 = 0; r7 = 0; r8 = 0;
+      join;
+      case(p)                                                                   // Arrays can be dynamic but only up to a fixed size so that we can unroll the loop that finds an element
+        1:
+            begin if (heapMem[q+0] > source2Value) r1 = 1; end
+        2:
+          fork
+            begin if (heapMem[q+0] > source2Value) r1 = 1; end
+            begin if (heapMem[q+1] > source2Value) r2 = 1; end
+          join
+        3:
+          fork
+            begin if (heapMem[q+0] > source2Value) r1 = 1; end
+            begin if (heapMem[q+1] > source2Value) r2 = 1; end
+            begin if (heapMem[q+2] > source2Value) r3 = 1; end
+          join
+        4:
+          fork
+            begin if (heapMem[q+0] > source2Value) r1 = 1; end
+            begin if (heapMem[q+1] > source2Value) r2 = 1; end
+            begin if (heapMem[q+2] > source2Value) r3 = 1; end
+            begin if (heapMem[q+3] > source2Value) r4 = 1; end
+          join
+        5:
+          fork
+            begin if (heapMem[q+0] > source2Value) r1 = 1; end
+            begin if (heapMem[q+1] > source2Value) r2 = 1; end
+            begin if (heapMem[q+2] > source2Value) r3 = 1; end
+            begin if (heapMem[q+3] > source2Value) r4 = 1; end
+            begin if (heapMem[q+4] > source2Value) r5 = 1; end
+          join
+        6:
+          fork
+            begin if (heapMem[q+0] > source2Value) r1 = 1; end
+            begin if (heapMem[q+1] > source2Value) r2 = 1; end
+            begin if (heapMem[q+2] > source2Value) r3 = 1; end
+            begin if (heapMem[q+3] > source2Value) r4 = 1; end
+            begin if (heapMem[q+4] > source2Value) r5 = 1; end
+            begin if (heapMem[q+5] > source2Value) r6 = 1; end
+          join
+        7:
+          fork
+            begin if (heapMem[q+0] > source2Value) r1 = 1; end
+            begin if (heapMem[q+1] > source2Value) r2 = 1; end
+            begin if (heapMem[q+2] > source2Value) r3 = 1; end
+            begin if (heapMem[q+3] > source2Value) r4 = 1; end
+            begin if (heapMem[q+4] > source2Value) r5 = 1; end
+            begin if (heapMem[q+5] > source2Value) r6 = 1; end
+            begin if (heapMem[q+6] > source2Value) r7 = 1; end
+          join
+      endcase
+      result = r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8;
+      setMemory();
+      lastInstruction = "ArrayCountGreater";
+    end
+  endtask
+
+  task arrayCountLess_instruction();
+    begin                                                                       // ArrayIndex
+      fork
+        q = source1Value * NArea;                                               // Array location
+        p = arraySizes[source1Value];                                           // Length of array
+        result = 0;
+        r1 = 0; r2 = 0; r3 = 0; r4 = 0; r5 = 0; r6 = 0; r7 = 0; r8 = 0;
+      join
+      case(p)                                                                   // Arrays can be dynamic but only up to a fixed size so that we can unroll the loop that finds an element
+        1:
+            begin if (heapMem[q+0] < source2Value) r1 = 1; end
+        2:
+          fork
+            begin if (heapMem[q+0] < source2Value) r1 = 1; end
+            begin if (heapMem[q+1] < source2Value) r2 = 1; end
+          join
+        3:
+          fork
+            begin if (heapMem[q+0] < source2Value) r1 = 1; end
+            begin if (heapMem[q+1] < source2Value) r2 = 1; end
+            begin if (heapMem[q+2] < source2Value) r3 = 1; end
+          join
+        4:
+          fork
+            begin if (heapMem[q+0] < source2Value) r1 = 1; end
+            begin if (heapMem[q+1] < source2Value) r2 = 1; end
+            begin if (heapMem[q+2] < source2Value) r3 = 1; end
+            begin if (heapMem[q+3] < source2Value) r4 = 1; end
+          join
+        5:
+          fork
+            begin if (heapMem[q+0] < source2Value) r1 = 1; end
+            begin if (heapMem[q+1] < source2Value) r2 = 1; end
+            begin if (heapMem[q+2] < source2Value) r3 = 1; end
+            begin if (heapMem[q+3] < source2Value) r4 = 1; end
+            begin if (heapMem[q+4] < source2Value) r5 = 1; end
+          join
+        6:
+          fork
+            begin if (heapMem[q+0] < source2Value) r1 = 1; end
+            begin if (heapMem[q+1] < source2Value) r2 = 1; end
+            begin if (heapMem[q+2] < source2Value) r3 = 1; end
+            begin if (heapMem[q+3] < source2Value) r4 = 1; end
+            begin if (heapMem[q+4] < source2Value) r5 = 1; end
+            begin if (heapMem[q+5] < source2Value) r6 = 1; end
+          join
+        7:
+          fork
+            begin if (heapMem[q+0] < source2Value) r1 = 1; end
+            begin if (heapMem[q+1] < source2Value) r2 = 1; end
+            begin if (heapMem[q+2] < source2Value) r3 = 1; end
+            begin if (heapMem[q+3] < source2Value) r4 = 1; end
+            begin if (heapMem[q+4] < source2Value) r5 = 1; end
+            begin if (heapMem[q+5] < source2Value) r6 = 1; end
+            begin if (heapMem[q+6] < source2Value) r7 = 1; end
+          join
+      endcase
+      result = r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8;
+      setMemory();
+      lastInstruction = "ArrayLess";
+    end
+  endtask
+
+  task shiftLeft_instruction();
+    begin                                                                       // shiftLeft
+      result = targetValue << source1Value;
+      setMemory();
+      lastInstruction = "ShiftLeft";
+    end
+  endtask
+
+  task shiftRight_instruction();
+    begin                                                                       // shiftLeft
+      result = targetValue >> source1Value;
+      setMemory();
+      lastInstruction = "ShiftRight";
+    end
+  endtask
+
+  task jEq_instruction();
+    begin                                                                       // Jeq
+      if (source1Value == source2Value) begin
+        ip += targetArea;
+        lastInstruction = "jEq taken";
+      end
+      else lastInstruction = "jEq continue";
+    end
+  endtask
+
+  task jFalse_instruction();
+    begin                                                                       // jFalse
+      if (source1Value == 0) begin
+        ip += targetArea;
+        lastInstruction = "jFalse taken";
+      end
+      else lastInstruction = "jFalse continue";
+    end
+  endtask
+
+  task jGe_instruction();
+    begin                                                                       // jGe
+      if (source1Value >= source2Value) begin
+        ip += targetArea ;
+        lastInstruction = "jGe taken";
+      end
+      else lastInstruction = "jGe continue";
+    end
+  endtask
+
+  task jGt_instruction();
+    begin                                                                       // jGt
+      if (source1Value >  source2Value) begin
+        ip += targetArea;
+        lastInstruction = "jGt taken";
+      end
+      else lastInstruction = "jGt continue";
+    end
+  endtask
+
+  task jLe_instruction();
+    begin                                                                       // jLe
+      if (source1Value <= source2Value) begin
+        ip += targetArea;
+        lastInstruction = "jLe taken";
+      end
+      else lastInstruction = "jLe continue";
+    end
+  endtask
+
+  task jLt_instruction();
+    begin                                                                       // jLt
+      if (source1Value <  source2Value) begin
+        ip += targetArea;
+        lastInstruction = "jLt taken";
+      end
+      else lastInstruction = "jLt continue";
+    end
+  endtask
+
+  task jNe_instruction();
+    begin                                                                       // jNe
+      if (source1Value != source2Value) begin
+        ip += targetArea;
+        lastInstruction = "jNe taken";
+      end
+      else lastInstruction = "jNe continue";
+    end
+  endtask
+
+  task jTrue_instruction();
+    begin                                                                       // jTrue
+      if (source1Value != 0) begin
+        ip += targetArea;
+        lastInstruction = "jTrue taken";
+      end
+      else lastInstruction = "jTrue continue";
+    end
+  endtask
+
+  task jmp_instruction();
+    begin                                                                       // jmp
+      ip += targetArea;
+        lastInstruction = "jmp taken";
+    end
+  endtask
+
+  task push_instruction();                                                      // push
+    begin
+      p = arraySizes[targetValue];
+      if (p + 1 < NArea) begin
+        heapMem[p] = source1Value;
+        arraySizes[targetValue] = p + 1;
+        lastInstruction = "Push"; result = source1Value;
+      end
+    end
+  endtask
+
+  task pop_instruction();                                                       // pop
+    begin
+      p = arraySizes[source1Value];
+      if (p > 0) begin
+        p--;
+        arraySizes[source1Value] = p;
+        result = heapMem[p];
+        setMemory();
+        lastInstruction = "Push"; result = source1Value;
+      end
+    end
+  endtask
+
+  task arraySize_instruction();
+    begin                                                                       // arraySize
+      result = arraySizes[source1Value];
+      setMemory();
+      lastInstruction = "ArraySize";
+    end
+  endtask
+                                                                                // Shift up an array inporallel by forst copyign evbery element in parallel then copying back just the elements we need into their new positions
+  task shiftUp_instruction();
+    begin
+      if (targetIndex < NArea) begin
+        p = targetLocationArea * NArea;                                         // Array Start
+        case(NArea)                                                             // shiftUp
+          10: begin
+            fork
+              arraySizes[targetLocationArea] = arraySizes[targetLocationArea] + 1;// New size of array
+              arrayShift[0] = heapMem[p + 0];                                   // Move data into staging area
+              arrayShift[1] = heapMem[p + 1];
+              arrayShift[2] = heapMem[p + 2];
+              arrayShift[3] = heapMem[p + 3];
+              arrayShift[4] = heapMem[p + 4];
+              arrayShift[5] = heapMem[p + 5];
+              arrayShift[6] = heapMem[p + 6];
+              arrayShift[7] = heapMem[p + 7];
+              arrayShift[8] = heapMem[p + 8];
+              arrayShift[9] = heapMem[p + 9];
+            join
+            case(targetIndex)                                                   // Destage data into one position higher
+              0: fork
+                heapMem[p + 0] = source1Value;
+                heapMem[p + 1] = arrayShift[0];
+                heapMem[p + 2] = arrayShift[1];
+                heapMem[p + 3] = arrayShift[2];
+                heapMem[p + 4] = arrayShift[3];
+                heapMem[p + 5] = arrayShift[4];
+                heapMem[p + 6] = arrayShift[5];
+                heapMem[p + 7] = arrayShift[6];
+                heapMem[p + 8] = arrayShift[7];
+                heapMem[p + 9] = arrayShift[8];
+              join
+              1: fork
+                heapMem[p + 1] = source1Value;
+                heapMem[p + 2] = arrayShift[1];
+                heapMem[p + 3] = arrayShift[2];
+                heapMem[p + 4] = arrayShift[3];
+                heapMem[p + 5] = arrayShift[4];
+                heapMem[p + 6] = arrayShift[5];
+                heapMem[p + 7] = arrayShift[6];
+                heapMem[p + 8] = arrayShift[7];
+                heapMem[p + 9] = arrayShift[8];
+              join
+              2: fork
+                heapMem[p + 2] = source1Value;
+                heapMem[p + 3] = arrayShift[2];
+                heapMem[p + 4] = arrayShift[3];
+                heapMem[p + 5] = arrayShift[4];
+                heapMem[p + 6] = arrayShift[5];
+                heapMem[p + 7] = arrayShift[6];
+                heapMem[p + 8] = arrayShift[7];
+                heapMem[p + 9] = arrayShift[8];
+              join
+              3: fork
+                heapMem[p + 3] = source1Value;
+                heapMem[p + 4] = arrayShift[3];
+                heapMem[p + 5] = arrayShift[4];
+                heapMem[p + 6] = arrayShift[5];
+                heapMem[p + 7] = arrayShift[6];
+                heapMem[p + 8] = arrayShift[7];
+                heapMem[p + 9] = arrayShift[8];
+              join
+              4: fork
+                heapMem[p + 4] = source1Value;
+                heapMem[p + 5] = arrayShift[4];
+                heapMem[p + 6] = arrayShift[5];
+                heapMem[p + 7] = arrayShift[6];
+                heapMem[p + 8] = arrayShift[7];
+                heapMem[p + 9] = arrayShift[8];
+              join
+              5: fork
+                heapMem[p + 5] = source1Value;
+                heapMem[p + 6] = arrayShift[5];
+                heapMem[p + 7] = arrayShift[6];
+                heapMem[p + 8] = arrayShift[7];
+                heapMem[p + 9] = arrayShift[8];
+              join
+              6: fork
+                heapMem[p + 6] = source1Value;
+                heapMem[p + 7] = arrayShift[6];
+                heapMem[p + 8] = arrayShift[7];
+                heapMem[p + 9] = arrayShift[8];
+              join
+              7: fork
+                heapMem[p + 7] = source1Value;
+                heapMem[p + 8] = arrayShift[7];
+                heapMem[p + 9] = arrayShift[8];
+              join
+              8: fork
+                heapMem[p + 8] = source1Value;
+                heapMem[p + 9] = arrayShift[8];
+              join
+              9: fork
+                heapMem[p + 9] = source1Value;
+              join
+            endcase
+          end
+        endcase
+      end
+      lastInstruction = "ShiftUp";
+    end
+  endtask
+
 endmodule
