@@ -7,11 +7,11 @@ module fpga_tb;                                                                 
 endmodule
 
 module fpga;                                                                    // The cpu executes one step in the computation per input clock. We can also put values into memory and get values out again to test each program.
-  parameter integer signed NTestPrograms  =    8;                               // Number of test programs to run
+  parameter integer signed NTestPrograms  =   15;                               // Number of test programs to run
   parameter integer signed NTestsExpected =   51;                               // Number of test passes expected
   parameter integer signed showInstructionDetails = 0;                          // Show details of each instruction as it is executed
 
-  parameter integer signed NSteps         =  400;                               // Maximum number of instruction executions
+  parameter integer signed NSteps         = 200;                                // Maximum number of instruction executions
   parameter integer signed NInstructions  = 2000;                               // Number of instruction slots in code memory
   parameter integer signed NArea          =   10;                               // Size of each area on the heap
   parameter integer signed NArrays        = 1000;                               // Amount of heap memory
@@ -69,7 +69,8 @@ module fpga;                                                                    
        11: Shift_up_test();
        12: Shift_up_test_2();
        13: Push_test();
-       14: Bubble_sort();
+       14: Pop_test();
+       15: Bubble_sort();
       endcase
     end
   endtask
@@ -137,34 +138,39 @@ module fpga;                                                                    
           ok(outMem[1] == 333, "Jeq_test 2");                                   // 1 => 29
         end
        11: begin
-          ok(heapMem[10] ==  4, "ShiftUp 1 length");                            // 5 => 34
-          ok(heapMem[11] == 99, "ShiftUp 1 new");
-          ok(heapMem[12] ==  0, "ShiftUp 1 0");
-          ok(heapMem[13] ==  1, "ShiftUp 1 1");
-          ok(heapMem[14] ==  2, "ShiftUp 1 2");
+          ok(arraySizes[0] ==  4, "ShiftUp 1 length");                          // 5 => 34
+          ok(heapMem[0]    == 99, "ShiftUp 1 new");
+          ok(heapMem[1]    ==  0, "ShiftUp 1 0");
+          ok(heapMem[2]    ==  1, "ShiftUp 1 1");
+          ok(heapMem[3]    ==  2, "ShiftUp 1 2");
         end
        12: begin
-          ok(heapMem[10] ==  4, "ShiftUp 2 length");                            // 5 => 39
-          ok(heapMem[11] ==  0, "ShiftUp 2 new");
-          ok(heapMem[12] ==  1, "ShiftUp 2 0");
-          ok(heapMem[13] == 99, "ShiftUp 2 1");
-          ok(heapMem[14] ==  2, "ShiftUp 2 2");
+          ok(arraySizes[0] ==  4, "ShiftUp 2 length");                          // 5 => 39
+          ok(heapMem[0]    ==  0, "ShiftUp 2 new");
+          ok(heapMem[1]    ==  1, "ShiftUp 2 0");
+          ok(heapMem[2]    == 99, "ShiftUp 2 1");
+          ok(heapMem[3]    ==  2, "ShiftUp 2 2");
         end
        13: begin
-          ok(heapMem[10] ==  2, "Push 1 length");                               // 3 => 42
-          ok(heapMem[11] ==  1, "Push 1 1");
-          ok(heapMem[12] ==  2, "Push 1 2");
+          ok(arraySizes[0] ==  2, "Push 1 length");                             // 3 => 42
+          ok(heapMem[0]    ==  1, "Push 1 1");
+          ok(heapMem[1]    ==  2, "Push 1 2");
         end
        14: begin
-          ok(heapMem[10] ==  8, "Bubble Sort length");                          // 9 => 51
-          ok(heapMem[11] ==  1, "Bubble Sort 1");
-          ok(heapMem[12] ==  2, "Bubble Sort 2");
-          ok(heapMem[13] ==  3, "Bubble Sort 2");
-          ok(heapMem[14] ==  4, "Bubble Sort 2");
-          ok(heapMem[15] ==  5, "Bubble Sort 2");
-          ok(heapMem[16] ==  6, "Bubble Sort 2");
-          ok(heapMem[17] ==  7, "Bubble Sort 2");
-          ok(heapMem[18] ==  8, "Bubble Sort 2");
+          ok(arraySizes[0] ==  0, "Pop 1 length");                              // 3 => 45
+          ok(outMem[0]     ==  2, "Pop 1.1");
+          ok(outMem[1]     ==  1, "Pop 1.2");
+        end
+       15: begin
+          ok(arraySizes[0] ==  8, "Bubble Sort length");                        // 9 => 54
+          ok(heapMem[0]    ==  11, "Bubble Sort 1");
+          ok(heapMem[1]    ==  22, "Bubble Sort 2");
+          ok(heapMem[2]    ==  33, "Bubble Sort 3");
+          ok(heapMem[3]    ==  44, "Bubble Sort 4");
+          ok(heapMem[4]    ==  55, "Bubble Sort 5");
+          ok(heapMem[5]    ==  66, "Bubble Sort 6");
+          ok(heapMem[6]    ==  77, "Bubble Sort 7");
+          ok(heapMem[7]    ==  88, "Bubble Sort 8");
         end
       endcase
     end
@@ -290,7 +296,7 @@ module fpga;                                                                    
     testsPassed = 0;                                                            // Passed tests
     testsFailed = 0;                                                            // Failed tests
     for(test = 1; test <= NTestPrograms; ++test) begin                          // Run the tests from bewest to oldest
-//if (test == 11) begin
+//if (test == 15) begin
       allocs         = 0;                                                       // Largest number of arrays in use at any one time so far
       freedArraysTop = 0;                                                       // Start freed arrays stack
       loadCode(test);                                                           // Load the program
@@ -307,7 +313,7 @@ module fpga;                                                                    
         if (showInstructionDetails) printInstruction();                         // Print Instruction details
 
         executeInstruction();
-        $display("%5d  %4d  %8s  %4d", nSteps, ip, lastInstruction, result);
+        //$display("%5d  %4d  %8s  %4d", nSteps, ip, lastInstruction, result);
         //printMemory();
         if (nSteps++ > NSteps) begin                                            // Count instructions executed
           $display("Out of instructions after %d steps", NSteps);
@@ -529,11 +535,6 @@ module fpga;                                                                    
      $display("paramsPut");
     end
   endtask
-  task pop_instruction();
-    begin                                                                       // pop
-     $display("pop");
-    end
-  endtask
   task random_instruction();
     begin                                                                       // random
      $display("random");
@@ -705,100 +706,112 @@ module fpga;                                                                    
   task Jeq_test();
     begin
       NInstructionEnd = 12;
-      code[   0] = 'h0000001f00000000000000000000017f000000000001207f000000000000007f;
-      code[   1] = 'h0000002200000000000000000000217f000000000001207f000000000000007f;
-      code[   2] = 'h0000002200000000000000000001217f000000000002207f000000000000007f;
-      code[   3] = 'h0000001600000000000000050002217f000000000000217f000000000001217f;
-      code[   4] = 'h0000002600000000000000000000017f00000000006f207f000000000000007f;
-      code[   5] = 'h0000001600000000000000030002217f000000000000217f000000000000217f;
-      code[   6] = 'h0000002600000000000000000000017f0000000000de207f000000000000007f;
-      code[   7] = 'h0000001e00000000000000040004217f000000000000007f000000000000007f;
-      code[   8] = 'h0000001f00000000000000000000017f000000000002207f000000000000007f;
-      code[   9] = 'h0000002600000000000000000000017f00000000014d207f000000000000007f;
-      code[  10] = 'h0000001f00000000000000000000017f000000000003207f000000000000007f;
-      code[  11] = 'h0000001f00000000000000000000017f000000000004207f000000000000007f;
+      code[   0] = 'h0000001f00000000000000000000010000000000000120000000000000000000;
+      code[   1] = 'h0000002200000000000000000000210000000000000120000000000000000000;
+      code[   2] = 'h0000002200000000000000000001210000000000000220000000000000000000;
+      code[   3] = 'h0000001600000000000000050002210000000000000021000000000000012100;
+      code[   4] = 'h0000002600000000000000000000010000000000006f20000000000000000000;
+      code[   5] = 'h0000001600000000000000030002210000000000000021000000000000002100;
+      code[   6] = 'h000000260000000000000000000001000000000000de20000000000000000000;
+      code[   7] = 'h0000001e00000000000000040004210000000000000000000000000000000000;
+      code[   8] = 'h0000001f00000000000000000000010000000000000220000000000000000000;
+      code[   9] = 'h0000002600000000000000000000010000000000014d20000000000000000000;
+      code[  10] = 'h0000001f00000000000000000000010000000000000320000000000000000000;
+      code[  11] = 'h0000001f00000000000000000000010000000000000420000000000000000000;
     end
   endtask
                                                                                 // Load program 'Shift_up_test' into code memory
   task Shift_up_test();
     begin
       NInstructionEnd = 5;
-      code[   0] = 'h0000000100000000000000000000217f000000000003207f000000000000007f;
-      code[   1] = 'h0000002200000000000000000000157f000000000000207f000000000000007f;
-      code[   2] = 'h0000002200000000000000000001157f000000000001207f000000000000007f;
-      code[   3] = 'h0000002200000000000000000002157f000000000002207f000000000000007f;
-      code[   4] = 'h0000003700000000000000000000157f000000000063207f000000000000007f;
+      code[   0] = 'h0000000100000000000000000000210000000000000320000000000000000000;
+      code[   1] = 'h0000002200000000000000000000150000000000000020000000000000000000;
+      code[   2] = 'h0000002200000000000000000001150000000000000120000000000000000000;
+      code[   3] = 'h0000002200000000000000000002150000000000000220000000000000000000;
+      code[   4] = 'h0000003700000000000000000000150000000000006320000000000000000000;
     end
   endtask
                                                                                 // Load program 'Shift_up_test_2' into code memory
   task Shift_up_test_2();
     begin
       NInstructionEnd = 5;
-      code[   0] = 'h0000000100000000000000000000217f000000000003207f000000000000007f;
-      code[   1] = 'h0000002200000000000000000000157f000000000000207f000000000000007f;
-      code[   2] = 'h0000002200000000000000000001157f000000000001207f000000000000007f;
-      code[   3] = 'h0000002200000000000000000002157f000000000002207f000000000000007f;
-      code[   4] = 'h0000003700000000000000000002157f000000000063207f000000000000007f;
+      code[   0] = 'h0000000100000000000000000000210000000000000320000000000000000000;
+      code[   1] = 'h0000002200000000000000000000150000000000000020000000000000000000;
+      code[   2] = 'h0000002200000000000000000001150000000000000120000000000000000000;
+      code[   3] = 'h0000002200000000000000000002150000000000000220000000000000000000;
+      code[   4] = 'h0000003700000000000000000002150000000000006320000000000000000000;
     end
   endtask
 
   task Push_test();
     begin
       NInstructionEnd = 3;
-      code[   0] = 'h0000000100000000000000000000217f000000000003207f000000000000007f;
-      code[   1] = 'h0000002d00000000000000000000217f000000000001207f000000000003207f;
-      code[   2] = 'h0000002d00000000000000000000217f000000000002207f000000000003207f;
+      code[   0] = 'h0000000100000000000000000000210000000000000320000000000000000000;
+      code[   1] = 'h0000002d00000000000000000000210000000000000120000000000000032000;
+      code[   2] = 'h0000002d00000000000000000000210000000000000220000000000000032000;
+    end
+  endtask
+
+  task Pop_test();
+    begin
+      NInstructionEnd = 7;
+      code[   0] = 'h0000000100000000000000000000210000000000000320000000000000000000;
+      code[   1] = 'h0000002d00000000000000000000210000000000000120000000000000032000;
+      code[   2] = 'h0000002d00000000000000000000210000000000000220000000000000032000;
+      code[   3] = 'h0000002c00000000000000000001210000000000000021000000000000032000;
+      code[   4] = 'h0000002c00000000000000000002210000000000000021000000000000032000;
+      code[   5] = 'h0000002600000000000000000000010000000000000121000000000000000000;
+      code[   6] = 'h0000002600000000000000000000010000000000000221000000000000000000;
     end
   endtask
                                                                                 // Load program 'Bubble_sort' into code memory
   task Bubble_sort();
     begin
-      NInstructionEnd = 45;
-      code[   0] = 'h0000000100000000000000000000217f000000000003207f000000000000007f;
-      code[   1] = 'h0000002d00000000000000000000217f000000000021207f000000000003207f;
-      code[   2] = 'h0000002d00000000000000000000217f00000000000b207f000000000003207f;
-      code[   3] = 'h0000002d00000000000000000000217f000000000016207f000000000003207f;
-      code[   4] = 'h0000000600000000000000000001217f000000000000217f000000000003207f;
-      code[   5] = 'h0000001f00000000000000000000017f000000000001207f000000000000007f;
-      code[   6] = 'h0000002200000000000000000002217f000000000000207f000000000000007f;
-      code[   7] = 'h0000001f00000000000000000000017f000000000002207f000000000000007f;
-      code[   8] = 'h0000001800000000000000200004217f000000000002217f000000000001217f;
-      code[   9] = 'h0000003800000000000000000003217f000000000001217f000000000002217f;
-      code[  10] = 'h0000002200000000000000000004217f000000000000207f000000000000007f;
-      code[  11] = 'h0000002600000000000000000000017f000000000457207f000000000000007f;
-      code[  12] = 'h0000001f00000000000000000000017f000000000005207f000000000000007f;
-      code[  13] = 'h0000002200000000000000000005217f000000000001207f000000000000007f;
-      code[  14] = 'h0000001f00000000000000000000017f000000000006207f000000000000007f;
-      code[  15] = 'h0000001800000000000000120008217f000000000005217f000000000003217f;
-      code[  16] = 'h0000002200000000000000000006217f000000000005167f000000000000007f;
-      code[  17] = 'h0000002200000000000000000007217f000000000005167e000000000000007f;
-      code[  18] = 'h0000002600000000000000000000017f0000000008ae207f000000000000007f;
-      code[  19] = 'h0000002600000000000000000000017f000000000005217f000000000000007f;
-      code[  20] = 'h0000002600000000000000000000017f000000000006217f000000000000007f;
-      code[  21] = 'h0000002600000000000000000000017f000000000007217f000000000000007f;
-      code[  22] = 'h0000001800000000000000070009217f000000000006217f000000000007217f;
-      code[  23] = 'h0000002200000000000000000005167e000000000006217f000000000000007f;
-      code[  24] = 'h0000002200000000000000000005167f000000000007217f000000000000007f;
-      code[  25] = 'h0000002600000000000000000000017f000000000d05207f000000000000007f;
-      code[  26] = 'h0000002600000000000000000000017f000000000006217f000000000000007f;
-      code[  27] = 'h0000002600000000000000000000017f000000000007217f000000000000007f;
-      code[  28] = 'h0000000000000000000000000004217f000000000004217f000000000001207f;
-      code[  29] = 'h0000001f00000000000000000000017f000000000009207f000000000000007f;
-      code[  30] = 'h0000001f00000000000000000000017f000000000007207f000000000000007f;
-      code[  31] = 'h0000000000000000000000000005217f000000000005217f000000000001207f;
-      code[  32] = 'h0000001e00000000ffffffee0006217f000000000000007f000000000000007f;
-      code[  33] = 'h0000001f00000000000000000000017f000000000008207f000000000000007f;
-      code[  34] = 'h0000002600000000000000000000017f00000000115c207f000000000000007f;
-      code[  35] = 'h0000001700000000000000050004217f000000000004217f000000000000007f;
-      code[  36] = 'h0000002600000000000000000000017f0000000015b3207f000000000000007f;
-      code[  37] = 'h0000001f00000000000000000000017f000000000003207f000000000000007f;
-      code[  38] = 'h0000000000000000000000000002217f000000000002217f000000000001207f;
-      code[  39] = 'h0000001e00000000ffffffe00002217f000000000000007f000000000000007f;
-      code[  40] = 'h0000001f00000000000000000000017f000000000004207f000000000000007f;
-      code[  41] = 'h0000002600000000000000000000017f000000001a0a207f000000000000007f;
-      code[  42] = 'h0000002600000000000000000000017f000000000000157f000000000000007f;
-      code[  43] = 'h0000002600000000000000000000017f000000000001157f000000000000007f;
-      code[  44] = 'h0000002600000000000000000000017f000000000002157f000000000000007f;
+      NInstructionEnd = 44;
+      code[   0] = 'h0000000100000000000000000000210000000000000320000000000000000000;
+      code[   1] = 'h0000002d00000000000000000000210000000000002120000000000000032000;
+      code[   2] = 'h0000002d00000000000000000000210000000000000b20000000000000032000;
+      code[   3] = 'h0000002d00000000000000000000210000000000001620000000000000032000;
+      code[   4] = 'h0000002d00000000000000000000210000000000002c20000000000000032000;
+      code[   5] = 'h0000002d00000000000000000000210000000000004d20000000000000032000;
+      code[   6] = 'h0000002d00000000000000000000210000000000003720000000000000032000;
+      code[   7] = 'h0000002d00000000000000000000210000000000004220000000000000032000;
+      code[   8] = 'h0000002d00000000000000000000210000000000005820000000000000032000;
+      code[   9] = 'h0000000600000000000000000001210000000000000021000000000000032000;
+      code[  10] = 'h0000001f00000000000000000000010000000000000120000000000000000000;
+      code[  11] = 'h0000002200000000000000000002210000000000000020000000000000000000;
+      code[  12] = 'h0000001f00000000000000000000010000000000000220000000000000000000;
+      code[  13] = 'h0000001800000000000000160004210000000000000221000000000000012100;
+      code[  14] = 'h0000003800000000000000000003210000000000000121000000000000022100;
+      code[  15] = 'h0000002200000000000000000004210000000000000020000000000000000000;
+      code[  16] = 'h0000001f00000000000000000000010000000000000520000000000000000000;
+      code[  17] = 'h0000002200000000000000000005210000000000000120000000000000000000;
+      code[  18] = 'h0000001f00000000000000000000010000000000000620000000000000000000;
+      code[  19] = 'h00000018000000000000000b0008210000000000000521000000000000032100;
+      code[  20] = 'h0000002200000000000000000006210000000000000516000000000000000000;
+      code[  21] = 'h0000002200000000000000000007210000000000000516ff0000000000000000;
+      code[  22] = 'h0000001800000000000000040009210000000000000621000000000000072100;
+      code[  23] = 'h000000220000000000000000000516ff00000000000621000000000000000000;
+      code[  24] = 'h0000002200000000000000000005160000000000000721000000000000000000;
+      code[  25] = 'h0000000000000000000000000004210000000000000421000000000000012000;
+      code[  26] = 'h0000001f00000000000000000000010000000000000920000000000000000000;
+      code[  27] = 'h0000001f00000000000000000000010000000000000720000000000000000000;
+      code[  28] = 'h0000000000000000000000000005210000000000000521000000000000012000;
+      code[  29] = 'h0000001e00000000fffffff50006210000000000000000000000000000000000;
+      code[  30] = 'h0000001f00000000000000000000010000000000000820000000000000000000;
+      code[  31] = 'h0000001700000000000000040004210000000000000421000000000000000000;
+      code[  32] = 'h0000001f00000000000000000000010000000000000320000000000000000000;
+      code[  33] = 'h0000000000000000000000000002210000000000000221000000000000012000;
+      code[  34] = 'h0000001e00000000ffffffea0002210000000000000000000000000000000000;
+      code[  35] = 'h0000001f00000000000000000000010000000000000420000000000000000000;
+      code[  36] = 'h0000002600000000000000000000010000000000000015000000000000000000;
+      code[  37] = 'h0000002600000000000000000000010000000000000115000000000000000000;
+      code[  38] = 'h0000002600000000000000000000010000000000000215000000000000000000;
+      code[  39] = 'h0000002600000000000000000000010000000000000315000000000000000000;
+      code[  40] = 'h0000002600000000000000000000010000000000000415000000000000000000;
+      code[  41] = 'h0000002600000000000000000000010000000000000515000000000000000000;
+      code[  42] = 'h0000002600000000000000000000010000000000000615000000000000000000;
+      code[  43] = 'h0000002600000000000000000000010000000000000715000000000000000000;
     end
   endtask
 
@@ -1132,7 +1145,6 @@ module fpga;                                                                    
 
   task jGe_instruction();
     begin                                                                       // jGe
-$display("AAAA %d %d", source1Value, source2Value);
       if (source1Value >= source2Value) begin
         ip += targetArea ;
         lastInstruction = "jGe taken";
@@ -1200,118 +1212,135 @@ $display("AAAA %d %d", source1Value, source2Value);
 
   task push_instruction();                                                      // push
     begin
-      l = targetValue * NArea;
-      o = heapMem[l];
-      heapMem[l+o+1] = source1Value;                                            // Push
-      heapMem[l] += 1;                                                          // Increment length
-      lastInstruction = "Push"; result = source1Value;
+      p = arraySizes[targetValue];
+      if (p + 1 < NArea) begin
+        heapMem[p] = source1Value;
+        arraySizes[targetValue] = p + 1;
+        lastInstruction = "Push"; result = source1Value;
+      end
+    end
+  endtask
+
+  task pop_instruction();                                                       // pop
+    begin
+      p = arraySizes[source1Value];
+      if (p > 0) begin
+        p--;
+        arraySizes[source1Value] = p;
+        result = heapMem[p];
+        setMemory();
+        lastInstruction = "Push"; result = source1Value;
+      end
     end
   endtask
 
   task arraySize_instruction();
     begin                                                                       // arraySize
-      result = heapMem[source1Value * NArea];
+      result = arraySizes[source1Value];
       setMemory();
       lastInstruction = "ArraySize";
     end
   endtask
-
+                                                                                // Shift up an array inporallel by forst copyign evbery element in parallel then copying back just the elements we need into their new positions
   task shiftUp_instruction();
     begin
-      p = targetLocation - targetLocation % NArea;                              // Array length
-      case(NArea)                                                               // shiftUp
-        10: begin
-          fork
-            heapMem[p]    = heapMem[p]+ 1;                                      // New length
-            arrayShift[0] = heapMem[p + 1];                                     // Move data into staging area
-            arrayShift[1] = heapMem[p + 2];
-            arrayShift[2] = heapMem[p + 3];
-            arrayShift[3] = heapMem[p + 4];
-            arrayShift[4] = heapMem[p + 5];
-            arrayShift[5] = heapMem[p + 6];
-            arrayShift[6] = heapMem[p + 7];
-            arrayShift[7] = heapMem[p + 8];
-            arrayShift[8] = heapMem[p + 9];
-          join
-          case(targetLocation % NArea - 1)                                      // Destage data into one position higher
-            0: fork
-              heapMem[p +  1] = source1Value;
-              heapMem[p +  2] = arrayShift[0];
-              heapMem[p +  3] = arrayShift[1];
-              heapMem[p +  4] = arrayShift[2];
-              heapMem[p +  5] = arrayShift[3];
-              heapMem[p +  6] = arrayShift[4];
-              heapMem[p +  7] = arrayShift[5];
-              heapMem[p +  8] = arrayShift[6];
-              heapMem[p +  9] = arrayShift[7];
-              heapMem[p + 10] = arrayShift[8];
+      if (targetIndex < NArea) begin
+        p = targetLocationArea * NArea;                                         // Array Start
+        case(NArea)                                                             // shiftUp
+          10: begin
+            fork
+              arraySizes[targetLocationArea] = arraySizes[targetLocationArea] + 1;// New size of array
+              arrayShift[0] = heapMem[p + 0];                                   // Move data into staging area
+              arrayShift[1] = heapMem[p + 1];
+              arrayShift[2] = heapMem[p + 2];
+              arrayShift[3] = heapMem[p + 3];
+              arrayShift[4] = heapMem[p + 4];
+              arrayShift[5] = heapMem[p + 5];
+              arrayShift[6] = heapMem[p + 6];
+              arrayShift[7] = heapMem[p + 7];
+              arrayShift[8] = heapMem[p + 8];
+              arrayShift[9] = heapMem[p + 9];
             join
-            1: fork
-              heapMem[p +  2] = source1Value;
-              heapMem[p +  3] = arrayShift[1];
-              heapMem[p +  4] = arrayShift[2];
-              heapMem[p +  5] = arrayShift[3];
-              heapMem[p +  6] = arrayShift[4];
-              heapMem[p +  7] = arrayShift[5];
-              heapMem[p +  8] = arrayShift[6];
-              heapMem[p +  9] = arrayShift[7];
-              heapMem[p + 10] = arrayShift[8];
-            join
-            2: fork
-              heapMem[p +  3] = source1Value;
-              heapMem[p +  4] = arrayShift[2];
-              heapMem[p +  5] = arrayShift[3];
-              heapMem[p +  6] = arrayShift[4];
-              heapMem[p +  7] = arrayShift[5];
-              heapMem[p +  8] = arrayShift[6];
-              heapMem[p +  9] = arrayShift[7];
-              heapMem[p + 10] = arrayShift[8];
-            join
-            3: fork
-              heapMem[p +  4] = source1Value;
-              heapMem[p +  5] = arrayShift[3];
-              heapMem[p +  6] = arrayShift[4];
-              heapMem[p +  7] = arrayShift[5];
-              heapMem[p +  8] = arrayShift[6];
-              heapMem[p +  9] = arrayShift[7];
-              heapMem[p + 10] = arrayShift[8];
-            join
-            4: fork
-              heapMem[p +  5] = source1Value;
-              heapMem[p +  6] = arrayShift[4];
-              heapMem[p +  7] = arrayShift[5];
-              heapMem[p +  8] = arrayShift[6];
-              heapMem[p +  9] = arrayShift[7];
-              heapMem[p + 10] = arrayShift[8];
-            join
-            5: fork
-              heapMem[p +  6] = source1Value;
-              heapMem[p +  7] = arrayShift[5];
-              heapMem[p +  8] = arrayShift[6];
-              heapMem[p +  9] = arrayShift[7];
-              heapMem[p + 10] = arrayShift[8];
-            join
-            6: fork
-              heapMem[p +  7] = source1Value;
-              heapMem[p +  8] = arrayShift[6];
-              heapMem[p +  9] = arrayShift[7];
-              heapMem[p + 10] = arrayShift[8];
-            join
-            7: fork
-              heapMem[p +  8] = source1Value;
-              heapMem[p +  9] = arrayShift[7];
-              heapMem[p + 10] = arrayShift[8];
-            join
-            8: fork
-              heapMem[p +  9] = source1Value;
-              heapMem[p + 10] = arrayShift[8];
-            join
-            9: fork
-              heapMem[p + 10] = source1Value;
-            join
-          endcase
-        end
-      endcase
+            case(targetIndex)                                                   // Destage data into one position higher
+              0: fork
+                heapMem[p + 0] = source1Value;
+                heapMem[p + 1] = arrayShift[0];
+                heapMem[p + 2] = arrayShift[1];
+                heapMem[p + 3] = arrayShift[2];
+                heapMem[p + 4] = arrayShift[3];
+                heapMem[p + 5] = arrayShift[4];
+                heapMem[p + 6] = arrayShift[5];
+                heapMem[p + 7] = arrayShift[6];
+                heapMem[p + 8] = arrayShift[7];
+                heapMem[p + 9] = arrayShift[8];
+              join
+              1: fork
+                heapMem[p + 1] = source1Value;
+                heapMem[p + 2] = arrayShift[1];
+                heapMem[p + 3] = arrayShift[2];
+                heapMem[p + 4] = arrayShift[3];
+                heapMem[p + 5] = arrayShift[4];
+                heapMem[p + 6] = arrayShift[5];
+                heapMem[p + 7] = arrayShift[6];
+                heapMem[p + 8] = arrayShift[7];
+                heapMem[p + 9] = arrayShift[8];
+              join
+              2: fork
+                heapMem[p + 2] = source1Value;
+                heapMem[p + 3] = arrayShift[2];
+                heapMem[p + 4] = arrayShift[3];
+                heapMem[p + 5] = arrayShift[4];
+                heapMem[p + 6] = arrayShift[5];
+                heapMem[p + 7] = arrayShift[6];
+                heapMem[p + 8] = arrayShift[7];
+                heapMem[p + 9] = arrayShift[8];
+              join
+              3: fork
+                heapMem[p + 3] = source1Value;
+                heapMem[p + 4] = arrayShift[3];
+                heapMem[p + 5] = arrayShift[4];
+                heapMem[p + 6] = arrayShift[5];
+                heapMem[p + 7] = arrayShift[6];
+                heapMem[p + 8] = arrayShift[7];
+                heapMem[p + 9] = arrayShift[8];
+              join
+              4: fork
+                heapMem[p + 4] = source1Value;
+                heapMem[p + 5] = arrayShift[4];
+                heapMem[p + 6] = arrayShift[5];
+                heapMem[p + 7] = arrayShift[6];
+                heapMem[p + 8] = arrayShift[7];
+                heapMem[p + 9] = arrayShift[8];
+              join
+              5: fork
+                heapMem[p + 5] = source1Value;
+                heapMem[p + 6] = arrayShift[5];
+                heapMem[p + 7] = arrayShift[6];
+                heapMem[p + 8] = arrayShift[7];
+                heapMem[p + 9] = arrayShift[8];
+              join
+              6: fork
+                heapMem[p + 6] = source1Value;
+                heapMem[p + 7] = arrayShift[6];
+                heapMem[p + 8] = arrayShift[7];
+                heapMem[p + 9] = arrayShift[8];
+              join
+              7: fork
+                heapMem[p + 7] = source1Value;
+                heapMem[p + 8] = arrayShift[7];
+                heapMem[p + 9] = arrayShift[8];
+              join
+              8: fork
+                heapMem[p + 8] = source1Value;
+                heapMem[p + 9] = arrayShift[8];
+              join
+              9: fork
+                heapMem[p + 9] = source1Value;
+              join
+            endcase
+          end
+        endcase
+      end
       lastInstruction = "ShiftUp";
     end
   endtask
