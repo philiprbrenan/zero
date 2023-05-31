@@ -295,7 +295,7 @@ module fpga;                                                                    
 //if (test == 15) begin
       allocs         = 0;                                                       // Largest number of arrays in use at any one time so far
       freedArraysTop = 0;                                                       // Start freed arrays stack
-      loadCode(test);                                                           // Load the program
+      loadCode();                                                               // Load the program
       $display("Test %d", test);
       outMemPos = 0;                                                            // Output channel position
       nSteps    = 1;                                                            // Number of instructions executed
