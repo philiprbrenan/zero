@@ -1,4 +1,4 @@
-# Test 2023-05-31 at 03:52:42
+# Test 2023-05-31 at 03:56:53
 
 name: Test
 
@@ -21,7 +21,7 @@ jobs:
       run:  sudo apt -y install iverilog
 
     - name: Verilog Version
-      run:  iverilog -v
+      run:  iverilog -V
 
     - name: fpga
       run:  rm -f fpga; #iverilog -g2012 -o fpga verilog/fpga.sv && timeout 1m ./fpga
