@@ -1,4 +1,4 @@
-# Test 2023-05-31 at 03:59:03
+# Test 2023-05-31 at 04:02:42
 
 name: Test
 
@@ -16,6 +16,9 @@ jobs:
 
     - name: Cpan
       run:  sudo cpan install -T Data::Dump Data::Table::Text
+
+    - name: Ubuntu update
+      run:  sudo apt update
 
     - name: Verilog
       run:  sudo apt -y install iverilog
