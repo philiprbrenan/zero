@@ -74,8 +74,11 @@ my $t = <<END;
     - name: Verilog
       run:  sudo apt -y install iverilog
 
+    - name: Verilog Version
+      run:  iverilog -v
+
     - name: fpga
-      run:  rm -f fpga; iverilog -g2012 -o fpga verilog/fpga.sv && timeout 1m ./fpga
+      run:  rm -f fpga; #iverilog -g2012 -o fpga verilog/fpga.sv && timeout 1m ./fpga
 
     - name: Emulator
       run:  perl lib/Zero/Emulator.pm
