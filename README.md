@@ -383,3 +383,11 @@ executions, which means more energy per unit time, in essence, higher power
 levels.
 
 </table>
+
+# Verilog Implementation
+
+The [Verilog
+implementation](https://github.com/philiprbrenan/zero/blob/main/verilog/fpga.sv)
+implements a  [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) that runs the same [code](https://en.wikipedia.org/wiki/Computer_program) as that executed by the [emulator](https://en.wikipedia.org/wiki/Emulator) using the **string** [memory](https://en.wikipedia.org/wiki/Computer_memory) model.
+
+So far we can run **bubblesort** successfully.
