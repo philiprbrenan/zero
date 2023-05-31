@@ -1831,7 +1831,7 @@ Jump to a target label if the first source field is equal to the second source f
        };
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->outLines, [111, 333];
-      #say STDERR generateVerilogMachineCode("Jeq_test");
+      #say STDERR generateVerilogMachineCode("Jeq_test"); exit;
      }
     
 
@@ -2693,6 +2693,7 @@ Pop the memory area specified by the source operand into the memory address spec
       Out $c;
       Out $d;
       my $e = &$ee(suppressOutput=>1);
+      #say STDERR generateVerilogMachineCode("Pop_test");  exit;
     
       is_deeply $e->PrintMemory->($e), <<END;
     Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
@@ -2820,7 +2821,7 @@ Push the value in the current stack frame specified by the source operand onto t
 
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->Heap->($e, 0), [1..2];
-      #say STDERR generateVerilogMachineCode("Push_test");
+      #say STDERR generateVerilogMachineCode("Push_test"); exit;
      }
     
 
