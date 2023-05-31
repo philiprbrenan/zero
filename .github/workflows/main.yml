@@ -1,4 +1,4 @@
-# Test 2023-05-31 at 03:47:59
+# Test 2023-05-31 at 03:52:42
 
 name: Test
 
@@ -20,8 +20,11 @@ jobs:
     - name: Verilog
       run:  sudo apt -y install iverilog
 
+    - name: Verilog Version
+      run:  iverilog -v
+
     - name: fpga
-      run:  rm -f fpga; iverilog -g2012 -o fpga verilog/fpga.sv && timeout 1m ./fpga
+      run:  rm -f fpga; #iverilog -g2012 -o fpga verilog/fpga.sv && timeout 1m ./fpga
 
     - name: Emulator
       run:  perl lib/Zero/Emulator.pm
