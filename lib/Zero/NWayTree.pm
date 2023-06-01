@@ -13,7 +13,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
-eval "use Test::More tests=>115" unless caller;
+eval "use Test::More tests=>130" unless caller;
 
 makeDieConfess;
 
