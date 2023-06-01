@@ -40,7 +40,7 @@ module fpga(input[1:0] in, output[1:0] out);                                    
   integer signed test;                                                          // Tests passed
   integer signed testsPassed;                                                   // Tests passed
   integer signed testsFailed;                                                   // Tests failed
-  integer signed i, j, k, l, m, n, o, p, q;                                     // Useful integers
+  integer signed i, j, k, l, p, q;                                              // Useful integers
 
 //Tests
 
@@ -78,6 +78,11 @@ module fpga(input[1:0] in, output[1:0] out);                                    
        16: MoveLong_test();
        17: NWayTree_1();
        18: begin; inMemPos = 0; inMem[0] = 33; inMem[1] = 22; inMem[2] = 11; inMemEnd = 3; In_test(); end
+      endcase
+
+      case(test)                                                                // Initialize memory except in specific cases
+        99:;
+        default: initializeMemory();
       endcase
     end
   endtask
@@ -334,23 +339,28 @@ module fpga(input[1:0] in, output[1:0] out);                                    
     end
   endtask
 
-// Execute each test progam
-
-  initial begin                                                                 // Load, run confirm
-    testsPassed = 0;                                                            // Passed tests
-    testsFailed = 0;                                                            // Failed tests
-    for(test = 1; test <= NTestPrograms; ++test) begin                          // Run the tests from bewest to oldest
-//if (test == 18) begin
+  task initializeMemory();                                                      // Initialize memory so we start in a known state
+    begin;
       allocs         = 0;                                                       // Largest number of arrays in use at any one time so far
       freedArraysTop = 0;                                                       // Start freed arrays stack
-      loadCode();                                                               // Load the program
       outMemPos      = 0;                                                       // Output channel position
       nSteps         = 1;                                                       // Number of instructions executed
       for(i = 0; i < NOut;    ++i)     outMem[i] = 'bx;                         // Reset the output channel
       for(i = 0; i < NHeap;   ++i)    heapMem[i] = 'bx;                         // Reset heap memory
       for(i = 0; i < NLocal;  ++i)   localMem[i] = 'bx;                         // Reset local memory
       for(i = 0; i < NArrays; ++i) arraySizes[i] =  0;                          // Set array sizes
+    end
+  endtask
 
+
+// Execute each test progam
+
+  initial begin                                                                 // Load, run confirm
+    testsPassed = 0;                                                            // Passed tests
+    testsFailed = 0;                                                            // Failed tests
+    for(test = 1; test <= NTestPrograms; ++test) begin                          // Run the tests from bewest to oldest
+      loadCode();
+//if (test == 18) begin
       for(ip = 0; ip >= 0 && ip < NInstructionEnd; ++ip)                        // Each instruction
       begin
         #1;                                                                     // Let the ip update its assigns
