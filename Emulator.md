@@ -3557,6 +3557,10 @@ Runs its sub sections in sequential order
 
 Map the instruction set into a machine architecture.
 
+## instructionMapreturn \\%instructions}()
+
+Instruction map
+
 ## GenerateMachineCode(%options)
 
 Generate a string of machine code from the current block of code.
@@ -3888,6 +3892,14 @@ Notional time elapsed since start with parallelism taken into account
 #### timeSequential
 
 Notional time elapsed since start without parellelism
+
+#### totalInstructions
+
+Count of every instruction executed
+
+#### totalLabels
+
+Count of every label instruction executed
 
 #### trace
 
@@ -4322,101 +4334,103 @@ Disassemble and remove context information from disassembly to make testing easi
 
 49 [InSize](#insize) - Number of elements remining in the input channel
 
-50 [Jeq](#jeq) - Jump to a target label if the first source field is equal to the second source field.
+50 [instructionMapreturn \\%instructions}](#instructionmapreturn-instructions) - Instruction map
 
-51 [JFalse](#jfalse) - Jump to a target label if the first source field is equal to zero.
+51 [Jeq](#jeq) - Jump to a target label if the first source field is equal to the second source field.
 
-52 [Jge](#jge) - Jump to a target label if the first source field is greater than or equal to the second source field.
+52 [JFalse](#jfalse) - Jump to a target label if the first source field is equal to zero.
 
-53 [Jgt](#jgt) - Jump to a target label if the first source field is greater than the second source field.
+53 [Jge](#jge) - Jump to a target label if the first source field is greater than or equal to the second source field.
 
-54 [Jle](#jle) - Jump to a target label if the first source field is less than or equal to the second source field.
+54 [Jgt](#jgt) - Jump to a target label if the first source field is greater than the second source field.
 
-55 [Jlt](#jlt) - Jump to a target label if the first source field is less than the second source field.
+55 [Jle](#jle) - Jump to a target label if the first source field is less than or equal to the second source field.
 
-56 [Jmp](#jmp) - Jump to a label.
+56 [Jlt](#jlt) - Jump to a target label if the first source field is less than the second source field.
 
-57 [Jne](#jne) - Jump to a target label if the first source field is not equal to the second source field.
+57 [Jmp](#jmp) - Jump to a label.
 
-58 [JTrue](#jtrue) - Jump to a target label if the first source field is not equal to zero.
+58 [Jne](#jne) - Jump to a target label if the first source field is not equal to the second source field.
 
-59 [Label](#label) - Create a label.
+59 [JTrue](#jtrue) - Jump to a target label if the first source field is not equal to zero.
 
-60 [LoadAddress](#loadaddress) - Load the address component of an address.
+60 [Label](#label) - Create a label.
 
-61 [LoadArea](#loadarea) - Load the area component of an address.
+61 [LoadAddress](#loadaddress) - Load the address component of an address.
 
-62 [Mov](#mov) - Copy a constant or memory address to the target address.
+62 [LoadArea](#loadarea) - Load the area component of an address.
 
-63 [MoveLong](#movelong) - Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand.
+63 [Mov](#mov) - Copy a constant or memory address to the target address.
 
-64 [Nop](#nop) - Do nothing (but do it well!).
+64 [MoveLong](#movelong) - Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand.
 
-65 [Not](#not) - Move and not.
+65 [Nop](#nop) - Do nothing (but do it well!).
 
-66 [Out](#out) - Write memory location contents to out.
+66 [Not](#not) - Move and not.
 
-67 [Parallel](#parallel) - Runs its sub sections in simulated parallel so that we can prove that the sections can be run in parallel.
+67 [Out](#out) - Write memory location contents to out.
 
-68 [ParallelContinue](#parallelcontinue) - Continue recording the elapsed time for parallel sections.
+68 [Parallel](#parallel) - Runs its sub sections in simulated parallel so that we can prove that the sections can be run in parallel.
 
-69 [ParallelStart](#parallelstart) - Start recording the elapsed time for parallel sections.
+69 [ParallelContinue](#parallelcontinue) - Continue recording the elapsed time for parallel sections.
 
-70 [ParallelStop](#parallelstop) - Stop recording the elapsed time for parallel sections.
+70 [ParallelStart](#parallelstart) - Start recording the elapsed time for parallel sections.
 
-71 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
+71 [ParallelStop](#parallelstop) - Stop recording the elapsed time for parallel sections.
 
-72 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
+72 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
 
-73 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
+73 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
 
-74 [Procedure](#procedure) - Define a procedure.
+74 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
 
-75 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
+75 [Procedure](#procedure) - Define a procedure.
 
-76 [Random](#random) - Create a random number in a specified range.
+76 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
 
-77 [RandomSeed](#randomseed) - Seed the random number generator.
+77 [Random](#random) - Create a random number in a specified range.
 
-78 [Resize](#resize) - Resize the target area to the source size.
+78 [RandomSeed](#randomseed) - Seed the random number generator.
 
-79 [Return](#return) - Return from a procedure via the call stack.
+79 [Resize](#resize) - Resize the target area to the source size.
 
-80 [ReturnGet](#returnget) - Get a word from the return area and save it.
+80 [Return](#return) - Return from a procedure via the call stack.
 
-81 [ReturnPut](#returnput) - Put a word into the return area.
+81 [ReturnGet](#returnget) - Get a word from the return area and save it.
 
-82 [Sequential](#sequential) - Runs its sub sections in sequential order
+82 [ReturnPut](#returnput) - Put a word into the return area.
 
-83 [ShiftDown](#shiftdown) - Shift an element down one in an area.
+83 [Sequential](#sequential) - Runs its sub sections in sequential order
 
-84 [ShiftLeft](#shiftleft) - Shift left within an element.
+84 [ShiftDown](#shiftdown) - Shift an element down one in an area.
 
-85 [ShiftRight](#shiftright) - Shift right with an element.
+85 [ShiftLeft](#shiftleft) - Shift left within an element.
 
-86 [ShiftUp](#shiftup) - Shift an element up one in an area.
+86 [ShiftRight](#shiftright) - Shift right with an element.
 
-87 [Start](#start) - Start the current assembly using the specified version of the Zero language.
+87 [ShiftUp](#shiftup) - Shift an element up one in an area.
 
-88 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
+88 [Start](#start) - Start the current assembly using the specified version of the Zero language.
 
-89 [Tally](#tally) - Counts instructions when enabled.
+89 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
 
-90 [Then](#then) - Then block.
+90 [Tally](#tally) - Counts instructions when enabled.
 
-91 [Trace](#trace) - Start or stop tracing.
+91 [Then](#then) - Then block.
 
-92 [TraceLabels](#tracelabels) - Enable or disable label tracing.
+92 [Trace](#trace) - Start or stop tracing.
 
-93 [Var](#var) - Create a variable initialized to the specified value.
+93 [TraceLabels](#tracelabels) - Enable or disable label tracing.
 
-94 [Watch](#watch) - Watches for changes to the specified memory location.
+94 [Var](#var) - Create a variable initialized to the specified value.
 
-95 [Zero::Emulator::Assembly::packInstruction](#zero-emulator-assembly-packinstruction) - Pack an instruction.
+95 [Watch](#watch) - Watches for changes to the specified memory location.
 
-96 [Zero::Emulator::Assembly::packRef](#zero-emulator-assembly-packref) - Pack a reference into 8 bytes.
+96 [Zero::Emulator::Assembly::packInstruction](#zero-emulator-assembly-packinstruction) - Pack an instruction.
 
-97 [Zero::Emulator::Assembly::unpackRef](#zero-emulator-assembly-unpackref) - Unpack a reference.
+97 [Zero::Emulator::Assembly::packRef](#zero-emulator-assembly-packref) - Pack a reference into 8 bytes.
+
+98 [Zero::Emulator::Assembly::unpackRef](#zero-emulator-assembly-unpackref) - Unpack a reference.
 
 # Installation
 
