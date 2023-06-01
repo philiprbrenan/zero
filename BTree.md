@@ -1529,28 +1529,19 @@ Print the data held in a tree.
 
 Utility functions.
 
-## commandStart0}(sub commandInsert() {1})
+## commandStart()
 
 Start a tree
 
-       Parameter                Description
-    1  sub commandInsert() {1}  Insert into a tree.  Must be followed by the key and the associated data
-
-## commandInsert1}(sub commandFind  () {2})
+## commandInsert()
 
 Insert into a tree.  Must be followed by the key and the associated data
 
-       Parameter                Description
-    1  sub commandFind  () {2}  Find in a tree. Must be followed by the key to find
-
-## commandFind2}(sub commandTest  () {3})
+## commandFind()
 
 Find in a tree. Must be followed by the key to find
 
-       Parameter                Description
-    1  sub commandTest  () {3}  Run test programs
-
-## commandTest3}()
+## commandTest()
 
 Run test programs
 
@@ -1588,13 +1579,13 @@ Create a random array.
 
 # Index
 
-1 [commandFind2}](#commandfind2) - Find in a tree.
+1 [commandFind](#commandfind) - Find in a tree.
 
-2 [commandInsert1}](#commandinsert1) - Insert into a tree.
+2 [commandInsert](#commandinsert) - Insert into a tree.
 
-3 [commandStart0}](#commandstart0) - Start a tree
+3 [commandStart](#commandstart) - Start a tree
 
-4 [commandTest3}](#commandtest3) - Run test programs
+4 [commandTest](#commandtest) - Run test programs
 
 5 [Find](#find) - Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResult) describing the outcome of the search.
 
