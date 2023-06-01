@@ -2479,6 +2479,29 @@ Copy the number of elements specified by the second source operand from the loca
       is_deeply $e->Heap->($e, 1), [100, 101, 4, 5, 6, 105 .. 109];
      }
     
+    if (1)                                                                          
+     {Start 1;
+      my $a = Array "aaa";
+      my $b = Array "bbb";
+      Mov [$a, \0, 'aaa'], 11;
+      Mov [$a, \1, 'aaa'], 22;
+      Mov [$a, \2, 'aaa'], 33;
+      Mov [$a, \3, 'aaa'], 44;
+      Mov [$a, \4, 'aaa'], 55;
+      Mov [$b, \0, 'bbb'], 66;
+      Mov [$b, \1, 'bbb'], 77;
+      Mov [$b, \2, 'bbb'], 88;
+      Mov [$b, \3, 'bbb'], 99;
+    
+    
+      MoveLong [$a, \1, 'aaa'], [$b, \1, 'bbb'], 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      my $e = Execute(suppressOutput=>1);
+      is_deeply $e->heap(0), bless([11, 77, 88, 44, 55], "aaa");
+      is_deeply $e->heap(1), bless([66, 77, 88, 99],     "bbb");
+      #say STDERR generateVerilogMachineCode("MoveLong_test");
+     }
+    
 
 ## Not()
 
