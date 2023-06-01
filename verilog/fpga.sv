@@ -2,12 +2,13 @@
 // Fpga implementation and testing of NWay Trees
 // Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
-module fpga;                                                                    // Run test programs
-  parameter integer NTestPrograms  =   15;                                      // Number of test programs to run
-  parameter integer NTestsExpected =   54;                                      // Number of test passes expected
+module fpga(input[1000000:0] in, output[1000000:0] out);                        // Run test programs
+  wire[1000000:0] in, out;
+  parameter integer NTestPrograms  =   16;                                      // Number of test programs to run
+  parameter integer NTestsExpected =   65;                                      // Number of test passes expected
   parameter integer showInstructionDetails = 0;                                 // Show details of each instruction as it is executed
 
-  parameter integer NSteps         = 200;                                       // Maximum number of instruction executions
+  parameter integer NSteps         =  200;                                      // Maximum number of instruction executions
   parameter integer NInstructions  = 2000;                                      // Number of instruction slots in code memory
   parameter integer NArea          =   10;                                      // Size of each area on the heap
   parameter integer NArrays        = 1000;                                      // Amount of heap memory
@@ -67,6 +68,7 @@ module fpga;                                                                    
        13: Push_test();
        14: Pop_test();
        15: Bubble_sort();
+       16: MoveLong_test();
       endcase
     end
   endtask
@@ -167,6 +169,19 @@ module fpga;                                                                    
           ok(heapMem[5]    ==  66, "Bubble Sort 6");
           ok(heapMem[6]    ==  77, "Bubble Sort 7");
           ok(heapMem[7]    ==  88, "Bubble Sort 8");
+        end
+       16: begin
+          ok(arraySizes[0]  ==  5,  "MoveLong Length aaa");                     // 11 => 65
+          ok(arraySizes[1]  ==  4,  "MoveLong Length bbb");
+          ok(heapMem[0]     ==  11, "MoveLong 1");
+          ok(heapMem[1]     ==  77, "MoveLong 2");
+          ok(heapMem[2]     ==  88, "MoveLong 3");
+          ok(heapMem[3]     ==  44, "MoveLong 4");
+          ok(heapMem[4]     ==  55, "MoveLong 5");
+          ok(heapMem[10]    ==  66, "MoveLong 6");
+          ok(heapMem[11]    ==  77, "MoveLong 7");
+          ok(heapMem[12]    ==  88, "MoveLong 8");
+          ok(heapMem[13]    ==  99, "MoveLong 9");
         end
       endcase
     end
@@ -297,9 +312,10 @@ module fpga;                                                                    
       $display("Test %d", test);
       outMemPos = 0;                                                            // Output channel position
       nSteps    = 1;                                                            // Number of instructions executed
-      for(i = 0; i < NOut;   ++i)   outMem[i] = 'bx;                            // Reset the output channel
-      for(i = 0; i < NHeap;  ++i)  heapMem[i] = 'bx;                            // Reset heap memory
-      for(i = 0; i < NLocal; ++i) localMem[i] = 'bx;                            // Reset local memory
+      for(i = 0; i < NOut;    ++i)     outMem[i] = 'bx;                         // Reset the output channel
+      for(i = 0; i < NHeap;   ++i)    heapMem[i] = 'bx;                         // Reset heap memory
+      for(i = 0; i < NLocal;  ++i)   localMem[i] = 'bx;                         // Reset local memory
+      for(i = 0; i < NArrays; ++i) arraySizes[i] =  0;                          // Set array sizes
 
       for(ip = 0; ip >= 0 && ip < NInstructionEnd; ++ip)                        // Each instruction
       begin
@@ -491,11 +507,6 @@ module fpga;                                                                    
   task loadArea_instruction();
     begin                                                                       // loadArea
      $display("loadArea");
-    end
-  endtask
-  task moveLong_instruction();
-    begin                                                                       // moveLong
-     $display("moveLong");
     end
   endtask
   task nop_instruction();
@@ -808,6 +819,24 @@ module fpga;                                                                    
     end
   endtask
 
+  task MoveLong_test();
+    begin
+      NInstructionEnd = 12;
+      code[   0] = 'h0000000100000000000000000000210000000000000320000000000000000000;
+      code[   1] = 'h0000000100000000000000000001210000000000000420000000000000000000;
+      code[   2] = 'h0000002200000000000000000000150000000000000b20000000000000000000;
+      code[   3] = 'h0000002200000000000000000001150000000000001620000000000000000000;
+      code[   4] = 'h0000002200000000000000000002150000000000002120000000000000000000;
+      code[   5] = 'h0000002200000000000000000003150000000000002c20000000000000000000;
+      code[   6] = 'h0000002200000000000000000004150000000000003720000000000000000000;
+      code[   7] = 'h0000002200000000000000010000150000000000004220000000000000000000;
+      code[   8] = 'h0000002200000000000000010001150000000000004d20000000000000000000;
+      code[   9] = 'h0000002200000000000000010002150000000000005820000000000000000000;
+      code[  10] = 'h0000002200000000000000010003150000000000006320000000000000000000;
+      code[  11] = 'h0000002300000000000000000001150000000001000115000000000000022000;
+    end
+  endtask
+
 // Instruction memory access functions
 
   task setMemory();                                                             // Set the target memory location updating the containing array size if necessary
@@ -829,7 +858,6 @@ module fpga;                                                                    
   task add_instruction();                                                       // Add
     begin
       result = source1Value + source2Value;
-      //$display("%4d = Add %d(%d), %d, %d", result, targetLocation, targetArena, source1Value, source2Value);
       setMemory();
     end
   endtask
@@ -838,12 +866,9 @@ module fpga;                                                                    
     begin
       if (freedArraysTop > 0) begin                                             // Reuse an array
         result = freedArrays[--freedArraysTop];
-        //$display("%4d(%4d) = Array reuse", targetLocation, result);
-
       end
       else begin
         result = allocs++;                                                      // Array zero means undefined
-        //$display("%4d(%4d) = Array new",   targetLocation, result);
       end
 
       arraySizes[targetLocationArea] = 0;                                       // Zero array length
@@ -960,9 +985,6 @@ module fpga;                                                                    
 
   task arrayCountGreater_instruction();
     begin                                                                       // ArrayIndex
-      //$display("arrayIndex");
-      //printMemory();
-      //printInstruction();
       fork
         q = source1Value * NArea;                                               // Array location
         p = arraySizes[source1Value];                                           // Length of array
@@ -1199,105 +1221,113 @@ module fpga;                                                                    
       setMemory();
     end
   endtask
-                                                                                // Shift up an array inporallel by forst copyign evbery element in parallel then copying back just the elements we need into their new positions
+                                                                                // Shift up an array in parallel by first copying every element in parallel then copying back just the elements we need into their new positions
   task shiftUp_instruction();
     begin
       if (targetIndex < NArea) begin
         p = targetLocationArea * NArea;                                         // Array Start
-        case(NArea)                                                             // shiftUp
-          10: begin
-            fork
-              arraySizes[targetLocationArea] = arraySizes[targetLocationArea] + 1;// New size of array
-              arrayShift[0] = heapMem[p + 0];                                   // Move data into staging area
-              arrayShift[1] = heapMem[p + 1];
-              arrayShift[2] = heapMem[p + 2];
-              arrayShift[3] = heapMem[p + 3];
-              arrayShift[4] = heapMem[p + 4];
-              arrayShift[5] = heapMem[p + 5];
-              arrayShift[6] = heapMem[p + 6];
-              arrayShift[7] = heapMem[p + 7];
-              arrayShift[8] = heapMem[p + 8];
-              arrayShift[9] = heapMem[p + 9];
-            join
-            case(targetIndex)                                                   // Destage data into one position higher
-              0: fork
-                heapMem[p + 0] = source1Value;
-                heapMem[p + 1] = arrayShift[0];
-                heapMem[p + 2] = arrayShift[1];
-                heapMem[p + 3] = arrayShift[2];
-                heapMem[p + 4] = arrayShift[3];
-                heapMem[p + 5] = arrayShift[4];
-                heapMem[p + 6] = arrayShift[5];
-                heapMem[p + 7] = arrayShift[6];
-                heapMem[p + 8] = arrayShift[7];
-                heapMem[p + 9] = arrayShift[8];
-              join
-              1: fork
-                heapMem[p + 1] = source1Value;
-                heapMem[p + 2] = arrayShift[1];
-                heapMem[p + 3] = arrayShift[2];
-                heapMem[p + 4] = arrayShift[3];
-                heapMem[p + 5] = arrayShift[4];
-                heapMem[p + 6] = arrayShift[5];
-                heapMem[p + 7] = arrayShift[6];
-                heapMem[p + 8] = arrayShift[7];
-                heapMem[p + 9] = arrayShift[8];
-              join
-              2: fork
-                heapMem[p + 2] = source1Value;
-                heapMem[p + 3] = arrayShift[2];
-                heapMem[p + 4] = arrayShift[3];
-                heapMem[p + 5] = arrayShift[4];
-                heapMem[p + 6] = arrayShift[5];
-                heapMem[p + 7] = arrayShift[6];
-                heapMem[p + 8] = arrayShift[7];
-                heapMem[p + 9] = arrayShift[8];
-              join
-              3: fork
-                heapMem[p + 3] = source1Value;
-                heapMem[p + 4] = arrayShift[3];
-                heapMem[p + 5] = arrayShift[4];
-                heapMem[p + 6] = arrayShift[5];
-                heapMem[p + 7] = arrayShift[6];
-                heapMem[p + 8] = arrayShift[7];
-                heapMem[p + 9] = arrayShift[8];
-              join
-              4: fork
-                heapMem[p + 4] = source1Value;
-                heapMem[p + 5] = arrayShift[4];
-                heapMem[p + 6] = arrayShift[5];
-                heapMem[p + 7] = arrayShift[6];
-                heapMem[p + 8] = arrayShift[7];
-                heapMem[p + 9] = arrayShift[8];
-              join
-              5: fork
-                heapMem[p + 5] = source1Value;
-                heapMem[p + 6] = arrayShift[5];
-                heapMem[p + 7] = arrayShift[6];
-                heapMem[p + 8] = arrayShift[7];
-                heapMem[p + 9] = arrayShift[8];
-              join
-              6: fork
-                heapMem[p + 6] = source1Value;
-                heapMem[p + 7] = arrayShift[6];
-                heapMem[p + 8] = arrayShift[7];
-                heapMem[p + 9] = arrayShift[8];
-              join
-              7: fork
-                heapMem[p + 7] = source1Value;
-                heapMem[p + 8] = arrayShift[7];
-                heapMem[p + 9] = arrayShift[8];
-              join
-              8: fork
-                heapMem[p + 8] = source1Value;
-                heapMem[p + 9] = arrayShift[8];
-              join
-              9: fork
-                heapMem[p + 9] = source1Value;
-              join
-            endcase
-          end
+        fork
+          arraySizes[targetLocationArea] = arraySizes[targetLocationArea] + 1;  // New size of array
+          if (NArea > 0) arrayShift[0] = heapMem[p + 0];                        // Move data into staging area
+          if (NArea > 1) arrayShift[1] = heapMem[p + 1];
+          if (NArea > 2) arrayShift[2] = heapMem[p + 2];
+          if (NArea > 3) arrayShift[3] = heapMem[p + 3];
+          if (NArea > 4) arrayShift[4] = heapMem[p + 4];
+          if (NArea > 5) arrayShift[5] = heapMem[p + 5];
+          if (NArea > 6) arrayShift[6] = heapMem[p + 6];
+          if (NArea > 7) arrayShift[7] = heapMem[p + 7];
+          if (NArea > 8) arrayShift[8] = heapMem[p + 8];
+          if (NArea > 9) arrayShift[9] = heapMem[p + 9];
+        join
+        case(targetIndex)                                                       // Destage data into one position higher
+          0: fork
+            if (NArea > 0) heapMem[p + 0] = source1Value;
+            if (NArea > 1) heapMem[p + 1] = arrayShift[0];
+            if (NArea > 2) heapMem[p + 2] = arrayShift[1];
+            if (NArea > 3) heapMem[p + 3] = arrayShift[2];
+            if (NArea > 4) heapMem[p + 4] = arrayShift[3];
+            if (NArea > 5) heapMem[p + 5] = arrayShift[4];
+            if (NArea > 6) heapMem[p + 6] = arrayShift[5];
+            if (NArea > 7) heapMem[p + 7] = arrayShift[6];
+            if (NArea > 8) heapMem[p + 8] = arrayShift[7];
+            if (NArea > 9) heapMem[p + 9] = arrayShift[8];
+          join
+          1: fork
+            if (NArea > 1) heapMem[p + 1] = source1Value;
+            if (NArea > 2) heapMem[p + 2] = arrayShift[1];
+            if (NArea > 3) heapMem[p + 3] = arrayShift[2];
+            if (NArea > 4) heapMem[p + 4] = arrayShift[3];
+            if (NArea > 5) heapMem[p + 5] = arrayShift[4];
+            if (NArea > 6) heapMem[p + 6] = arrayShift[5];
+            if (NArea > 7) heapMem[p + 7] = arrayShift[6];
+            if (NArea > 8) heapMem[p + 8] = arrayShift[7];
+            if (NArea > 9) heapMem[p + 9] = arrayShift[8];
+          join
+          2: fork
+            if (NArea > 2) heapMem[p + 2] = source1Value;
+            if (NArea > 3) heapMem[p + 3] = arrayShift[2];
+            if (NArea > 4) heapMem[p + 4] = arrayShift[3];
+            if (NArea > 5) heapMem[p + 5] = arrayShift[4];
+            if (NArea > 6) heapMem[p + 6] = arrayShift[5];
+            if (NArea > 7) heapMem[p + 7] = arrayShift[6];
+            if (NArea > 8) heapMem[p + 8] = arrayShift[7];
+            if (NArea > 9) heapMem[p + 9] = arrayShift[8];
+          join
+          3: fork
+            if (NArea > 3) heapMem[p + 3] = source1Value;
+            if (NArea > 4) heapMem[p + 4] = arrayShift[3];
+            if (NArea > 5) heapMem[p + 5] = arrayShift[4];
+            if (NArea > 6) heapMem[p + 6] = arrayShift[5];
+            if (NArea > 7) heapMem[p + 7] = arrayShift[6];
+            if (NArea > 8) heapMem[p + 8] = arrayShift[7];
+            if (NArea > 9) heapMem[p + 9] = arrayShift[8];
+          join
+          4: fork
+            if (NArea > 4) heapMem[p + 4] = source1Value;
+            if (NArea > 5) heapMem[p + 5] = arrayShift[4];
+            if (NArea > 6) heapMem[p + 6] = arrayShift[5];
+            if (NArea > 7) heapMem[p + 7] = arrayShift[6];
+            if (NArea > 8) heapMem[p + 8] = arrayShift[7];
+            if (NArea > 9) heapMem[p + 9] = arrayShift[8];
+          join
+          5: fork
+            if (NArea > 5) heapMem[p + 5] = source1Value;
+            if (NArea > 6) heapMem[p + 6] = arrayShift[5];
+            if (NArea > 7) heapMem[p + 7] = arrayShift[6];
+            if (NArea > 8) heapMem[p + 8] = arrayShift[7];
+            if (NArea > 9) heapMem[p + 9] = arrayShift[8];
+          join
+          6: fork
+            if (NArea > 6) heapMem[p + 6] = source1Value;
+            if (NArea > 7) heapMem[p + 7] = arrayShift[6];
+            if (NArea > 8) heapMem[p + 8] = arrayShift[7];
+            if (NArea > 9) heapMem[p + 9] = arrayShift[8];
+          join
+          7: fork
+            if (NArea > 7) heapMem[p + 7] = source1Value;
+            if (NArea > 8) heapMem[p + 8] = arrayShift[7];
+            if (NArea > 9) heapMem[p + 9] = arrayShift[8];
+          join
+          8: fork
+            if (NArea > 8) heapMem[p + 8] = source1Value;
+            if (NArea > 9) heapMem[p + 9] = arrayShift[8];
+          join
+          9: fork
+            if (NArea > 9) heapMem[p + 9] = source1Value;
+          join
         endcase
+      end
+    end
+  endtask
+
+  task moveLong_instruction();
+    begin                                                                       // moveLong
+      l = source2Value;
+      p = targetLocation; j = sourceLocation;
+      q = p + l;
+      for(i = p; i < q; ++i) begin
+        heapMem[i] = heapMem[j];
+        ++j;
       end
     end
   endtask
