@@ -295,7 +295,7 @@ END
 
 #### Explanation
 
-```Start``` starts a [program](https://en.wikipedia.org/wiki/Computer_program) using a specified version of the language.
+```Start``` starts a [program](https://en.wikipedia.org/wiki/Computer_program) using a specified [version](https://en.wikipedia.org/wiki/Software_versioning) of the language.
 
 ```Out``` writes a message to the ```out``` channel.
 
