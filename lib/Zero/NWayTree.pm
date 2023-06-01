@@ -13,7 +13,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
-eval "use Test::More tests=>114" unless caller;
+eval "use Test::More tests=>115" unless caller;
 
 makeDieConfess;
 
@@ -852,16 +852,17 @@ sub Iterate(&$)                                                                 
 
   GoAllTheWayLeft($f, $n);
 
-  For
-   {my ($i, $check, $next, $end) = @_;                                          # Iteration number
-    Jeq $end, FindResult_cmp($f), FindResult_notFound;
+  Block                                                                         # Visit each element sequentially
+   {my ($Start, $Good, $Bad, $End) = @_;
+    Jeq $End, FindResult_cmp($f), FindResult_notFound;
 
     FindResult_copy($F, $f);                                                    # Copying the find result allows for parallel processing
 
     Parallel
       sub {&$block($F)},
       sub {GoUpAndAround($f)};
-   } $l;                                                                        # 2**31
+    Jmp $Start;
+   };
 
   Parallel
     sub{FindResult_free($f)},
@@ -1279,6 +1280,69 @@ if (1)                                                                          
  }
 
 #latest:;
+if (1)                                                                          ##Insert
+ {my $N = 6;
+  Start 1;
+  my $t = New(3);
+  For
+   {my ($i, $Check, $Next, $End) = @_;
+    Insert($t, $i, $i);
+   } $N, reverse=>1;
+
+  Iterate
+   {my ($find) = @_;
+    Out FindResult_key($find);
+   } $t;
+
+  my $e = Execute(suppressOutput=>1);
+  is_deeply $e->count, 599;
+
+  is_deeply $e->heap(0 ), bless([6, 4, 3, 2], "Tree");
+  is_deeply $e->heap(2 ), bless([2, 1, 0, 0, 3, 4, 11], "Node");
+  is_deeply $e->heap(3 ), bless([2, 4], "Keys");
+  is_deeply $e->heap(4 ), bless([2, 4], "Data");
+  is_deeply $e->heap(5 ), bless([2, 2, 2, 0, 6, 7, 0], "Node");
+  is_deeply $e->heap(6 ), bless([0, 1], "Keys");
+  is_deeply $e->heap(7 ), bless([0, 1], "Data");
+  is_deeply $e->heap(8 ), bless([1, 3, 2, 0, 9, 10, 0], "Node");
+  is_deeply $e->heap(9 ), bless([5], "Keys");
+  is_deeply $e->heap(10), bless([5], "Data");
+  is_deeply $e->heap(11), bless([5, 12, 8], "Down");
+  is_deeply $e->heap(12), bless([1, 4, 2, 0, 13, 14, 0], "Node");
+  is_deeply $e->heap(13), bless([3], "Keys");
+  is_deeply $e->heap(14), bless([3], "Data");
+  is_deeply $e->outLines, [0..5];
+# say STDERR generateVerilogMachineCode("NWayTree_1"); exit;
+ }
+
+#latest:;
+#if (1)
+# {my $w = 3;
+#  my @a = (1,8,5,6,3,4,7,2,9,0);
+#  Start 1;
+#  my $a = Array "aaa";
+#  for my $i(keys @a)
+#   {Mov [$a, $i, "aaa"], $a[$i];
+#   }
+#
+#  my $t = New($w);
+#  ForArray
+#   {my ($i, $e, $Check, $Next, $End) = @_;
+#    Insert($t, $e, $i);
+#   } $a, "aaa";
+#
+#  Iterate
+#   {my ($find) = @_;
+#    Out FindResult_key($find);
+#   } $t;
+#
+#  my $e = Execute(suppressOutput=>1);
+#  is_deeply $e->outLines, [0..9];
+#  is_deeply $e->count, 1334;
+#  say STDERR generateVerilogMachineCode("NWayTree"); exit;
+# }
+
+#latest:;
 if (1)
  {my $W = 3;
   Start 1;
@@ -1321,6 +1385,7 @@ if (1)                                                                          
     my $d = Add $j, $j;
     AssertEq $d, FindResult_data(Find($t, $j));
    } $N;
+
   AssertNe FindResult_found, FindResult_cmp(Find($t, -1));                      # Should not be present
   AssertNe FindResult_found, FindResult_cmp(Find($t, $N));
 
@@ -1370,17 +1435,17 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1, in=>[@r]);
   is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-  is_deeply $e->widestAreaInArena,   [undef, 6, 539];
+  is_deeply $e->widestAreaInArena,   [undef, 6, 537];
   is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
   is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  24613;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  24397;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
   is_deeply $e->tallyTotal->{1}, 15456;
   is_deeply $e->tallyTotal->{2},  6294;
-  is_deeply $e->tallyTotal->{3},  2863;
+  is_deeply $e->tallyTotal->{3},  2647;
 #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
 
   #say STDERR formatTable $e->tallyCounts->{1};   exit;
@@ -1421,17 +1486,17 @@ END
 
   #say STDERR formatTable($e->tallyCounts->{3}); exit;
   is_deeply formatTable($e->tallyCounts->{3}), <<END;                           # Iterate tally
-add          269
+add          162
 array          2
 arrayIndex    72
 free           2
 jEq          260
 jFalse        28
-jGe          316
+jGe          208
 jNe          117
 jTrue         73
 jmp          252
-mov         1112
+mov         1111
 moveLong     107
 not          180
 shiftLeft      1
@@ -1501,24 +1566,24 @@ if (1)                                                                          
   my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1, in=>[@r],
     stringMemory=>1, maximumArraySize=>7);
   is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-  is_deeply $e->widestAreaInArena,   [undef, 6, 539];
+  is_deeply $e->widestAreaInArena,   [undef, 6, 537];
   is_deeply $e->namesOfWidestArrays, [undef, 0, 0];
   is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  24613;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  24397;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
   is_deeply $e->tallyTotal->{1}, 15456;
   is_deeply $e->tallyTotal->{2},  6294;
-  is_deeply $e->tallyTotal->{3},  2863;
+  is_deeply $e->tallyTotal->{3},  2647;
 
-  is_deeply $e->timeParallel,   24693;
-  is_deeply $e->timeSequential, 29090;
+  is_deeply $e->timeParallel,   24261;
+  is_deeply $e->timeSequential, 28658;
 
   #say STDERR formatTable($e->counts);
   is_deeply formatTable($e->counts), <<END;                                     # All instruction codes used in NWay Tree
-add                 2241
+add                 2027
 array                253
 arrayCountGreater      2
 arrayCountLess       485
@@ -1528,13 +1593,13 @@ in                   107
 inSize                 1
 jEq                 2104
 jFalse                56
-jGe                 1855
+jGe                 1639
 jLe                  928
 jLt                  565
 jNe                 1249
 jTrue                146
 jmp                 2093
-mov                12786
+mov                12784
 moveLong             385
 not                 1351
 resize               161
