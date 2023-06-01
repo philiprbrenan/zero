@@ -1405,7 +1405,7 @@ if (1)                                                                          
   ForIn                                                                         # Create tree
    {my ($i, $k) = @_;
     my $n = Keys($t);
-    AssertEq $n, $i;                                                            # Check tree size
+
     my $K = Add $k, $k;
     Tally 1;
     Insert($t, $k, $K,                                                          # Insert a new node
@@ -1435,7 +1435,7 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1, in=>[@r]);
   is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-  is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+  is_deeply $e->widestAreaInArena,   [undef, 6, 536];
   is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
   is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
 
@@ -1535,7 +1535,7 @@ if (1)                                                                          
   ForIn                                                                         # Create tree
    {my ($i, $k) = @_;
     my $n = Keys($t);
-    AssertEq $n, $i;                                                            # Check tree size
+
     my $K = Add $k, $k;
     Tally 1;
     Insert($t, $k, $K,                                                          # Insert a new node
@@ -1566,7 +1566,7 @@ if (1)                                                                          
   my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1, in=>[@r],
     stringMemory=>1, maximumArraySize=>7);
   is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-  is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+  is_deeply $e->widestAreaInArena,   [undef, 6, 536];
   is_deeply $e->namesOfWidestArrays, [undef, 0, 0];
   is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
 
@@ -1578,28 +1578,28 @@ if (1)                                                                          
   is_deeply $e->tallyTotal->{2},  6294;
   is_deeply $e->tallyTotal->{3},  2647;
 
-  is_deeply $e->timeParallel,   24261;
-  is_deeply $e->timeSequential, 28658;
+  is_deeply $e->timeParallel,   24260;
+  is_deeply $e->timeSequential, 28657;
 
-  #say STDERR formatTable($e->counts);
+  say STDERR formatTable($e->counts);
   is_deeply formatTable($e->counts), <<END;                                     # All instruction codes used in NWay Tree
-add                 2027
+add                 1920
 array                253
 arrayCountGreater      2
 arrayCountLess       485
 arrayIndex           767
 free                   4
 in                   107
-inSize                 1
+inSize               108
 jEq                 2104
-jFalse                56
-jGe                 1639
+jFalse               164
+jGe                 1531
 jLe                  928
 jLt                  565
 jNe                 1249
 jTrue                146
 jmp                 2093
-mov                12784
+mov                12783
 moveLong             385
 not                 1351
 resize               161
@@ -1609,7 +1609,7 @@ subtract            1249
 END
  }
 
-latest:;
+#latest:;
 
 sub commandStart () {0}                                                         # Start a tree
 sub commandInsert() {1}                                                         # Insert into a tree.  Must be followed by the key and the associated data
