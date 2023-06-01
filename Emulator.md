@@ -3557,10 +3557,6 @@ Runs its sub sections in sequential order
 
 Map the instruction set into a machine architecture.
 
-## instructionMapreturn \\%instructions}()
-
-Instruction map
-
 ## GenerateMachineCode(%options)
 
 Generate a string of machine code from the current block of code.
@@ -4200,6 +4196,10 @@ Continue recording the elapsed time for parallel sections.
 
 Stop recording the elapsed time for parallel sections.
 
+## instructionMap()
+
+Instruction map
+
 ## Zero::Emulator::Assembly::packRef($code, $instruction, $ref, $type)
 
 Pack a reference into 8 bytes.
@@ -4334,7 +4334,7 @@ Disassemble and remove context information from disassembly to make testing easi
 
 49 [InSize](#insize) - Number of elements remining in the input channel
 
-50 [instructionMapreturn \\%instructions}](#instructionmapreturn-instructions) - Instruction map
+50 [instructionMap](#instructionmap) - Instruction map
 
 51 [Jeq](#jeq) - Jump to a target label if the first source field is equal to the second source field.
 
