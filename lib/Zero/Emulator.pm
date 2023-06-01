@@ -118,7 +118,7 @@ my sub stackFrame(%)                                                            
   );
  }
 
-sub Zero::Emulator::Assembly::instruction($%)                                       #P Create a new instruction.
+sub Zero::Emulator::Assembly::instruction($%)                                   #P Create a new instruction.
  {my ($block, %options) = @_;                                                   # Block of code descriptor, options
 
   my ($package, $fileName, $line) = caller($options{level} // 1);
@@ -151,7 +151,7 @@ sub Zero::Emulator::Assembly::instruction($%)                                   
    }
  }
 
-sub Zero::Emulator::Assembly::codeToString($)                                       #P Code as a string.
+sub Zero::Emulator::Assembly::codeToString($)                                   #P Code as a string.
  {my ($block) = @_;                                                             # Block of code
   @_ == 1 or confess "One parameter";
   my @T;
@@ -180,7 +180,7 @@ my sub contextString($$$)                                                       
   join "\n", @s
  }
 
-sub Zero::Emulator::Assembly::Instruction::contextString($)                         #P Stack trace back for this instruction.
+sub Zero::Emulator::Assembly::Instruction::contextString($)                     #P Stack trace back for this instruction.
  {my ($i) = @_;                                                                 # Instruction
   @_ == 1 or confess "One parameter";
   my @s;
@@ -279,7 +279,7 @@ my sub arenaLocal {2}                                                           
 my sub arenaParms {3}                                                           # Parameter areas
 my sub arenaReturn{4}                                                           # Return areas
 
-sub Zero::Emulator::Assembly::referenceToString($$$)                                #P Reference as a string.
+sub Zero::Emulator::Assembly::referenceToString($$$)                            #P Reference as a string.
  {my ($block, $r, $operand) = @_;                                               # Block of code, reference, operand type : 0-Target 1-Source 2-Source2
   @_ == 3 or confess "Three parameters";
 
@@ -329,7 +329,7 @@ sub Zero::Emulator::Assembly::referenceToString($$$)                            
   confess "ReferenceToString, operand: $operand ".dump($r);
  }
 
-sub Zero::Emulator::Assembly::ArrayNameToNumber($$)                                 #P Generate a unique number for this array name.
+sub Zero::Emulator::Assembly::ArrayNameToNumber($$)                             #P Generate a unique number for this array name.
  {my ($code, $name) = @_;                                                       # Code block, array name
 
   if (defined(my $n = $code->arrayNames->{$name}))                              # Name already exists
@@ -341,7 +341,7 @@ sub Zero::Emulator::Assembly::ArrayNameToNumber($$)                             
   $n
  }
 
-sub Zero::Emulator::Assembly::ArrayNumberToName($$)                                 #P Return the array name associated with an array number.
+sub Zero::Emulator::Assembly::ArrayNumberToName($$)                             #P Return the array name associated with an array number.
  {my ($code, $number) = @_;                                                     # Code block, array name
 
   $code->arrayNumbers->[$number] // $number
@@ -363,7 +363,7 @@ my sub Reference($$$$$)                                                         
    );
  }
 
-sub Zero::Emulator::Assembly::Reference($$$)                                        # Record a reference to a left or right address.
+sub Zero::Emulator::Assembly::Reference($$$)                                    # Record a reference to a left or right address.
  {my ($code, $r, $operand) = @_;                                                # Code block, reference, type of refence: 0-Target 1-Source 2-Source2
   @_ == 3 or confess "Three parameters";
   ref($r) and ref($r) !~ m(\A(array|scalar|ref)\Z)i and confess "Scalar or reference required, not: ".dump($r);
@@ -388,7 +388,7 @@ sub Zero::Emulator::Procedure::call($)                                          
   Zero::Emulator::Call($procedure->target);
  }
 
-sub Zero::Emulator::Assembly::assemble($%)                                          #P Assemble a block of code to prepare it for execution.  This modifies the jump targets and so once assembled we cannot assembled again.
+sub Zero::Emulator::Assembly::assemble($%)                                      #P Assemble a block of code to prepare it for execution.  This modifies the jump targets and so once assembled we cannot assembled again.
  {my ($Block, %options) = @_;                                                   # Code block, assembly options
 
   my $code = $Block->code;                                                      # The code to be assembled
@@ -408,12 +408,12 @@ sub Zero::Emulator::Assembly::assemble($%)                                      
    {my $i = $$code[$c];
     next unless $i->action =~ m(\A(j|call))i;
     if (my $l = $i->target->address)                                            # Label
-     {if (my $t = $labels{$l})                                                  # Found label
+     {if (defined(my $t = $labels{$l}))                                         # Found label
        {$i->jump = $Block->Reference($t - $c, 1);                               # Relative jump
        }
       else
        {my $a = $i->action;
-        confess "No target for $a to label: $$l";
+        confess "No target for $a to label: $l";
        }
      }
    }
@@ -466,7 +466,7 @@ my sub dumpMemory($)                                                            
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my @m;
-  my $m = $exec->GetMemoryArrays->($exec);                                       # Memory areas
+  my $m = $exec->GetMemoryArrays->($exec);                                      # Memory areas
   for my $area(1..$m)                                                           # Each memory area except memory area 0 - which might once have been reserved for some purpose
    {my $h = $exec->heap($area);
     next unless defined $h and @$h;
@@ -647,7 +647,7 @@ sub stringGetMemoryLocation($$$$)                                               
   my $t = $exec->memoryStringElements;                                          # User width of a heap area
   $address < $t or confess "Address $address >= $t";                            # Check we are within the area
 
-  if ($address+1 > vec($exec->memoryStringLengths, $area, $w))                    # Extend length of array if necessary
+  if ($address+1 > vec($exec->memoryStringLengths, $area, $w))                  # Extend length of array if necessary
    {vec($exec->memoryStringLengths, $area, $w) = $address+1;
    }
   \vec($exec->memoryString, $area * $t + $address, $w)                          # Memory containing one element
@@ -1321,7 +1321,7 @@ sub analyzeExecutionResults($%)                                                 
   join "\n", @r;
  }
 
-sub Zero::Emulator::Assembly::execute($%)                                           #P Execute a block of code.
+sub Zero::Emulator::Assembly::execute($%)                                       #P Execute a block of code.
  {my ($block, %options) = @_;                                                   # Block of code, execution options
 
   $block->assemble if $block;                                                   # Assemble unless we just want the instructions
@@ -2230,19 +2230,13 @@ sub ForArray(&$$%)                                                              
 
 sub ForIn(&%)                                                                   #i For loop to process each element remaining in the input channel
  {my ($block, %options) = @_;                                                   # Block of code, area, area name, options
-  my $e = InSize;                                                               # End
-  my $s = 0;                                                                    # Start
-
-  my ($Start, $Check, $Next, $End) = (label, label, label, label);
-
-  setLabel($Start);                                                             # Start
-  my $i = Mov $s;
-    setLabel($Check);                                                           # Check
-    Jge  $End, $i, $e;
-      my $a = In;
-      &$block($i, $a, $Check, $Next, $End);                                     # Block
+  my ($Check, $Next, $End) = (label, label, label);
+  setLabel($Check);                                                            # Check
+    my $s = InSize;
+    JFalse($End, $s);
+     my $a = In;
+      &$block($s, $a, $Check, $Next, $End);                                     # Block
     setLabel($Next);
-    Inc $i;                                                                     # Next
     Jmp $Check;
   setLabel($End);                                                               # End
  }
@@ -2785,8 +2779,8 @@ my sub rerefValue($$)                                                           
   confess "Rereference depth of $depth is too deep";
  }
 
-sub Zero::Emulator::Assembly::packRef($$$$)                                          #P Pack a reference into 8 bytes.
- {my ($code, $instruction, $ref, $type) = @_;                                          # Code block being packed, instruction being packed, reference being packed, type of reference being packed 0-target 1-source1 2-source2
+sub Zero::Emulator::Assembly::packRef($$$$)                                     #P Pack a reference into 8 bytes.
+ {my ($code, $instruction, $ref, $type) = @_;                                   # Code block being packed, instruction being packed, reference being packed, type of reference being packed 0-target 1-source1 2-source2
   @_ == 4 or confess "Four parameters";
   if (!defined($ref) or ref($ref) =~ m(array)i && !@$ref)                       # Unused reference
    {my $a = '';
@@ -2840,7 +2834,7 @@ END
   $a
  }
 
-sub Zero::Emulator::Assembly::unpackRef($$$)                                        #P Unpack a reference.
+sub Zero::Emulator::Assembly::unpackRef($$$)                                    #P Unpack a reference.
  {my ($code, $a, $operand) = @_;                                                # Code block being packed, instruction being packed, reference being packed, operand type 0-target 1-source 2-source2
 
   my $vArea    = vec($a,  0, 32);
@@ -2855,7 +2849,7 @@ sub Zero::Emulator::Assembly::unpackRef($$$)                                    
   $code->Reference([$arena  != arenaHeap ? undef : $area, $address, 0, $delta], $operand);
  }
 
-sub Zero::Emulator::Assembly::packInstruction($$)                                   #P Pack an instruction.
+sub Zero::Emulator::Assembly::packInstruction($$)                               #P Pack an instruction.
  {my ($code, $i) = @_;                                                          # Code being packed, instruction to pack
   my  $a = '';
   my $n = $instructions{$i->action};
@@ -4209,8 +4203,9 @@ if (1)                                                                          
     Out $i; Out $e;
    };
 
-  my $e = Execute(suppressOutput=>1, in=>[333, 22, 1]);
-  is_deeply $e->outLines, [0, 333,  1, 22, 2, 1];
+  my $e = Execute(suppressOutput=>1, trace=>0, in=>[333, 22, 1]);
+
+  is_deeply $e->outLines, [3, 333,  2, 22, 1, 1];
  }
 
 #latest:;
@@ -4530,16 +4525,16 @@ if (1)                                                                          
   #say STDERR generateVerilogMachineCode("MoveLong_test");
  }
 
-latest:;
+#latest:;
 if (1)                                                                          ##ForIn
  {Start 1;
-  ForIn                                                                         #
+  ForIn
    {my ($i, $v, $Check, $Next, $End) = @_;
     Out $i;
     Out $v;
    };
   my $e = Execute(suppressOutput=>1, in => [33,22,11]);
-  is_deeply $e->outLines, [0,33, 1,22, 2,11];
+  is_deeply $e->outLines, [3,33, 2,22, 1,11];
   say STDERR generateVerilogMachineCode("In_test");
  }
 
