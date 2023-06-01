@@ -1124,6 +1124,20 @@ For loop to process each element remaining in the input channel
       is_deeply $e->outLines, [0, 333,  1, 22, 2, 1];
      }
     
+    if (1)                                                                          
+     {Start 1;
+    
+      ForIn                                                                         #  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+       {my ($i, $v, $Check, $Next, $End) = @_;
+        Out $i;
+        Out $v;
+       };
+      my $e = Execute(suppressOutput=>1, in => [33,22,11]);
+      is_deeply $e->outLines, [0,33,1,22,2,11];
+      #say STDERR generateVerilogMachineCode("In_test");
+     }
+    
 
 ## Free($target, $source)
 
