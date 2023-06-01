@@ -697,7 +697,7 @@ Get key field from find results.
 
 ## Find($tree, $key, %options)
 
-Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResult) describing the outcome of the search.
+Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResult) describing the outcome of the search.  To avoid allocating a new find result area for each individual request a preallocated find result area may be supplied via the findResult option.
 
        Parameter  Description
     1  $tree      Tree to search
@@ -1529,6 +1529,31 @@ Print the data held in a tree.
 
 Utility functions.
 
+## commandStart0}(sub commandInsert() {1})
+
+Start a tree
+
+       Parameter                Description
+    1  sub commandInsert() {1}  Insert into a tree.  Must be followed by the key and the associated data
+
+## commandInsert1}(sub commandFind  () {2})
+
+Insert into a tree.  Must be followed by the key and the associated data
+
+       Parameter                Description
+    1  sub commandFind  () {2}  Find in a tree. Must be followed by the key to find
+
+## commandFind2}(sub commandTest  () {3})
+
+Find in a tree. Must be followed by the key to find
+
+       Parameter                Description
+    1  sub commandTest  () {3}  Run test programs
+
+## commandTest3}()
+
+Run test programs
+
 # Attributes
 
 The following is a list of all the attributes in this package.  A method coded
@@ -1563,29 +1588,37 @@ Create a random array.
 
 # Index
 
-1 [Find](#find) - Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResult) describing the outcome of the search.
+1 [commandFind2}](#commandfind2) - Find in a tree.
 
-2 [FindResult\_cmp](#findresult_cmp) - Get comparison from find result.
+2 [commandInsert1}](#commandinsert1) - Insert into a tree.
 
-3 [FindResult\_copy](#findresult_copy) - Copy a find result
+3 [commandStart0}](#commandstart0) - Start a tree
 
-4 [FindResult\_data](#findresult_data) - Get data field from find results.
+4 [commandTest3}](#commandtest3) - Run test programs
 
-5 [FindResult\_key](#findresult_key) - Get key field from find results.
+5 [Find](#find) - Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResult) describing the outcome of the search.
 
-6 [Insert](#insert) - Insert a key and its associated data into a tree.
+6 [FindResult\_cmp](#findresult_cmp) - Get comparison from find result.
 
-7 [Iterate](#iterate) - Iterate over a tree.
+7 [FindResult\_copy](#findresult_copy) - Copy a find result
 
-8 [Keys](#keys) - Get the number of keys in the tree.
+8 [FindResult\_data](#findresult_data) - Get data field from find results.
 
-9 [New](#new) - Create a variable referring to a new tree descriptor.
+9 [FindResult\_key](#findresult_key) - Get key field from find results.
 
-10 [printTreeData](#printtreedata) - Print the data held in a tree.
+10 [Insert](#insert) - Insert a key and its associated data into a tree.
 
-11 [printTreeKeys](#printtreekeys) - Print the keys held in a tree.
+11 [Iterate](#iterate) - Iterate over a tree.
 
-12 [randomArray](#randomarray) - Create a random array.
+12 [Keys](#keys) - Get the number of keys in the tree.
+
+13 [New](#new) - Create a variable referring to a new tree descriptor.
+
+14 [printTreeData](#printtreedata) - Print the data held in a tree.
+
+15 [printTreeKeys](#printtreekeys) - Print the keys held in a tree.
+
+16 [randomArray](#randomarray) - Create a random array.
 
 # Installation
 
