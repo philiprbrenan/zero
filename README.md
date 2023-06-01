@@ -395,7 +395,7 @@ implements a  [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) that 
 The verilog implementation is able to run [programs](https://en.wikipedia.org/wiki/Computer_program) that construct a [B-Tree](https://en.wikipedia.org/wiki/B-tree) and
 iterate throught them:
 ```
-rm -f fpga; iverilog -g2012 -o fpga /home/phil/perl/cpan/ZeroEmulator/verilog/fpga.sv && timeout 1m ./fpga
+rm -f fpga; iverilog -g2012 -o fpga verilog/fpga.sv && timeout 1m ./fpga
 Test    1, steps        7
 Test    2, steps        3
 Test    3, steps        3
