@@ -83,6 +83,8 @@ sub ExecutionEnvironment(%)                                                     
     timeParallel=>          0,                                                  # Notional time elapsed since start with parallelism taken into account
     timeSequential=>        0,                                                  # Notional time elapsed since start without parellelism
     timeDelta=>             undef,                                              # Time for last instruction if something other than 1
+    totalInstructions=>     0,                                                  # Count of every instruction executed
+    totalLabels=>           0,                                                  # Count of every label instruction executed
     trace=>                 $options{trace},                                    # Trace all statements
     traceLabels=>           undef,                                              # Trace changes in execution flow
     watch=>                 [],                                                 # Addresses to watch for changes
@@ -989,7 +991,7 @@ my sub right($$)                                                                
    }
 
   if ($ref->dAddress == 0)                                                      # Constant
-   {return $address if defined $address;                                        # Attempting to read a address that has never been set is an error
+   {return $address if defined $address;                                        # Attempting to read an address that has never been set is an error
     invalid;
    }
 
@@ -1786,6 +1788,8 @@ sub Zero::Emulator::Assembly::execute($%)                                       
 
 # Instruction loop
 
+  my %instructionMap = %{&instructionMap};                                      # Instruction name to number
+
   for my $step(1..$mi)                                                          # Execute each instruction in the code until we hit an undefined instruction. Track various statistics to assist in debugging and code improvement.
    {last unless defined($exec->instructionPointer);
     my $instruction = $exec->block->code->[$exec->instructionPointer++];        # Current instruction
@@ -1805,11 +1809,11 @@ sub Zero::Emulator::Assembly::execute($%)                                       
       $exec->latestLeftTarget  = left  $exec, $instruction->target;             # Precompute this useful value if possible
       $exec->latestRightSource = right $exec, $instruction->source;             # Precompute this useful value if possible
 
-# EEEE Execute
+#EEEE Execute
       $implementation->($instruction);                                          # Execute instruction
       $exec->tallyInstructionCounts($instruction);                              # Instruction counts
-
       $exec->traceMemory($instruction);                                         # Trace changes to memory
+#say STDERR sprintf "%4d %4d  %2d %s", $step, $exec->instructionPointer, $instructionMap{$a}, $a;
 #say STDERR "XXXX", dump($a, $exec->timeDelta, $exec->timeParallel, $exec->timeSequential, $exec->count);
      }
     if ($step >= maximumInstructionsToExecute)
@@ -1836,7 +1840,11 @@ sub completionStatistics($)                                                     
 
 sub tallyInstructionCounts($$)                                                  #P Tally instruction counts.
  {my ($exec, $instruction) = @_;                                                # Execution environment, instruction being executed
+      $exec->totalInstructions++;                                               # Total instruction count
+
   my $a = $instruction->action;
+  $exec->totalLabels++ if $a =~ m(\Alabel\Z);                                   # Count of every label instruction executed
+
   if (!defined($exec->timeDelta) or $exec->timeDelta > 0)
    {if (my $t = $exec->tally)                                                   # Tally instruction counts
      {$exec->tallyCount++;
@@ -2732,6 +2740,8 @@ my @instructions = sort keys %$instructions;
 my %instructions = map {$instructions[$_]=>$_} keys @instructions;
 #say STDERR "IIII\n", dump(\%instructions), formatTable(\@instructions); exit;
 
+sub instructionMap() {return \%instructions}                                    # Instruction map
+
 my sub instructionList()                                                        #P Create a list of instructions.
  {my @i = grep {m(\s+#i)} readFile $0;
   my @j;                                                                        # Description of instruction
@@ -2937,8 +2947,9 @@ sub generateVerilogMachineCode($)                                               
 END
 
   for my $i(0..$L-1)                                                            # Each instruction
-   {my $s  = unpack "H*", substr($string, $i*$N, $N);
-    push @v, sprintf qq(      code[%4d] = 'h$s;), $i;
+   {my $s = unpack "H*", substr($string, $i*$N, $N);
+    my $c = pad sprintf(qq(      code[%4d] = 'h$s;), $i), 80;
+    push @v, $c."// ".$assembly->code->[$i]->action;
    }
 
   push @v, <<END;
