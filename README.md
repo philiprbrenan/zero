@@ -12,7 +12,7 @@ Install the [Zero assembler programming language](https://github.com/philiprbren
 
 ## Application
 
-Includes an implementation of N-Way [trees](https://en.wikipedia.org/wiki/Tree_(data_structure)) using [code](https://en.wikipedia.org/wiki/Computer_program) written in the [Zero assembler programming language](https://github.com/philiprbrenan/zero): assiduously optimized through exhaustive testing, ready for realization in [Silicon](https://en.wikipedia.org/wiki/Silicon) as an [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) rather than as software on a conventional [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) so that large,
+Includes an implementation of a [B-Tree](https://en.wikipedia.org/wiki/B-tree) [code](https://en.wikipedia.org/wiki/Computer_program) written in the [Zero assembler programming language](https://github.com/philiprbrenan/zero): assiduously optimized through exhaustive testing, ready for realization in [Silicon](https://en.wikipedia.org/wiki/Silicon) as an [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) rather than as software on a conventional [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) so that large,
 extremely fast, associative memories can be manufactured on an industrial
 scale.
 
@@ -311,7 +311,7 @@ An implementation of N-Way-Trees in the [Zero assembler programming language](ht
 [Code](https://github.com/philiprbrenan/zero/blob/main/lib/Zero/NWayTree.pm)
 
 Can you reduce the number of instructions required to perform ```107``` inserts
-into an N-Way-Tree using the instruction set provided? Please raise an issue if
+into a [B-Tree](https://en.wikipedia.org/wiki/B-tree) using the instruction set provided? Please raise an issue if
 so stating the licence for your enhancement.
 
 ```
@@ -390,4 +390,25 @@ The [Verilog
 implementation](https://github.com/philiprbrenan/zero/blob/main/verilog/fpga.sv)
 implements a  [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) that runs the same [code](https://en.wikipedia.org/wiki/Computer_program) as that executed by the [emulator](https://en.wikipedia.org/wiki/Emulator) using the **string** [memory](https://en.wikipedia.org/wiki/Computer_memory) model.
 
-So far we can run **bubblesort** successfully.
+The verilog implementation is able to run [programs](https://en.wikipedia.org/wiki/Computer_program) that construct btrees and iterate throught them:
+```
+rm -f fpga; iverilog -g2012 -o fpga fpga.sv && timeout 1m ./fpga
+Test    1, steps        7
+Test    2, steps        3
+Test    3, steps        3
+Test    4, steps        7
+Test    5, steps        4
+Test    6, steps       29
+Test    7, steps       10
+Test    8, steps        4
+Test    9, steps        4
+Test   10, steps       11
+Test   11, steps        6
+Test   12, steps        6
+Test   13, steps        4
+Test   14, steps        8
+Test   15, steps      174
+Test   16, steps       13
+Test   17, steps     1018
+All 112 tests passed successfully in 17 programs
+```
