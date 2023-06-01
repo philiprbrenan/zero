@@ -1611,8 +1611,8 @@ END
 
 #latest:;
 
-sub commandStart()                                                              # Start a tree
- {0}
+sub commandStart() {0}                                                          # Start a tree
+
 sub commandInsert()                                                             # Insert into a tree.  Must be followed by the key and the associated data
  {1}
 sub commandFind()                                                               # Find in a tree. Must be followed by the key to find
