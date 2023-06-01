@@ -2740,7 +2740,9 @@ my @instructions = sort keys %$instructions;
 my %instructions = map {$instructions[$_]=>$_} keys @instructions;
 #say STDERR "IIII\n", dump(\%instructions), formatTable(\@instructions); exit;
 
-sub instructionMap() {return \%instructions}                                    # Instruction map
+sub instructionMap()                                                            #P Instruction map
+ {return \%instructions
+ }
 
 my sub instructionList()                                                        #P Create a list of instructions.
  {my @i = grep {m(\s+#i)} readFile $0;
