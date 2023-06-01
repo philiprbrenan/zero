@@ -12,13 +12,13 @@ Install the [Zero assembler programming language](https://github.com/philiprbren
 
 ## Application
 
-Includes an implementation of a [B-Tree](https://en.wikipedia.org/wiki/B-tree) [code](https://en.wikipedia.org/wiki/Computer_program) written in the [Zero assembler programming language](https://github.com/philiprbrenan/zero): assiduously optimized through exhaustive testing, ready for realization in [Silicon](https://en.wikipedia.org/wiki/Silicon) as an [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) rather than as software on a conventional [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) so that large,
+Includes an implementation of a [B-Tree](https://en.wikipedia.org/wiki/B-tree) algorithm written in the [Zero assembler programming language](https://github.com/philiprbrenan/zero): assiduously optimized through exhaustive testing, ready for realization in [Silicon](https://en.wikipedia.org/wiki/Silicon) as an [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) rather than as software on a conventional [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) so that large,
 extremely fast, associative memories can be manufactured on an industrial
 scale.
 
 The initial idea is to produce a small CPU which implements just the
-instructions needed to implement the algorithm.  The small CPU will then be
-replicated across an [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) so that the [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)) can be queried in parallel.
+instructions needed to implement the [B-Tree](https://en.wikipedia.org/wiki/B-tree) algorithm.  The small CPU will then
+be replicated across an [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) so that the [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)) can be queried in parallel.
 
 Only one [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)) will be used: typically mapping 64 [bit](https://en.wikipedia.org/wiki/Bit) keys into 64 [bit](https://en.wikipedia.org/wiki/Bit) data. It
 will be useful to add additional data at the front of the keys such as data
