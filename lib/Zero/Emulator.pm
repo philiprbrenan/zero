@@ -17,7 +17,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Time::HiRes qw(time);
-eval "use Test::More tests=>398" unless caller;
+eval "use Test::More tests=>400" unless caller;
 
 makeDieConfess;
 our $memoryTechnique;                                                           # Undef or the address of a sub that loads the memory handlers into an execution environment.
@@ -4493,6 +4493,28 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [1..3];
   #say STDERR generateVerilogMachineCode("Mov_test");
+ }
+
+#latest:;
+if (1)                                                                          ##MoveLong
+ {Start 1;
+  my $a = Array "aaa";
+  my $b = Array "bbb";
+  Mov [$a, \0, 'aaa'], 11;
+  Mov [$a, \1, 'aaa'], 22;
+  Mov [$a, \2, 'aaa'], 33;
+  Mov [$a, \3, 'aaa'], 44;
+  Mov [$a, \4, 'aaa'], 55;
+  Mov [$b, \0, 'bbb'], 66;
+  Mov [$b, \1, 'bbb'], 77;
+  Mov [$b, \2, 'bbb'], 88;
+  Mov [$b, \3, 'bbb'], 99;
+
+  MoveLong [$a, \1, 'aaa'], [$b, \1, 'bbb'], 2;
+  my $e = Execute(suppressOutput=>1);
+  is_deeply $e->heap(0), bless([11, 77, 88, 44, 55], "aaa");
+  is_deeply $e->heap(1), bless([66, 77, 88, 99],     "bbb");
+  #say STDERR generateVerilogMachineCode("MoveLong_test");
  }
 
 ok 1;
