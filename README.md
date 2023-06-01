@@ -81,15 +81,15 @@ locate the data to be processed by the instruction.
 
 Each reference indexes an [array](https://en.wikipedia.org/wiki/Dynamic_array) in [memory](https://en.wikipedia.org/wiki/Computer_memory). Each [array](https://en.wikipedia.org/wiki/Dynamic_array) has a non unique name to
 confirm that we are reading or writing to the right kind of [memory](https://en.wikipedia.org/wiki/Computer_memory). 
-The [emulator](https://en.wikipedia.org/wiki/Emulator) evaluates the target reference as a left hand reference and the first
-source operand as a right hand reference before executing each instruction and
-saves the results of these operations in the execution environment.  These pre
-computed values can be used to simplify the implementation of instructions that
-follow the convention that the target operand is always a left hand reference and
-the first source operand is always a right hand reference. However, not all
-instructions follow this convention, for example, **MoveLong** treats its first
-source oeprand reference as a left hand reference rather than a right hand
-reference.
+The [emulator](https://en.wikipedia.org/wiki/Emulator) evaluates the target reference as a left hand reference and the
+first source operand as a right hand reference before executing each
+instruction and saves the results of these operations in the execution
+environment.  These pre computed values can be used to simplify the
+implementation of instructions that follow the convention that the target
+operand is always a left hand reference and the first source operand is always
+a right hand reference. However, not all instructions follow this convention,
+for example, **MoveLong** treats its first source oeprand reference as a left
+hand reference rather than a right hand reference.
 
 ### Left hand references
 
@@ -355,8 +355,10 @@ solution.
 
 #### Bubblesort
  [Bubble Sort](https://en.wikipedia.org/wiki/Bubble_sort) is easy to optimize by overlapping instruction execution across
-three channels. Doing so gives it the best performance of the **O(n^2)** [sort](https://en.wikipedia.org/wiki/Sorting) algorithms implemented in the [Zero assembler programming language](https://github.com/philiprbrenan/zero) so far. Of course, with unlimited parallelism,
-bubble [sort](https://en.wikipedia.org/wiki/Sorting) can [sort](https://en.wikipedia.org/wiki/Sorting) an [array](https://en.wikipedia.org/wiki/Dynamic_array) in **O(N)** time: just let each of **N** [processes](https://en.wikipedia.org/wiki/Process_management_(computing)) perform one pass each on the [array](https://en.wikipedia.org/wiki/Dynamic_array) of length **N** to be sorted.
+three channels. Doing so gives it the best performance of the **O(n^2)** [sort](https://en.wikipedia.org/wiki/Sorting) algorithms implemented in the [Zero assembler programming language](https://github.com/philiprbrenan/zero) so far. Of course, with unlimited
+parallelism, bubble [sort](https://en.wikipedia.org/wiki/Sorting) can [sort](https://en.wikipedia.org/wiki/Sorting) an [array](https://en.wikipedia.org/wiki/Dynamic_array) in **O(N)** time: just let each of
+**N** [processes](https://en.wikipedia.org/wiki/Process_management_(computing)) perform one pass each on the [array](https://en.wikipedia.org/wiki/Dynamic_array) of length **N** to be
+sorted.
 
 # Optimization space
 
@@ -365,12 +367,12 @@ resources:
 
 <table border="0" cellpadding="10">
 
-<tr><th>Time<td>The amount of elapsed time it takes to execute the code as this
-bears upon the utility of the solution.
+<tr><th>Time<td>The amount of elapsed time it takes to execute the code as
+this bears upon the utility of the solution.
 
-<tr><th>Code Space<td>The amount of code required to implement the solution.
-The more code required, the more memory, and thus Silicon, is required to store
-the code.
+<tr><th>Code Space<td>The amount of code required to implement the
+solution. The more code required, the more memory, and thus Silicon,
+is required to store the code.
 
 <tr><th>Heap Space<td>The amount of memory required to store the data used by
 the code.
@@ -390,25 +392,12 @@ The [Verilog
 implementation](https://github.com/philiprbrenan/zero/blob/main/verilog/fpga.sv)
 implements a  [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) that runs the same [code](https://en.wikipedia.org/wiki/Computer_program) as that executed by the [emulator](https://en.wikipedia.org/wiki/Emulator) using the **string** [memory](https://en.wikipedia.org/wiki/Computer_memory) model.
 
-The verilog implementation is able to run [programs](https://en.wikipedia.org/wiki/Computer_program) that construct btrees and iterate throught them:
-```
-rm -f fpga; iverilog -g2012 -o fpga fpga.sv && timeout 1m ./fpga
-Test    1, steps        7
-Test    2, steps        3
-Test    3, steps        3
-Test    4, steps        7
-Test    5, steps        4
-Test    6, steps       29
-Test    7, steps       10
-Test    8, steps        4
-Test    9, steps        4
-Test   10, steps       11
-Test   11, steps        6
-Test   12, steps        6
-Test   13, steps        4
-Test   14, steps        8
-Test   15, steps      174
-Test   16, steps       13
-Test   17, steps     1018
-All 112 tests passed successfully in 17 programs
-```
+The verilog implementation is able to run [programs](https://en.wikipedia.org/wiki/Computer_program) that construct a [B-Tree](https://en.wikipedia.org/wiki/B-tree) and
+iterate throught them: ``` rm -f fpga; iverilog -g2012 -o fpga fpga.sv &&
+timeout 1m ./fpga Test    1, steps        7 Test    2, steps        3 Test
+3, steps        3 Test    4, steps        7 Test    5, steps        4 Test
+6, steps       29 Test    7, steps       10 Test    8, steps        4 Test
+9, steps        4 Test   10, steps       11 Test   11, steps        6 Test
+12, steps        6 Test   13, steps        4 Test   14, steps        8 Test
+15, steps      174 Test   16, steps       13 Test   17, steps     1018 All 112
+tests passed successfully in 17 programs ```
