@@ -1120,7 +1120,9 @@ For loop to process each element remaining in the input channel
         Out $i; Out $e;
        };
     
-      my $e = Execute(suppressOutput=>1, in=>[333, 22, 1]);
+      my $e = Execute(suppressOutput=>0, trace=>1, in=>[333, 22, 1]);
+    
+    say STDERR dump $e->outLines; x;
       is_deeply $e->outLines, [0, 333,  1, 22, 2, 1];
      }
     
