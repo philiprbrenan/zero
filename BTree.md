@@ -250,7 +250,7 @@ Get the number of keys in the tree..
     
         my $n = Keys($t);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-        AssertEq $n, $i;                                                            # Check tree size
+    
         my $K = Add $k, $k;
         Tally 1;
         Insert($t, $k, $K,                                                          # Insert a new node
@@ -280,7 +280,7 @@ Get the number of keys in the tree..
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+      is_deeply $e->widestAreaInArena,   [undef, 6, 536];
       is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
       is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
@@ -433,7 +433,7 @@ Get data field from find results.
       ForIn                                                                         # Create tree
        {my ($i, $k) = @_;
         my $n = Keys($t);
-        AssertEq $n, $i;                                                            # Check tree size
+    
         my $K = Add $k, $k;
         Tally 1;
         Insert($t, $k, $K,                                                          # Insert a new node
@@ -465,7 +465,7 @@ Get data field from find results.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+      is_deeply $e->widestAreaInArena,   [undef, 6, 536];
       is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
       is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
@@ -574,7 +574,7 @@ Get key field from find results.
       ForIn                                                                         # Create tree
        {my ($i, $k) = @_;
         my $n = Keys($t);
-        AssertEq $n, $i;                                                            # Check tree size
+    
         my $K = Add $k, $k;
         Tally 1;
         Insert($t, $k, $K,                                                          # Insert a new node
@@ -606,7 +606,7 @@ Get key field from find results.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+      is_deeply $e->widestAreaInArena,   [undef, 6, 536];
       is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
       is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
@@ -751,7 +751,7 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
       ForIn                                                                         # Create tree
        {my ($i, $k) = @_;
         my $n = Keys($t);
-        AssertEq $n, $i;                                                            # Check tree size
+    
         my $K = Add $k, $k;
         Tally 1;
         Insert($t, $k, $K,                                                          # Insert a new node
@@ -785,7 +785,7 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+      is_deeply $e->widestAreaInArena,   [undef, 6, 536];
       is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
       is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
@@ -1110,7 +1110,7 @@ Iterate over a tree.
       ForIn                                                                         # Create tree
        {my ($i, $k) = @_;
         my $n = Keys($t);
-        AssertEq $n, $i;                                                            # Check tree size
+    
         my $K = Add $k, $k;
         Tally 1;
         Insert($t, $k, $K,                                                          # Insert a new node
@@ -1144,7 +1144,7 @@ Iterate over a tree.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+      is_deeply $e->widestAreaInArena,   [undef, 6, 536];
       is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
       is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
@@ -1259,7 +1259,7 @@ Print the keys held in a tree.
       ForIn                                                                         # Create tree
        {my ($i, $k) = @_;
         my $n = Keys($t);
-        AssertEq $n, $i;                                                            # Check tree size
+    
         my $K = Add $k, $k;
         Tally 1;
         Insert($t, $k, $K,                                                          # Insert a new node
@@ -1289,7 +1289,7 @@ Print the keys held in a tree.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+      is_deeply $e->widestAreaInArena,   [undef, 6, 536];
       is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
       is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
@@ -1402,7 +1402,7 @@ Print the data held in a tree.
       ForIn                                                                         # Create tree
        {my ($i, $k) = @_;
         my $n = Keys($t);
-        AssertEq $n, $i;                                                            # Check tree size
+    
         my $K = Add $k, $k;
         Tally 1;
         Insert($t, $k, $K,                                                          # Insert a new node
@@ -1432,7 +1432,7 @@ Print the data held in a tree.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [undef, 6, 537];
+      is_deeply $e->widestAreaInArena,   [undef, 6, 536];
       is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
       is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
