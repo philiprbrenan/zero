@@ -393,7 +393,7 @@ implementation](https://github.com/philiprbrenan/zero/blob/main/verilog/fpga.sv)
 implements a  [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) that runs the same [code](https://en.wikipedia.org/wiki/Computer_program) as that executed by the [emulator](https://en.wikipedia.org/wiki/Emulator) using the **string** [memory](https://en.wikipedia.org/wiki/Computer_memory) model.
 
 The verilog implementation is able to run [programs](https://en.wikipedia.org/wiki/Computer_program) that construct a [B-Tree](https://en.wikipedia.org/wiki/B-tree) and
-iterate throught them:
+iterate through them:
 ```
 rm -f fpga; iverilog -g2012 -o fpga verilog/fpga.sv && timeout 1m ./fpga
 Test    1, steps        7
