@@ -1120,23 +1120,22 @@ For loop to process each element remaining in the input channel
         Out $i; Out $e;
        };
     
-      my $e = Execute(suppressOutput=>0, trace=>1, in=>[333, 22, 1]);
+      my $e = Execute(suppressOutput=>1, trace=>0, in=>[333, 22, 1]);
     
-    say STDERR dump $e->outLines; x;
-      is_deeply $e->outLines, [0, 333,  1, 22, 2, 1];
+      is_deeply $e->outLines, [3, 333,  2, 22, 1, 1];
      }
     
     if (1)                                                                          
      {Start 1;
     
-      ForIn                                                                         #  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      ForIn  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
        {my ($i, $v, $Check, $Next, $End) = @_;
         Out $i;
         Out $v;
        };
       my $e = Execute(suppressOutput=>1, in => [33,22,11]);
-      is_deeply $e->outLines, [0,33, 1,22, 2,11];
+      is_deeply $e->outLines, [3,33, 2,22, 1,11];
       say STDERR generateVerilogMachineCode("In_test");
      }
     
