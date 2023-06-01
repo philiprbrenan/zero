@@ -1620,7 +1620,7 @@ sub commandFind()                                                               
 sub commandTest()                                                               # Run test programs
  {3}
 
-if (1)                                                                          # Actions on a tree driven by the input channel
+if (1)                                                                          # Actions on a tree driven by the input channel ##commandStart ##commandInsert ##commandFind ##commandTest
  {Start 1;
   my $W = 3;                                                                    # Width of each node
   my $F = FindResult_new;                                                       # Find area
