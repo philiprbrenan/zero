@@ -1,4 +1,4 @@
-# Test 2023-06-01 at 06:32:58
+# Test 2023-06-01 at 06:41:09
 
 name: Test
 
@@ -50,9 +50,9 @@ jobs:
     - name: TestEmulator
       run:  perl examples/testEmulator.pl
 
-    - name: NWayTree
-      run:  perl lib/Zero/NWayTree.pm
+    - name: BTree
+      run:  perl lib/Zero/BTree.pm
 
-    - name: TestNWayTree
-      run:  perl examples/testNWayTree.pl
+    - name: TestBTree
+      run:  perl examples/testBTree.pl
 
