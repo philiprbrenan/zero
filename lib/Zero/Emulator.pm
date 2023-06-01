@@ -4530,7 +4530,7 @@ if (1)                                                                          
   #say STDERR generateVerilogMachineCode("MoveLong_test");
  }
 
-#latest:;
+latest:;
 if (1)                                                                          ##ForIn
  {Start 1;
   ForIn                                                                         #
@@ -4539,8 +4539,8 @@ if (1)                                                                          
     Out $v;
    };
   my $e = Execute(suppressOutput=>1, in => [33,22,11]);
-  is_deeply $e->outLines, [0,33,1,22,2,11];
-  #say STDERR generateVerilogMachineCode("In_test");
+  is_deeply $e->outLines, [0,33, 1,22, 2,11];
+  say STDERR generateVerilogMachineCode("In_test");
  }
 
 =pod
