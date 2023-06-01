@@ -4,8 +4,8 @@
 //------------------------------------------------------------------------------
 module fpga(input[1:0] in, output[1:0] out);                                    // Run test programs
   wire[1:0] in, out;                                                            // Input and output lines
-  parameter integer NTestPrograms  =   17;                                      // Number of test programs to run
-  parameter integer NTestsExpected =  112;                                      // Number of test passes expected
+  parameter integer NTestPrograms  =   18;                                      // Number of test programs to run
+  parameter integer NTestsExpected =  118;                                      // Number of test passes expected
   parameter integer showInstructionDetails = 0;                                 // Show details of each instruction as it is executed
 
   parameter integer NSteps         = 2500;                                      // Maximum number of instruction executions
@@ -18,6 +18,7 @@ module fpga(input[1:0] in, output[1:0] out);                                    
   parameter integer NOut           = 1000;                                      // Size of output area
   parameter integer NFreedArrays   = 1000;                                      // Size of output area
   parameter integer NMemoryPrintX  =   20;                                      // Width of memory to print
+  parameter integer NMemoryPrintLines = 1;                                      // Number of lines of memory to print
 
   reg signed [255:0] code[NInstructions];                                       // Code memory
   reg signed [ 64:0] arraySizes[NArrays];                                       // Size of each array
@@ -30,7 +31,8 @@ module fpga(input[1:0] in, output[1:0] out);                                    
 
   integer signed nSteps;                                                        // Number of instructions executed
   integer signed NInstructionEnd;                                               // Limit of instructions for the current program
-  integer signed  inMemPos;                                                     // Position in input channel
+  integer signed  inMemPos;                                                     // Current position in input channel
+  integer signed  inMemEnd;                                                     // End of input channel, this is the next element that would have been added.
   integer signed outMemPos;                                                     // Position in output channel
   integer signed result;                                                        // Result of an instruction execution
   integer signed allocs;                                                        // Maximum number of array allocations in use at any one time
@@ -75,6 +77,7 @@ module fpga(input[1:0] in, output[1:0] out);                                    
        15: Bubble_sort();
        16: MoveLong_test();
        17: NWayTree_1();
+       18: begin; inMemPos = 0; inMem[0] = 33; inMem[1] = 22; inMem[2] = 11; inMemEnd = 3; In_test(); end
       endcase
     end
   endtask
@@ -84,10 +87,12 @@ module fpga(input[1:0] in, output[1:0] out);                                    
       $write("Local:");
       $write("      "); for(i = 0; i < NMemoryPrintX; ++i) $write(" %4d", i); $display("");
       for(j = 0; j < NLocal; j += NMemoryPrintX) begin
-        for(i = 0; i < NMemoryPrintX; ++i) begin
-          $write(" %4d", localMem[j+i]);
+        if (j < NMemoryPrintLines) begin
+          for(i = 0; i < NMemoryPrintX; ++i) begin
+            $write(" %4d", localMem[j+i]);
+          end
+          $display("");
         end
-        $display("");
       end
       $write("Heap: ");
       for(i = 0; i < NMemoryPrintX; ++i) begin
@@ -206,6 +211,11 @@ module fpga(input[1:0] in, output[1:0] out);                                    
 
           ok(outMem[0] == 0, "NT1 Out 0"); ok(outMem[1] == 1, "NT1 Out 1"); ok(outMem[2] == 2, "NT1 Out 2");
           ok(outMem[3] == 3, "NT1 Out 3"); ok(outMem[4] == 4, "NT1 Out 4"); ok(outMem[5] == 5, "NT1 Out 5");
+        end
+       18: begin
+          ok(outMem[0] ==  0, "In1"); ok(outMem[1] == 33, "In2");
+          ok(outMem[2] ==  1, "In3"); ok(outMem[3] == 22, "In4");
+          ok(outMem[4] ==  2, "In5"); ok(outMem[5] == 11, "In6");
         end
       endcase
     end
@@ -330,7 +340,7 @@ module fpga(input[1:0] in, output[1:0] out);                                    
     testsPassed = 0;                                                            // Passed tests
     testsFailed = 0;                                                            // Failed tests
     for(test = 1; test <= NTestPrograms; ++test) begin                          // Run the tests from bewest to oldest
-//if (test == 17) begin
+//if (test == 18) begin
       allocs         = 0;                                                       // Largest number of arrays in use at any one time so far
       freedArraysTop = 0;                                                       // Start freed arrays stack
       loadCode();                                                               // Load the program
@@ -509,16 +519,6 @@ module fpga(input[1:0] in, output[1:0] out);                                    
   task dump_instruction();
     begin                                                                       // dump
      $display("dump");
-    end
-  endtask
-  task in_instruction();
-    begin                                                                       // in
-     $display("in");
-    end
-  endtask
-  task inSize_instruction();
-    begin                                                                       // inSize
-     $display("inSize");
     end
   endtask
   task label_instruction();
@@ -2523,6 +2523,24 @@ module fpga(input[1:0] in, output[1:0] out);                                    
       code[1654] = 'h0000002900000000000000000000010000000000000000000000000000000000;                                                                          // parallelStop
     end
   endtask
+                                                                                // Load program 'In_test' into code memory
+  task In_test();
+    begin
+      NInstructionEnd = 12;
+      code[   0] = 'h0000001500000000000000000000210000000000000000000000000000000000;                                                                          // inSize
+      code[   1] = 'h0000001f00000000000000000000010000000000000120000000000000000000;                                                                          // label
+      code[   2] = 'h0000002200000000000000000001210000000000000020000000000000000000;                                                                          // mov
+      code[   3] = 'h0000001f00000000000000000000010000000000000220000000000000000000;                                                                          // label
+      code[   4] = 'h0000001800000000000000070004210000000000000121000000000000002100;                                                                          // jGe
+      code[   5] = 'h0000001400000000000000000002210000000000000000000000000000000000;                                                                          // in
+      code[   6] = 'h0000002600000000000000000000010000000000000121000000000000000000;                                                                          // out
+      code[   7] = 'h0000002600000000000000000000010000000000000221000000000000000000;                                                                          // out
+      code[   8] = 'h0000001f00000000000000000000010000000000000320000000000000000000;                                                                          // label
+      code[   9] = 'h0000000000000000000000000001210000000000000121000000000000012000;                                                                          // add
+      code[  10] = 'h0000001e00000000fffffff90002210000000000000000000000000000000000;                                                                          // jmp
+      code[  11] = 'h0000001f00000000000000000000010000000000000420000000000000000000;                                                                          // label
+    end
+  endtask
 
 //Memory access functions for instruction execution
 
@@ -3017,6 +3035,20 @@ module fpga(input[1:0] in, output[1:0] out);                                    
         heapMem[i] = heapMem[j];
         ++j;
       end
+    end
+  endtask
+
+  task in_instruction();
+    begin                                                                       // in
+     result = inMem[inMemPos++];
+     setMemory();
+    end
+  endtask
+
+  task inSize_instruction();
+    begin                                                                       // inSize
+     result = inMemEnd - inMemPos;
+     setMemory();
     end
   endtask
 endmodule
