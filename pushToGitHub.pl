@@ -45,10 +45,12 @@ sub pod($$$)                                                                    
  }
 
 pod fpf($home, q(lib/Zero/Emulator.pm)), fpf($home, q(Emulator.md)), &introEmulator;
-pod fpf($home, q(lib/Zero/NWayTree.pm)), fpf($home, q(NWayTree.md)), &introNWayTree;
+pod fpf($home, q(lib/Zero/BTree.pm)),    fpf($home, q(BTree.md)),    &introBTree;
 
 expandWellKnownWordsInMarkDownFile                                              # Documentation
   fpe($home, qw(README md2)), fpe $home, qw(README md);
+
+&run();                                                                         # Upload run configuration
 
 push my @files,
   grep {!/backups/}
@@ -65,9 +67,10 @@ for my $s(@files)                                                               
   lll "$w $s $t";
  }
 
-my $d = dateTimeStamp;
+sub run
+ {my $d = dateTimeStamp;
 
-my $t = <<END;
+  my $t = <<END;
     - name: Cpan
       run:  sudo cpan install -T Data::Dump Data::Table::Text
 
@@ -104,14 +107,14 @@ my $t = <<END;
     - name: TestEmulator
       run:  perl examples/testEmulator.pl
 
-    - name: NWayTree
-      run:  perl lib/Zero/NWayTree.pm
+    - name: BTree
+      run:  perl lib/Zero/BTree.pm
 
-    - name: TestNWayTree
-      run:  perl examples/testNWayTree.pl
+    - name: TestBTree
+      run:  perl examples/testBTree.pl
 END
 
-my $y = <<"END" =~ s(XXXX) ($t)gsr;
+  my $y = <<"END" =~ s(XXXX) ($t)gsr;
 # Test $d
 
 name: Test
@@ -131,7 +134,7 @@ jobs:
 XXXX
 END
 
-my $ym = <<'END' =~ s(XXXX) ($t)gsr;
+  my $ym = <<'END' =~ s(XXXX) ($t)gsr;
   testMac:
     runs-on: macos-latest
 
@@ -143,9 +146,9 @@ my $ym = <<'END' =~ s(XXXX) ($t)gsr;
 XXXX
 END
 
-$y .= $ym if $macos;
+  $y .= $ym if $macos;
 
-my $yw = <<'END' =~ s(XXXX) ($t)gsr;
+ my $yw = <<'END' =~ s(XXXX) ($t)gsr;
   testWindows:
     runs-on: windows-latest
 
@@ -173,9 +176,9 @@ my $yw = <<'END' =~ s(XXXX) ($t)gsr;
 XXXX
 END
 
-$y .= $yw if $windows;
+  $y .= $yw if $windows;
 
-my $yob = <<'END' =~ s(XXXX) ($t)gsr;
+  my $yob = <<'END' =~ s(XXXX) ($t)gsr;
   testOpenBsd:
     runs-on: macos-12
     name: OpenBSD
@@ -195,18 +198,18 @@ my $yob = <<'END' =~ s(XXXX) ($t)gsr;
 
         run: |
           perl lib/Zero/Emulator.pm
-          perl lib/Zero/NWayTree.pm
+          perl lib/Zero/BTree.pm
           perl examples/testEmulator.pl
-          perl examples/testNWayTree.pl
+          perl examples/testBTree.pl
           perl examples/bubbleSort.pl
           perl examples/insertionSort.pl
           perl examples/quickSort.pl
           perl examples/selectionSort.pl
 END
 
-$y .= $yob if $openBsd;
+ $y .= $yob if $openBsd;
 
-my $yfb = <<'END' =~ s(XXXX) ($t)gsr;
+ my $yfb = <<'END' =~ s(XXXX) ($t)gsr;
   testFreeBsd:
     runs-on: macos-12
     name: FreeBSD
@@ -226,20 +229,19 @@ my $yfb = <<'END' =~ s(XXXX) ($t)gsr;
 
         run: |
           perl lib/Zero/Emulator.pm
-          perl lib/Zero/NWayTree.pm
-          perl lib/Zero/Emulator.pm
-          perl lib/Zero/NWayTree.pm
+          perl lib/Zero/BTree.pm
           perl examples/testEmulator.pl
-          perl examples/testNWayTree.pl
+          perl examples/testBTree.pl
           perl examples/bubbleSort.pl
           perl examples/insertionSort.pl
           perl examples/quickSort.pl
           perl examples/selectionSort.pl
 END
 
-$y .= $yfb if $freeBsd;
+  $y .= $yfb if $freeBsd;
 
-lll "Ubuntu work flow for $repo ", writeFileUsingSavedToken($user, $repo, $wf, $y);
+  lll "Ubuntu work flow for $repo ", writeFileUsingSavedToken($user, $repo, $wf, $y);
+ }
 
 sub introEmulator{&introEmulator1.&introEmulator2}
 
@@ -273,9 +275,9 @@ Hello World
 END
 END2
 
-sub introNWayTree{&introNWayTree1.&introNWayTree2}
+sub introBTree{&introBTree1.&introBTree2}
 
-sub introNWayTree1{<<"END"}
+sub introBTree1{<<"END"}
 =pod
 
 =encoding utf-8
@@ -296,7 +298,7 @@ to the minimum possible while still passing all the tests.
 
 END
 
-sub introNWayTree2{<<'END2'}
+sub introBTree2{<<'END2'}
  {my $W = 3; my $N = 107; my @r = randomArray $N;
 
   Start 1;
