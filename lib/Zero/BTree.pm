@@ -13,7 +13,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
-eval "use Test::More tests=>130" unless caller;
+eval "use Test::More tests=>131" unless caller;
 
 makeDieConfess;
 
@@ -1581,7 +1581,7 @@ if (1)                                                                          
   is_deeply $e->timeParallel,   24260;
   is_deeply $e->timeSequential, 28657;
 
-  say STDERR formatTable($e->counts);
+  #say STDERR formatTable($e->counts);
   is_deeply formatTable($e->counts), <<END;                                     # All instruction codes used in NWay Tree
 add                 1920
 array                253
@@ -1611,10 +1611,14 @@ END
 
 #latest:;
 
-sub commandStart () {0}                                                         # Start a tree
-sub commandInsert() {1}                                                         # Insert into a tree.  Must be followed by the key and the associated data
-sub commandFind  () {2}                                                         # Find in a tree. Must be followed by the key to find
-sub commandTest  () {3}                                                         # Run test programs
+sub commandStart()                                                              # Start a tree
+ {0}
+sub commandInsert()                                                             # Insert into a tree.  Must be followed by the key and the associated data
+ {1}
+sub commandFind()                                                               # Find in a tree. Must be followed by the key to find
+ {2}
+sub commandTest()                                                               # Run test programs
+ {3}
 
 if (1)                                                                          # Actions on a tree driven by the input channel
  {Start 1;
