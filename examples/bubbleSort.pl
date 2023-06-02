@@ -45,14 +45,13 @@ if (1)                                                                          
   bubbleSort $a, 'array';                                                       # Sort
   Out [$a, \$_, 'array'] for keys @a;
 
-  my $e = Execute(suppressOutput=>0, trace=>0);                                 # Execute
-  say STDERR generateVerilogMachineCode("Bubble_sort");
+  my $e = Execute(suppressOutput=>1);                                           # Execute
+  #say STDERR generateVerilogMachineCode("Bubble_sort");
 
-  #say STDERR "AAAA", $e->PrintMemory->($e); exit;
-  is_deeply $e->PrintMemory->($e), <<END;
-Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
-Local:    0    8    1    7    0    7   77   66
-     0   11   22   33   44   55   66   77   88    size:     8
+  #say STDERR $e->PrintHeap->($e); exit;
+  is_deeply $e->PrintHeap->($e), <<END;
+Heap: |  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
+ 0  8 | 11 22 33 44 55 66 77 88
 END
   #is_deeply $e->outLines, [11, 22, 33];
 
