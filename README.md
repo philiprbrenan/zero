@@ -211,18 +211,22 @@ A possible downside of this [memory](https://en.wikipedia.org/wiki/Computer_memo
 Alternatively, in the [string](https://en.wikipedia.org/wiki/String_(computer_science)) [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme, [arrays](https://en.wikipedia.org/wiki/Dynamic_array) are held as a [string](https://en.wikipedia.org/wiki/String_(computer_science)) concatenated together in fixed size blocks.  This imposes the limitation that
 each [array](https://en.wikipedia.org/wiki/Dynamic_array) can only extend up to a predetermined size. The number of such [arrays](https://en.wikipedia.org/wiki/Dynamic_array) is determined by the total size of the available [memory](https://en.wikipedia.org/wiki/Computer_memory). 
 The advantage of the [string](https://en.wikipedia.org/wiki/String_(computer_science)) [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme is that the allocation and freeing of
-such [arrays](https://en.wikipedia.org/wiki/Dynamic_array) is very simple because freed [arrays](https://en.wikipedia.org/wiki/Dynamic_array) can be immediately reused.
-Allocation and freeing is thus a fast operation. Thus [memory](https://en.wikipedia.org/wiki/Computer_memory) can be recycled
-indefinitely which is very convenient for [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) implementations.  The [string](https://en.wikipedia.org/wiki/String_(computer_science)) [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme is useful in the case of N-Way [trees](https://en.wikipedia.org/wiki/Tree_(data_structure)) where each node in the [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)) only extends to a small fixed size.
+such [arrays](https://en.wikipedia.org/wiki/Dynamic_array) is simple because all freed [arrays](https://en.wikipedia.org/wiki/Dynamic_array) are all the same size and so can
+be reused immediately at the next allocation making allocation and freeing a
+fast operation while allowing blocks of [memory](https://en.wikipedia.org/wiki/Computer_memory) to be recycled indefinitely.
+These capabilities are relvanto to database applications because the purpose of
+a database is to store data for long periods of time across many insert update
+delete cyles.
 
 Another advantage of the [string](https://en.wikipedia.org/wiki/String_(computer_science)) [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme is that all [array](https://en.wikipedia.org/wiki/Dynamic_array) operations can
 be done in parallel because the maximum size of each [array](https://en.wikipedia.org/wiki/Dynamic_array) is small and fixed
 and can thus be precoded in advance for each possible variation.
 
 The importance of the optimized [B-Tree](https://en.wikipedia.org/wiki/B-tree) algorithm is that it allows us to have
-data structures that are much larger than the fixed [array](https://en.wikipedia.org/wiki/Dynamic_array) size while the
-retaining the advantages of parallel operation and indefinite [memory](https://en.wikipedia.org/wiki/Computer_memory) reuse.
-
+data structures that are much larger than the fixed [array](https://en.wikipedia.org/wiki/Dynamic_array) size while retaining
+the advantages of parallel operation and indefinite [memory](https://en.wikipedia.org/wiki/Computer_memory) reuse. Each node in
+a [B-Tree](https://en.wikipedia.org/wiki/B-tree) has a size that varies between two small fixed limits making the
+**string [memory](https://en.wikipedia.org/wiki/Computer_memory) schema** ideal for implementing such [trees](https://en.wikipedia.org/wiki/Tree_(data_structure)). 
 
 ## Input and Output channels
 
