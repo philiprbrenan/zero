@@ -115,25 +115,12 @@ Create a new memory area and write its number into the address named by the targ
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->Heap->($e, 0), [1, 22, 333];
-      is_deeply $e->out, <<END if $testSet <= 2;
+      is_deeply $e->out, <<END;
     
     Array size:  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     3
     bless([1, 22, 333], "aaa")
-    0
-    1
-    1
-    22
-    2
-    333
-    END
-      is_deeply $e->out, <<END if $testSet  > 2;
-    
-    Array size:  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-    3
-    [1, 22, 333]
     0
     1
     1
@@ -334,21 +321,10 @@ The current size of an array.
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->Heap->($e, 0), [1, 22, 333];
-      is_deeply $e->out, <<END if $testSet <= 2;
+      is_deeply $e->out, <<END;
     Array size:
     3
     bless([1, 22, 333], "aaa")
-    0
-    1
-    1
-    22
-    2
-    333
-    END
-      is_deeply $e->out, <<END if $testSet  > 2;
-    Array size:
-    3
-    [1, 22, 333]
     0
     1
     1
@@ -858,11 +834,9 @@ Dump all the arrays currently in memory.
       Out Mov [$a, \2, 'node'];
       Free $a, "node";
       my $e = Execute(suppressOutput=>1);
-      #say STDERR $e->PrintMemory->($e); exit;
-      is_deeply $e->PrintMemory->($e), <<END;
-    Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
-    Local:    0    1    2
-         0    size:     0
+      #say STDERR $e->PrintHeap->($e); exit;
+      is_deeply $e->PrintHeap->($e), <<END;
+    Heap: |  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
     END
       is_deeply $e->outLines, [0..2];
      }
@@ -1061,21 +1035,10 @@ For loop to process each element of the named area.
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->Heap->($e, 0), [1, 22, 333];
-      is_deeply $e->out, <<END if $testSet <= 2;
+      is_deeply $e->out, <<END;
     Array size:
     3
     bless([1, 22, 333], "aaa")
-    0
-    1
-    1
-    22
-    2
-    333
-    END
-      is_deeply $e->out, <<END if $testSet  > 2;
-    Array size:
-    3
-    [1, 22, 333]
     0
     1
     1
@@ -1161,11 +1124,9 @@ Free the memory area named by the target operand after confirming that it has th
       Free $a, "node";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      #say STDERR $e->PrintMemory->($e); exit;
-      is_deeply $e->PrintMemory->($e), <<END;
-    Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
-    Local:    0    1    2
-         0    size:     0
+      #say STDERR $e->PrintHeap->($e); exit;
+      is_deeply $e->PrintHeap->($e), <<END;
+    Heap: |  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
     END
       is_deeply $e->outLines, [0..2];
      }
@@ -2407,8 +2368,7 @@ Copy a constant or memory address to the target address.
       my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       19 instructions executed";
-      is_deeply $e->Heap->($e, 0), [undef, undef, 1] if $testSet <= 2;
-      is_deeply $e->Heap->($e, 0), [0,     0,     1] if $testSet  > 2;
+      is_deeply $e->Heap->($e, 0), [undef, undef, 1];
      }
     
     if (1)                                                                           
@@ -2571,21 +2531,10 @@ Do nothing (but do it well!).
       my $e = Execute(suppressOutput=>1);
     
       is_deeply $e->Heap->($e, 0), [1, 22, 333];
-      is_deeply $e->out, <<END if $testSet <= 2;
+      is_deeply $e->out, <<END;
     Array size:
     3
     bless([1, 22, 333], "aaa")
-    0
-    1
-    1
-    22
-    2
-    333
-    END
-      is_deeply $e->out, <<END if $testSet  > 2;
-    Array size:
-    3
-    [1, 22, 333]
     0
     1
     1
@@ -2719,10 +2668,10 @@ Pop the memory area specified by the source operand into the memory address spec
       my $e = &$ee(suppressOutput=>1);
       #say STDERR generateVerilogMachineCode("Pop_test");  exit;
     
-      is_deeply $e->PrintMemory->($e), <<END;
+      #say STDERR $e->PrintLocal->($e); x;
+      is_deeply $e->PrintLocal->($e), <<END;
     Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
     Local:    0    2    1
-         0    size:     0
     END
       is_deeply $e->Heap->($e, 0), [];
      }
@@ -2792,10 +2741,10 @@ Push the value in the current stack frame specified by the source operand onto t
       Push $a, 2,     "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = &$ee(suppressOutput=>1);
-      is_deeply $e->PrintMemory->($e), <<END;
-    Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
-    Local:    0
-         0    1    2    size:     2
+      #say STDERR $e->PrintHeap->($e); x;
+      is_deeply $e->PrintHeap->($e), <<END;
+    Heap: |  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
+     0  2 |  1  2
     END
      }
     
@@ -2824,12 +2773,11 @@ Push the value in the current stack frame specified by the source operand onto t
       my $e = &$ee(suppressOutput=>1);
       is_deeply $e->GetMemoryArrays->($e), 2;
     
-      #say STDERR $e->PrintMemory->($e); exit;
-      is_deeply $e->PrintMemory->($e), <<END;
-    Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
-    Local:    0    1
-         0    1    2    3    size:     3
-         1   11   22   33    size:     3
+      #say STDERR $e->PrintHeap->($e); exit;
+      is_deeply $e->PrintHeap->($e), <<END;
+    Heap: |  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
+     0  3 |  1  2  3
+     1  3 | 11 22 33
     END
       is_deeply $e->mostArrays, [undef, 2, 1, 1, 1];
      }
@@ -3670,9 +3618,13 @@ Get the contents of the specified array
 
 Low level memory access - pop from area
 
-#### PrintMemory
+#### PrintHeap
 
-Print memory
+Print heap memory
+
+#### PrintLocal
+
+Print local memory
 
 #### PushMemoryArea
 
