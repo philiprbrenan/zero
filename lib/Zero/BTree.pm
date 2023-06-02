@@ -1609,10 +1609,8 @@ subtract            1249
 END
  }
 
-#latest:;
-
-sub commandStart() {0}                                                          # Start a tree
-
+sub commandStart()                                                              # Start a tree
+ {0}
 sub commandInsert()                                                             # Insert into a tree.  Must be followed by the key and the associated data
  {1}
 sub commandFind()                                                               # Find in a tree. Must be followed by the key to find
@@ -1620,6 +1618,7 @@ sub commandFind()                                                               
 sub commandTest()                                                               # Run test programs
  {3}
 
+latest:;
 if (1)                                                                          # Actions on a tree driven by the input channel ##commandStart ##commandInsert ##commandFind ##commandTest
  {Start 1;
   my $W = 3;                                                                    # Width of each node
@@ -1655,9 +1654,9 @@ if (1)                                                                          
      };
     Jmp $End;                                                                   # Invalid command terminates the command sequence
    };
-  my $e = Execute(suppressOutput=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
+  my $e = Execute(suppressOutput=>0, trace=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
   is_deeply $e->outLines, [0, 1, 22, 0, 1, 33];
-  #say STDERR generateVerilogMachineCode("BTreeController");
+  say STDERR generateVerilogMachineCode("BTreeController");
  }
 
 
