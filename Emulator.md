@@ -427,12 +427,12 @@ Assert false.
       my $e = &$ee(suppressOutput=>1, trace=>1);
     
       is_deeply $e->out, <<END;
-        1     0     0    assertTrue
+        1     0     0    15    assertTrue
     
     AssertFalse 1 failed  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
         1     2 assertFalse
-        2     1     0   assertFalse
+        2     1     0     9   assertFalse
     END
      }
     
@@ -579,13 +579,14 @@ Assert true.
       AssertTrue  0;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = &$ee(suppressOutput=>1, trace=>1);
+    
       is_deeply $e->out, <<END;
-        1     0     0   assertFalse
+        1     0     0     9   assertFalse
     
     AssertTrue 0 failed  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
         1     2 assertTrue
-        2     1     0    assertTrue
+        2     1     0    15    assertTrue
     END
      }
     
@@ -917,38 +918,23 @@ Else block.
         Mov 4, 4;
        };
       my $e = &$ee(suppressOutput=>1);
+    
       is_deeply $e->out, <<END;
     Trace: 1
-        1     0     0         trace
-        2     1     1           jNe
-        3     5     0         label
-        4     6     1           mov  [0, 3, stackArea] = 3
-        5     7     1           mov  [0, 4, stackArea] = 4
-        6     8     0         label
-        7     9     1           jNe
-        8    10     1           mov  [0, 1, stackArea] = 1
-        9    11     1           mov  [0, 2, stackArea] = 1
-       10    12     1           jmp
-       11    16     0         label
-    END
-      my $E = &$ee(suppressOutput=>1);
-      is_deeply $E->out, <<END;
-    Trace: 1
-        1     0     0         trace
-        2     1     1           jNe
-        3     5     0         label
-        4     6     1           mov  [0, 3, stackArea] = 3
-        5     7     1           mov  [0, 4, stackArea] = 4
-        6     8     0         label
-        7     9     1           jNe
-        8    10     1           mov  [0, 1, stackArea] = 1
-        9    11     1           mov  [0, 2, stackArea] = 1
-       10    12     1           jmp
-       11    16     0         label
+        1     0     0    58         trace
+        2     1     1    28           jNe
+        3     5     0    31         label
+        4     6     1    34           mov  [0, 3, stackArea] = 3
+        5     7     1    34           mov  [0, 4, stackArea] = 4
+        6     8     0    31         label
+        7     9     1    28           jNe
+        8    10     1    34           mov  [0, 1, stackArea] = 1
+        9    11     1    34           mov  [0, 2, stackArea] = 1
+       10    12     1    30           jmp
+       11    16     0    31         label
     END
     
       is_deeply scalar($e->notExecuted->@*), 6;
-      is_deeply scalar($E->notExecuted->@*), 6;
      }
     
 
@@ -1136,7 +1122,7 @@ For loop to process each element remaining in the input channel
        };
       my $e = Execute(suppressOutput=>1, in => [33,22,11]);
       is_deeply $e->outLines, [3,33, 2,22, 1,11];
-      say STDERR generateVerilogMachineCode("In_test");
+      #say STDERR generateVerilogMachineCode("In_test");
      }
     
 
@@ -3301,38 +3287,23 @@ Then block.
         Mov 4, 4;
        };
       my $e = &$ee(suppressOutput=>1);
+    
       is_deeply $e->out, <<END;
     Trace: 1
-        1     0     0         trace
-        2     1     1           jNe
-        3     5     0         label
-        4     6     1           mov  [0, 3, stackArea] = 3
-        5     7     1           mov  [0, 4, stackArea] = 4
-        6     8     0         label
-        7     9     1           jNe
-        8    10     1           mov  [0, 1, stackArea] = 1
-        9    11     1           mov  [0, 2, stackArea] = 1
-       10    12     1           jmp
-       11    16     0         label
-    END
-      my $E = &$ee(suppressOutput=>1);
-      is_deeply $E->out, <<END;
-    Trace: 1
-        1     0     0         trace
-        2     1     1           jNe
-        3     5     0         label
-        4     6     1           mov  [0, 3, stackArea] = 3
-        5     7     1           mov  [0, 4, stackArea] = 4
-        6     8     0         label
-        7     9     1           jNe
-        8    10     1           mov  [0, 1, stackArea] = 1
-        9    11     1           mov  [0, 2, stackArea] = 1
-       10    12     1           jmp
-       11    16     0         label
+        1     0     0    58         trace
+        2     1     1    28           jNe
+        3     5     0    31         label
+        4     6     1    34           mov  [0, 3, stackArea] = 3
+        5     7     1    34           mov  [0, 4, stackArea] = 4
+        6     8     0    31         label
+        7     9     1    28           jNe
+        8    10     1    34           mov  [0, 1, stackArea] = 1
+        9    11     1    34           mov  [0, 2, stackArea] = 1
+       10    12     1    30           jmp
+       11    16     0    31         label
     END
     
       is_deeply scalar($e->notExecuted->@*), 6;
-      is_deeply scalar($E->notExecuted->@*), 6;
      }
     
 
@@ -3369,42 +3340,25 @@ Start or stop tracing.  Tracing prints each instruction executed and its effect 
         Mov 4, 4;
        };
       my $e = &$ee(suppressOutput=>1);
+    
       is_deeply $e->out, <<END;
     
     Trace: 1  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-        1     0     0         trace
-        2     1     1           jNe
-        3     5     0         label
-        4     6     1           mov  [0, 3, stackArea] = 3
-        5     7     1           mov  [0, 4, stackArea] = 4
-        6     8     0         label
-        7     9     1           jNe
-        8    10     1           mov  [0, 1, stackArea] = 1
-        9    11     1           mov  [0, 2, stackArea] = 1
-       10    12     1           jmp
-       11    16     0         label
-    END
-      my $E = &$ee(suppressOutput=>1);
-      is_deeply $E->out, <<END;
-    
-    Trace: 1  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-        1     0     0         trace
-        2     1     1           jNe
-        3     5     0         label
-        4     6     1           mov  [0, 3, stackArea] = 3
-        5     7     1           mov  [0, 4, stackArea] = 4
-        6     8     0         label
-        7     9     1           jNe
-        8    10     1           mov  [0, 1, stackArea] = 1
-        9    11     1           mov  [0, 2, stackArea] = 1
-       10    12     1           jmp
-       11    16     0         label
+        1     0     0    58         trace
+        2     1     1    28           jNe
+        3     5     0    31         label
+        4     6     1    34           mov  [0, 3, stackArea] = 3
+        5     7     1    34           mov  [0, 4, stackArea] = 4
+        6     8     0    31         label
+        7     9     1    28           jNe
+        8    10     1    34           mov  [0, 1, stackArea] = 1
+        9    11     1    34           mov  [0, 2, stackArea] = 1
+       10    12     1    30           jmp
+       11    16     0    31         label
     END
     
       is_deeply scalar($e->notExecuted->@*), 6;
-      is_deeply scalar($E->notExecuted->@*), 6;
      }
     
 
