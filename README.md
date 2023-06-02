@@ -12,9 +12,9 @@ Install the [Zero assembler programming language](https://github.com/philiprbren
 
 ## Application
 
-Includes an implementation of a [B-Tree](https://en.wikipedia.org/wiki/B-tree) algorithm written in the [Zero assembler programming language](https://github.com/philiprbrenan/zero): assiduously optimized through exhaustive testing, ready for realization in [Silicon](https://en.wikipedia.org/wiki/Silicon) as an [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) or [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) rather than as software on a conventional [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) so that
+Includes an implementation of the [B-Tree](https://en.wikipedia.org/wiki/B-tree) algorithm written in the [Zero assembler programming language](https://github.com/philiprbrenan/zero): assiduously optimized through exhaustive testing, ready for realization in [Silicon](https://en.wikipedia.org/wiki/Silicon) as an [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) or [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) rather than as software on a conventional [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) so that
 large, extremely fast, associative memories can be manufactured on an
-industrial scale. In short: a __Database on a Chip__ or a **DOC**.
+industrial scale. In short: a __Database on a Chip__ or a **DoC**.
 
 The initial idea is to produce a small CPU which implements just the
 instructions needed to implement the [B-Tree](https://en.wikipedia.org/wiki/B-tree) algorithm.  The small CPU will then
@@ -214,6 +214,14 @@ The advantage of the [string](https://en.wikipedia.org/wiki/String_(computer_sci
 such [arrays](https://en.wikipedia.org/wiki/Dynamic_array) is very simple because freed [arrays](https://en.wikipedia.org/wiki/Dynamic_array) can be immediately reused.
 Allocation and freeing is thus a fast operation. Thus [memory](https://en.wikipedia.org/wiki/Computer_memory) can be recycled
 indefinitely which is very convenient for [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) implementations.  The [string](https://en.wikipedia.org/wiki/String_(computer_science)) [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme is useful in the case of N-Way [trees](https://en.wikipedia.org/wiki/Tree_(data_structure)) where each node in the [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)) only extends to a small fixed size.
+
+Another advantage of the [string](https://en.wikipedia.org/wiki/String_(computer_science)) [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme is that all [array](https://en.wikipedia.org/wiki/Dynamic_array) operations can
+be done in parallel because the maximum size of each [array](https://en.wikipedia.org/wiki/Dynamic_array) is small and fixed
+and can thus be precoded in advance for each possible variation.
+
+The importance of the optimized [B-Tree](https://en.wikipedia.org/wiki/B-tree) algorithm is that it allows us to have
+data structures that are much larger than the fixed [array](https://en.wikipedia.org/wiki/Dynamic_array) size while the
+retaining the advantages of parallel operation and indefinite [memory](https://en.wikipedia.org/wiki/Computer_memory) reuse.
 
 
 ## Input and Output channels
