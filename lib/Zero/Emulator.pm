@@ -17,7 +17,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Time::HiRes qw(time);
-eval "use Test::More tests=>400" unless caller;
+eval "use Test::More tests=>392" unless caller;
 
 makeDieConfess;
 our $memoryTechnique;                                                           # Undef or the address of a sub that loads the memory handlers into an execution environment.
@@ -1876,15 +1876,16 @@ sub traceMemory($$)                                                             
   my $s = $exec->suppressOutput;
   my $a = $instruction->action;
   my $n = $instruction->number;
+  my $o = &instructionMap->{$a};
   my $F = $instruction->file;
   my $L = $instruction->line;
   my $S = $instruction->step;
-  my $m  = sprintf "%5d  %4d  %4d  %12s", $S, $n, $e, $a;
+  my $m  = sprintf "%5d  %4d  %4d  %4d  %12s", $S, $n, $e, $o, $a;
      $m .= sprintf "  %20s", $f;
      $m .= sprintf "  at %s line %d", $F, $L unless $s;
      $m =~ s(\s+\Z) ();
   say STDERR $m unless $s;
-  $exec->output("$m\n");
+  $exec->output("$m\n") if $s;
  }
 
 sub formatTrace($)                                                              #P Describe last memory assignment.
@@ -3634,11 +3635,12 @@ if (1)                                                                          
   AssertFalse 0;
   AssertTrue  0;
   my $e = &$ee(suppressOutput=>1, trace=>1);
+
   is_deeply $e->out, <<END;
-    1     0     0   assertFalse
+    1     0     0     9   assertFalse
 AssertTrue 0 failed
     1     2 assertTrue
-    2     1     0    assertTrue
+    2     1     0    15    assertTrue
 END
  }
 
@@ -3650,10 +3652,10 @@ if (1)                                                                          
   my $e = &$ee(suppressOutput=>1, trace=>1);
 
   is_deeply $e->out, <<END;
-    1     0     0    assertTrue
+    1     0     0    15    assertTrue
 AssertFalse 1 failed
     1     2 assertFalse
-    2     1     0   assertFalse
+    2     1     0     9   assertFalse
 END
  }
 
@@ -4095,38 +4097,23 @@ if (1)                                                                          
     Mov 4, 4;
    };
   my $e = &$ee(suppressOutput=>1);
+
   is_deeply $e->out, <<END;
 Trace: 1
-    1     0     0         trace
-    2     1     1           jNe
-    3     5     0         label
-    4     6     1           mov  [0, 3, stackArea] = 3
-    5     7     1           mov  [0, 4, stackArea] = 4
-    6     8     0         label
-    7     9     1           jNe
-    8    10     1           mov  [0, 1, stackArea] = 1
-    9    11     1           mov  [0, 2, stackArea] = 1
-   10    12     1           jmp
-   11    16     0         label
-END
-  my $E = &$ee(suppressOutput=>1);
-  is_deeply $E->out, <<END;
-Trace: 1
-    1     0     0         trace
-    2     1     1           jNe
-    3     5     0         label
-    4     6     1           mov  [0, 3, stackArea] = 3
-    5     7     1           mov  [0, 4, stackArea] = 4
-    6     8     0         label
-    7     9     1           jNe
-    8    10     1           mov  [0, 1, stackArea] = 1
-    9    11     1           mov  [0, 2, stackArea] = 1
-   10    12     1           jmp
-   11    16     0         label
+    1     0     0    58         trace
+    2     1     1    28           jNe
+    3     5     0    31         label
+    4     6     1    34           mov  [0, 3, stackArea] = 3
+    5     7     1    34           mov  [0, 4, stackArea] = 4
+    6     8     0    31         label
+    7     9     1    28           jNe
+    8    10     1    34           mov  [0, 1, stackArea] = 1
+    9    11     1    34           mov  [0, 2, stackArea] = 1
+   10    12     1    30           jmp
+   11    16     0    31         label
 END
 
   is_deeply scalar($e->notExecuted->@*), 6;
-  is_deeply scalar($E->notExecuted->@*), 6;
  }
 
 #latest:;
@@ -4535,7 +4522,7 @@ if (1)                                                                          
    };
   my $e = Execute(suppressOutput=>1, in => [33,22,11]);
   is_deeply $e->outLines, [3,33, 2,22, 1,11];
-  say STDERR generateVerilogMachineCode("In_test");
+  #say STDERR generateVerilogMachineCode("In_test");
  }
 
 =pod
