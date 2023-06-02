@@ -20,14 +20,15 @@ module fpga(input[1:0] in, output[1:0] out);                                    
   parameter integer NMemoryPrintX  =   20;                                      // Width of memory to print
   parameter integer NMemoryPrintLines = 1;                                      // Number of lines of memory to print
 
-  reg signed [255:0] code[NInstructions];                                       // Code memory
-  reg signed [ 64:0] arraySizes[NArrays];                                       // Size of each array
-  reg signed [ 64:0] heapMem [NHeap];                                           // Heap memory
-  reg signed [ 64:0] localMem[NLocal];                                          // Local memory
-  reg signed [ 64:0] inMem[NIn];                                                // Input channel
-  reg signed [ 64:0] outMem[NOut];                                              // Out channel
-  reg signed [ 64:0] freedArrays[NFreedArrays];                                 // Freed arrays list implemented as a stack
-  reg signed [ 64:0] arrayShift[NArea];                                         // Array shift area
+  reg signed [255:0] code        [NInstructions];                               // Code memory
+  reg signed [ 32:0] opExecCounts[NInstructions];                               // Instruction execution counts
+  reg signed [ 64:0] arraySizes  [NArrays];                                     // Size of each array
+  reg signed [ 64:0] heapMem     [NHeap];                                       // Heap memory
+  reg signed [ 64:0] localMem    [NLocal];                                      // Local memory
+  reg signed [ 64:0] inMem       [NIn];                                         // Input channel
+  reg signed [ 64:0] outMem      [NOut];                                        // Out channel
+  reg signed [ 64:0] freedArrays [NFreedArrays];                                // Freed arrays list implemented as a stack
+  reg signed [ 64:0] arrayShift  [NArea];                                       // Array shift area
 
   integer signed nSteps;                                                        // Number of instructions executed
   integer signed NInstructionEnd;                                               // Limit of instructions for the current program
@@ -40,6 +41,7 @@ module fpga(input[1:0] in, output[1:0] out);                                    
   integer signed test;                                                          // Tests passed
   integer signed testsPassed;                                                   // Tests passed
   integer signed testsFailed;                                                   // Tests failed
+  integer signed opExecCount;                                                   // Number of times the current instruction has been executed
   integer signed i, j, k, l, p, q;                                              // Useful integers
 
 //Tests
@@ -84,12 +86,12 @@ module fpga(input[1:0] in, output[1:0] out);                                    
          inMem[ 1] =   1; inMem[ 2] =   3; inMem[ 3] = 333;
          inMem[ 4] =   1; inMem[ 5] =   1; inMem[ 6] = 111;
          inMem[ 7] =   1; inMem[ 8] =   2; inMem[ 9] = 222;
-         inMem[10] =   1; inMem[10] =   4; inMem[11] = 444;
-         inMem[12] =   2; inMem[13] =   5;
-         inMem[14] =   2; inMem[15] =   2;
-         inMem[16] =   2; inMem[17] =   6;
-         inMem[18] =   2; inMem[19] =   3;
-         inMemEnd  =  20; BTreeController();
+         inMem[10] =   1; inMem[11] =   4; inMem[12] = 444;
+         inMem[13] =   2; inMem[14] =   5;
+         inMem[15] =   2; inMem[16] =   4;
+         inMem[17] =   2; inMem[18] =   6;
+         inMem[19] =   2; inMem[20] =   3;
+         inMemEnd  =  21; BTreeController();
        end
       endcase
 
@@ -134,9 +136,8 @@ module fpga(input[1:0] in, output[1:0] out);                                    
   task printIn();                                                               // Print the input channel
     begin
       $display("In from: %4d to: %4d", inMemPos, inMemEnd);
-      $write("      "); for(i = inMemPos; i < inMemEndNMemoryPrintX; ++i) $write(" %4d", i); $display("");
-      for(i = 0; i < outMemPos; ++i) begin
-        $write(" %4d", outMem[i]);
+      for(i = inMemPos; i < inMemEnd; ++i) begin
+        $write(" %4d", inMem[i]);
       end
       $display("");
     end
@@ -247,6 +248,7 @@ module fpga(input[1:0] in, output[1:0] out);                                    
           ok(outMem[4] ==  1, "In5"); ok(outMem[5] == 11, "In6");
         end
        19: begin
+printOut();
           ok(outMem[0] ==  3, "BT1"); ok(outMem[1] == 33, "BT2");
           ok(outMem[2] ==  2, "BT3"); ok(outMem[3] == 22, "BT4");
           ok(outMem[4] ==  1, "BT5"); ok(outMem[5] == 11, "BT6");
@@ -257,7 +259,7 @@ module fpga(input[1:0] in, output[1:0] out);                                    
 
 //Layout of each instruction
 
-  integer ip = 0;                                                               // Instruction pointer
+  integer ip = 0, oip = 0;                                                      // Instruction pointer
   integer r1, r2, r3, r4, r5, r6, r7, r8;                                       // Intermediate array results
 
   wire signed [255:0] instruction = code[ip];
@@ -374,10 +376,11 @@ module fpga(input[1:0] in, output[1:0] out);                                    
       freedArraysTop = 0;                                                       // Start freed arrays stack
       outMemPos      = 0;                                                       // Output channel position
       nSteps         = 1;                                                       // Number of instructions executed
-      for(i = 0; i < NOut;    ++i)     outMem[i] = 'bx;                         // Reset the output channel
-      for(i = 0; i < NHeap;   ++i)    heapMem[i] = 'bx;                         // Reset heap memory
-      for(i = 0; i < NLocal;  ++i)   localMem[i] = 'bx;                         // Reset local memory
-      for(i = 0; i < NArrays; ++i) arraySizes[i] =  0;                          // Set array sizes
+      for(i = 0; i < NOut;          ++i)       outMem[i] = 'bx;                 // Reset the output channel
+      for(i = 0; i < NHeap;         ++i)      heapMem[i] = 'bx;                 // Reset heap memory
+      for(i = 0; i < NLocal;        ++i)     localMem[i] = 'bx;                 // Reset local memory
+      for(i = 0; i < NArrays;       ++i)   arraySizes[i] =  0;                  // Set array sizes
+      for(i = 0; i < NInstructions; ++i) opExecCounts[i] =  0;                  // Set operator counts
     end
   endtask
 
@@ -387,16 +390,21 @@ module fpga(input[1:0] in, output[1:0] out);                                    
   initial begin                                                                 // Load, run confirm
     testsPassed = 0;                                                            // Passed tests
     testsFailed = 0;                                                            // Failed tests
-    for(test = 19; test <= NTestPrograms; ++test) begin                          // Run the tests from bewest to oldest
+    for(test = 19; test <= NTestPrograms; ++test) begin                         // Run the tests from bewest to oldest
       loadCode();
 //if (test == 18) begin
       for(ip = 0; ip >= 0 && ip < NInstructionEnd; ++ip)                        // Each instruction
       begin
+        oip = ip;                                                               // Save the old instruction pointer
         #1;                                                                     // Let the ip update its assigns
         if (showInstructionDetails) printInstruction();                         // Print Instruction details
 //Execute
         executeInstruction();
-$display("%4d  %4d  %4d", nSteps, ip, operator);
+
+                      opExecCounts[oip]++;
+        opExecCount = opExecCounts[oip];
+$display("%4d  %4d  %4d  %4d = %4d",
+nSteps, oip, opExecCount, operator, result);
         if (nSteps++ > NSteps) begin                                            // Count instructions executed
           $display("Out of instructions after %d steps", NSteps);
           printMemory();
@@ -4676,7 +4684,8 @@ $display("%4d  %4d  %4d", nSteps, ip, operator);
     begin                                                                       // in
      result = inMem[inMemPos];
      setMemory();
-$display("In %d  from %d ", source1Value, inMemPos);
+printIn();
+$display("In %d  from %d ", result, inMemPos);
      inMemPos += 1;
     end
   endtask
