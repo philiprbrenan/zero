@@ -235,9 +235,10 @@ There are two channels: **in** for input, **out** for output.
 ### Input
 
 The input channel is supplied preloaded to the [emulator](https://en.wikipedia.org/wiki/Emulator). The input channel
-**in** can be read using the **In** and  **ForIn** instructions.  The numnber
-of items remaining in the input channel can be discoevered using the **InSize**
-instruction.
+**in** can be read using the **In** and  **ForIn** instructions.  The number of
+items remaining in the input channel can be discovered using the **InSize**
+instruction and the parameters to the subrotuine implemnting the body block of
+the **ForIn** instruction.
 
 ### Output
 
