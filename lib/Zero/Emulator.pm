@@ -68,7 +68,8 @@ sub ExecutionEnvironment(%)                                                     
     pointlessAssign=>       {},                                                 # Location already has the specified value
     PopMemoryArea=>        \&popMemoryArea,                                     # Low level memory access - pop from area
     printDoubleWrite=>      $options{doubleWrite},                              # Double writes: earlier instruction number to later instruction number
-    PrintMemory=>           \&printMemory,                                      # Print memory
+    PrintHeap=>            \&printHeap,                                         # Print heap memory
+    PrintLocal=>           \&printLocal,                                        # Print local memory
     printPointlessAssign=>  $options{pointlessAssign},                          # Pointless assigns {instruction number} to count - address already has the specified value
     PushMemoryArea=>       \&pushMemoryArea,                                    # Low level memory access - push onto area
     read=>                  [],                                                 # Records whether a memory address was ever read allowing us to find all the unused locations
@@ -94,7 +95,8 @@ sub ExecutionEnvironment(%)                                                     
    );
 
   $memoryTechnique->($exec)       if $memoryTechnique;                          # Load memory handlers if a different memory handling system has been requested
-  $exec->setStringMemoryTechnique if $options{stringMemory};                    # Optionally overrLoad memory handlers if a different memory handling system has been requested
+  $exec->setOriginalMemoryTechnique;                                            # Standard memory handlers
+  $exec->setStringMemoryTechnique if $options{stringMemory};                    # Optionally override memory handlers if a different memory handling system has been requested
 
   if (defined(my $n = $options{maximumArraySize}))                              # Override the maximum number of elements in an array from the default setting if requested
    {$exec->memoryStringElements  = $n;
@@ -552,7 +554,7 @@ sub popMemoryArea($$)                                                           
   pop @$a;                                                                      # Pop
  }
 
-sub printMemory($)                                                              #P Print memory
+sub printLocal($)                                                               #P Print loal memory
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my @p = join ' ', "Memory", map {sprintf "%4d", $_} 0..31;
@@ -562,18 +564,26 @@ sub printMemory($)                                                              
     push @p, join " ", "Local:", @l;
    }
 
+  join "\n", @p, '';
+ }
+
+sub printHeap($)                                                                #P Print memory
+ {my ($exec) = @_;                                                              # Execution environment
+  @_ == 1 or confess "One parameter";
+  my @p = join ' ', "Heap: |", map {sprintf "%2d", $_} 0..20;
+
   if (my $h = $exec->memory->[arenaHeap])                                       # Heap storage
    {my @heap = @$h;
     for my $area(0..$#heap)
      {my @area = $heap[$area]->@*;
-      my @q = sprintf "%6d", $area;
+      next unless @area;
+      my @q = sprintf "%2d %2d |", $area, scalar(@area);
       for my $address(keys @area)
        {my $v = $area[$address];
-        push @q, sprintf "%4d", $v if defined $v;
-        push @q, q(****)       unless defined $v;
+        push @q, sprintf "%2d", $v if defined $v;
+        push @q, q(**)         unless defined $v;
        }
-      push @q,  sprintf "   size: %5d", scalar(@area);
-      push @p, join ' ', @q;
+      push @p, join(' ', @q);
      }
    }
   join "\n", @p, '';
@@ -582,7 +592,7 @@ sub printMemory($)                                                              
 sub setOriginalMemoryTechnique($)                                               #P Set the handlers for the original memory allocation technique.
  {my ($exec) = @_;                                                              # Execution environment
   $exec->Heap              = \&heap;                                            # Low level memory access - content of an array
-  $exec->SetMemory         = \&setMemory;                                       # Low level memory access - set memory
+  #$exec->SetMemory         = \&setMemory;                                       # Low level memory access - set memory
   $exec->GetMemoryArrays    = \&getMemoryArrays;                                # Low level memory access - arena
   $exec->GetMemoryArea     = \&getMemoryArea;                                   # Low level memory access - area
   $exec->GetMemoryLocation = \&getMemoryLocation;                               # Low level memory access - location
@@ -591,7 +601,8 @@ sub setOriginalMemoryTechnique($)                                               
   $exec->ResizeMemoryArea  = \&resizeMemoryArea;                                # Low level memory access - resize a memory area
   $exec->PushMemoryArea    = \&pushMemoryArea;                                  # Low level memory access - push onto area
   $exec->PopMemoryArea     = \&popMemoryArea;                                   # Low level memory access - pop from area
-  $exec->PrintMemory       = \&printMemory;                                     # Low level memory access - print memory
+  $exec->PrintHeap         = \&printHeap;                                       # Low level memory access - print heap memory
+  $exec->PrintLocal        = \&printLocal;                                      # Low level memory access - print local memory
  }
 
 # These methods place the heap arena in a vector string. Each area is up to a prespecified width wide. The current length of each such array is held in the first element.
@@ -705,7 +716,7 @@ sub stringPopMemoryArea($$)                                                     
   $v
  }
 
-sub stringPrintMemory($)                                                        #P Print string memory
+sub stringPrintLocal($)                                                         #P Print string local memory
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
@@ -718,17 +729,26 @@ sub stringPrintMemory($)                                                        
     push @p, join " ", "Local:", @l;
    }
 
+  join "\n", @p, '';
+ }
+
+sub stringPrintHeap($)                                                          #P Print string heap memory
+ {my ($exec) = @_;                                                              # Execution environment
+  @_ == 1 or confess "One parameter";
+  my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
+  my $t = $exec->memoryStringElements;                                          # User width of a heap area
   my $s = $exec->memoryString;
+
+  my @p = join ' ', "Heap: |", map {sprintf "%2d", $_} 0..20;
 
   my $nArea = stringGetMemoryArrays $exec;                                      # Number of arrays in heap memory
   for my $a(0..$nArea-1)                                                        # Each array
    {my $l = stringAreaSize $exec, $a;                                           # Number of integers in array
 
-    my @q = sprintf "%6d", $a;
+    my @q = sprintf "%2d %2d |", $a, $l;
     for my $address(0..$l-1)                                                    # Active elements
-     {push @q, sprintf "%4d", vec($s, $a*$t+$address, $w);
+     {push @q, sprintf "%2d", vec($s, $a*$t+$address, $w);
      }
-    push @q,  sprintf "   size: %5d", $l;
     push @p, join ' ', @q;
    }
 
@@ -748,7 +768,8 @@ sub setStringMemoryTechnique($)                                                 
   $exec->PopMemoryArea     = \&stringPopMemoryArea;                             # Low level memory access - pop from area
   $exec->memoryStringElementWidth = 32;                                         # Each element is 32 bits wide
   $exec->memoryStringElements     = 10;                                         # Number of elements on heap
-  $exec->PrintMemory       = \&stringPrintMemory;                               # Low level memory access - print memory
+  $exec->PrintHeap         = \&stringPrintHeap;                                 # Low level memory access - print heap memory
+  $exec->PrintLocal        = \&stringPrintLocal;                                # Low level memory access - print local memory
   $exec->memoryString        = '';                                              # Low level memory access - array memory
   $exec->memoryStringLengths = '';                                              # Low level memory access - array lengths
  }
@@ -1811,8 +1832,10 @@ sub Zero::Emulator::Assembly::execute($%)                                       
 
 #EEEE Execute
       $implementation->($instruction);                                          # Execute instruction
+
       $exec->tallyInstructionCounts($instruction);                              # Instruction counts
       $exec->traceMemory($instruction);                                         # Trace changes to memory
+#say STDERR $exec->PrintMemory->($exec);
 #say STDERR sprintf "%4d %4d  %2d %s", $step, $exec->instructionPointer, $instructionMap{$a}, $a;
 #say STDERR "XXXX", dump($a, $exec->timeDelta, $exec->timeParallel, $exec->timeSequential, $exec->count);
      }
@@ -3330,10 +3353,10 @@ if (1)                                                                          
   Push $a, 1,     "aaa";
   Push $a, 2,     "aaa";
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->PrintMemory->($e), <<END;
-Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
-Local:    0
-     0    1    2    size:     2
+  #say STDERR $e->PrintHeap->($e); x;
+  is_deeply $e->PrintHeap->($e), <<END;
+Heap: |  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
+ 0  2 |  1  2
 END
  }
 
@@ -3351,10 +3374,10 @@ if (1)                                                                          
   my $e = &$ee(suppressOutput=>1);
   #say STDERR generateVerilogMachineCode("Pop_test");  exit;
 
-  is_deeply $e->PrintMemory->($e), <<END;
+  #say STDERR $e->PrintLocal->($e); x;
+  is_deeply $e->PrintLocal->($e), <<END;
 Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
 Local:    0    2    1
-     0    size:     0
 END
   is_deeply $e->Heap->($e, 0), [];
  }
@@ -3373,12 +3396,11 @@ if (1)                                                                          
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->GetMemoryArrays->($e), 2;
 
-  #say STDERR $e->PrintMemory->($e); exit;
-  is_deeply $e->PrintMemory->($e), <<END;
-Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
-Local:    0    1
-     0    1    2    3    size:     3
-     1   11   22   33    size:     3
+  #say STDERR $e->PrintHeap->($e); exit;
+  is_deeply $e->PrintHeap->($e), <<END;
+Heap: |  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
+ 0  3 |  1  2  3
+ 1  3 | 11 22 33
 END
   is_deeply $e->mostArrays, [undef, 2, 1, 1, 1];
  }
@@ -3418,11 +3440,9 @@ if (1)                                                                          
   Out Mov [$a, \2, 'node'];
   Free $a, "node";
   my $e = Execute(suppressOutput=>1);
-  #say STDERR $e->PrintMemory->($e); exit;
-  is_deeply $e->PrintMemory->($e), <<END;
-Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31
-Local:    0    1    2
-     0    size:     0
+  #say STDERR $e->PrintHeap->($e); exit;
+  is_deeply $e->PrintHeap->($e), <<END;
+Heap: |  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
 END
   is_deeply $e->outLines, [0..2];
  }
@@ -4027,8 +4047,7 @@ if (1)                                                                          
   my $e = &$ee(suppressOutput=>1);
 
   is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       19 instructions executed";
-  is_deeply $e->Heap->($e, 0), [undef, undef, 1] if $testSet <= 2;
-  is_deeply $e->Heap->($e, 0), [0,     0,     1] if $testSet  > 2;
+  is_deeply $e->Heap->($e, 0), [undef, undef, 1];
  }
 
 #latest:;
@@ -4157,21 +4176,10 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->Heap->($e, 0), [1, 22, 333];
-  is_deeply $e->out, <<END if $testSet <= 2;
+  is_deeply $e->out, <<END;
 Array size:
 3
 bless([1, 22, 333], "aaa")
-0
-1
-1
-22
-2
-333
-END
-  is_deeply $e->out, <<END if $testSet  > 2;
-Array size:
-3
-[1, 22, 333]
 0
 1
 1
