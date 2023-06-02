@@ -1572,9 +1572,9 @@ Start a tree
          };
         Jmp $End;                                                                   # Invalid command terminates the command sequence
        };
-      my $e = Execute(suppressOutput=>0, trace=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
+      my $e = Execute(suppressOutput=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
       is_deeply $e->outLines, [0, 1, 22, 0, 1, 33];
-      say STDERR generateVerilogMachineCode("BTreeController");
+      #say STDERR generateVerilogMachineCode("BTreeController");
      }
     
 
@@ -1621,9 +1621,9 @@ Insert into a tree.  Must be followed by the key and the associated data
          };
         Jmp $End;                                                                   # Invalid command terminates the command sequence
        };
-      my $e = Execute(suppressOutput=>0, trace=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
+      my $e = Execute(suppressOutput=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
       is_deeply $e->outLines, [0, 1, 22, 0, 1, 33];
-      say STDERR generateVerilogMachineCode("BTreeController");
+      #say STDERR generateVerilogMachineCode("BTreeController");
      }
     
 
@@ -1670,9 +1670,9 @@ Find in a tree. Must be followed by the key to find
          };
         Jmp $End;                                                                   # Invalid command terminates the command sequence
        };
-      my $e = Execute(suppressOutput=>0, trace=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
+      my $e = Execute(suppressOutput=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
       is_deeply $e->outLines, [0, 1, 22, 0, 1, 33];
-      say STDERR generateVerilogMachineCode("BTreeController");
+      #say STDERR generateVerilogMachineCode("BTreeController");
      }
     
 
@@ -1717,9 +1717,9 @@ Run test programs
          };
         Jmp $End;                                                                   # Invalid command terminates the command sequence
        };
-      my $e = Execute(suppressOutput=>0, trace=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
+      my $e = Execute(suppressOutput=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
       is_deeply $e->outLines, [0, 1, 22, 0, 1, 33];
-      say STDERR generateVerilogMachineCode("BTreeController");
+      #say STDERR generateVerilogMachineCode("BTreeController");
      }
     
 
