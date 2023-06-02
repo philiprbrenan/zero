@@ -1529,9 +1529,54 @@ Print the data held in a tree.
 
 Utility functions.
 
-## commandStart0}()
+## commandStart()
 
 Start a tree
+
+**Example:**
+
+    if (1)                                                                          # Actions on a tree driven by the input channel    
+     {Start 1;
+      my $W = 3;                                                                    # Width of each node
+      my $F = FindResult_new;                                                       # Find area
+      my $T;                                                                        # The tree
+    
+      ForIn                                                                         # Read commands from input channel
+       {my ($i, $v, $Check, $Next, $End) = @_;
+    
+        IfEq $v, commandStart(),                                                    # Start a new tree  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+        Then
+         {$T = New $W;
+          Jmp $Next;
+         };
+        IfEq $v, commandInsert(),                                                   # Insert a key
+        Then
+         {my $k = In; my $d = In;
+          Insert $T, $k, $d;
+          Jmp $Next;
+         };
+        IfEq $v, commandFind(),                                                     # Find a key. Indicate whether it was found and its value on the output channel
+        Then
+         {my $k = In;
+          Find $T, $k, findResult=>$F;
+          IfEq FindResult_cmp($F), FindResult_found,
+          Then
+           {Out 1;
+            Out FindResult_data $F;
+           },
+          Else
+           {Out 0;
+           };
+          Jmp $Next;
+         };
+        Jmp $End;                                                                   # Invalid command terminates the command sequence
+       };
+      my $e = Execute(suppressOutput=>0, trace=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
+      is_deeply $e->outLines, [0, 1, 22, 0, 1, 33];
+      say STDERR generateVerilogMachineCode("BTreeController");
+     }
+    
 
 ## commandInsert()
 
@@ -1576,9 +1621,9 @@ Insert into a tree.  Must be followed by the key and the associated data
          };
         Jmp $End;                                                                   # Invalid command terminates the command sequence
        };
-      my $e = Execute(suppressOutput=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
+      my $e = Execute(suppressOutput=>0, trace=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
       is_deeply $e->outLines, [0, 1, 22, 0, 1, 33];
-      #say STDERR generateVerilogMachineCode("BTreeController");
+      say STDERR generateVerilogMachineCode("BTreeController");
      }
     
 
@@ -1625,9 +1670,9 @@ Find in a tree. Must be followed by the key to find
          };
         Jmp $End;                                                                   # Invalid command terminates the command sequence
        };
-      my $e = Execute(suppressOutput=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
+      my $e = Execute(suppressOutput=>0, trace=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
       is_deeply $e->outLines, [0, 1, 22, 0, 1, 33];
-      #say STDERR generateVerilogMachineCode("BTreeController");
+      say STDERR generateVerilogMachineCode("BTreeController");
      }
     
 
@@ -1672,9 +1717,9 @@ Run test programs
          };
         Jmp $End;                                                                   # Invalid command terminates the command sequence
        };
-      my $e = Execute(suppressOutput=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
+      my $e = Execute(suppressOutput=>0, trace=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
       is_deeply $e->outLines, [0, 1, 22, 0, 1, 33];
-      #say STDERR generateVerilogMachineCode("BTreeController");
+      say STDERR generateVerilogMachineCode("BTreeController");
      }
     
 
@@ -1716,7 +1761,7 @@ Create a random array.
 
 2 [commandInsert](#commandinsert) - Insert into a tree.
 
-3 [commandStart0}](#commandstart0) - Start a tree
+3 [commandStart](#commandstart) - Start a tree
 
 4 [commandTest](#commandtest) - Run test programs
 
