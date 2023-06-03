@@ -268,7 +268,7 @@ figuratively, in parallel.
 ```
 
 In reality all that happens is that the [emulator](https://en.wikipedia.org/wiki/Emulator) chooses a random order to run
-reach parallel section in and then records the time taken by the longest
+each parallel section in and then records the time taken by the longest
 section as the time for the entire block. This technique allows us to confirm
 that the specified sections can be run in any order and thus can also be run in
 parallel on a target [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) .  The difference between the figurative parallel
@@ -405,7 +405,7 @@ The [Verilog
 implementation](https://github.com/philiprbrenan/zero/blob/main/verilog/fpga.sv)
 implements a  [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) that runs the same [code](https://en.wikipedia.org/wiki/Computer_program) as that executed by the [emulator](https://en.wikipedia.org/wiki/Emulator) using the **string** [memory](https://en.wikipedia.org/wiki/Computer_memory) model.
 
-The verilog implementation is able to run [programs](https://en.wikipedia.org/wiki/Computer_program) that construct a [B-Tree](https://en.wikipedia.org/wiki/B-tree) and
+The [Verilog](https://en.wikipedia.org/wiki/Verilog) implementation is able to run [programs](https://en.wikipedia.org/wiki/Computer_program) that construct a [B-Tree](https://en.wikipedia.org/wiki/B-tree) and
 iterate through them:
 ```
 rm -f fpga; iverilog -g2012 -o fpga verilog/fpga.sv && timeout 1m ./fpga
