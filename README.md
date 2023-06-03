@@ -427,3 +427,9 @@ Test   15, steps      174
 Test   16, steps       13
 Test   17, steps     1018
 ```
+
+# FPGA
+
+At the moment I am targetting (this
+device)[https://www.xilinx.com/products/som/kria/k26c-commercial.html] because
+of its high speed ethernet conenctivity and large [memory](https://en.wikipedia.org/wiki/Computer_memory). 
