@@ -18,7 +18,8 @@ industrial scale. In short: a __Database on a Chip__ or a **DoC**.
 
 The initial idea is to produce a small CPU which implements just the
 instructions needed to implement the [B-Tree](https://en.wikipedia.org/wiki/B-tree) algorithm.  The small CPU will then
-be replicated across an [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) or [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) so that the [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)) can be queried in parallel.
+be replicated across an [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) or [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) so that the [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)) can be queried in massive
+parallel.
 
 Only one [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)) will be used: typically mapping 64 [bit](https://en.wikipedia.org/wiki/Bit) keys into 64 [bit](https://en.wikipedia.org/wiki/Bit) data. It
 will be useful to add additional data at the front of the keys such as data
