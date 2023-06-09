@@ -10,26 +10,18 @@ module ClockAndQuery                                                            
 
   parameter integer NSize  = 8;                                                 // Log2(Size of memory)
 
-  reg[NSize:0] ip, ip2;                                                         // Instruction pointer which we will advance
-  reg[NSize:0] in2;                                                             // Out driver
-  reg[NSize:0] got;                                                             // What we got from memory
-  reg out2;                                                                     // Out driving register
-  reg[NSize:0] outReg;                                                          // Out driver
-  integer state, state2;                                                        // Clock divder
+  reg[NSize:0] ip = 0, ip2 = 0;                                                 // Instruction pointer which we will advance
+  reg[NSize:0] in2 = 0;                                                         // Out driver
+  reg[NSize:0] got = 0;                                                         // What we got from memory
+  reg out2 = 0;                                                                 // Out driving register
+  integer state, state2 = 0;                                                    // Clock divder
 
   assign out = out2;
 
-  always @(posedge(clock)) begin                                                // Start ip address
-    if (reset) begin
-    //$display("Reset");
-      ip <= 0; ip2 <= 0;
-      state <= 0; state2 <= 0;  in2 <= 0;
-    end
-    else begin                                                                  // Capture current input on positive edge
+  always @(posedge(clock) && !reset) begin                                      // Start ip address
     //$display("Positive");
-      ip2 <= ip;                                                                // Simulate executing an instruction
-       state2 <= state;                                                         // Divide the clock so we can read in the address and write the contents as a single bit stream after simulating executing the instruction
-    end
+    ip2 <= ip;                                                                  // Simulate executing an instruction
+    state2 <= state;                                                            // Divide the clock so we can read in the address and write the contents as a single bit stream after simulating executing the instruction
   end
 
 // Use NSize clocks to get the address, 1 to read the associated value from memory, NSize to send it back, 1 to execute the next pseudo instruction making 2 * (NSize + 1) in total for each instruction execute, check resulting memory cycle.
@@ -50,7 +42,7 @@ module ClockAndQuery                                                            
     end
     if (state2 == NSize+1) begin                                                // Next pseudo instruction
       //$display("At state: %2d Read memory %d got %d", state2, in2, ip2);
-      got <= ip2;
+      got <= ip2 + in2;
     end
     if (state2 > NSize + 1 && state2 <= NSize * 2 + 1) begin                    // Write result
       out2 <= got[state2 - NSize - 2];
