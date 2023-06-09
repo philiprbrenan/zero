@@ -19,16 +19,17 @@ module ClockAndQuery                                                            
 
   assign out = out2;
 
-  always @(posedge(clock) && reset) begin                                       // Start ip address
+  always @(posedge(clock)) begin                                                // Start ip address
+    if (reset) begin
     //$display("Reset");
-    ip <= 0; ip2 <= 0;
-    state <= 0; state2 <= 0;  in2 <= 0;
-  end
-
-  always @(posedge clock && !reset) begin                                       // Capture current input on positive edge
+      ip <= 0; ip2 <= 0;
+      state <= 0; state2 <= 0;  in2 <= 0;
+    end
+    else begin                                                                  // Capture current input on positive edge
     //$display("Positive");
-    ip2 <= ip;                                                                  // Simulate executing an instruction
-    state2 <= state;                                                            // Divide the clock so we can read in the address and write the contents as a single bit stream after simulating executing the instruction
+      ip2 <= ip;                                                                // Simulate executing an instruction
+       state2 <= state;                                                         // Divide the clock so we can read in the address and write the contents as a single bit stream after simulating executing the instruction
+    end
   end
 
 // Use NSize clocks to get the address, 1 to read the associated value from memory, NSize to send it back, 1 to execute the next pseudo instruction making 2 * (NSize + 1) in total for each instruction execute, check resulting memory cycle.
@@ -43,30 +44,18 @@ module ClockAndQuery                                                            
       //$display("Next state %2d", state2 + 1);
       state <= state2 + 1;
     end
-  end
-
-  always @(negedge clock) begin                                                 // Read address
-    if (state2 > 0 && state2 <= NSize) begin
+    if (state2 > 0 && state2 <= NSize) begin                                    // Read address
       in2[state2-1] <= in;
-      $display("At state: %2d Read bit %2d value %2d total : %d", state2, state2-1, in, in2);
+      //$display("At state: %2d Read bit %2d value %2d total : %d", state2, state2-1, in, in2);
     end
-  end
-
-  always @(negedge clock) begin                                                 // Next pseudo instruction
-    if (state2 == NSize+1) begin
-      $display("At state: %2d Read memory %d got %d", state2, in2, ip2);
-      got = ip2;
+    if (state2 == NSize+1) begin                                                // Next pseudo instruction
+      //$display("At state: %2d Read memory %d got %d", state2, in2, ip2);
+      got <= ip2;
     end
-  end
-
-  always @(negedge clock) begin                                                 // Write result
-    if (state2 > NSize + 1 && state2 <= NSize * 2 + 1) begin
+    if (state2 > NSize + 1 && state2 <= NSize * 2 + 1) begin                    // Write result
       out2 <= got[state2 - NSize - 2];
       //$display("At state: %2d write bit %2d value %2d", state2, state2 - NSize - 2, got[state2 - NSize - 2]);
     end
-  end
-
-  always @(negedge clock) begin                                                 // Next pseudo instruction
     if (state2 == 2 + 2 * NSize) begin
       //$display("Next instruction");
       ip <= ip2 + 1;
