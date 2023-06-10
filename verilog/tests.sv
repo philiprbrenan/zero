@@ -2,10 +2,10 @@
 // Check test results
 // Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
-integer testsPassed;                                                          // Tests passed
-integer testsFailed;                                                          // Tests failed
+integer testsPassed = 0;                                                        // Tests passed
+integer testsFailed = 0;                                                        // Tests failed
 
-task ok(integer signed test, string name);                                    // Check a single test result
+task ok(integer signed test, string name);                                      // Check a single test result
   begin
     if (test == 1) begin
       testsPassed++;
@@ -17,7 +17,7 @@ task ok(integer signed test, string name);                                    //
   end
 endtask
 
-task checkAllTestsPassed(integer NTestsExpected);                             // Check we got the expected number of passes
+task checkAllTestsPassed(integer NTestsExpected);                               // Check we got the expected number of passes
   begin
     if (testsPassed > 0 && testsFailed > 0) begin                               // Summarize test results
        $display("Passed %1d tests, FAILED %1d tests out of %d tests",  testsPassed, testsFailed, NTestsExpected);
