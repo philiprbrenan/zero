@@ -36,19 +36,27 @@ module ClockAndQuery                                                            
       //$display("Next state %2d", state2 + 1);
       state <= state2 + 1;
     end
+  end
+  always @(negedge clock) begin
     if (state2 > 0 && state2 <= NSize) begin                                    // Read address
       in2[state2-1] <= in;
       //$display("At state: %2d Read bit %2d value %2d total : %d", state2, state2-1, in, in2);
     end
+  end
+  always @(negedge clock) begin
     if (state2 == NSize+1) begin                                                // Next pseudo instruction
       //$display("At state: %2d Read memory %d got %d", state2, in2, ip2);
       got <= ip2 + in2;
     end
+  end
+  always @(negedge clock) begin
     if (state2 > NSize + 1 && state2 <= NSize * 2 + 1) begin                    // Write result
       out2 <= got[state2 - NSize - 2];
       //$display("At state: %2d write bit %2d value %2d", state2, state2 - NSize - 2, got[state2 - NSize - 2]);
     end
-    if (state2 == 2 + 2 * NSize) begin
+  end
+  always @(negedge clock) begin
+    if (state2 == 2 + 2 * NSize) begin                                          // Next instruction
       //$display("Next instruction");
       ip <= ip2 + 1;
     end
