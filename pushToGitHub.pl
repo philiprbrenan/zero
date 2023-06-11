@@ -87,10 +87,10 @@ sub run
       run:  cd verilog/fpga/;           iverilog -g2012 -o fpga fpga.sv && timeout 1m ./fpga
 
     - name: ClockDivider
-      run:  cd verilog/clockDivider/;   iverilog -g2012 -o clockDivider   clockDivider.tb   clockDivider.sv   && timeout 1m ./clockDivider
+      run:  cd verilog/clockDivider/;   iverilog -g2012 -o clockDivider     clockDivider.tb   clockDivider.sv && timeout 1m ./clockDivider
 
     - name: ClockAndQuery
-      run:  cd verilog/clockAndQuery/;  iverilog -g2012 -o clockAndQuery  clockAndQuery.tb  clockAndQuery.sv  && timeout 1m ./clockAndQuery
+      run:  cd verilog/clockAndQuery/;  iverilog -g2012 -o clockAndQuery   clockAndQuery.tb  clockAndQuery.sv && timeout 1m ./clockAndQuery
 
     - name: CircularBuffer
       run:  cd verilog/circularBuffer/; iverilog -g2012 -o circularBuffer circularBuffer.tb circularBuffer.sv && timeout 1m ./circularBuffer
