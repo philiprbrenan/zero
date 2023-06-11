@@ -22,15 +22,19 @@ module ClockAndQuery                                                            
 
   always @(posedge(clock)) begin                                                // Start ip address
     state <= `nextState;                                                        // Divide the clock so we can read in the address and write the contents as a single bit stream after simulating executing the instruction
-    if (`nextState == NSize || reset) begin                                     // Next instruction
-      ip  <= reset ? 0 : ip + 1;
-      got <= 11; //ip + address;
+    got   <= 11;
+    if (reset) begin                                                            // Restart
+      ip  <= 0;
       //$display("                             At 11 reset=%2d in=%2d ip=%2d state=%2d address=%2d got=%2d", reset, in, ip, state, address, got);
     end
-    if (`nextState < NSize && !reset) begin                                     // Read address on 0 - NSize-1
+    else if (`nextState == NSize) begin                                         // Next instruction
+      ip  <= ip + 1;
+      //$display("                             At 22 reset=%2d in=%2d ip=%2d state=%2d address=%2d got=%2d", reset, in, ip, state, address, got);
+    end
+    else begin                                                                  // Read address on 0 - NSize-1
       address[`nextState] <= in;
       outReg              <= got[`nextState];
-      //$display("                             At 22 reset=%2d in=%2d ip=%2d state=%2d address=%2d got=%2d", reset, in, ip, state, address, got);
+      //$display("                             At 33 reset=%2d in=%2d ip=%2d state=%2d address=%2d got=%2d", reset, in, ip, state, address, got);
     end
   end
 endmodule
