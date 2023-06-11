@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// Advance the clock and query the results
+// Advance the clock and query the results in memory at a specified location
 // Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
 module ClockAndQuery                                                            // Advance the clock and respond to a pseudo request to see memory
@@ -10,11 +10,11 @@ module ClockAndQuery                                                            
 
   parameter integer NSize = 4;                                                  // Log2(Size of memory)
 
-  reg[NSize:0] ip  = 0;                                                         // Instruction pointer which we will advance
-  integer state = 0;                                                            // Clock divder
+  reg[NSize:0] ip      = 0;                                                     // Instruction pointer which we will advance
+  integer      state   = 0;                                                     // Clock divder
   reg[NSize:0] address = 0;                                                     // Input address
-  reg[NSize:0] got = 0;                                                         // What we got from memory
-  reg outReg = 0;                                                               // Out driver
+  reg[NSize:0] got     = 0;                                                     // What we got from memory
+  reg          outReg  = 0;                                                     // Out driver
 
   assign out = outReg;
 
@@ -27,7 +27,7 @@ module ClockAndQuery                                                            
       got <= 11; //ip + address;
       //$display("                             At 11 reset=%2d in=%2d ip=%2d state=%2d address=%2d got=%2d", reset, in, ip, state, address, got);
     end
-    if (`nextState < NSize && !reset) begin                                                    // Read address on 0 - NSize-1
+    if (`nextState < NSize && !reset) begin                                     // Read address on 0 - NSize-1
       address[`nextState] <= in;
       outReg              <= got[`nextState];
       //$display("                             At 22 reset=%2d in=%2d ip=%2d state=%2d address=%2d got=%2d", reset, in, ip, state, address, got);
