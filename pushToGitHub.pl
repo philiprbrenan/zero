@@ -86,6 +86,15 @@ sub run
     - name: fpga
       run:  iverilog -g2012 -o fpga verilog/fpga/fpga.sv && timeout 1m ./fpga
 
+    - name: ClockDivider
+      run:  iverilog -g2012 -o clockDivider verilog/clockDivider/clockDivider.tb verilog/clockDivider/clockDivider.sv && timeout 1m ./clockDivider
+
+    - name: ClockAndQuery
+      run:  iverilog -g2012 -o clockAndQuery verilog/clockAndQuery/clockAndQuery.tb verilog/clockAndQuery/clockAndQuery.sv && timeout 1m ./clockAndQuery
+
+    - name: CircularBuffer
+      run:  iverilog -g2012 -o circularBuffer verilog/circularBuffer/circularBuffer.tb verilog/circularBuffer/circularBuffer.sv && timeout 1m ./circularBuffer
+
     - name: Emulator
       run:  perl lib/Zero/Emulator.pm
 
