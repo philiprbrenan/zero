@@ -58,7 +58,7 @@ push my @files,
   grep {!/Build.PL/}
   grep {!/blib/}
   grep {$perlXmp or !/\.pl\Z/}                                                  # No changes expected
-  searchDirectoryTreesForMatchingFiles($home, qw(.pm .pl .md .sv));             # Files
+  searchDirectoryTreesForMatchingFiles($home, qw(.pm .pl .md .sv .tb));         # Files
 
 for my $s(@files)                                                               # Upload each selected file
  {my $c = readFile($s);                                                         # Load file
@@ -84,13 +84,13 @@ sub run
       run:  iverilog -V
 
     - name: fpga
-      run:  iverilog -g2012 -o fpga verilog/fpga/fpga.sv && timeout 1m ./fpga
+      run:  iverilog -g2012 -o fpga           verilog/fpga/fpga.sv && timeout 1m ./fpga
 
     - name: ClockDivider
-      run:  iverilog -g2012 -o clockDivider verilog/clockDivider/clockDivider.tb verilog/clockDivider/clockDivider.sv && timeout 1m ./clockDivider
+      run:  iverilog -g2012 -o clockDivider   verilog/clockDivider/clockDivider.tb     verilog/clockDivider/clockDivider.sv     && timeout 1m ./clockDivider
 
     - name: ClockAndQuery
-      run:  iverilog -g2012 -o clockAndQuery verilog/clockAndQuery/clockAndQuery.tb verilog/clockAndQuery/clockAndQuery.sv && timeout 1m ./clockAndQuery
+      run:  iverilog -g2012 -o clockAndQuery  verilog/clockAndQuery/clockAndQuery.tb   verilog/clockAndQuery/clockAndQuery.sv   && timeout 1m ./clockAndQuery
 
     - name: CircularBuffer
       run:  iverilog -g2012 -o circularBuffer verilog/circularBuffer/circularBuffer.tb verilog/circularBuffer/circularBuffer.sv && timeout 1m ./circularBuffer
