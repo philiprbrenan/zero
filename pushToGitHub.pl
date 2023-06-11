@@ -84,7 +84,7 @@ sub run
       run:  iverilog -V
 
     - name: fpga
-      run:  rm -f fpga; iverilog -g2012 -o fpga verilog/fpga.sv && timeout 1m ./fpga
+      run:  iverilog -g2012 -o fpga verilog/fpga/fpga.sv && timeout 1m ./fpga
 
     - name: Emulator
       run:  perl lib/Zero/Emulator.pm
