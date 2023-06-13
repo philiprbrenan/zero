@@ -2,17 +2,19 @@
 // Fpga implementation and testing of NWay Trees
 // Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
-module fpga(input[1:0] in, output[1:0] out);                                    // Run test programs
-  wire[1:0] in, out;                                                            // Input and output lines
+module fpga                                                                     // Run test programs
+ (input  wire     startIn,                                                      // Start execution
+  output reg[7:0] passedOut);                                                   // Report number of tests passed
+
   parameter integer NTestPrograms  =   19;                                      // Number of test programs to run
-  parameter integer NTestsExpected =  118;                                      // Number of test passes expected
+  parameter integer NTestsExpected =  124;                                      // Number of test passes expected
   parameter integer showInstructionDetails = 0;                                 // Show details of each instruction as it is executed
 
   parameter integer NSteps         = 2500;                                      // Maximum number of instruction executions
-  parameter integer NInstructions  = 2000;                                      // Number of instruction slots in code memory
+  parameter integer NInstructions  = 2000; //3000;                                      // Number of instruction slots in code memory
   parameter integer NArea          =   10;                                      // Size of each area on the heap
-  parameter integer NArrays        = 1000;                                      // Amount of heap memory
-  parameter integer NHeap          = NArea*NArrays;                             // Amount of heap memory
+  parameter integer NArrays        = 1000;                                      // Maximum number of arrays
+  parameter integer NHeap          = 2000; //NArea*NArrays;                             // Amount of heap memory
   parameter integer NLocal         = 1000;                                      // Size of local memory
   parameter integer NIn            = 1000;                                      // Size of input area
   parameter integer NOut           = 1000;                                      // Size of output area
@@ -20,15 +22,15 @@ module fpga(input[1:0] in, output[1:0] out);                                    
   parameter integer NMemoryPrintX  =   50;                                      // Width of memory to print
   parameter integer NMemoryPrintLines = 2;                                      // Number of lines of memory to print
 
-  reg signed [255:0] code        [NInstructions];                               // Code memory
-  reg signed [ 32:0] opExecCounts[NInstructions];                               // Instruction execution counts
-  reg signed [ 64:0] arraySizes  [NArrays];                                     // Size of each array
-  reg signed [ 64:0] heapMem     [NHeap];                                       // Heap memory
-  reg signed [ 64:0] localMem    [NLocal];                                      // Local memory
-  reg signed [ 64:0] inMem       [NIn];                                         // Input channel
-  reg signed [ 64:0] outMem      [NOut];                                        // Out channel
-  reg signed [ 64:0] freedArrays [NFreedArrays];                                // Freed arrays list implemented as a stack
-  reg signed [ 64:0] arrayShift  [NArea];                                       // Array shift area
+  reg signed [255:0] code        [NInstructions:0];                             // Code memory
+  reg signed [ 32:0] opExecCounts[NInstructions:0];                             // Instruction execution counts
+  reg signed [ 64:0] arraySizes  [NArrays:0];                                   // Size of each array
+  reg signed [ 64:0] heapMem     [NHeap:0];                                     // Heap memory
+  reg signed [ 64:0] localMem    [NLocal:0];                                    // Local memory
+  reg signed [ 64:0] inMem       [NIn:0];                                       // Input channel
+  reg signed [ 64:0] outMem      [NOut:0];                                      // Out channel
+  reg signed [ 64:0] freedArrays [NFreedArrays:0];                              // Freed arrays list implemented as a stack
+  reg signed [ 64:0] arrayShift  [NArea:0];                                     // Array shift area
 
   integer signed nSteps;                                                        // Number of instructions executed
   integer signed NInstructionEnd;                                               // Limit of instructions for the current program
@@ -46,15 +48,15 @@ module fpga(input[1:0] in, output[1:0] out);                                    
 
 //Tests
 
-  task ok(integer signed test, string name);                                    // Check a single test result
+  task ok(integer signed test, integer name);                                   // Check a single test result
     begin
       if (test == 1) begin
-        testsPassed++;
+        testsPassed = testsPassed + 1;
       end
       else begin
         $display("Assertion %s FAILED", name);
         printHeap();
-        testsFailed++;
+        testsFailed = testsFailed + 1;
       end
     end
   endtask
@@ -102,13 +104,13 @@ module fpga(input[1:0] in, output[1:0] out);                                    
     end
   endtask
 
-  task printLocal();                                                           // Print memory so we now what to chec
+  task printLocal();                                                            // Print memory so we now what to chec
     begin
       $display("Local:");
-      $write("      "); for(i = 0; i < NMemoryPrintX; ++i) $write(" %2d", i); $display("");
-      for(j = 0; j < NLocal; j += NMemoryPrintX) begin
+      $write("      "); for(i = 0; i < NMemoryPrintX; i = i + 1) $write(" %2d", i); $display("");
+      for(j = 0; j < NLocal; j = j + NMemoryPrintX) begin
         if (j < NMemoryPrintLines) begin
-          for(i = 0; i < NMemoryPrintX; ++i) begin
+          for(i = 0; i < NMemoryPrintX; i = i + 1) begin
             $write(" %2d", localMem[j+i]);
           end
           $display("");
@@ -117,19 +119,20 @@ module fpga(input[1:0] in, output[1:0] out);                                    
     end
   endtask
 
-  task automatic printHeap();                                                   // Print memory so we now what to chec
+  integer ph_i, ph_j, ph_v, ph_s;
+
+  task printHeap();                                                             // Print memory so we now what to chec
     begin
-      integer i, j, v, s;
       $write("Heap:");
-      for(i = 0; i < 10; ++i) $write(" %2d", i); $display("");
-      for(j = 0; j < 20; j++) begin
-        s = arraySizes[j];
-        if (s > 0) begin;
-          $write("%2d:%2d", j, s);
-          for(i = 0; i < s; ++i) begin
-            v = heapMem[j*NArea+i];
-            if (v !== 'bx) begin
-              $write(" %2d", v);
+      for(ph_i = 0; ph_i < 10; ph_i = ph_i + 1) $write(" %2d", ph_i); $display("");
+      for(ph_j = 0; ph_j < 20; ph_j = ph_j + 1) begin
+        ph_s = arraySizes[ph_j];
+        if (ph_s > 0) begin;
+          $write("%2d:%2d", ph_j, ph_s);
+          for(ph_i = 0; ph_i < ph_s; ph_i = ph_i + 1) begin
+            ph_v = heapMem[ph_j*NArea+ph_i];
+            if (ph_v !== 'bx) begin
+              $write(" %2d", ph_v);
             end
             else begin
               $write(" **");
@@ -138,7 +141,7 @@ module fpga(input[1:0] in, output[1:0] out);                                    
           $display("");
         end
         else begin;
-          //$display("%2d:%2d", j, s);
+          //$display("%2d:%2d", ph_j, ph_s);
         end
       end
     end
@@ -147,8 +150,8 @@ module fpga(input[1:0] in, output[1:0] out);                                    
   task printOut();                                                              // Print the output channel
     begin
       $display("Out %7d", outMemPos);
-      $write("      "); for(i = 0; i < NMemoryPrintX; ++i) $write(" %4d", i); $display("");
-      for(i = 0; i < outMemPos; ++i) begin
+      $write("      "); for(i = 0; i < NMemoryPrintX; i = i + 1) $write(" %4d", i); $display("");
+      for(i = 0; i < outMemPos; i = i + 1) begin
         $write(" %4d", outMem[i]);
       end
       $display("");
@@ -158,7 +161,7 @@ module fpga(input[1:0] in, output[1:0] out);                                    
   task printIn();                                                               // Print the input channel
     begin
       $display("In from: %4d to: %4d", inMemPos, inMemEnd);
-      for(i = inMemPos; i < inMemEnd; ++i) begin
+      for(i = inMemPos; i < inMemEnd; i = i + 1) begin
         $write(" %4d", inMem[i]);
       end
       $display("");
@@ -168,111 +171,110 @@ module fpga(input[1:0] in, output[1:0] out);                                    
   task checkResults();                                                          // Check results of test
     begin
       case(test)
-        1: ok(outMem[0] == 1, "Mov 1");                                         // 1
-        2: ok(outMem[0] == 5, "Add 1");                                         // 1
-        3: ok(outMem[0] == 2, "Subtract 1");                                    // 1
-        4: begin                                                                // 3
-          ok(outMem[0] == 3, "Not 1.1");
-          ok(outMem[1] == 0, "Not 1.2");
-          ok(outMem[2] == 1, "Not 1.3");
+        1: ok(outMem[0] == 1, 1);
+        2: ok(outMem[0] == 5, 2);
+        3: ok(outMem[0] == 2, 3);
+        4: begin
+          ok(outMem[0] == 3, 4);
+          ok(outMem[1] == 0, 5);
+          ok(outMem[2] == 1, 6);
         end
-        5: begin                                                                // 4 => 10
-          ok(localMem[0] ==  0, "Array 1.1");
-          ok( heapMem[0] == 11, "Array 1.2");
-          ok( heapMem[1] == 22, "Array 1.3");
-          ok( arraySizes[0] == 2, "Array 1.4");
+        5: begin
+          ok( localMem[0]   ==  0,  7);
+          ok( heapMem[0]    == 11,  8);
+          ok( heapMem[1]    == 22,  9);
+          ok( arraySizes[0] ==  2, 10);
         end
-        6: begin                                                                // 12 => 22
-          ok(outMem[0] == 3, "scan 1.1"); ok(outMem[1] == 2, "scan 1.2"); ok(outMem[ 2] == 1, "scan 1.3"); ok(outMem[ 3] == 0, "scan 1.4");
-          ok(outMem[4] == 3, "scan 2.1"); ok(outMem[5] == 2, "scan 2.2"); ok(outMem[ 6] == 1, "scan 2.3"); ok(outMem[ 7] == 0, "scan 2.4");
-          ok(outMem[8] == 0, "scan 3.1"); ok(outMem[9] == 1, "scan 3.2"); ok(outMem[10] == 2, "scan 3.3"); ok(outMem[11] == 3, "scan 3.4");
+        6: begin
+          ok(outMem[0] == 3, 11); ok(outMem[1] == 2, 14); ok(outMem[ 2] == 1, 17); ok(outMem[ 3] == 0, 20);
+          ok(outMem[4] == 3, 12); ok(outMem[5] == 2, 15); ok(outMem[ 6] == 1, 18); ok(outMem[ 7] == 0, 21);
+          ok(outMem[8] == 0, 13); ok(outMem[9] == 1, 16); ok(outMem[10] == 2, 19); ok(outMem[11] == 3, 22);
         end
-        7: begin                                                                // 3    => 25
-          ok(outMem[0] == 0, "Free 1"); ok(outMem[1] == 0, "Free 2"); ok(outMem[2] == 0, "Free 3");
+        7: begin
+          ok(outMem[0] == 0, 23); ok(outMem[1] == 0, 24); ok(outMem[2] == 0, 25);
         end
         8: begin
-          ok(localMem[0] == 2, "ShiftLeft");                                    // 1
+          ok(localMem[0] == 2, 26);
         end
         9: begin
-          ok(localMem[0] == 2, "ShiftRight");                                   // 1
+          ok(localMem[0] == 2, 27);
         end
        10: begin
-          ok(outMem[0] == 111, "Jeq_test 1");                                   // 1
-          ok(outMem[1] == 333, "Jeq_test 2");                                   // 1 => 29
+          ok(outMem[0] == 111, 28);
+          ok(outMem[1] == 333, 29);
         end
        11: begin
-          ok(arraySizes[0] ==  4, "ShiftUp 1 length");                          // 5 => 34
-          ok(heapMem[0]    == 99, "ShiftUp 1 new");
-          ok(heapMem[1]    ==  0, "ShiftUp 1 0");
-          ok(heapMem[2]    ==  1, "ShiftUp 1 1");
-          ok(heapMem[3]    ==  2, "ShiftUp 1 2");
+          ok(arraySizes[0] ==  4, 30);
+          ok(heapMem[0]    == 99, 31);
+          ok(heapMem[1]    ==  0, 32);
+          ok(heapMem[2]    ==  1, 33);
+          ok(heapMem[3]    ==  2, 34);
         end
        12: begin
-          ok(arraySizes[0] ==  4, "ShiftUp 2 length");                          // 5 => 39
-          ok(heapMem[0]    ==  0, "ShiftUp 2 new");
-          ok(heapMem[1]    ==  1, "ShiftUp 2 0");
-          ok(heapMem[2]    == 99, "ShiftUp 2 1");
-          ok(heapMem[3]    ==  2, "ShiftUp 2 2");
+          ok(arraySizes[0] ==  4, 35);
+          ok(heapMem[0]    ==  0, 36);
+          ok(heapMem[1]    ==  1, 37);
+          ok(heapMem[2]    == 99, 38);
+          ok(heapMem[3]    ==  2, 39);
         end
        13: begin
-          ok(arraySizes[0] ==  2, "Push 1 length");                             // 3 => 42
-          ok(heapMem[0]    ==  1, "Push 1 1");
-          ok(heapMem[1]    ==  2, "Push 1 2");
+          ok(arraySizes[0] ==  2, 40);
+          ok(heapMem[0]    ==  1, 41);
+          ok(heapMem[1]    ==  2, 42);
         end
        14: begin
-          ok(arraySizes[0] ==  0, "Pop 1 length");                              // 3 => 45
-          ok(outMem[0]     ==  2, "Pop 1.1");
-          ok(outMem[1]     ==  1, "Pop 1.2");
+          ok(arraySizes[0] ==  0, 43);
+          ok(outMem[0]     ==  2, 44);
+          ok(outMem[1]     ==  1, 45);
         end
        15: begin
-          ok(arraySizes[0] ==  8, "Bubble Sort length");                        // 9 => 54
-          ok(heapMem[0]    ==  11, "Bubble Sort 1");
-          ok(heapMem[1]    ==  22, "Bubble Sort 2");
-          ok(heapMem[2]    ==  33, "Bubble Sort 3");
-          ok(heapMem[3]    ==  44, "Bubble Sort 4");
-          ok(heapMem[4]    ==  55, "Bubble Sort 5");
-          ok(heapMem[5]    ==  66, "Bubble Sort 6");
-          ok(heapMem[6]    ==  77, "Bubble Sort 7");
-          ok(heapMem[7]    ==  88, "Bubble Sort 8");
+          ok(arraySizes[0] ==   8, 46);
+          ok(heapMem[0]    ==  11, 47);
+          ok(heapMem[1]    ==  22, 48);
+          ok(heapMem[2]    ==  33, 49);
+          ok(heapMem[3]    ==  44, 50);
+          ok(heapMem[4]    ==  55, 51);
+          ok(heapMem[5]    ==  66, 52);
+          ok(heapMem[6]    ==  77, 53);
+          ok(heapMem[7]    ==  88, 54);
         end
        16: begin
-          ok(arraySizes[0]  ==   5, "MoveLong Length aaa");                     // 11 => 65
-          ok(arraySizes[1]  ==   4, "MoveLong Length bbb");
-          ok(heapMem[0]     ==  11, "MoveLong 1");
-          ok(heapMem[1]     ==  77, "MoveLong 2");
-          ok(heapMem[2]     ==  88, "MoveLong 3");
-          ok(heapMem[3]     ==  44, "MoveLong 4");
-          ok(heapMem[4]     ==  55, "MoveLong 5");
-          ok(heapMem[10]    ==  66, "MoveLong 6");
-          ok(heapMem[11]    ==  77, "MoveLong 7");
-          ok(heapMem[12]    ==  88, "MoveLong 8");
-          ok(heapMem[13]    ==  99, "MoveLong 9");
+          ok(arraySizes[0]  ==   5, 55);
+          ok(arraySizes[1]  ==   4, 56);
+          ok(heapMem[0]     ==  11, 57);
+          ok(heapMem[1]     ==  77, 58);
+          ok(heapMem[2]     ==  88, 59);
+          ok(heapMem[3]     ==  44, 60);
+          ok(heapMem[4]     ==  55, 61);
+          ok(heapMem[10]    ==  66, 62);
+          ok(heapMem[11]    ==  77, 63);
+          ok(heapMem[12]    ==  88, 64);
+          ok(heapMem[13]    ==  99, 65);
         end
        17: begin
-          ok(heapMem[ 00] == 6,  "NT100"); ok(heapMem[  1] ==  4,  "NT101"); ok(heapMem [02] == 3,  "NT102"); ok(heapMem [03] == 2, "NT103");
-          ok(heapMem[ 20] == 2,  "NT120"); ok(heapMem[ 21] ==  1,  "NT121"); ok(heapMem [22] == 0,  "NT122"); ok(heapMem [23] == 0, "NT123");  ok(heapMem [24] ==  3, "NT124");  ok(heapMem [25] ==  4,  "NT125"); ok(heapMem [26] == 11, "NT126");
-          ok(heapMem[ 30] == 2,  "NT130"); ok(heapMem[ 31] ==  4,  "NT131");
-          ok(heapMem[ 50] == 2,  "NT150"); ok(heapMem[ 51] ==  2,  "NT151"); ok(heapMem [52] == 2,  "NT152"); ok(heapMem [53] == 0, "NT153");  ok(heapMem [54] ==  6, "NT154");  ok(heapMem [55] ==  7,  "NT155"); ok(heapMem [56] ==  0, "NT156");
-          ok(heapMem[ 60] == 0,  "NT160"); ok(heapMem[ 61] ==  1,  "NT161");
+          ok(heapMem[ 00] == 6, 66); ok(heapMem[  1] ==  4, 71); ok(heapMem [02] == 3, 76); ok(heapMem [03] == 2, 79);
+          ok(heapMem[ 20] == 2, 67); ok(heapMem[ 21] ==  1, 72); ok(heapMem [22] == 0, 77); ok(heapMem [23] == 0, 80);  ok(heapMem [24] ==  3, 82);  ok(heapMem [25] ==  4,  84); ok(heapMem [26] == 11, 86);
+          ok(heapMem[ 30] == 2, 68); ok(heapMem[ 31] ==  4, 73);
+          ok(heapMem[ 50] == 2, 69); ok(heapMem[ 51] ==  2, 74); ok(heapMem [52] == 2, 78); ok(heapMem [53] == 0, 81);  ok(heapMem [54] ==  6, 83);  ok(heapMem [55] ==  7,  85); ok(heapMem [56] ==  0, 87);
+          ok(heapMem[ 60] == 0, 70); ok(heapMem[ 61] ==  1, 75);
 
-          ok(heapMem[ 80] == 1,  "NT180"); ok(heapMem[ 81] ==  3,  "NT181"); ok(heapMem [82] == 2,  "NT182"); ok(heapMem [83] == 0, "NT183");  ok(heapMem [84] ==  9, "NT184");  ok(heapMem [85] == 10,  "NT185"); ok(heapMem [86] ==  0, "NT186");
-          ok(heapMem[ 90] == 5,  "NT190");
-          ok(heapMem[110] == 5, "NT1110"); ok(heapMem[111] == 12, "NT1111"); ok(heapMem[112] == 8, "NT1112");
-          ok(heapMem[120] == 1, "NT1120"); ok(heapMem[121] ==  4, "NT1121"); ok(heapMem[122] == 2, "NT1122"); ok(heapMem[123] == 0, "NT1123"); ok(heapMem[124] == 13, "NT1124"); ok(heapMem[125] == 14, "NT1125"); ok(heapMem[126] ==  0, "NT1126");
-          ok(heapMem[140] == 3, "NT1140");
+          ok(heapMem[ 80] == 1, 90); ok(heapMem[ 81] ==  3, 95); ok(heapMem [82] == 2,  98); ok(heapMem [83] == 0, 101); ok(heapMem [84] ==  9, 103); ok(heapMem [85] == 10, 105); ok(heapMem [86] ==  0, 107);
+          ok(heapMem[ 90] == 5, 91);
+          ok(heapMem[110] == 5, 92); ok(heapMem[111] == 12, 96); ok(heapMem[112] == 8,  99);
+          ok(heapMem[120] == 1, 93); ok(heapMem[121] ==  4, 97); ok(heapMem[122] == 2, 100); ok(heapMem[123] == 0, 102); ok(heapMem[124] == 13, 104); ok(heapMem[125] == 14, 106); ok(heapMem[126] ==  0, 108);
+          ok(heapMem[140] == 3, 94);
 
-          ok(outMem[0] == 0, "NT1 Out 0"); ok(outMem[1] == 1, "NT1 Out 1"); ok(outMem[2] == 2, "NT1 Out 2");
-          ok(outMem[3] == 3, "NT1 Out 3"); ok(outMem[4] == 4, "NT1 Out 4"); ok(outMem[5] == 5, "NT1 Out 5");
+          ok(outMem[0] == 0, 110); ok(outMem[1] == 1, 112); ok(outMem[2] == 2, 114);
+          ok(outMem[3] == 3, 111); ok(outMem[4] == 4, 113); ok(outMem[5] == 5, 115);
         end
        18: begin
-          ok(outMem[0] ==  3, "In1"); ok(outMem[1] == 33, "In2");
-          ok(outMem[2] ==  2, "In3"); ok(outMem[3] == 22, "In4");
-          ok(outMem[4] ==  1, "In5"); ok(outMem[5] == 11, "In6");
+          ok(outMem[0] ==  3, 116); ok(outMem[1] == 33, 119);
+          ok(outMem[2] ==  2, 117); ok(outMem[3] == 22, 120);
+          ok(outMem[4] ==  1, 118); ok(outMem[5] == 11, 121);
         end
        19: begin
-printOut();
-          ok(outMem[0] ==  0, "BT1"); ok(outMem[1] == 1, "BT2"); ok(outMem[2] == 22, "BT3");
-          ok(outMem[3] ==  0, "BT4"); ok(outMem[4] == 1, "BT5"); ok(outMem[5] == 33, "BT6");
+          ok(outMem[0] ==  0, 130); ok(outMem[1] == 1, 132); ok(outMem[2] == 22, 134);
+          ok(outMem[3] ==  0, 131); ok(outMem[4] == 1, 133); ok(outMem[5] == 33, 135);
         end
       endcase
     end
@@ -397,24 +399,24 @@ printOut();
       freedArraysTop = 0;                                                       // Start freed arrays stack
       outMemPos      = 0;                                                       // Output channel position
       nSteps         = 1;                                                       // Number of instructions executed
-      for(i = 0; i < NOut;          ++i)       outMem[i] = 'bx;                 // Reset the output channel
-      for(i = 0; i < NHeap;         ++i)      heapMem[i] = 'bx;                 // Reset heap memory
-      for(i = 0; i < NLocal;        ++i)     localMem[i] = 'bx;                 // Reset local memory
-      for(i = 0; i < NArrays;       ++i)   arraySizes[i] =  0;                  // Set array sizes
-      for(i = 0; i < NInstructions; ++i) opExecCounts[i] =  0;                  // Set operator counts
+      for(i = 0; i < NOut;          i = i + 1)       outMem[i] = 'bx;           // Reset the output channel
+      for(i = 0; i < NHeap;         i = i + 1)      heapMem[i] = 'bx;           // Reset heap memory
+      for(i = 0; i < NLocal;        i = i + 1)     localMem[i] = 'bx;           // Reset local memory
+      for(i = 0; i < NArrays;       i = i + 1)   arraySizes[i] =  0;            // Set array sizes
+      for(i = 0; i < NInstructions; i = i + 1) opExecCounts[i] =  0;            // Set operator counts
     end
   endtask
 
 
 // Execute each test progam
 
-  initial begin                                                                 // Load, run confirm
+  always @(posedge startIn) begin                                               // Load, run confirm
     testsPassed = 0;                                                            // Passed tests
     testsFailed = 0;                                                            // Failed tests
-    for(test = 19; test <= NTestPrograms; ++test) begin                         // Run the tests from bewest to oldest
+    for(test = 0; test <= NTestPrograms; test = test + 1) begin                 // Run the tests from bewest to oldest
       loadCode();
 //if (test == 18) begin
-      for(ip = 0; ip >= 0 && ip < NInstructionEnd; ++ip)                        // Each instruction
+      for(ip = 0; ip >= 0 && ip < NInstructionEnd; ip = ip + 1)                 // Each instruction
       begin
         oip = ip;                                                               // Save the old instruction pointer
         #1;                                                                     // Let the ip update its assigns
@@ -422,11 +424,12 @@ printOut();
 //Execute
         executeInstruction();
 printHeap();
-                      opExecCounts[oip]++;
+                      opExecCounts[oip] = opExecCounts[oip] + 1;
         opExecCount = opExecCounts[oip];
 $display("%4d  %4d  %4d  %4d = %4d",
 nSteps, oip, opExecCount, operator, result);
-        if (nSteps++ > NSteps) begin                                            // Count instructions executed
+        nSteps = nSteps + 1;
+        if (nSteps > NSteps) begin                                              // Count instructions executed
           $display("Out of instructions after %d steps", NSteps);
           printHeap();
           $finish;
@@ -451,7 +454,7 @@ nSteps, oip, opExecCount, operator, result);
     else begin
        $display("No tests run passed: %1d, failed: %1d, expected %1d, programs: %1d", testsPassed, testsFailed, NTestsExpected, NTestPrograms);
     end
-    $finish;
+    passedOut = testsPassed;
   end
 
 //Single instruction execution
@@ -3782,10 +3785,12 @@ nSteps, oip, opExecCount, operator, result);
   task array_instruction();                                                     // Array
     begin
       if (freedArraysTop > 0) begin                                             // Reuse an array
-        result = freedArrays[--freedArraysTop];
+        freedArraysTop = freedArraysTop - 1;
+        result = freedArrays[freedArraysTop];
       end
       else begin
-        result = allocs++;                                                      // Array zero means undefined
+        result = allocs;                                                          // Array zero means undefined
+        allocs = allocs + 1;                                                      // Array zero means undefined
       end
 
       arraySizes[targetLocationArea] = 0;                                       // Zero array length
@@ -3795,7 +3800,8 @@ nSteps, oip, opExecCount, operator, result);
 
   task free_instruction();
     begin                                                                       // Free
-      freedArrays[freedArraysTop++] = targetValue;
+      freedArrays[freedArraysTop] = targetValue;
+      freedArraysTop = freedArraysTop + 1;
       arraySizes[targetValue] = 0;                                              // Zero array length
     end
   endtask
@@ -3832,7 +3838,8 @@ nSteps, oip, opExecCount, operator, result);
 
   task out_instruction();                                                       // Out
     begin
-      outMem[outMemPos++] = source1Value;
+      outMem[outMemPos] = source1Value;
+      outMemPos = outMemPos + 1;
 //$display("Out %d",source1Value);
     end
   endtask
@@ -4038,7 +4045,7 @@ nSteps, oip, opExecCount, operator, result);
   task jEq_instruction();
     begin                                                                       // Jeq
       if (source1Value == source2Value) begin
-        ip += targetArea - 1;
+        ip = ip + targetArea - 1;
       end
     end
   endtask
@@ -4046,7 +4053,7 @@ nSteps, oip, opExecCount, operator, result);
   task jFalse_instruction();
     begin                                                                       // jFalse
       if (source1Value == 0) begin
-        ip += targetArea - 1;
+        ip = ip + targetArea - 1;
       end
     end
   endtask
@@ -4054,7 +4061,7 @@ nSteps, oip, opExecCount, operator, result);
   task jGe_instruction();
     begin                                                                       // jGe
       if (source1Value >= source2Value) begin
-        ip += targetArea - 1;
+        ip = ip + targetArea - 1;
       end
     end
   endtask
@@ -4062,16 +4069,15 @@ nSteps, oip, opExecCount, operator, result);
   task jGt_instruction();
     begin                                                                       // jGt
       if (source1Value >  source2Value) begin
-        ip += targetArea - 1;
+        ip = ip + targetArea - 1;
       end
     end
   endtask
 
   task jLe_instruction();
     begin                                                                       // jLe
-$display("JJJJLE %d  %d", source1Value, source2Value);
       if (source1Value <= source2Value) begin
-        ip += targetArea - 1;
+        ip = ip + targetArea - 1;
       end
     end
   endtask
@@ -4079,7 +4085,7 @@ $display("JJJJLE %d  %d", source1Value, source2Value);
   task jLt_instruction();
     begin                                                                       // jLt
       if (source1Value <  source2Value) begin
-        ip += targetArea - 1;
+        ip = ip + targetArea - 1;
       end
     end
   endtask
@@ -4087,7 +4093,7 @@ $display("JJJJLE %d  %d", source1Value, source2Value);
   task jNe_instruction();
     begin                                                                       // jNe
       if (source1Value != source2Value) begin
-        ip += targetArea - 1;
+        ip = ip + targetArea - 1;
       end
     end
   endtask
@@ -4095,14 +4101,14 @@ $display("JJJJLE %d  %d", source1Value, source2Value);
   task jTrue_instruction();
     begin                                                                       // jTrue
       if (source1Value != 0) begin
-        ip += targetArea - 1;
+        ip = ip + targetArea - 1;
       end
     end
   endtask
 
   task jmp_instruction();
     begin                                                                       // jmp
-      ip += targetArea - 1;
+      ip = ip + targetArea - 1;
     end
   endtask
 
@@ -4121,7 +4127,7 @@ $display("JJJJLE %d  %d", source1Value, source2Value);
     begin
       p = arraySizes[source1Value];
       if (p > 0) begin
-        p--;
+        p = p - 1;
         arraySizes[source1Value] = p;
         result = heapMem[p];
         setMemory();
@@ -4235,20 +4241,18 @@ $display("JJJJLE %d  %d", source1Value, source2Value);
     end
   endtask
 
-  task automatic moveLong_instruction();
+  integer signed ml_i, ml_l, ml_q, ml_p, ml_n;
+
+  task moveLong_instruction();
     begin                                                                       // moveLong
-      integer signed l = source2Value;
-      integer signed q = targetLocation;
-      integer signed p = sourceLocation;
-      integer signed n = targetLocationArea;
-printInstruction();
-      for(i = 0; i < l; ++i) begin
-        heapMem[q+i] = heapMem[p+i];
-$display("MoveLong %d <- %d(%d) result=%d", q+i, p+1, heapMem[p+i], heapMem[q+i]);
-        if (targetIndex+i + 1 > arraySizes[n]) begin
-          arraySizes[n] = targetIndex+i+1;
-$display("MoveLong size = %d targetLocationArea=%d", arraySizes[n], n);
-printHeap();
+      ml_l = source2Value;
+      ml_q = targetLocation;
+      ml_p = sourceLocation;
+      ml_n = targetLocationArea;
+      for(ml_i = 0; ml_i < ml_l; ml_i = ml_i + 1) begin
+        heapMem[ml_q+ml_i] = heapMem[ml_p+ml_i];
+        if (targetIndex+ml_i + 1 > arraySizes[ml_n]) begin
+          arraySizes[ml_n] = targetIndex+ml_i+1;
         end
       end
     end
@@ -4258,9 +4262,7 @@ printHeap();
     begin                                                                       // in
      result = inMem[inMemPos];
      setMemory();
-printIn();
-$display("In %d  from %d ", result, inMemPos);
-     inMemPos += 1;
+     inMemPos = inMemPos + 1;
     end
   endtask
 
