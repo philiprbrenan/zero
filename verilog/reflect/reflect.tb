@@ -1,0 +1,26 @@
+//-----------------------------------------------------------------------------
+// Reflect
+// Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
+//------------------------------------------------------------------------------
+module Reflect_tb();                                                            // Run test programs
+
+  reg clk = 0;                                                                  // Start tests in fpga
+  reg[7:0] out;                                                                // Number of tests passed
+  reg[7:0] i;
+
+  Reflect r                                                                     // Fpga
+   (.clk(clk),
+    .out(out)
+   );
+
+  initial begin                                                                 // Test the circular buffer
+    for(i = 0; i < 10; ++i) begin
+      clk = 1;
+      $display("T111 %d", out);
+      #1
+      clk = 0;
+      $display("T222 %d", out);
+      #1;
+    end
+  end
+endmodule
