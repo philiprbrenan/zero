@@ -7,7 +7,7 @@ module ClockAndQueryTB();                                                       
   parameter integer TestValue = 9;                                              // Pretend value of memory
   reg clock = 0;                                                                // Clock
   reg reset = 0;                                                                // Reset ip to 0
-  reg in = 0;                                                                   // Address to read sent one bit at a time
+  reg inw = 0;                                                                  // Address to read sent one bit at a time
   reg out;                                                                      // Content of the addressed memory one bit at a time
   reg[NSize:0] address = TestValue;                                             // Address to send
   reg[NSize:0] memory  = 0;                                                     // Data retrieved
@@ -20,7 +20,7 @@ module ClockAndQueryTB();                                                       
    c
    (.clock(clock),
     .reset(reset),
-    .in(in),
+    .inw(inw),
     .out(out)
    );
 
@@ -31,7 +31,7 @@ module ClockAndQueryTB();                                                       
 
     for  (j = 0; j <= NSize; ++j) begin                                         // Number of tests
       for(i = 0; i <  NSize; ++i) begin                                         // Transfer address to read
-        in <= address[i];
+        inw <= address[i];
         #1 clock <= 1; #1 clock <= 0; reset <= 0;
         memory[i % NSize] <= out;
         //$display("11 Memory=%2d j=%2d i=%2d out=%2d", memory, j, i % NSize, out);
