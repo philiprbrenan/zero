@@ -1,0 +1,24 @@
+//-----------------------------------------------------------------------------
+// Fpga implementation and testing of NWay Trees
+// Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
+//------------------------------------------------------------------------------
+module fpga_tb();                                                               // Run test programs
+
+  reg      startIn = 0;                                                         // Start tests in fpga
+  reg[7:0] passedOut;                                                           // Number of tests passed
+
+  `include "../tests.sv"                                                        // Test routines
+
+  fpga f                                                                        // Fpga
+   (.startIn(startIn),
+    .passedOut(passedOut)
+   );
+
+  initial begin                                                                 // Test the fpga
+    startIn = 1;
+    #10000;
+    ok(passedOut == 124, "aaa");
+    checkAllTestsPassed(1);
+  end
+
+endmodule
