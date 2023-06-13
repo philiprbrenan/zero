@@ -5,8 +5,8 @@
 module ClockAndQuery                                                            // Advance the clock and respond to a pseudo request to see memory
  (input  wire clock,                                                            // Clock
   input  wire reset,                                                            // Restart ip
-  input  wire in,                                                               // Memory byte address to be read as 8 bits
-  output reg  out);                                                             // 8 bits representing the byte in memory corresponding. Visible after 8 bits clocked into in
+  input  wire inw,                                                              // Memory byte address to be read as 8 bits
+  output reg out);                                                             // 8 bits representing the byte in memory corresponding. Visible after 8 bits clocked into in
 
   parameter integer NSize = 4;                                                  // Log2(Size of memory)
 
@@ -14,9 +14,6 @@ module ClockAndQuery                                                            
   integer      state   = 0;                                                     // Clock divder
   reg[NSize:0] address = 0;                                                     // Input address
   reg[NSize:0] got     = 0;                                                     // What we got from memory
-  reg          outReg  = 0;                                                     // Out driver
-
-  assign out = outReg;
 
  `define nextState (reset ? 0 : (state + 1) % (1 + NSize))                      // Next state
 
@@ -28,12 +25,12 @@ module ClockAndQuery                                                            
       //$display("                             At 11 reset=%2d in=%2d ip=%2d state=%2d address=%2d got=%2d", reset, in, ip, state, address, got);
     end
     else if (`nextState == NSize) begin                                         // Next instruction
-      ip  <= ip + 1;
+      ip  <= ip + 1'b1;
       //$display("                             At 22 reset=%2d in=%2d ip=%2d state=%2d address=%2d got=%2d", reset, in, ip, state, address, got);
     end
     else begin                                                                  // Read address on 0 - NSize-1
-      address[`nextState] <= in;
-      outReg              <= got[`nextState];
+      address[`nextState] <= inw;
+      out                 <= got[`nextState];
       //$display("                             At 33 reset=%2d in=%2d ip=%2d state=%2d address=%2d got=%2d", reset, in, ip, state, address, got);
     end
   end
