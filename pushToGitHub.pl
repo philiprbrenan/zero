@@ -58,7 +58,7 @@ push my @files,
   grep {!/Build.PL/}
   grep {!/blib/}
   grep {$perlXmp or !/\.pl\Z/}                                                  # No changes expected
-  searchDirectoryTreesForMatchingFiles($home, qw(.pm .pl .md .sv .tb));         # Files
+  searchDirectoryTreesForMatchingFiles($home, qw(.pm .pl .md .sv .tb .cst));    # Files
 
 for my $s(@files)                                                               # Upload each selected file
  {my $c = readFile($s);                                                         # Load file
@@ -127,15 +127,26 @@ sub run
 END
 
   my $f = <<END;                                                                # Low level tests - convert verilog to fpga bitstream
-    - name: Checkout tools repo
-      uses: actions/checkout\@v3
-      with:
-        repository: YosysHQ/yosys
+    - name: Get
+      run:  wget https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2023-06-14/oss-cad-suite-linux-x64-20230614.tgz
 
-    - name: Tree
-      run:  tree -d -L 2
+    - name: gunzip
+      run: gunzip  oss-cad-suite-linux-x64-20230614.tgz
 
+    - name: tar
+      run: tar -xf oss-cad-suite-linux-x64-20230614.tar
 
+    - name: yosys
+      run:  oss-cad-suite/bin/yosys -p "read_verilog verilog/countUp/countUp.sv; synth_gowin -top countUp -json verilog/countUp/countUp.json"
+
+    - name: nextpnr-gowin
+      run:  oss-cad-suite/bin/nextpnr-gowin -v --json verilog/countUp/countUp.json --write verilog/countUp/countUp.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/countUp/tangnano9k.cst                                                                                at /home/phil/perl/cpan/ZeroEmulator/verilog/countUp/pushToGitHub.pl line 29
+
+    - name: gowin_pack
+      run:  oss-cad-suite/bin/gowin_pack -d GW1N-9C -o pack.fs verilog/countUp/countUp.pnr
+
+    - name: tree
+      run:  tree -d -L 2 verilog
 END
 
   my $y = <<"END" =~ s(XXXX) ($t)gsr =~ s(YYYY) ($f)gsr;
