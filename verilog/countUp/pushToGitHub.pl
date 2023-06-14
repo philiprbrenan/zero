@@ -15,6 +15,7 @@ makeDieConfess;
 my $home    = q(/home/phil/perl/cpan/ZeroEmulator/verilog/countUp/);            # Local folder
 my $yosys   = q(/home/phil/z/yosys/oss-cad-suite/bin/yosys);                    # Yosys
 my $nextpnr = q(/home/phil/z/yosys/oss-cad-suite/bin/nextpnr-gowin);            # Next pnr
+my $pack    = q(/home/phil/z/yosys/oss-cad-suite/bin/gowin_pack);               # Pack
 my $m       = q(countUp);                                                       # Module
 my $v       = fpe $home, $m, q(sv);                                             # Source file
 my $j       = fpe $home, $m, qw(json);                                          # Json descrtiption
@@ -22,16 +23,11 @@ my $p       = fpe $home, $m, qw(pnr);                                           
 my $d       = qq(GW1NR-LV9QN88PC6/I5);                                          # Device
 my $b       = q(/home/phil/perl/cpan/ZeroEmulator/verilog/countUp/tangnano9k.cst); # Device description
 
-my @c;
-push @c, qq($yosys -p "read_verilog $v");
-push @c, qq($yosys -p "synth_gowin  -json $j");
-push @c, qq($nextpnr -v            --json $j --write $p --device "$d" --family GW1N-9C --cst $b --top countUp);
-#push @c, qq(gowin_pack -d GW1N-9C -o pack.fs $p);
+unlink $j; unlink $p;
 
-for my $c(@c)
- {say STDERR qq($c);
-  say STDERR qx($c);
- }
+xxx(qq($yosys -p "read_verilog $v; synth_gowin -top countUp -json $j"));
+xxx(qq($nextpnr -v --json $j --write $p --device "$d" --family GW1N-9C --cst $b));
+xxx(qq($pack -d GW1N-9C -o pack.fs $p));
 
 # /home/phil/z/yosys/oss-cad-suite/bin/nextpnr-gowin
 # ERROR: Invalid device GW1NR-9 C6/I5
