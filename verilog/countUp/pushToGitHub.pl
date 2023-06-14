@@ -25,9 +25,9 @@ my $b       = q(/home/phil/perl/cpan/ZeroEmulator/verilog/countUp/tangnano9k.cst
 
 unlink $j; unlink $p;
 
-xxx(qq($yosys -p "read_verilog $v; synth_gowin -top countUp -json $j"));
-xxx(qq($nextpnr -v --json $j --write $p --device "$d" --family GW1N-9C --cst $b));
-xxx(qq($pack -d GW1N-9C -o pack.fs $p));
+lll(qq($yosys -p "read_verilog $v; synth_gowin -top countUp -json $j"));
+lll(qq($nextpnr -v --json $j --write $p --device "$d" --family GW1N-9C --cst $b));
+lll(qq($pack -d GW1N-9C -o pack.fs $p));
 
 # /home/phil/z/yosys/oss-cad-suite/bin/nextpnr-gowin
 # ERROR: Invalid device GW1NR-9 C6/I5
