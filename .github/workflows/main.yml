@@ -1,4 +1,4 @@
-# Test 2023-06-14 at 02:21:20
+# Test 2023-06-14 at 17:08:06
 
 name: Test
 
@@ -38,6 +38,9 @@ jobs:
     - name: CircularBuffer
       run:  cd verilog/circularBuffer/; iverilog -g2012 -o circularBuffer circularBuffer.tb circularBuffer.sv && timeout 1m ./circularBuffer
 
+    - name: CountUp
+      run:  cd verilog/countUp/; iverilog -g2012 -o countUp countUp.tb countUp.sv && timeout 1m ./countUp
+
     - name: Emulator
       run:  perl lib/Zero/Emulator.pm
 
@@ -64,4 +67,23 @@ jobs:
 
     - name: TestBTree
       run:  perl examples/testBTree.pl
+
+
+  fpga:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: 'main'
+
+    - name: Checkout tools repo
+      uses: actions/checkout@v3
+      with:
+        repository: YosysHQ/yosys
+
+    - name: Tree
+      run:  tree -d -L 2
+
+
 
