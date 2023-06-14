@@ -70,7 +70,7 @@ for my $s(@files)                                                               
 sub run
  {my $d = dateTimeStamp;
 
-  my $t = <<END;
+  my $t = <<END;                                                                # High level tests using Perl and Verilog
     - name: Cpan
       run:  sudo cpan install -T Data::Dump Data::Table::Text
 
@@ -94,6 +94,9 @@ sub run
 
     - name: CircularBuffer
       run:  cd verilog/circularBuffer/; iverilog -g2012 -o circularBuffer circularBuffer.tb circularBuffer.sv && timeout 1m ./circularBuffer
+
+    - name: CountUp
+      run:  cd verilog/countUp/; iverilog -g2012 -o countUp countUp.tb countUp.sv && timeout 1m ./countUp
 
     - name: Emulator
       run:  perl lib/Zero/Emulator.pm
@@ -123,7 +126,19 @@ sub run
       run:  perl examples/testBTree.pl
 END
 
-  my $y = <<"END" =~ s(XXXX) ($t)gsr;
+  my $f = <<END;                                                                # Low level tests - convert verilog to fpga bitstream
+    - name: Checkout tools repo
+      uses: actions/checkout\@v3
+      with:
+        repository: YosysHQ/yosys
+
+    - name: Tree
+      run:  tree -d -L 2
+
+
+END
+
+  my $y = <<"END" =~ s(XXXX) ($t)gsr =~ s(YYYY) ($f)gsr;
 # Test $d
 
 name: Test
@@ -141,6 +156,16 @@ jobs:
         ref: 'main'
 
 XXXX
+
+  fpga:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout\@v2
+      with:
+        ref: 'main'
+
+YYYY
 END
 
   my $ym = <<'END' =~ s(XXXX) ($t)gsr;
