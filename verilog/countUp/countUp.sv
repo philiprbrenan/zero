@@ -2,7 +2,7 @@
 // Count up
 // Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
-(* top *) module countUp
+module countUp
  (input  wire     clk,
   output reg[7:0] out = 0);
 
