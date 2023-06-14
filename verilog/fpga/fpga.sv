@@ -6,15 +6,18 @@ module fpga                                                                     
  (input  wire     startIn,                                                      // Start execution
   output reg[7:0] passedOut);                                                   // Report number of tests passed
 
+  parameter integer InstructionNWidth  = 256;                                   // Number of bits in an instruction
+  parameter integer MemoryElementWidth =  16;                                   // Memory width
+
   parameter integer NTestPrograms  =   19;                                      // Number of test programs to run
   parameter integer NTestsExpected =  124;                                      // Number of test passes expected
   parameter integer showInstructionDetails = 0;                                 // Show details of each instruction as it is executed
 
   parameter integer NSteps         = 2500;                                      // Maximum number of instruction executions
-  parameter integer NInstructions  = 2000; //3000;                                      // Number of instruction slots in code memory
+  parameter integer NInstructions  = 2000;                                      // Number of instruction slots in code memory
   parameter integer NArea          =   10;                                      // Size of each area on the heap
   parameter integer NArrays        = 1000;                                      // Maximum number of arrays
-  parameter integer NHeap          = 2000; //NArea*NArrays;                             // Amount of heap memory
+  parameter integer NHeap          = 2000; //NArea*NArrays;                     // Amount of heap memory
   parameter integer NLocal         = 1000;                                      // Size of local memory
   parameter integer NIn            = 1000;                                      // Size of input area
   parameter integer NOut           = 1000;                                      // Size of output area
@@ -22,15 +25,15 @@ module fpga                                                                     
   parameter integer NMemoryPrintX  =   50;                                      // Width of memory to print
   parameter integer NMemoryPrintLines = 2;                                      // Number of lines of memory to print
 
-  reg signed [255:0] code        [NInstructions:0];                             // Code memory
-  reg signed [ 32:0] opExecCounts[NInstructions:0];                             // Instruction execution counts
-  reg signed [ 64:0] arraySizes  [NArrays:0];                                   // Size of each array
-  reg signed [ 64:0] heapMem     [NHeap:0];                                     // Heap memory
-  reg signed [ 64:0] localMem    [NLocal:0];                                    // Local memory
-  reg signed [ 64:0] inMem       [NIn:0];                                       // Input channel
-  reg signed [ 64:0] outMem      [NOut:0];                                      // Out channel
-  reg signed [ 64:0] freedArrays [NFreedArrays:0];                              // Freed arrays list implemented as a stack
-  reg signed [ 64:0] arrayShift  [NArea:0];                                     // Array shift area
+  reg signed [ InstructionNWidth-1:0]         code[NInstructions:0];            // Code memory
+  reg signed [MemoryElementWidth-1:0] opExecCounts[NInstructions:0];            // Instruction execution counts
+  reg signed [MemoryElementWidth-1:0]   arraySizes[NArrays      :0];            // Size of each array
+  reg signed [MemoryElementWidth-1:0]      heapMem[NHeap        :0];            // Heap memory
+  reg signed [MemoryElementWidth-1:0]     localMem[NLocal       :0];            // Local memory
+  reg signed [MemoryElementWidth-1:0]        inMem[NIn          :0];            // Input channel
+  reg signed [MemoryElementWidth-1:0]       outMem[NOut         :0];            // Out channel
+  reg signed [MemoryElementWidth-1:0]  freedArrays[NFreedArrays :0];            // Freed arrays list implemented as a stack
+  reg signed [MemoryElementWidth-1:0]   arrayShift[NArea        :0];            // Array shift area
 
   integer signed nSteps;                                                        // Number of instructions executed
   integer signed NInstructionEnd;                                               // Limit of instructions for the current program
