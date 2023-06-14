@@ -1,4 +1,4 @@
-# Test 2023-06-14 at 18:56:56
+# Test 2023-06-14 at 19:21:00
 
 name: Test
 
@@ -93,8 +93,8 @@ jobs:
       run:  oss-cad-suite/bin/nextpnr-gowin -v --json verilog/countUp/countUp.json --write verilog/countUp/countUp.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/countUp/tangnano9k.cst
 
     - name: gowin_pack
-      run:  oss-cad-suite/bin/gowin_pack -d GW1N-9C -o pack.fs verilog/countUp/countUp.pnr
+      run:  oss-cad-suite/bin/gowin_pack -d GW1N-9C -o verilog/countUp/pack.fs verilog/countUp/countUp.pnr
 
     - name: tree
-      run:  tree -L 3 verilog/countUp
+      run:  ls -la verilog/countUp/*
 
