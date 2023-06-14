@@ -1,4 +1,4 @@
-# Test 2023-06-14 at 17:31:57
+# Test 2023-06-14 at 17:41:48
 
 name: Test
 
@@ -90,7 +90,7 @@ jobs:
       run:  oss-cad-suite/bin/yosys -p "read_verilog verilog/countUp/countUp.sv; synth_gowin -top countUp -json verilog/countUp/countUp.json"
 
     - name: nextpnr-gowin
-      run:  oss-cad-suite/bin/nextpnr-gowin -v --json verilog/countUp/countUp.json --write verilog/countUp/countUp.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/countUp/tangnano9k.cst                                                                                at /home/phil/perl/cpan/ZeroEmulator/verilog/countUp/pushToGitHub.pl line 29
+      run:  oss-cad-suite/bin/nextpnr-gowin -v --json verilog/countUp/countUp.json --write verilog/countUp/countUp.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/countUp/tangnano9k.cst
 
     - name: gowin_pack
       run:  oss-cad-suite/bin/gowin_pack -d GW1N-9C -o pack.fs verilog/countUp/countUp.pnr
