@@ -1,4 +1,4 @@
-# Test 2023-06-15 at 17:35:27
+# Test 2023-06-15 at 17:38:06
 
 name: Test
 
@@ -17,6 +17,9 @@ jobs:
       with:
         repository: philiprbrenan/DataTableText
         path: dtt
+
+    - name: Cpan
+      run:  sudo cpan install -T Data::Dump Data::Table::Text
 
     - name: Ubuntu update
       run:  sudo apt update
@@ -66,7 +69,7 @@ jobs:
     - name: BTree
       run:  perl -I$GITHUB_WORKSPACE/dtt/lib lib/Zero/BTree.pm
 
-    - name: TestBTree
+    - name: TestBTree - last as it is longest
       run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/testBTree.pl
 
   fpga:
