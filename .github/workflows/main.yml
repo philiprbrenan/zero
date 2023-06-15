@@ -1,4 +1,5 @@
-# Test 2023-06-15 at 16:50:55
+# Test 2023-06-15 at 16:53:21
+
 name: Test
 
 on:
@@ -9,9 +10,72 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout\@v3
+    - uses: actions/checkout@v2
+      with:
+        ref: 'main'
 
-    - uses: actions/checkout\@v3
+    - name: Cpan
+      run:  sudo cpan install -T Data::Dump Data::Table::Text
+
+    - name: Ubuntu update
+      run:  sudo apt update
+
+    - name: Verilog
+      run:  sudo apt -y install iverilog
+
+    - name: Verilog Version
+      run:  iverilog -V
+
+    - name: fpga
+      run:  cd verilog/fpga/;           iverilog -g2012 -o fpga fpga.sv && timeout 1m ./fpga
+
+    - name: ClockDivider
+      run:  cd verilog/clockDivider/;   iverilog -g2012 -o clockDivider     clockDivider.tb   clockDivider.sv && timeout 1m ./clockDivider
+
+    - name: ClockAndQuery
+      run:  cd verilog/clockAndQuery/;  iverilog -g2012 -o clockAndQuery   clockAndQuery.tb  clockAndQuery.sv && timeout 1m ./clockAndQuery
+
+    - name: CircularBuffer
+      run:  cd verilog/circularBuffer/; iverilog -g2012 -o circularBuffer circularBuffer.tb circularBuffer.sv && timeout 1m ./circularBuffer
+
+    - name: CountUp
+      run:  cd verilog/countUp/; iverilog -g2012 -o countUp countUp.tb countUp.sv && timeout 1m ./countUp
+
+    - name: Emulator
+      run:  perl lib/Zero/Emulator.pm
+
+    - name: BubbleSort
+      run:  perl examples/bubbleSort.pl
+
+    - name: InsertionSort
+      run:  perl examples/insertionSort.pl
+
+    - name: QuickSort
+      run:  perl examples/quickSort.pl
+
+    - name: QuickSort Parallel
+      run:  perl examples/quickSortParallel.pl
+
+    - name: SelectionSort
+      run:  perl examples/selectionSort.pl
+
+    - name: TestEmulator
+      run:  perl examples/testEmulator.pl
+
+    - name: BTree
+      run:  perl lib/Zero/BTree.pm
+
+    - name: TestBTree
+      run:  perl examples/testBTree.pl
+
+
+  fpga:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions/checkout@v3
       with:
         repository: philiprbrenan/DataTableText
         path: dtt
@@ -19,15 +83,24 @@ jobs:
     - name: Cpan
       run:  sudo cpan install -T Data::Dump
 
-    - name: Run dtt1
-      run: |
-        tree
-        ls -la dtt/lib/Data/Table/Text.pm
-        pwd
-        echo $HOME
-        printenv
-        perl -I$GITHUB_WORKSPACE/dtt/lib/ -MData::Table::Text -e"use v5.30; say STDERR \$Data::Table::Text::VERSION"
+    - name: Get
+      run:  wget -q https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2023-06-14/oss-cad-suite-linux-x64-20230614.tgz
 
-    - name: Run dtt2
-      run: |
-        perl -I$GITHUB_WORKSPACE/dtt/lib/ -MData::Table::Text -e"use v5.30; say STDERR \$Data::Table::Text::VERSION"
+    - name: gunzip
+      run: gunzip  oss-cad-suite-linux-x64-20230614.tgz
+
+    - name: tar
+      run: tar -xf oss-cad-suite-linux-x64-20230614.tar
+
+    - name: tree
+      run:  |
+        ls -la ./oss-cad-suite/bin/yosys
+        export PATH="$PATH:oss-cad-suite/bin/"
+
+
+    - name: countUp
+      run:  cd verilog/countUp; perl -I$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl
+
+    - name: fpga1
+      run:  cd verilog/fpga1;   perl -I$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl
+
