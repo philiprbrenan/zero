@@ -53,13 +53,16 @@ expandWellKnownWordsInMarkDownFile                                              
 &run();                                                                         # Upload run configuration
 
 push my @files,
-  grep {/pushToGitHub\.pl\Z/}
   grep {!/backups/}
   grep {!/_build/}
   grep {!/Build.PL/}
   grep {!/blib/}
   grep {$perlXmp or !/\.pl\Z/}                                                  # No changes expected
   searchDirectoryTreesForMatchingFiles($home, qw(.pm .pl .md .sv .tb .cst));    # Files
+
+#@files = ();                                                                   # No files
+#@files = grep {/pushToGitHub\.pl\Z/} @files;                                   # Just control file unless commented out
+#@files = grep {/\.sv\Z/} @files;                                                # Just sv files
 
 for my $s(@files)                                                               # Upload each selected file
  {my $c = readFile($s);                                                         # Load file
@@ -102,8 +105,13 @@ jobs:
 END
 
   $y .= <<END;                                                                  # High level tests using Perl and Verilog
+    - uses: actions/checkout\@v3
+      with:
+        repository: philiprbrenan/DataTableText
+        path: dtt
+
     - name: Cpan
-      run:  sudo cpan install -T Data::Dump Data::Table::Text
+      run:  sudo cpan install -T Data::Dump
 
     - name: Ubuntu update
       run:  sudo apt update
@@ -130,31 +138,31 @@ END
       run:  cd verilog/countUp/; iverilog -g2012 -o countUp countUp.tb countUp.sv && timeout 1m ./countUp
 
     - name: Emulator
-      run:  perl lib/Zero/Emulator.pm
+      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib lib/Zero/Emulator.pm
 
     - name: BubbleSort
-      run:  perl examples/bubbleSort.pl
+      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/bubbleSort.pl
 
     - name: InsertionSort
-      run:  perl examples/insertionSort.pl
+      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/insertionSort.pl
 
     - name: QuickSort
-      run:  perl examples/quickSort.pl
+      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/quickSort.pl
 
     - name: QuickSort Parallel
-      run:  perl examples/quickSortParallel.pl
+      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/quickSortParallel.pl
 
     - name: SelectionSort
-      run:  perl examples/selectionSort.pl
+      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/selectionSort.pl
 
     - name: TestEmulator
-      run:  perl examples/testEmulator.pl
+      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/testEmulator.pl
 
     - name: BTree
-      run:  perl lib/Zero/BTree.pm
+      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib lib/Zero/BTree.pm
 
-    - name: TestBTree
-      run:  perl examples/testBTree.pl
+    - name: TestBTree - last as it is longest
+      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/testBTree.pl
 
 END
 
