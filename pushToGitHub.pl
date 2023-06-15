@@ -128,38 +128,7 @@ sub run
       run:  perl examples/testBTree.pl
 END
 
-  my $f2 = <<END;                                                               # Low level tests - convert verilog to fpga bitstream
-  fpga:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout\@v2
-      with:
-        ref: 'main'
-
-    - name: Get
-      run:  wget https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2023-06-14/oss-cad-suite-linux-x64-20230614.tgz
-
-    - name: gunzip
-      run: gunzip  oss-cad-suite-linux-x64-20230614.tgz
-
-    - name: tar
-      run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-
-    - name: yosys
-      run:  oss-cad-suite/bin/yosys -p "read_verilog verilog/countUp/countUp.sv; synth_gowin -top countUp -json verilog/countUp/countUp.json"
-
-    - name: nextpnr-gowin
-      run:  oss-cad-suite/bin/nextpnr-gowin -v --json verilog/countUp/countUp.json --write verilog/countUp/countUp.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/countUp/tangnano9k.cst
-
-    - name: gowin_pack
-      run:  oss-cad-suite/bin/gowin_pack -d GW1N-9C -o verilog/countUp/countUp.fs verilog/countUp/countUp.pnr
-
-    - name: tree
-      run:  ls -la verilog/countUp/*
-END
-
-  my $f = <<'END';                                                                # Low level tests - convert verilog to fpga bitstream
+  my $f = <<'END';                                                              # Low level tests - convert verilog to fpga bitstream using yosys
   fpga:
     runs-on: ubuntu-latest
 
@@ -185,9 +154,8 @@ END
 
     - name: tree
       run:  |
-        ls -la ./oss-cad-suite/bin/yosys
-        export PATH="$PATH:oss-cad-suite/bin/"
-
+        ls -la $GITHUB_WORKSPACE//oss-cad-suite/bin/yosys
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
 
     - name: countUp
       run:  cd verilog/countUp; perl -I$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl
