@@ -51,7 +51,7 @@ expandWellKnownWordsInMarkDownFile                                              
   fpe($home, qw(README md2)), fpe $home, qw(README md);
 
 &run();                                                                         # Upload run configuration
-
+#exit;
 
 push my @files,
   grep {/pushToGitHub\.pl\Z/}
@@ -181,7 +181,10 @@ END
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
 
     - name: tree
-      run:  tree -d -L 3
+      run:  |
+        ls -la ./oss-cad-suite/bin/yosys
+        export PATH="\$PATH:oss-cad-suite/bin/"
+
 
     - name: countUp
       run:  cd verilog/countUp; perl pushToGitHub.pl
