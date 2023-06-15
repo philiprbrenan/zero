@@ -164,12 +164,15 @@ END
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout\@v2
+    - uses: actions/checkout\@v3
+
+    - uses: actions/checkout\@v3
       with:
-        ref: 'main'
+        repository: philiprbrenan/DataTableText
+        path: dtt
 
     - name: Cpan
-      run:  sudo cpan install -T Data::Dump Data::Table::Text
+      run:  sudo cpan install -T Data::Dump
 
     - name: Get
       run:  wget -q https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2023-06-14/oss-cad-suite-linux-x64-20230614.tgz
@@ -187,10 +190,10 @@ END
 
 
     - name: countUp
-      run:  cd verilog/countUp; perl pushToGitHub.pl
+      run:  cd verilog/countUp; perl -Idtt/lib pushToGitHub.pl
 
     - name: fpga1
-      run:  cd verilog/fpga1;   perl pushToGitHub.pl
+      run:  cd verilog/fpga1;   perl -Idtt/lib pushToGitHub.pl
 END
 
   my $y = <<"END" =~ s(XXXX) ($t)gsr =~ s(YYYY) ($f)gsr;
