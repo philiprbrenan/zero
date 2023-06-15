@@ -1,5 +1,4 @@
-# Test 2023-06-15 at 16:39:52
-
+# Test 2023-06-15 at 16:45:59
 name: Test
 
 on:
@@ -10,9 +9,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout\@v3
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout\@v3
       with:
         repository: philiprbrenan/DataTableText
         path: dtt
@@ -24,8 +23,8 @@ jobs:
       run: |
         tree
         ls -la dtt/lib/Data/Table/Text.pm
-        perl -Idtt/lib/ -MData::Table::Text -e"use v5.30; say STDERR \$Data::Table::Text::VERSION"
+        perl -I$HOME/dtt/lib/ -MData::Table::Text -e"use v5.30; say STDERR \$Data::Table::Text::VERSION"
 
     - name: Run dtt2
       run: |
-        perl -Idtt/lib/ -MData::Table::Text -e"use v5.30; say STDERR \$Data::Table::Text::VERSION"
+        perl -I$HOME/dtt/lib/ -MData::Table::Text -e"use v5.30; say STDERR \$Data::Table::Text::VERSION"
