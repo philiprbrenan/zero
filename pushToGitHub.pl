@@ -53,6 +53,7 @@ expandWellKnownWordsInMarkDownFile                                              
 &run();                                                                         # Upload run configuration
 
 push my @files,
+  grep {/pushToGitHub\.pl\Z/}
   grep {!/backups/}
   grep {!/_build/}
   grep {!/Build.PL/}
@@ -126,7 +127,15 @@ sub run
       run:  perl examples/testBTree.pl
 END
 
-  my $f = <<END;                                                                # Low level tests - convert verilog to fpga bitstream
+  my $f2 = <<END;                                                               # Low level tests - convert verilog to fpga bitstream
+  fpga:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout\@v2
+      with:
+        ref: 'main'
+
     - name: Get
       run:  wget https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2023-06-14/oss-cad-suite-linux-x64-20230614.tgz
 
@@ -140,13 +149,41 @@ END
       run:  oss-cad-suite/bin/yosys -p "read_verilog verilog/countUp/countUp.sv; synth_gowin -top countUp -json verilog/countUp/countUp.json"
 
     - name: nextpnr-gowin
-      run:  oss-cad-suite/bin/nextpnr-gowin -v --json verilog/countUp/countUp.json --write verilog/countUp/countUp.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/countUp/tangnano9k.cst                                                                                at /home/phil/perl/cpan/ZeroEmulator/verilog/countUp/pushToGitHub.pl line 29
+      run:  oss-cad-suite/bin/nextpnr-gowin -v --json verilog/countUp/countUp.json --write verilog/countUp/countUp.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/countUp/tangnano9k.cst
 
     - name: gowin_pack
-      run:  oss-cad-suite/bin/gowin_pack -d GW1N-9C -o pack.fs verilog/countUp/countUp.pnr
+      run:  oss-cad-suite/bin/gowin_pack -d GW1N-9C -o verilog/countUp/countUp.fs verilog/countUp/countUp.pnr
 
     - name: tree
-      run:  tree -d -L 2 verilog
+      run:  ls -la verilog/countUp/*
+END
+
+  my $f = <<END;                                                                # Low level tests - convert verilog to fpga bitstream
+  fpga:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout\@v2
+      with:
+        ref: 'main'
+
+    - name: Get
+      run:  wget https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2023-06-14/oss-cad-suite-linux-x64-20230614.tgz
+
+    - name: gunzip
+      run: gunzip  oss-cad-suite-linux-x64-20230614.tgz
+
+    - name: tar
+      run: tar -xf oss-cad-suite-linux-x64-20230614.tar
+
+    - name: yosys
+      run:  oss-cad-suite/bin/yosys -p "read_verilog verilog/countUp/countUp.sv; synth_gowin -top countUp -json verilog/countUp/countUp.json"
+
+    - name: countUp
+      run:  cd verilog/countUp; perl pushToGitHub.pl
+
+    - name: fpga1
+      run:  cd verilog/fpga1;   perl pushToGitHub.pl
 END
 
   my $y = <<"END" =~ s(XXXX) ($t)gsr =~ s(YYYY) ($f)gsr;
@@ -167,14 +204,6 @@ jobs:
         ref: 'main'
 
 XXXX
-
-  fpga:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout\@v2
-      with:
-        ref: 'main'
 
 YYYY
 END
