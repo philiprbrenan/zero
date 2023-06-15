@@ -159,20 +159,17 @@ END
       run:  ls -la verilog/countUp/*
 END
 
-  my $f = <<END;                                                                # Low level tests - convert verilog to fpga bitstream
+  my $f = <<'END';                                                                # Low level tests - convert verilog to fpga bitstream
   fpga:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout\@v3
+    - uses: actions/checkout@v3
 
-    - uses: actions/checkout\@v3
+    - uses: actions/checkout@v3
       with:
         repository: philiprbrenan/DataTableText
         path: dtt
-
-    - name: Tree dtt
-      run:  tree
 
     - name: Cpan
       run:  sudo cpan install -T Data::Dump
@@ -189,14 +186,14 @@ END
     - name: tree
       run:  |
         ls -la ./oss-cad-suite/bin/yosys
-        export PATH="\$PATH:oss-cad-suite/bin/"
+        export PATH="$PATH:oss-cad-suite/bin/"
 
 
     - name: countUp
-      run:  cd verilog/countUp; perl -Idtt/lib pushToGitHub.pl
+      run:  cd verilog/countUp; perl -I$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl
 
     - name: fpga1
-      run:  cd verilog/fpga1;   perl -Idtt/lib pushToGitHub.pl
+      run:  cd verilog/fpga1;   perl -I$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl
 END
 
   my $y = <<"END" =~ s(XXXX) ($t)gsr =~ s(YYYY) ($f)gsr;
