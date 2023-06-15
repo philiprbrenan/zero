@@ -51,7 +51,6 @@ expandWellKnownWordsInMarkDownFile                                              
   fpe($home, qw(README md2)), fpe $home, qw(README md);
 
 &run();                                                                         # Upload run configuration
-#exit;
 
 push my @files,
   grep {/pushToGitHub\.pl\Z/}
