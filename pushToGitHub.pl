@@ -72,7 +72,37 @@ for my $s(@files)                                                               
 sub run
  {my $d = dateTimeStamp;
 
-  my $t = <<END;                                                                # High level tests using Perl and Verilog
+  my $run = <<END;
+        run: |
+          perl lib/Zero/Emulator.pm
+          perl lib/Zero/BTree.pm
+          perl examples/testEmulator.pl
+          perl examples/testBTree.pl
+          perl examples/bubbleSort.pl
+          perl examples/insertionSort.pl
+          perl examples/quickSort.pl
+          perl examples/selectionSort.pl
+END
+
+  my $y = <<"END";
+# Test $d
+
+name: Test
+
+on:
+  push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout\@v2
+      with:
+        ref: 'main'
+END
+
+  $y .= <<END;                                                                  # High level tests using Perl and Verilog
     - name: Cpan
       run:  sudo cpan install -T Data::Dump Data::Table::Text
 
@@ -126,65 +156,10 @@ sub run
 
     - name: TestBTree
       run:  perl examples/testBTree.pl
+
 END
 
-  my $f = <<'END';                                                              # Low level tests - convert verilog to fpga bitstream using yosys
-  fpga:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - uses: actions/checkout@v3
-      with:
-        repository: philiprbrenan/DataTableText
-        path: dtt
-
-    - name: Cpan
-      run:  sudo cpan install -T Data::Dump
-
-    - name: Get
-      run:  wget -q https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2023-06-14/oss-cad-suite-linux-x64-20230614.tgz
-
-    - name: gunzip
-      run: gunzip  oss-cad-suite-linux-x64-20230614.tgz
-
-    - name: tar
-      run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-
-    - name: Reference yosys
-      run: export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-
-    - name: countUp
-      run:  cd verilog/countUp; perl -I$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl
-
-    - name: fpga1
-      run:  cd verilog/fpga1;   perl -I$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl
-END
-
-  my $y = <<"END" =~ s(XXXX) ($t)gsr =~ s(YYYY) ($f)gsr;
-# Test $d
-
-name: Test
-
-on:
-  push
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout\@v2
-      with:
-        ref: 'main'
-
-XXXX
-
-YYYY
-END
-
-  my $ym = <<'END' =~ s(XXXX) ($t)gsr;
+  $y .= <<'END'.$run if $macos;
   testMac:
     runs-on: macos-latest
 
@@ -193,12 +168,9 @@ END
       with:
         ref: 'main'
 
-XXXX
 END
 
-  $y .= $ym if $macos;
-
- my $yw = <<'END' =~ s(XXXX) ($t)gsr;
+  $y .= <<'END'.$run if $windows;
   testWindows:
     runs-on: windows-latest
 
@@ -223,12 +195,9 @@ END
       run: |
         sudo apt-get -y install build-essential
 
-XXXX
 END
 
-  $y .= $yw if $windows;
-
-  my $yob = <<'END' =~ s(XXXX) ($t)gsr;
+  $y .= <<'END'.$run if $openBsd;
   testOpenBsd:
     runs-on: macos-12
     name: OpenBSD
@@ -245,21 +214,9 @@ END
         usesh: true
         prepare: |
           cpan install -T Data::Dump Data::Table::Text
-
-        run: |
-          perl lib/Zero/Emulator.pm
-          perl lib/Zero/BTree.pm
-          perl examples/testEmulator.pl
-          perl examples/testBTree.pl
-          perl examples/bubbleSort.pl
-          perl examples/insertionSort.pl
-          perl examples/quickSort.pl
-          perl examples/selectionSort.pl
 END
 
- $y .= $yob if $openBsd;
-
- my $yfb = <<'END' =~ s(XXXX) ($t)gsr;
+  $y .= <<'END'.$run if $freeBsd;
   testFreeBsd:
     runs-on: macos-12
     name: FreeBSD
@@ -276,19 +233,44 @@ END
         usesh: true
         prepare: |
           cpan install -T Data::Dump Data::Table::Text
-
-        run: |
-          perl lib/Zero/Emulator.pm
-          perl lib/Zero/BTree.pm
-          perl examples/testEmulator.pl
-          perl examples/testBTree.pl
-          perl examples/bubbleSort.pl
-          perl examples/insertionSort.pl
-          perl examples/quickSort.pl
-          perl examples/selectionSort.pl
 END
 
-  $y .= $yfb if $freeBsd;
+  $y .= <<END;                                                                   # Low level tests - convert verilog to fpga bitstream using yosys
+  fpga:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout\@v3
+
+    - uses: actions/checkout\@v3
+      with:
+        repository: philiprbrenan/DataTableText
+        path: dtt
+
+    - name: Cpan
+      run:  sudo cpan install -T Data::Dump
+
+    - name: Get
+      run:  wget -q https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2023-06-14/oss-cad-suite-linux-x64-20230614.tgz
+
+    - name: gunzip
+      run: gunzip  oss-cad-suite-linux-x64-20230614.tgz
+
+    - name: tar
+      run: tar -xf oss-cad-suite-linux-x64-20230614.tar
+
+    - name: Reference yosys
+      run: |
+        ls -la \$GITHUB_WORKSPACE/oss-cad-suite/bin/yosys
+        export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
+        yosys -version
+
+    - name: countUp
+      run:  cd verilog/countUp; perl -I\$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl
+
+    - name: fpga1
+      run:  cd verilog/fpga1;   perl -I\$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl
+END
 
   lll "Ubuntu work flow for $repo ", writeFileUsingSavedToken($user, $repo, $wf, $y);
  }
