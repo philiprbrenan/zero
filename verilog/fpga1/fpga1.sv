@@ -3,17 +3,14 @@
 // Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
 module fpga1                                                                    // Run test programs
- (input  wire     startIn,                                                      // Start execution
-  output reg[7:0] passedOut);                                                   // Report number of tests passed
+ (input  wire loadCode,                                                         // Load code on positive edge
+  input  wire clock,                                                            // Execute the next instruction
+  output reg  finished,                                                         // Goes high when the program has finished
+  output reg  success);                                                         // Goes high on finish if all the tests passed
 
   parameter integer InstructionNWidth  = 256;                                   // Number of bits in an instruction
   parameter integer MemoryElementWidth =  16;                                   // Memory width
 
-  parameter integer NTestPrograms  =    1;                                      // Number of test programs to run
-  parameter integer NTestsExpected =    1;                                      // Number of test passes expected
-  parameter integer showInstructionDetails = 0;                                 // Show details of each instruction as it is executed
-
-  parameter integer NSteps         = 2500;                                      // Maximum number of instruction executions
   parameter integer NInstructions  = 2000;                                      // Number of instruction slots in code memory
   parameter integer NArea          =   10;                                      // Size of each area on the heap
   parameter integer NArrays        = 1000;                                      // Maximum number of arrays
@@ -25,6 +22,7 @@ module fpga1                                                                    
   parameter integer NMemoryPrintX  =   50;                                      // Width of memory to print
   parameter integer NMemoryPrintLines = 2;                                      // Number of lines of memory to print
 
+  reg startable;                                                                // Goes high when the program has been loaded and we are ready to run
   reg signed [ InstructionNWidth-1:0]         code[NInstructions:0];            // Code memory
   reg signed [MemoryElementWidth-1:0] opExecCounts[NInstructions:0];            // Instruction execution counts
   reg signed [MemoryElementWidth-1:0]   arraySizes[NArrays      :0];            // Size of each array
@@ -34,7 +32,6 @@ module fpga1                                                                    
   reg signed [MemoryElementWidth-1:0]  freedArrays[NFreedArrays :0];            // Freed arrays list implemented as a stack
   reg signed [MemoryElementWidth-1:0]   arrayShift[NArea        :0];            // Array shift area
 
-  integer signed nSteps;                                                        // Number of instructions executed
   integer signed NInstructionEnd;                                               // Limit of instructions for the current program
   integer signed  inMemPos;                                                     // Current position in input channel
   integer signed  inMemEnd;                                                     // End of input channel, this is the next element that would have been added.
@@ -42,97 +39,11 @@ module fpga1                                                                    
   integer signed result;                                                        // Result of an instruction execution
   integer signed allocs;                                                        // Maximum number of array allocations in use at any one time
   integer signed freedArraysTop;                                                // Position in freed arrays stack
-  integer signed test;                                                          // Tests passed
-  integer signed testsPassed;                                                   // Tests passed
-  integer signed testsFailed;                                                   // Tests failed
-  integer signed opExecCount;                                                   // Number of times the current instruction has been executed
   integer signed i, j, k, l, p, q;                                              // Useful integers
-
-//Tests
-
-  task ok(integer signed test, integer name);                                   // Check a single test result
-    begin
-      if (test == 1) begin
-        testsPassed = testsPassed + 1;
-      end
-      else begin
-        $display("Assertion %s FAILED", name);
-        printHeap();
-        testsFailed = testsFailed + 1;
-      end
-    end
-  endtask
-
-  task loadCode();                                                              // Load code to be tested for test
-    begin
-      Mov_test();
-      initializeMemory();
-    end
-  endtask
-
-  task printLocal();                                                            // Print memory so we now what to chec
-    begin
-      $display("Local:");
-      $write("      "); for(i = 0; i < NMemoryPrintX; i = i + 1) $write(" %2d", i); $display("");
-      for(j = 0; j < NLocal; j = j + NMemoryPrintX) begin
-        if (j < NMemoryPrintLines) begin
-          for(i = 0; i < NMemoryPrintX; i = i + 1) begin
-            $write(" %2d", localMem[j+i]);
-          end
-          $display("");
-        end
-      end
-    end
-  endtask
-
-  integer ph_i, ph_j, ph_v, ph_s;
-
-  task printHeap();                                                             // Print memory so we now what to chec
-    begin
-      $write("Heap:");
-      for(ph_i = 0; ph_i < 10; ph_i = ph_i + 1) $write(" %2d", ph_i); $display("");
-      for(ph_j = 0; ph_j < 20; ph_j = ph_j + 1) begin
-        ph_s = arraySizes[ph_j];
-        if (ph_s > 0) begin;
-          $write("%2d:%2d", ph_j, ph_s);
-          for(ph_i = 0; ph_i < ph_s; ph_i = ph_i + 1) begin
-            ph_v = heapMem[ph_j*NArea+ph_i];
-            if (ph_v !== 'bx) begin
-              $write(" %2d", ph_v);
-            end
-            else begin
-              $write(" **");
-            end
-          end
-          $display("");
-        end
-        else begin;
-          //$display("%2d:%2d", ph_j, ph_s);
-        end
-      end
-    end
-  endtask
-
-  task printOut();                                                              // Print the output channel
-    begin
-      $display("Out %7d", outMemPos);
-      $write("      "); for(i = 0; i < NMemoryPrintX; i = i + 1) $write(" %4d", i); $display("");
-      for(i = 0; i < outMemPos; i = i + 1) begin
-        $write(" %4d", outMem[i]);
-      end
-      $display("");
-    end
-  endtask
-
-  task checkResults();                                                          // Check results of test
-    begin
-      ok(outMem[0] == 1, 1);
-    end
-  endtask
 
 //Layout of each instruction
 
-  integer ip = 0, oip = 0;                                                      // Instruction pointer
+  integer ip = 0;                                                               // Instruction pointer
   integer r1, r2, r3, r4, r5, r6, r7, r8;                                       // Intermediate array results
 
   wire signed [255:0] instruction = code[ip];
@@ -248,7 +159,6 @@ module fpga1                                                                    
       allocs         = 0;                                                       // Largest number of arrays in use at any one time so far
       freedArraysTop = 0;                                                       // Start freed arrays stack
       outMemPos      = 0;                                                       // Output channel position
-      nSteps         = 1;                                                       // Number of instructions executed
       for(i = 0; i < NOut;          i = i + 1)       outMem[i] = 'bx;           // Reset the output channel
       for(i = 0; i < NHeap;         i = i + 1)      heapMem[i] = 'bx;           // Reset heap memory
       for(i = 0; i < NLocal;        i = i + 1)     localMem[i] = 'bx;           // Reset local memory
@@ -260,49 +170,30 @@ module fpga1                                                                    
 
 // Execute each test progam
 
-  always @(posedge startIn) begin                                               // Load, run confirm
-    testsPassed = 0;                                                            // Passed tests
-    testsFailed = 0;                                                            // Failed tests
-    for(test = 1; test <= NTestPrograms; test = test + 1) begin                 // Run the tests from bewest to oldest
-      loadCode();
-      for(ip = 0; ip >= 0 && ip < NInstructionEnd; ip = ip + 1)                 // Each instruction
-      begin
-        oip = ip;                                                               // Save the old instruction pointer
-        #1;                                                                     // Let the ip update its assigns
-        if (showInstructionDetails) printInstruction();                         // Print Instruction details
-//Execute
+  always @(posedge loadCode) begin                                              // Load code
+    startable  = 0;
+    ip         = 0;
+    finished   = 0;
+    success    = 0;
+    Add_test();
+    initializeMemory();
+    startable = 1;
+  end
+
+  always @(posedge clock) begin                                                 // Execute instruction
+    if (startable) begin
+      if (ip >= 0 && ip < NInstructionEnd) begin                                // Ip in range
         executeInstruction();
-                      opExecCounts[oip] = opExecCounts[oip] + 1;
-        opExecCount = opExecCounts[oip];
-$display("%4d  %4d  %4d  %4d = %4d",
-nSteps, oip, opExecCount, operator, result);
-        nSteps = nSteps + 1;
-        if (nSteps > NSteps) begin                                              // Count instructions executed
-          $display("Out of instructions after %d steps", NSteps);
-          printHeap();
-          $finish;
-        end
+        ip = ip + 1;
       end
-      $display("Test %4d, steps %8d", test, nSteps);
-      checkResults();                                                           // Check results
-//end
+      else begin;                                                               // Finished
+        finished = 1;
+      end
     end
-    if (testsPassed > 0 && testsFailed > 0) begin
-       $display("Passed %1d tests, FAILED %1d tests out of %d tests", testsPassed, testsFailed, NTestsExpected);
-    end
-    else if (testsFailed > 0) begin
-       $display("FAILED %1d tests out of %1d tests", testsFailed, NTestsExpected);
-    end
-    else if (testsPassed > 0 && testsPassed != NTestsExpected) begin
-       $display("Passed %1d tests out of %1d tests with no failures ", testsPassed, NTestsExpected);
-    end
-    else if (testsPassed == NTestsExpected) begin                               // Testing summary
-       $display("All %1d tests passed successfully in %1d programs", NTestsExpected, NTestPrograms);
-    end
-    else begin
-       $display("No tests run passed: %1d, failed: %1d, expected %1d, programs: %1d", testsPassed, testsFailed, NTestsExpected, NTestPrograms);
-    end
-    passedOut = testsPassed;
+  end
+
+  always @(posedge finished) begin                                              // Evaluate results of program execution
+    success = outMem[0] == 5;
   end
 
 //Single instruction execution
@@ -536,15 +427,12 @@ nSteps, oip, opExecCount, operator, result);
   endtask
 
 //Programs to execute as tests
-  task Mov_test();                                                              // Load program 'Mov_test' into code memory
+
+  task Add_test();                                                              // Load program 'Add_test' into code memory    begin
     begin
-      NInstructionEnd = 6;
-      code[   0] = 'h0000002200000000000000000000210000000000000120000000000000000000;
-      code[   1] = 'h0000002200000000000000000001210000000000000220000000000000000000;
-      code[   2] = 'h0000002200000000000000000002210000000000000320000000000000000000;
-      code[   3] = 'h0000002600000000000000000000010000000000000021000000000000000000;
-      code[   4] = 'h0000002600000000000000000000010000000000000121000000000000000000;
-      code[   5] = 'h0000002600000000000000000000010000000000000221000000000000000000;
+      NInstructionEnd = 2;
+      code[   0] = 'h0000000000000000000000000000210000000000000320000000000000022000;
+      code[   1] = 'h0000002600000000000000000000010000000000000021000000000000000000;
     end
   endtask
 
@@ -1040,12 +928,12 @@ nSteps, oip, opExecCount, operator, result);
       ml_q = targetLocation;
       ml_p = sourceLocation;
       ml_n = targetLocationArea;
-      for(ml_i = 0; ml_i < ml_l; ml_i = ml_i + 1) begin
-        heapMem[ml_q+ml_i] = heapMem[ml_p+ml_i];
-        if (targetIndex+ml_i + 1 > arraySizes[ml_n]) begin
-          arraySizes[ml_n] = targetIndex+ml_i+1;
-        end
-      end
+      //for(ml_i = 0; ml_i < ml_l; ml_i = ml_i + 1) begin
+      //  heapMem[ml_q+ml_i] = heapMem[ml_p+ml_i];
+      //  if (targetIndex+ml_i + 1 > arraySizes[ml_n]) begin
+      //    arraySizes[ml_n] = targetIndex+ml_i+1;
+      //  end
+      //end
     end
   endtask
 
