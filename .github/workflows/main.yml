@@ -1,4 +1,4 @@
-# Test 2023-06-15 at 16:27:55
+# Test 2023-06-15 at 16:32:43
 
 name: Test
 
@@ -25,7 +25,5 @@ jobs:
 
     - name: Run dtt
       run: |
-        perl -Idtt/lib/ -MData::Table::Text;
-        perl -Idtt/lib  -MData::Table::Text;
-        perl -Idtt/lib/ -mData::Table::Text;
-        perl -Idtt/lib  -mData::Table::Text;
+        perl -Idtt/lib/ -mData::Table::Text -e"use v5.30; say $Data::Table::Text::VERSION"
+        perl -Ilib -mData::Table::Text -e"use v5.30; say $Data::Table::Text::VERSION"
