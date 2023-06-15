@@ -1,4 +1,4 @@
-# Test 2023-06-15 at 17:02:47
+# Test 2023-06-15 at 17:13:07
 
 name: Test
 
@@ -13,7 +13,6 @@ jobs:
     - uses: actions/checkout@v2
       with:
         ref: 'main'
-
     - name: Cpan
       run:  sudo cpan install -T Data::Dump Data::Table::Text
 
@@ -68,7 +67,6 @@ jobs:
     - name: TestBTree
       run:  perl examples/testBTree.pl
 
-
   fpga:
     runs-on: ubuntu-latest
 
@@ -93,11 +91,13 @@ jobs:
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
 
     - name: Reference yosys
-      run: export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
+      run: |
+        ls -la $GITHUB_WORKSPACE/oss-cad-suite/bin/yosys
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
+        yosys -version
 
     - name: countUp
       run:  cd verilog/countUp; perl -I$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl
 
     - name: fpga1
       run:  cd verilog/fpga1;   perl -I$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl
-
