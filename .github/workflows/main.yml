@@ -1,4 +1,4 @@
-# Test 2023-06-15 at 04:25:52
+# Test 2023-06-15 at 04:46:51
 
 name: Test
 
@@ -88,9 +88,6 @@ jobs:
 
     - name: tar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-
-    - name: yosys
-      run:  oss-cad-suite/bin/yosys -p "read_verilog verilog/countUp/countUp.sv; synth_gowin -top countUp -json verilog/countUp/countUp.json"
 
     - name: countUp
       run:  cd verilog/countUp; perl pushToGitHub.pl
