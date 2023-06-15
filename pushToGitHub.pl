@@ -171,6 +171,9 @@ END
         repository: philiprbrenan/DataTableText
         path: dtt
 
+    - name: Tree dtt
+      run:  tree
+
     - name: Cpan
       run:  sudo cpan install -T Data::Dump
 
