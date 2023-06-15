@@ -1,4 +1,4 @@
-# Test 2023-06-15 at 16:18:11
+# Test 2023-06-15 at 16:19:47
 
 name: Test
 
@@ -79,6 +79,9 @@ jobs:
       with:
         repository: philiprbrenan/DataTableText
         path: dtt
+
+    - name: Tree dtt
+      run:  tree
 
     - name: Cpan
       run:  sudo cpan install -T Data::Dump
