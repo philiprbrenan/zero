@@ -1,4 +1,4 @@
-# Test 2023-06-15 at 16:47:28
+# Test 2023-06-15 at 16:49:34
 name: Test
 
 on:
@@ -25,6 +25,7 @@ jobs:
         ls -la dtt/lib/Data/Table/Text.pm
         pwd
         echo $HOME
+        printenv
         perl -I$HOME/dtt/lib/ -MData::Table::Text -e"use v5.30; say STDERR \$Data::Table::Text::VERSION"
 
     - name: Run dtt2
