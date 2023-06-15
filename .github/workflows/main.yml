@@ -1,4 +1,4 @@
-# Test 2023-06-15 at 16:32:43
+# Test 2023-06-15 at 16:34:42
 
 name: Test
 
@@ -20,10 +20,9 @@ jobs:
     - name: Cpan
       run:  sudo cpan install -T Data::Dump
 
-    - name: Tree dtt
-      run:  tree
-
     - name: Run dtt
       run: |
+        tree
+        ls -la dtt/lib/Data/Table/Text.pm
         perl -Idtt/lib/ -mData::Table::Text -e"use v5.30; say $Data::Table::Text::VERSION"
         perl -Ilib -mData::Table::Text -e"use v5.30; say $Data::Table::Text::VERSION"
