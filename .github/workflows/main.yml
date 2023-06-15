@@ -1,4 +1,4 @@
-# Test 2023-06-15 at 05:12:44
+# Test 2023-06-15 at 05:17:00
 
 name: Test
 
@@ -90,7 +90,9 @@ jobs:
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
 
     - name: tree
-      run:  tree -d -L 3
+      run:  |
+        tree -L 3 ./oss-cad-suite/bin
+        ls -la ./oss-cad-suite/bin/yosys
 
     - name: countUp
       run:  cd verilog/countUp; perl pushToGitHub.pl
