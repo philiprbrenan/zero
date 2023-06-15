@@ -167,6 +167,9 @@ END
       with:
         ref: 'main'
 
+    - name: Cpan
+      run:  sudo cpan install -T Data::Dump Data::Table::Text
+
     - name: Get
       run:  wget https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2023-06-14/oss-cad-suite-linux-x64-20230614.tgz
 
@@ -175,9 +178,6 @@ END
 
     - name: tar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-
-    - name: yosys
-      run:  oss-cad-suite/bin/yosys -p "read_verilog verilog/countUp/countUp.sv; synth_gowin -top countUp -json verilog/countUp/countUp.json"
 
     - name: countUp
       run:  cd verilog/countUp; perl pushToGitHub.pl
