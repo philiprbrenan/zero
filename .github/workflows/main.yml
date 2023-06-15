@@ -1,4 +1,4 @@
-# Test 2023-06-15 at 16:34:42
+# Test 2023-06-15 at 16:34:51
 
 name: Test
 
@@ -25,4 +25,3 @@ jobs:
         tree
         ls -la dtt/lib/Data/Table/Text.pm
         perl -Idtt/lib/ -mData::Table::Text -e"use v5.30; say $Data::Table::Text::VERSION"
-        perl -Ilib -mData::Table::Text -e"use v5.30; say $Data::Table::Text::VERSION"
