@@ -28,4 +28,9 @@ if (0)                                                                          
   #xxx(qq($bin/quartus_sta "$PROJECT"));
  }
 
-fpgaGowin;
+if (-e q(/home/phil/))
+ {fpgaGowin;
+ }
+else
+ {fpgaGowin bin=>q(oss-cad-suite/bin/);
+ }
