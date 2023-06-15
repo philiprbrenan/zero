@@ -1,4 +1,4 @@
-# Test 2023-06-15 at 04:15:53
+# Test 2023-06-15 at 04:17:27
 
 name: Test
 
@@ -68,6 +68,14 @@ jobs:
     - name: TestBTree
       run:  perl examples/testBTree.pl
 
+
+  fpga:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: 'main'
 
     - name: Get
       run:  wget https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2023-06-14/oss-cad-suite-linux-x64-20230614.tgz
