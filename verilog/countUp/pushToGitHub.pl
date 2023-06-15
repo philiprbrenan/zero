@@ -13,5 +13,5 @@ if (-e q(/home/phil/))
  {fpgaGowin;
  }
 else
- {fpgaGowin bin=>q(oss-cad-suite/bin/);
+ {fpgaGowin bin=>q(./oss-cad-suite/bin/);
  }
