@@ -52,6 +52,7 @@ expandWellKnownWordsInMarkDownFile                                              
 
 &run();                                                                         # Upload run configuration
 
+
 push my @files,
   grep {/pushToGitHub\.pl\Z/}
   grep {!/backups/}
@@ -171,13 +172,16 @@ END
       run:  sudo cpan install -T Data::Dump Data::Table::Text
 
     - name: Get
-      run:  wget https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2023-06-14/oss-cad-suite-linux-x64-20230614.tgz
+      run:  wget -q https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2023-06-14/oss-cad-suite-linux-x64-20230614.tgz
 
     - name: gunzip
       run: gunzip  oss-cad-suite-linux-x64-20230614.tgz
 
     - name: tar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
+
+    - name: tree
+      run:  tree -d -L 3
 
     - name: countUp
       run:  cd verilog/countUp; perl pushToGitHub.pl
