@@ -1,4 +1,4 @@
-# Test 2023-06-15 at 19:24:08
+# Test 2023-06-15 at 19:30:24
 
 name: Test
 
@@ -103,5 +103,5 @@ jobs:
     - name: fpga1
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        # (cd verilog/fpga1;   perl -I$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl)
+       (cd verilog/fpga1;   perl -I$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl)
 
