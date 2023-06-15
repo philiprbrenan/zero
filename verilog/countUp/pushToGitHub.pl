@@ -1,6 +1,6 @@
 #!/usr/bin/perl -I/home/phil/perl/cpan/DataTableText/lib/
 #-------------------------------------------------------------------------------
-# Build a gowin project
+# Build CountUp as a gowin project
 # Philip R Brenan at gmail dot com, Appa Apps Ltd Inc., 2023
 #-------------------------------------------------------------------------------
 use v5.28;
@@ -9,9 +9,4 @@ use strict;
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 
-if (-e q(/home/phil/))
- {fpgaGowin;
- }
-else
- {fpgaGowin bin=>q(./oss-cad-suite/bin/);
- }
+fpgaGowin;
