@@ -1,4 +1,4 @@
-# Test 2023-06-15 at 17:29:44
+# Test 2023-06-15 at 17:35:27
 
 name: Test
 
@@ -13,8 +13,10 @@ jobs:
     - uses: actions/checkout@v2
       with:
         ref: 'main'
-    - name: Cpan
-      run:  sudo cpan install -T Data::Dump Data::Table::Text
+    - uses: actions/checkout@v3
+      with:
+        repository: philiprbrenan/DataTableText
+        path: dtt
 
     - name: Ubuntu update
       run:  sudo apt update
@@ -41,31 +43,31 @@ jobs:
       run:  cd verilog/countUp/; iverilog -g2012 -o countUp countUp.tb countUp.sv && timeout 1m ./countUp
 
     - name: Emulator
-      run:  perl lib/Zero/Emulator.pm
+      run:  perl -I$GITHUB_WORKSPACE/dtt/lib lib/Zero/Emulator.pm
 
     - name: BubbleSort
-      run:  perl examples/bubbleSort.pl
+      run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/bubbleSort.pl
 
     - name: InsertionSort
-      run:  perl examples/insertionSort.pl
+      run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/insertionSort.pl
 
     - name: QuickSort
-      run:  perl examples/quickSort.pl
+      run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/quickSort.pl
 
     - name: QuickSort Parallel
-      run:  perl examples/quickSortParallel.pl
+      run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/quickSortParallel.pl
 
     - name: SelectionSort
-      run:  perl examples/selectionSort.pl
+      run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/selectionSort.pl
 
     - name: TestEmulator
-      run:  perl examples/testEmulator.pl
+      run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/testEmulator.pl
 
     - name: BTree
-      run:  perl lib/Zero/BTree.pm
+      run:  perl -I$GITHUB_WORKSPACE/dtt/lib lib/Zero/BTree.pm
 
     - name: TestBTree
-      run:  perl examples/testBTree.pl
+      run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/testBTree.pl
 
   fpga:
     runs-on: ubuntu-latest
