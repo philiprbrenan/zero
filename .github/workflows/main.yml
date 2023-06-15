@@ -24,8 +24,8 @@ jobs:
       run: |
         tree
         ls -la dtt/lib/Data/Table/Text.pm
-        perl -Idtt/lib/ -MData::Table::Text -e"use v5.30; say STDERR $Data::Table::Text::VERSION"
+        perl -Idtt/lib/ -MData::Table::Text -e"use v5.30; say STDERR \$Data::Table::Text::VERSION"
 
     - name: Run dtt2
       run: |
-        perl -Idtt/lib/ -MData::Table::Text -e"use v5.30; say STDERR $Data::Table::Text::VERSION"
+        perl -Idtt/lib/ -MData::Table::Text -e"use v5.30; say STDERR \$Data::Table::Text::VERSION"
