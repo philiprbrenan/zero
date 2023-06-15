@@ -1,4 +1,4 @@
-# Test 2023-06-15 at 16:53:21
+# Test 2023-06-15 at 16:57:21
 
 name: Test
 
@@ -94,9 +94,8 @@ jobs:
 
     - name: tree
       run:  |
-        ls -la ./oss-cad-suite/bin/yosys
-        export PATH="$PATH:oss-cad-suite/bin/"
-
+        ls -la $GITHUB_WORKSPACE//oss-cad-suite/bin/yosys
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
 
     - name: countUp
       run:  cd verilog/countUp; perl -I$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl
