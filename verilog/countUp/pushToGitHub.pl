@@ -9,4 +9,9 @@ use strict;
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 
-fpgaGowin;
+if (-e q(/home/phil/))
+ {fpgaGowin;
+ }
+else
+ {fpgaGowin bin=>q(oss-cad-suite/bin/);
+ }
