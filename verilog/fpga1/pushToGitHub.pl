@@ -12,6 +12,8 @@ use Data::Table::Text qw(:all);
 
 makeDieConfess;
 
+confess "Crashes local machine by using alot of memory" if -e q(/home/phil/);
+
 if (0)                                                                          # Quartus Prime
  {my $home = q(/home/phil/perl/cpan/ZeroEmulator/verilog/fpga1/);               # Local files
   my $bin  = q(/home/phil/intelFPGA_lite/22.1std/quartus/bin);                  # Quartus commands
