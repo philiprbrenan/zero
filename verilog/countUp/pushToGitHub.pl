@@ -9,4 +9,6 @@ use strict;
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 
+say STDERR "Version: ", $Data::Table::Text::VERSION;
+
 fpgaGowin;
