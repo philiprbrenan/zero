@@ -259,11 +259,19 @@ END
     - name: tar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
 
-    - name: Reference yosys
+    - name: Reference yosys 1
       run: |
         ls -la \$GITHUB_WORKSPACE/oss-cad-suite/bin/yosys
         export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -version
+
+    - name: Reference yosys 2
+      run: |
+        yosys -version
+
+    - name: Reference yosys 3
+      run: |
+        (cd verilog/countUp; yosys -version)
 
     - name: countUp
       run:  cd verilog/countUp; perl -I\$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl
