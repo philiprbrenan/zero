@@ -12,7 +12,7 @@ module fpga1                                                                    
   parameter integer MemoryElementWidth =  12;                                   // Memory width
 
   parameter integer NInstructions  = 1000;                                      // Number of instruction slots in code memory
-  parameter integer NArea          =    1;                                      // Size of each area on the heap
+  parameter integer NArea          = 1000;                                      // Size of each area on the heap
   parameter integer NArrays        =    1;                                      // Maximum number of arrays
   parameter integer NHeap          =    1; //NArea*NArrays;                     // Amount of heap memory
   parameter integer NLocal         =    1;                                      // Size of local memory
