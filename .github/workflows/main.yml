@@ -1,4 +1,4 @@
-# Test 2023-06-16 at 02:00:37
+# Test 2023-06-16 at 02:02:54
 
 name: Test
 
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         ref: 'main'
     - uses: actions/checkout@v3
