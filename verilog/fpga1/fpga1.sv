@@ -11,14 +11,14 @@ module fpga1                                                                    
   parameter integer InstructionNWidth  = 256;                                   // Number of bits in an instruction
   parameter integer MemoryElementWidth =  12;                                   // Memory width
 
-  parameter integer NInstructions  =   1;                                      // Number of instruction slots in code memory
-  parameter integer NArea          =   1;                                      // Size of each area on the heap
-  parameter integer NArrays        =   1;                                      // Maximum number of arrays
-  parameter integer NHeap          =   1; //NArea*NArrays;                     // Amount of heap memory
-  parameter integer NLocal         =   1;                                      // Size of local memory
-  parameter integer NIn            =   1;                                      // Size of input area
-  parameter integer NOut           =   1;                                      // Size of output area
-  parameter integer NFreedArrays   =   1;                                      // Size of output area
+  parameter integer NInstructions  =   10;                                      // Number of instruction slots in code memory
+  parameter integer NArea          =   10;                                      // Size of each area on the heap
+  parameter integer NArrays        =   10;                                      // Maximum number of arrays
+  parameter integer NHeap          =   10; //NArea*NArrays;                     // Amount of heap memory
+  parameter integer NLocal         =   10;                                      // Size of local memory
+  parameter integer NIn            =   10;                                      // Size of input area
+  parameter integer NOut           =   10;                                      // Size of output area
+  parameter integer NFreedArrays   =   10;                                      // Size of output area
 
   reg startable;                                                                // Goes high when the program has been loaded and we are ready to run
   reg signed [ InstructionNWidth-1:0]         code[NInstructions:0];            // Code memory
