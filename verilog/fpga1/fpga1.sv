@@ -9,18 +9,16 @@ module fpga1                                                                    
   output reg  success);                                                         // Goes high on finish if all the tests passed
 
   parameter integer InstructionNWidth  = 256;                                   // Number of bits in an instruction
-  parameter integer MemoryElementWidth =  16;                                   // Memory width
+  parameter integer MemoryElementWidth =  12;                                   // Memory width
 
-  parameter integer NInstructions  = 2000;                                      // Number of instruction slots in code memory
-  parameter integer NArea          =   10;                                      // Size of each area on the heap
-  parameter integer NArrays        = 1000;                                      // Maximum number of arrays
-  parameter integer NHeap          = 2000; //NArea*NArrays;                     // Amount of heap memory
-  parameter integer NLocal         = 1000;                                      // Size of local memory
-  parameter integer NIn            = 1000;                                      // Size of input area
-  parameter integer NOut           = 1000;                                      // Size of output area
-  parameter integer NFreedArrays   = 1000;                                      // Size of output area
-  parameter integer NMemoryPrintX  =   50;                                      // Width of memory to print
-  parameter integer NMemoryPrintLines = 2;                                      // Number of lines of memory to print
+  parameter integer NInstructions  =   1;                                      // Number of instruction slots in code memory
+  parameter integer NArea          =   1;                                      // Size of each area on the heap
+  parameter integer NArrays        =   1;                                      // Maximum number of arrays
+  parameter integer NHeap          =   1; //NArea*NArrays;                     // Amount of heap memory
+  parameter integer NLocal         =   1;                                      // Size of local memory
+  parameter integer NIn            =   1;                                      // Size of input area
+  parameter integer NOut           =   1;                                      // Size of output area
+  parameter integer NFreedArrays   =   1;                                      // Size of output area
 
   reg startable;                                                                // Goes high when the program has been loaded and we are ready to run
   reg signed [ InstructionNWidth-1:0]         code[NInstructions:0];            // Code memory
@@ -32,13 +30,13 @@ module fpga1                                                                    
   reg signed [MemoryElementWidth-1:0]  freedArrays[NFreedArrays :0];            // Freed arrays list implemented as a stack
   reg signed [MemoryElementWidth-1:0]   arrayShift[NArea        :0];            // Array shift area
 
-  integer signed NInstructionEnd;                                               // Limit of instructions for the current program
-  integer signed  inMemPos;                                                     // Current position in input channel
-  integer signed  inMemEnd;                                                     // End of input channel, this is the next element that would have been added.
-  integer signed outMemPos;                                                     // Position in output channel
-  integer signed result;                                                        // Result of an instruction execution
-  integer signed allocs;                                                        // Maximum number of array allocations in use at any one time
-  integer signed freedArraysTop;                                                // Position in freed arrays stack
+  integer signed  NInstructionEnd;                                              // Limit of instructions for the current program
+  integer signed         inMemPos;                                              // Current position in input channel
+  integer signed         inMemEnd;                                              // End of input channel, this is the next element that would have been added.
+  integer signed        outMemPos;                                              // Position in output channel
+  integer signed           result;                                              // Result of an instruction execution
+  integer signed           allocs;                                              // Maximum number of array allocations in use at any one time
+  integer signed   freedArraysTop;                                              // Position in freed arrays stack
   integer signed i, j, k, l, p, q;                                              // Useful integers
 
 //Layout of each instruction
@@ -463,55 +461,55 @@ module fpga1                                                                    
 
   task array_instruction();                                                     // Array
     begin
-      if (freedArraysTop > 0) begin                                             // Reuse an array
-        freedArraysTop = freedArraysTop - 1;
-        result = freedArrays[freedArraysTop];
-      end
-      else begin
-        result = allocs;                                                          // Array zero means undefined
-        allocs = allocs + 1;                                                      // Array zero means undefined
-      end
-
-      arraySizes[targetLocationArea] = 0;                                       // Zero array length
-      setMemory();                                                              // Save address of array
+      //if (freedArraysTop > 0) begin                                             // Reuse an array
+      //  freedArraysTop = freedArraysTop - 1;
+      //  result = freedArrays[freedArraysTop];
+      //end
+      //else begin
+      //  result = allocs;                                                          // Array zero means undefined
+      //  allocs = allocs + 1;                                                      // Array zero means undefined
+      //end
+      //
+      //arraySizes[targetLocationArea] = 0;                                       // Zero array length
+      //setMemory();                                                              // Save address of array
     end
   endtask
 
   task free_instruction();
     begin                                                                       // Free
-      freedArrays[freedArraysTop] = targetValue;
-      freedArraysTop = freedArraysTop + 1;
-      arraySizes[targetValue] = 0;                                              // Zero array length
+      //freedArrays[freedArraysTop] = targetValue;
+      //freedArraysTop = freedArraysTop + 1;
+      //arraySizes[targetValue] = 0;                                              // Zero array length
     end
   endtask
 
   task mov_instruction();                                                       // Mov
     begin
-      result = source1Value;
-      //$display("%4d = Mov %d(%d), %d", result, targetLocation, targetArena, source1Value);
-      setMemory();                                                              // Save result in target
+      //result = source1Value;
+      ////$display("%4d = Mov %d(%d), %d", result, targetLocation, targetArena, source1Value);
+      //setMemory();                                                              // Save result in target
     end
   endtask
 
 
   task not_instruction();                                                       // Not
     begin
-      result = source1Value ? 0 : 1;
-      setMemory();                                                              // Save result in target
+      //result = source1Value ? 0 : 1;
+      //setMemory();                                                              // Save result in target
     end
   endtask
 
   task resize_instruction();                                                    // Resize
     begin
-      result = source1Value;
-      arraySizes[targetLocationArea] = result;
+      //result = source1Value;
+      //arraySizes[targetLocationArea] = result;
     end
   endtask
 
   task subtract_instruction();                                                  // Subtract
     begin
-      result = source1Value - source2Value;
-      setMemory();                                                              // Save result in target
+      //result = source1Value - source2Value;
+      //setMemory();                                                              // Save result in target
     end
   endtask
 
@@ -525,199 +523,199 @@ module fpga1                                                                    
 
   task arrayIndex_instruction();
     begin                                                                       // ArrayIndex
-      begin
-        q = source1Value * NArea;                                               // Array location
-        p = arraySizes[source1Value];                                           // Length of array
-        result = 0;
-      end
-      case(p)                                                                   // Arrays can be dynamic but only up to a fixed size so that we can unroll the loop that finds an element
-        1:
-            begin if (heapMem[q+0] == source2Value) result = 1; end
-        2:
-          begin
-            begin if (heapMem[q+0] == source2Value) result = 1; end
-            begin if (heapMem[q+1] == source2Value) result = 2; end
-          end
-        3:
-          begin
-            begin if (heapMem[q+0] == source2Value) result = 1; end
-            begin if (heapMem[q+1] == source2Value) result = 2; end
-            begin if (heapMem[q+2] == source2Value) result = 3; end
-          end
-        4:
-          begin
-            begin if (heapMem[q+0] == source2Value) result = 1; end
-            begin if (heapMem[q+1] == source2Value) result = 2; end
-            begin if (heapMem[q+2] == source2Value) result = 3; end
-            begin if (heapMem[q+3] == source2Value) result = 4; end
-          end
-        5:
-          begin
-            begin if (heapMem[q+0] == source2Value) result = 1; end
-            begin if (heapMem[q+1] == source2Value) result = 2; end
-            begin if (heapMem[q+2] == source2Value) result = 3; end
-            begin if (heapMem[q+3] == source2Value) result = 4; end
-            begin if (heapMem[q+4] == source2Value) result = 5; end
-          end
-        6:
-          begin
-            begin if (heapMem[q+0] == source2Value) result = 1; end
-            begin if (heapMem[q+1] == source2Value) result = 2; end
-            begin if (heapMem[q+2] == source2Value) result = 3; end
-            begin if (heapMem[q+3] == source2Value) result = 4; end
-            begin if (heapMem[q+4] == source2Value) result = 5; end
-            begin if (heapMem[q+5] == source2Value) result = 6; end
-          end
-        7:
-          begin
-            begin if (heapMem[q+0] == source2Value) result = 1; end
-            begin if (heapMem[q+1] == source2Value) result = 2; end
-            begin if (heapMem[q+2] == source2Value) result = 3; end
-            begin if (heapMem[q+3] == source2Value) result = 4; end
-            begin if (heapMem[q+4] == source2Value) result = 5; end
-            begin if (heapMem[q+5] == source2Value) result = 6; end
-            begin if (heapMem[q+6] == source2Value) result = 7; end
-          end
-      endcase
-      setMemory();
+      //begin
+      //  q = source1Value * NArea;                                               // Array location
+      //  p = arraySizes[source1Value];                                           // Length of array
+      //  result = 0;
+      //end
+      //case(p)                                                                   // Arrays can be dynamic but only up to a fixed size so that we can unroll the loop that finds an element
+      //  1:
+      //      begin if (heapMem[q+0] == source2Value) result = 1; end
+      //  2:
+      //    begin
+      //      begin if (heapMem[q+0] == source2Value) result = 1; end
+      //      begin if (heapMem[q+1] == source2Value) result = 2; end
+      //    end
+      //  3:
+      //    begin
+      //      begin if (heapMem[q+0] == source2Value) result = 1; end
+      //      begin if (heapMem[q+1] == source2Value) result = 2; end
+      //      begin if (heapMem[q+2] == source2Value) result = 3; end
+      //    end
+      //  4:
+      //    begin
+      //      begin if (heapMem[q+0] == source2Value) result = 1; end
+      //      begin if (heapMem[q+1] == source2Value) result = 2; end
+      //      begin if (heapMem[q+2] == source2Value) result = 3; end
+      //      begin if (heapMem[q+3] == source2Value) result = 4; end
+      //    end
+      //  5:
+      //    begin
+      //      begin if (heapMem[q+0] == source2Value) result = 1; end
+      //      begin if (heapMem[q+1] == source2Value) result = 2; end
+      //      begin if (heapMem[q+2] == source2Value) result = 3; end
+      //      begin if (heapMem[q+3] == source2Value) result = 4; end
+      //      begin if (heapMem[q+4] == source2Value) result = 5; end
+      //    end
+      //  6:
+      //    begin
+      //      begin if (heapMem[q+0] == source2Value) result = 1; end
+      //      begin if (heapMem[q+1] == source2Value) result = 2; end
+      //      begin if (heapMem[q+2] == source2Value) result = 3; end
+      //      begin if (heapMem[q+3] == source2Value) result = 4; end
+      //      begin if (heapMem[q+4] == source2Value) result = 5; end
+      //      begin if (heapMem[q+5] == source2Value) result = 6; end
+      //    end
+      //  7:
+      //    begin
+      //      begin if (heapMem[q+0] == source2Value) result = 1; end
+      //      begin if (heapMem[q+1] == source2Value) result = 2; end
+      //      begin if (heapMem[q+2] == source2Value) result = 3; end
+      //      begin if (heapMem[q+3] == source2Value) result = 4; end
+      //      begin if (heapMem[q+4] == source2Value) result = 5; end
+      //      begin if (heapMem[q+5] == source2Value) result = 6; end
+      //      begin if (heapMem[q+6] == source2Value) result = 7; end
+      //    end
+      //endcase
+      //setMemory();
     end
   endtask
 
   task arrayCountGreater_instruction();
     begin                                                                       // ArrayIndex
-      begin
-        q = source1Value * NArea;                                               // Array location
-        p = arraySizes[source1Value];                                           // Length of array
-        result = 0;
-        r1 = 0; r2 = 0; r3 = 0; r4 = 0; r5 = 0; r6 = 0; r7 = 0; r8 = 0;
-      end;
-      case(p)                                                                   // Arrays can be dynamic but only up to a fixed size so that we can unroll the loop that finds an element
-        1:
-            begin if (heapMem[q+0] > source2Value) r1 = 1; end
-        2:
-          begin
-            begin if (heapMem[q+0] > source2Value) r1 = 1; end
-            begin if (heapMem[q+1] > source2Value) r2 = 1; end
-          end
-        3:
-          begin
-            begin if (heapMem[q+0] > source2Value) r1 = 1; end
-            begin if (heapMem[q+1] > source2Value) r2 = 1; end
-            begin if (heapMem[q+2] > source2Value) r3 = 1; end
-          end
-        4:
-          begin
-            begin if (heapMem[q+0] > source2Value) r1 = 1; end
-            begin if (heapMem[q+1] > source2Value) r2 = 1; end
-            begin if (heapMem[q+2] > source2Value) r3 = 1; end
-            begin if (heapMem[q+3] > source2Value) r4 = 1; end
-          end
-        5:
-          begin
-            begin if (heapMem[q+0] > source2Value) r1 = 1; end
-            begin if (heapMem[q+1] > source2Value) r2 = 1; end
-            begin if (heapMem[q+2] > source2Value) r3 = 1; end
-            begin if (heapMem[q+3] > source2Value) r4 = 1; end
-            begin if (heapMem[q+4] > source2Value) r5 = 1; end
-          end
-        6:
-          begin
-            begin if (heapMem[q+0] > source2Value) r1 = 1; end
-            begin if (heapMem[q+1] > source2Value) r2 = 1; end
-            begin if (heapMem[q+2] > source2Value) r3 = 1; end
-            begin if (heapMem[q+3] > source2Value) r4 = 1; end
-            begin if (heapMem[q+4] > source2Value) r5 = 1; end
-            begin if (heapMem[q+5] > source2Value) r6 = 1; end
-          end
-        7:
-          begin
-            begin if (heapMem[q+0] > source2Value) r1 = 1; end
-            begin if (heapMem[q+1] > source2Value) r2 = 1; end
-            begin if (heapMem[q+2] > source2Value) r3 = 1; end
-            begin if (heapMem[q+3] > source2Value) r4 = 1; end
-            begin if (heapMem[q+4] > source2Value) r5 = 1; end
-            begin if (heapMem[q+5] > source2Value) r6 = 1; end
-            begin if (heapMem[q+6] > source2Value) r7 = 1; end
-          end
-      endcase
-      result = r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8;
-      setMemory();
+      //begin
+      //  q = source1Value * NArea;                                               // Array location
+      //  p = arraySizes[source1Value];                                           // Length of array
+      //  result = 0;
+      //  r1 = 0; r2 = 0; r3 = 0; r4 = 0; r5 = 0; r6 = 0; r7 = 0; r8 = 0;
+      //end;
+      //case(p)                                                                   // Arrays can be dynamic but only up to a fixed size so that we can unroll the loop that finds an element
+      //  1:
+      //      begin if (heapMem[q+0] > source2Value) r1 = 1; end
+      //  2:
+      //    begin
+      //      begin if (heapMem[q+0] > source2Value) r1 = 1; end
+      //      begin if (heapMem[q+1] > source2Value) r2 = 1; end
+      //    end
+      //  3:
+      //    begin
+      //      begin if (heapMem[q+0] > source2Value) r1 = 1; end
+      //      begin if (heapMem[q+1] > source2Value) r2 = 1; end
+      //      begin if (heapMem[q+2] > source2Value) r3 = 1; end
+      //    end
+      //  4:
+      //    begin
+      //      begin if (heapMem[q+0] > source2Value) r1 = 1; end
+      //      begin if (heapMem[q+1] > source2Value) r2 = 1; end
+      //      begin if (heapMem[q+2] > source2Value) r3 = 1; end
+      //      begin if (heapMem[q+3] > source2Value) r4 = 1; end
+      //    end
+      //  5:
+      //    begin
+      //      begin if (heapMem[q+0] > source2Value) r1 = 1; end
+      //      begin if (heapMem[q+1] > source2Value) r2 = 1; end
+      //      begin if (heapMem[q+2] > source2Value) r3 = 1; end
+      //      begin if (heapMem[q+3] > source2Value) r4 = 1; end
+      //      begin if (heapMem[q+4] > source2Value) r5 = 1; end
+      //    end
+      //  6:
+      //    begin
+      //      begin if (heapMem[q+0] > source2Value) r1 = 1; end
+      //      begin if (heapMem[q+1] > source2Value) r2 = 1; end
+      //      begin if (heapMem[q+2] > source2Value) r3 = 1; end
+      //      begin if (heapMem[q+3] > source2Value) r4 = 1; end
+      //      begin if (heapMem[q+4] > source2Value) r5 = 1; end
+      //      begin if (heapMem[q+5] > source2Value) r6 = 1; end
+      //    end
+      //  7:
+      //    begin
+      //      begin if (heapMem[q+0] > source2Value) r1 = 1; end
+      //      begin if (heapMem[q+1] > source2Value) r2 = 1; end
+      //      begin if (heapMem[q+2] > source2Value) r3 = 1; end
+      //      begin if (heapMem[q+3] > source2Value) r4 = 1; end
+      //      begin if (heapMem[q+4] > source2Value) r5 = 1; end
+      //      begin if (heapMem[q+5] > source2Value) r6 = 1; end
+      //      begin if (heapMem[q+6] > source2Value) r7 = 1; end
+      //    end
+      //endcase
+      //result = r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8;
+      //setMemory();
     end
   endtask
 
   task arrayCountLess_instruction();
     begin                                                                       // ArrayIndex
-      begin
-        q = source1Value * NArea;                                               // Array location
-        p = arraySizes[source1Value];                                           // Length of array
-        result = 0;
-        r1 = 0; r2 = 0; r3 = 0; r4 = 0; r5 = 0; r6 = 0; r7 = 0; r8 = 0;
-      end
-      case(p)                                                                   // Arrays can be dynamic but only up to a fixed size so that we can unroll the loop that finds an element
-        1:
-            begin if (heapMem[q+0] < source2Value) r1 = 1; end
-        2:
-          begin
-            begin if (heapMem[q+0] < source2Value) r1 = 1; end
-            begin if (heapMem[q+1] < source2Value) r2 = 1; end
-          end
-        3:
-          begin
-            begin if (heapMem[q+0] < source2Value) r1 = 1; end
-            begin if (heapMem[q+1] < source2Value) r2 = 1; end
-            begin if (heapMem[q+2] < source2Value) r3 = 1; end
-          end
-        4:
-          begin
-            begin if (heapMem[q+0] < source2Value) r1 = 1; end
-            begin if (heapMem[q+1] < source2Value) r2 = 1; end
-            begin if (heapMem[q+2] < source2Value) r3 = 1; end
-            begin if (heapMem[q+3] < source2Value) r4 = 1; end
-          end
-        5:
-          begin
-            begin if (heapMem[q+0] < source2Value) r1 = 1; end
-            begin if (heapMem[q+1] < source2Value) r2 = 1; end
-            begin if (heapMem[q+2] < source2Value) r3 = 1; end
-            begin if (heapMem[q+3] < source2Value) r4 = 1; end
-            begin if (heapMem[q+4] < source2Value) r5 = 1; end
-          end
-        6:
-          begin
-            begin if (heapMem[q+0] < source2Value) r1 = 1; end
-            begin if (heapMem[q+1] < source2Value) r2 = 1; end
-            begin if (heapMem[q+2] < source2Value) r3 = 1; end
-            begin if (heapMem[q+3] < source2Value) r4 = 1; end
-            begin if (heapMem[q+4] < source2Value) r5 = 1; end
-            begin if (heapMem[q+5] < source2Value) r6 = 1; end
-          end
-        7:
-          begin
-            begin if (heapMem[q+0] < source2Value) r1 = 1; end
-            begin if (heapMem[q+1] < source2Value) r2 = 1; end
-            begin if (heapMem[q+2] < source2Value) r3 = 1; end
-            begin if (heapMem[q+3] < source2Value) r4 = 1; end
-            begin if (heapMem[q+4] < source2Value) r5 = 1; end
-            begin if (heapMem[q+5] < source2Value) r6 = 1; end
-            begin if (heapMem[q+6] < source2Value) r7 = 1; end
-          end
-      endcase
-      result = r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8;
-      setMemory();
+      //begin
+      //  q = source1Value * NArea;                                               // Array location
+      //  p = arraySizes[source1Value];                                           // Length of array
+      //  result = 0;
+      //  r1 = 0; r2 = 0; r3 = 0; r4 = 0; r5 = 0; r6 = 0; r7 = 0; r8 = 0;
+      //end
+      //case(p)                                                                   // Arrays can be dynamic but only up to a fixed size so that we can unroll the loop that finds an element
+      //  1:
+      //      begin if (heapMem[q+0] < source2Value) r1 = 1; end
+      //  2:
+      //    begin
+      //      begin if (heapMem[q+0] < source2Value) r1 = 1; end
+      //      begin if (heapMem[q+1] < source2Value) r2 = 1; end
+      //    end
+      //  3:
+      //    begin
+      //      begin if (heapMem[q+0] < source2Value) r1 = 1; end
+      //      begin if (heapMem[q+1] < source2Value) r2 = 1; end
+      //      begin if (heapMem[q+2] < source2Value) r3 = 1; end
+      //    end
+      //  4:
+      //    begin
+      //      begin if (heapMem[q+0] < source2Value) r1 = 1; end
+      //      begin if (heapMem[q+1] < source2Value) r2 = 1; end
+      //      begin if (heapMem[q+2] < source2Value) r3 = 1; end
+      //      begin if (heapMem[q+3] < source2Value) r4 = 1; end
+      //    end
+      //  5:
+      //    begin
+      //      begin if (heapMem[q+0] < source2Value) r1 = 1; end
+      //      begin if (heapMem[q+1] < source2Value) r2 = 1; end
+      //      begin if (heapMem[q+2] < source2Value) r3 = 1; end
+      //      begin if (heapMem[q+3] < source2Value) r4 = 1; end
+      //      begin if (heapMem[q+4] < source2Value) r5 = 1; end
+      //    end
+      //  6:
+      //    begin
+      //      begin if (heapMem[q+0] < source2Value) r1 = 1; end
+      //      begin if (heapMem[q+1] < source2Value) r2 = 1; end
+      //      begin if (heapMem[q+2] < source2Value) r3 = 1; end
+      //      begin if (heapMem[q+3] < source2Value) r4 = 1; end
+      //      begin if (heapMem[q+4] < source2Value) r5 = 1; end
+      //      begin if (heapMem[q+5] < source2Value) r6 = 1; end
+      //    end
+      //  7:
+      //    begin
+      //      begin if (heapMem[q+0] < source2Value) r1 = 1; end
+      //      begin if (heapMem[q+1] < source2Value) r2 = 1; end
+      //      begin if (heapMem[q+2] < source2Value) r3 = 1; end
+      //      begin if (heapMem[q+3] < source2Value) r4 = 1; end
+      //      begin if (heapMem[q+4] < source2Value) r5 = 1; end
+      //      begin if (heapMem[q+5] < source2Value) r6 = 1; end
+      //      begin if (heapMem[q+6] < source2Value) r7 = 1; end
+      //    end
+      //endcase
+      //result = r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8;
+      //setMemory();
     end
   endtask
 
   task shiftLeft_instruction();
     begin                                                                       // shiftLeft
-      result = targetValue << source1Value;
-      setMemory();
+      //result = targetValue << source1Value;
+      //setMemory();
     end
   endtask
 
   task shiftRight_instruction();
     begin                                                                       // shiftLeft
-      result = targetValue >> source1Value;
-      setMemory();
+      //result = targetValue >> source1Value;
+      //setMemory();
     end
   endtask
 
@@ -824,99 +822,99 @@ module fpga1                                                                    
                                                                                 // Shift up an array in parallel by first copying every element in parallel then copying back just the elements we need into their new positions
   task shiftUp_instruction();
     begin
-      if (targetIndex < NArea) begin
-        p = targetLocationArea * NArea;                                         // Array Start
-        begin
-          arraySizes[targetLocationArea] = arraySizes[targetLocationArea] + 1;  // New size of array
-          if (NArea > 0) arrayShift[0] = heapMem[p + 0];                        // Move data into staging area
-          if (NArea > 1) arrayShift[1] = heapMem[p + 1];
-          if (NArea > 2) arrayShift[2] = heapMem[p + 2];
-          if (NArea > 3) arrayShift[3] = heapMem[p + 3];
-          if (NArea > 4) arrayShift[4] = heapMem[p + 4];
-          if (NArea > 5) arrayShift[5] = heapMem[p + 5];
-          if (NArea > 6) arrayShift[6] = heapMem[p + 6];
-          if (NArea > 7) arrayShift[7] = heapMem[p + 7];
-          if (NArea > 8) arrayShift[8] = heapMem[p + 8];
-          if (NArea > 9) arrayShift[9] = heapMem[p + 9];
-        end
-        case(targetIndex)                                                       // Destage data into one position higher
-          0: begin
-            if (NArea > 0) heapMem[p + 0] = source1Value;
-            if (NArea > 1) heapMem[p + 1] = arrayShift[0];
-            if (NArea > 2) heapMem[p + 2] = arrayShift[1];
-            if (NArea > 3) heapMem[p + 3] = arrayShift[2];
-            if (NArea > 4) heapMem[p + 4] = arrayShift[3];
-            if (NArea > 5) heapMem[p + 5] = arrayShift[4];
-            if (NArea > 6) heapMem[p + 6] = arrayShift[5];
-            if (NArea > 7) heapMem[p + 7] = arrayShift[6];
-            if (NArea > 8) heapMem[p + 8] = arrayShift[7];
-            if (NArea > 9) heapMem[p + 9] = arrayShift[8];
-          end
-          1: begin
-            if (NArea > 1) heapMem[p + 1] = source1Value;
-            if (NArea > 2) heapMem[p + 2] = arrayShift[1];
-            if (NArea > 3) heapMem[p + 3] = arrayShift[2];
-            if (NArea > 4) heapMem[p + 4] = arrayShift[3];
-            if (NArea > 5) heapMem[p + 5] = arrayShift[4];
-            if (NArea > 6) heapMem[p + 6] = arrayShift[5];
-            if (NArea > 7) heapMem[p + 7] = arrayShift[6];
-            if (NArea > 8) heapMem[p + 8] = arrayShift[7];
-            if (NArea > 9) heapMem[p + 9] = arrayShift[8];
-          end
-          2: begin
-            if (NArea > 2) heapMem[p + 2] = source1Value;
-            if (NArea > 3) heapMem[p + 3] = arrayShift[2];
-            if (NArea > 4) heapMem[p + 4] = arrayShift[3];
-            if (NArea > 5) heapMem[p + 5] = arrayShift[4];
-            if (NArea > 6) heapMem[p + 6] = arrayShift[5];
-            if (NArea > 7) heapMem[p + 7] = arrayShift[6];
-            if (NArea > 8) heapMem[p + 8] = arrayShift[7];
-            if (NArea > 9) heapMem[p + 9] = arrayShift[8];
-          end
-          3: begin
-            if (NArea > 3) heapMem[p + 3] = source1Value;
-            if (NArea > 4) heapMem[p + 4] = arrayShift[3];
-            if (NArea > 5) heapMem[p + 5] = arrayShift[4];
-            if (NArea > 6) heapMem[p + 6] = arrayShift[5];
-            if (NArea > 7) heapMem[p + 7] = arrayShift[6];
-            if (NArea > 8) heapMem[p + 8] = arrayShift[7];
-            if (NArea > 9) heapMem[p + 9] = arrayShift[8];
-          end
-          4: begin
-            if (NArea > 4) heapMem[p + 4] = source1Value;
-            if (NArea > 5) heapMem[p + 5] = arrayShift[4];
-            if (NArea > 6) heapMem[p + 6] = arrayShift[5];
-            if (NArea > 7) heapMem[p + 7] = arrayShift[6];
-            if (NArea > 8) heapMem[p + 8] = arrayShift[7];
-            if (NArea > 9) heapMem[p + 9] = arrayShift[8];
-          end
-          5: begin
-            if (NArea > 5) heapMem[p + 5] = source1Value;
-            if (NArea > 6) heapMem[p + 6] = arrayShift[5];
-            if (NArea > 7) heapMem[p + 7] = arrayShift[6];
-            if (NArea > 8) heapMem[p + 8] = arrayShift[7];
-            if (NArea > 9) heapMem[p + 9] = arrayShift[8];
-          end
-          6: begin
-            if (NArea > 6) heapMem[p + 6] = source1Value;
-            if (NArea > 7) heapMem[p + 7] = arrayShift[6];
-            if (NArea > 8) heapMem[p + 8] = arrayShift[7];
-            if (NArea > 9) heapMem[p + 9] = arrayShift[8];
-          end
-          7: begin
-            if (NArea > 7) heapMem[p + 7] = source1Value;
-            if (NArea > 8) heapMem[p + 8] = arrayShift[7];
-            if (NArea > 9) heapMem[p + 9] = arrayShift[8];
-          end
-          8: begin
-            if (NArea > 8) heapMem[p + 8] = source1Value;
-            if (NArea > 9) heapMem[p + 9] = arrayShift[8];
-          end
-          9: begin
-            if (NArea > 9) heapMem[p + 9] = source1Value;
-          end
-        endcase
-      end
+      //if (targetIndex < NArea) begin
+      //  p = targetLocationArea * NArea;                                         // Array Start
+      //  begin
+      //    arraySizes[targetLocationArea] = arraySizes[targetLocationArea] + 1;  // New size of array
+      //    if (NArea > 0) arrayShift[0] = heapMem[p + 0];                        // Move data into staging area
+      //    if (NArea > 1) arrayShift[1] = heapMem[p + 1];
+      //    if (NArea > 2) arrayShift[2] = heapMem[p + 2];
+      //    if (NArea > 3) arrayShift[3] = heapMem[p + 3];
+      //    if (NArea > 4) arrayShift[4] = heapMem[p + 4];
+      //    if (NArea > 5) arrayShift[5] = heapMem[p + 5];
+      //    if (NArea > 6) arrayShift[6] = heapMem[p + 6];
+      //    if (NArea > 7) arrayShift[7] = heapMem[p + 7];
+      //    if (NArea > 8) arrayShift[8] = heapMem[p + 8];
+      //    if (NArea > 9) arrayShift[9] = heapMem[p + 9];
+      //  end
+      //  case(targetIndex)                                                       // Destage data into one position higher
+      //    0: begin
+      //      if (NArea > 0) heapMem[p + 0] = source1Value;
+      //      if (NArea > 1) heapMem[p + 1] = arrayShift[0];
+      //      if (NArea > 2) heapMem[p + 2] = arrayShift[1];
+      //      if (NArea > 3) heapMem[p + 3] = arrayShift[2];
+      //      if (NArea > 4) heapMem[p + 4] = arrayShift[3];
+      //      if (NArea > 5) heapMem[p + 5] = arrayShift[4];
+      //      if (NArea > 6) heapMem[p + 6] = arrayShift[5];
+      //      if (NArea > 7) heapMem[p + 7] = arrayShift[6];
+      //      if (NArea > 8) heapMem[p + 8] = arrayShift[7];
+      //      if (NArea > 9) heapMem[p + 9] = arrayShift[8];
+      //    end
+      //    1: begin
+      //      if (NArea > 1) heapMem[p + 1] = source1Value;
+      //      if (NArea > 2) heapMem[p + 2] = arrayShift[1];
+      //      if (NArea > 3) heapMem[p + 3] = arrayShift[2];
+      //      if (NArea > 4) heapMem[p + 4] = arrayShift[3];
+      //      if (NArea > 5) heapMem[p + 5] = arrayShift[4];
+      //      if (NArea > 6) heapMem[p + 6] = arrayShift[5];
+      //      if (NArea > 7) heapMem[p + 7] = arrayShift[6];
+      //      if (NArea > 8) heapMem[p + 8] = arrayShift[7];
+      //      if (NArea > 9) heapMem[p + 9] = arrayShift[8];
+      //    end
+      //    2: begin
+      //      if (NArea > 2) heapMem[p + 2] = source1Value;
+      //      if (NArea > 3) heapMem[p + 3] = arrayShift[2];
+      //      if (NArea > 4) heapMem[p + 4] = arrayShift[3];
+      //      if (NArea > 5) heapMem[p + 5] = arrayShift[4];
+      //      if (NArea > 6) heapMem[p + 6] = arrayShift[5];
+      //      if (NArea > 7) heapMem[p + 7] = arrayShift[6];
+      //      if (NArea > 8) heapMem[p + 8] = arrayShift[7];
+      //      if (NArea > 9) heapMem[p + 9] = arrayShift[8];
+      //    end
+      //    3: begin
+      //      if (NArea > 3) heapMem[p + 3] = source1Value;
+      //      if (NArea > 4) heapMem[p + 4] = arrayShift[3];
+      //      if (NArea > 5) heapMem[p + 5] = arrayShift[4];
+      //      if (NArea > 6) heapMem[p + 6] = arrayShift[5];
+      //      if (NArea > 7) heapMem[p + 7] = arrayShift[6];
+      //      if (NArea > 8) heapMem[p + 8] = arrayShift[7];
+      //      if (NArea > 9) heapMem[p + 9] = arrayShift[8];
+      //    end
+      //    4: begin
+      //      if (NArea > 4) heapMem[p + 4] = source1Value;
+      //      if (NArea > 5) heapMem[p + 5] = arrayShift[4];
+      //      if (NArea > 6) heapMem[p + 6] = arrayShift[5];
+      //      if (NArea > 7) heapMem[p + 7] = arrayShift[6];
+      //      if (NArea > 8) heapMem[p + 8] = arrayShift[7];
+      //      if (NArea > 9) heapMem[p + 9] = arrayShift[8];
+      //    end
+      //    5: begin
+      //      if (NArea > 5) heapMem[p + 5] = source1Value;
+      //      if (NArea > 6) heapMem[p + 6] = arrayShift[5];
+      //      if (NArea > 7) heapMem[p + 7] = arrayShift[6];
+      //      if (NArea > 8) heapMem[p + 8] = arrayShift[7];
+      //      if (NArea > 9) heapMem[p + 9] = arrayShift[8];
+      //    end
+      //    6: begin
+      //      if (NArea > 6) heapMem[p + 6] = source1Value;
+      //      if (NArea > 7) heapMem[p + 7] = arrayShift[6];
+      //      if (NArea > 8) heapMem[p + 8] = arrayShift[7];
+      //      if (NArea > 9) heapMem[p + 9] = arrayShift[8];
+      //    end
+      //    7: begin
+      //      if (NArea > 7) heapMem[p + 7] = source1Value;
+      //      if (NArea > 8) heapMem[p + 8] = arrayShift[7];
+      //      if (NArea > 9) heapMem[p + 9] = arrayShift[8];
+      //    end
+      //    8: begin
+      //      if (NArea > 8) heapMem[p + 8] = source1Value;
+      //      if (NArea > 9) heapMem[p + 9] = arrayShift[8];
+      //    end
+      //    9: begin
+      //      if (NArea > 9) heapMem[p + 9] = source1Value;
+      //    end
+      //  endcase
+      //end
     end
   endtask
 
@@ -924,10 +922,10 @@ module fpga1                                                                    
 
   task moveLong_instruction();
     begin                                                                       // moveLong
-      ml_l = source2Value;
-      ml_q = targetLocation;
-      ml_p = sourceLocation;
-      ml_n = targetLocationArea;
+      //ml_l = source2Value;
+      //ml_q = targetLocation;
+      //ml_p = sourceLocation;
+      //ml_n = targetLocationArea;
       //for(ml_i = 0; ml_i < ml_l; ml_i = ml_i + 1) begin
       //  heapMem[ml_q+ml_i] = heapMem[ml_p+ml_i];
       //  if (targetIndex+ml_i + 1 > arraySizes[ml_n]) begin
@@ -939,16 +937,16 @@ module fpga1                                                                    
 
   task in_instruction();
     begin                                                                       // in
-     result = 0;
-     setMemory();
-     inMemPos = inMemPos + 1;
+     //result = 0;
+     //setMemory();
+     //inMemPos = inMemPos + 1;
     end
   endtask
 
   task inSize_instruction();
     begin                                                                       // inSize
-     result = inMemEnd - inMemPos;
-     setMemory();
+     //result = inMemEnd - inMemPos;
+     //setMemory();
     end
   endtask
 endmodule
