@@ -13,7 +13,7 @@ module fpga1                                                                    
 
   parameter integer NInstructions  = 1000;  // 40s                              // Number of instruction slots in code memory
   parameter integer NArea          =   10;  // 40s                              // Size of each area on the heap
-  parameter integer NArrays        = 1000;                                      // Maximum number of arrays
+  parameter integer NArrays        = 1000;  // long                                    // Maximum number of arrays
   parameter integer NHeap          =    1;  //NArea*NArrays;                    // Amount of heap memory
   parameter integer NLocal         =    1;                                      // Size of local memory
   parameter integer NIn            = 1000;  // 40                               // Size of input area
@@ -791,32 +791,32 @@ module fpga1                                                                    
 
   task push_instruction();                                                      // push
     begin
-      p = arraySizes[targetValue];
-      if (p + 1 < NArea) begin
-        heapMem[p] = source1Value;
-        arraySizes[targetValue] = p + 1;
-        result = source1Value;
-      end
+    //  p = arraySizes[targetValue];
+    //  if (p + 1 < NArea) begin
+    //    heapMem[p] = source1Value;
+    //    arraySizes[targetValue] = p + 1;
+    //    result = source1Value;
+    //  end
     end
   endtask
 
   task pop_instruction();                                                       // pop
     begin
-      p = arraySizes[source1Value];
-      if (p > 0) begin
-        p = p - 1;
-        arraySizes[source1Value] = p;
-        result = heapMem[p];
-        setMemory();
-        result = source1Value;
-      end
+    //  p = arraySizes[source1Value];
+    //  if (p > 0) begin
+    //    p = p - 1;
+    //    arraySizes[source1Value] = p;
+    //    result = heapMem[p];
+    //    setMemory();
+    //    result = source1Value;
+    //  end
     end
   endtask
 
   task arraySize_instruction();
     begin                                                                       // arraySize
-      result = arraySizes[source1Value];
-      setMemory();
+    //  result = arraySizes[source1Value];
+    //  setMemory();
     end
   endtask
                                                                                 // Shift up an array in parallel by first copying every element in parallel then copying back just the elements we need into their new positions
