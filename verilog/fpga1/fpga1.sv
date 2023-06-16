@@ -16,9 +16,9 @@ module fpga1                                                                    
   parameter integer NArrays        =    1;                                      // Maximum number of arrays
   parameter integer NHeap          =    1;  //NArea*NArrays;                    // Amount of heap memory
   parameter integer NLocal         =    1;                                      // Size of local memory
-  parameter integer NIn            = 1000;  // 42                                     // Size of input area
-  parameter integer NOut           =    1;                                      // Size of output area
-  parameter integer NFreedArrays   = 1000;                                      // Size of output area
+  parameter integer NIn            = 1000;  // 40                               // Size of input area
+  parameter integer NOut           = 1000;                                      // Size of output area
+  parameter integer NFreedArrays   = 1000;  // 40                               // Size of output area
 
   reg startable;                                                                // Goes high when the program has been loaded and we are ready to run
   reg signed [ InstructionNWidth-1:0]         code[NInstructions:0];            // Code memory
