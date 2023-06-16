@@ -441,9 +441,9 @@ module fpga1                                                                    
       case(targetArena)
         1: begin                                                                // Update array
           heapMem[targetLocation] = result;
-          arraySizes[targetLocationArea]  =
-          arraySizes[targetLocationArea] >  targetIndex ?
-          arraySizes[targetLocationArea]  : targetIndex + 1;
+          //arraySizes[targetLocationArea]  =
+          //arraySizes[targetLocationArea] >  targetIndex ?
+          //arraySizes[targetLocationArea]  : targetIndex + 1;
         end
         2: localMem[targetLocation] = result;                                   // Local memory
       endcase
