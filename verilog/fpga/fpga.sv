@@ -3791,12 +3791,12 @@ nSteps, oip, opExecCount, operator, result);
         freedArraysTop = freedArraysTop - 1;
         result = freedArrays[freedArraysTop];
       end
-      else begin
-        result = allocs;                                                          // Array zero means undefined
-        allocs = allocs + 1;                                                      // Array zero means undefined
+      else begin                                                                // Create a new array
+        result = allocs;
+        allocs = allocs + 1;
       end
 
-      arraySizes[targetLocationArea] = 0;                                       // Zero array length
+      arraySizes[result] = 0;                                                   // Zero array length
       setMemory();                                                              // Save address of array
     end
   endtask
