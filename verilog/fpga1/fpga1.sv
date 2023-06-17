@@ -477,25 +477,25 @@ module fpga1                                                                    
 
   task free_instruction();
     begin                                                                       // Free
-      freedArrays[freedArraysTop] = targetValue;
-      freedArraysTop = freedArraysTop + 1;
-      arraySizes[targetValue] = 0;                                              // Zero array length
+      //freedArrays[freedArraysTop] = targetValue;
+      //freedArraysTop = freedArraysTop + 1;
+      //arraySizes[targetValue] = 0;                                              // Zero array length
     end
   endtask
 
   task mov_instruction();                                                       // Mov
     begin
-      result = source1Value;
-      //$display("%4d = Mov %d(%d), %d", result, targetLocation, targetArena, source1Value);
-      setMemory();                                                              // Save result in target
+      //result = source1Value;
+      ////$display("%4d = Mov %d(%d), %d", result, targetLocation, targetArena, source1Value);
+      //setMemory();                                                              // Save result in target
     end
   endtask
 
 
   task not_instruction();                                                       // Not
     begin
-      result = source1Value ? 0 : 1;
-      setMemory();                                                              // Save result in target
+      //result = source1Value ? 0 : 1;
+      //setMemory();                                                              // Save result in target
     end
   endtask
 
