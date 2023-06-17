@@ -14,7 +14,7 @@ module fpga1                                                                    
   parameter integer NInstructions  = 1000;  // 40s                              // Number of instruction slots in code memory
   parameter integer NArea          =   10;  // 40s                              // Size of each area on the heap
   parameter integer NArrays        = 1000;  // long AAAA                        // Maximum number of arrays
-  parameter integer NHeap          =    1;  //NArea*NArrays;                    // Amount of heap memory
+  parameter integer NHeap          = 1000;  //NArea*NArrays;                    // Amount of heap memory
   parameter integer NLocal         = 1000;                                      // Size of local memory
   parameter integer NIn            = 1000;  // 40                               // Size of input area
   parameter integer NOut           = 1000;  // 40                               // Size of output area
