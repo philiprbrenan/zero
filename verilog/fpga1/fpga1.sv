@@ -445,6 +445,10 @@ module fpga1                                                                    
           //arraySizes[targetLocationArea]  =
           //arraySizes[targetLocationArea] >  targetIndex ?
           //arraySizes[targetLocationArea]  : targetIndex + 1;
+
+          localMem[targetLocation]  =
+          arraySizes[targetLocationArea] >  targetIndex ?
+          arraySizes[targetLocationArea]  : targetIndex + 1;
         end
         2: localMem[targetLocation] = result;                                   // Local memory
       endcase
