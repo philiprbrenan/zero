@@ -707,15 +707,15 @@ module fpga1                                                                    
 
   task shiftLeft_instruction();
     begin                                                                       // shiftLeft
-      //result = targetValue << source1Value;
-      //setMemory();
+      result = targetValue << source1Value;
+      setMemory();
     end
   endtask
 
   task shiftRight_instruction();
     begin                                                                       // shiftLeft
-      //result = targetValue >> source1Value;
-      //setMemory();
+      result = targetValue >> source1Value;
+      setMemory();
     end
   endtask
 
@@ -937,16 +937,16 @@ module fpga1                                                                    
 
   task in_instruction();
     begin                                                                       // in
-     //result = 0;
-     //setMemory();
-     //inMemPos = inMemPos + 1;
+     result = 0;
+     setMemory();
+     inMemPos = inMemPos + 1;
     end
   endtask
 
   task inSize_instruction();
     begin                                                                       // inSize
-     //result = inMemEnd - inMemPos;
-     //setMemory();
+     result = inMemEnd - inMemPos;
+     setMemory();
     end
   endtask
 endmodule
