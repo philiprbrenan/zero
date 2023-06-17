@@ -22,7 +22,6 @@ module fpga1                                                                    
 
   reg startable;                                                                // Goes high when the program has been loaded and we are ready to run
   reg signed [ InstructionNWidth-1:0]         code[NInstructions:0];            // Code memory
-  reg signed [MemoryElementWidth-1:0] opExecCounts[NInstructions:0];            // Instruction execution counts
   reg signed [MemoryElementWidth-1:0]   arraySizes[NArrays      :0];            // Size of each array
   reg signed [MemoryElementWidth-1:0]      heapMem[NHeap        :0];            // Heap memory
   reg signed [MemoryElementWidth-1:0]     localMem[NLocal       :0];            // Local memory
@@ -161,7 +160,6 @@ module fpga1                                                                    
       for(i = 0; i < NHeap;         i = i + 1)      heapMem[i] = 'bx;           // Reset heap memory
       for(i = 0; i < NLocal;        i = i + 1)     localMem[i] = 'bx;           // Reset local memory
       for(i = 0; i < NArrays;       i = i + 1)   arraySizes[i] =  0;            // Set array sizes
-      for(i = 0; i < NInstructions; i = i + 1) opExecCounts[i] =  0;            // Set operator counts
     end
   endtask
 
