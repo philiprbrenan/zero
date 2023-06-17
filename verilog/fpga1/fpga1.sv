@@ -478,8 +478,8 @@ module fpga1                                                                    
         allocs = allocs + 1;                                                    // Array zero means undefined
       end
       // ###
-      arraySizes[targetLocationArea] = 0;  //#                                      // Zero array length
-      //setMemory();                                                              // Save address of array
+      arraySizes[targetLocationArea] = 0;                                       // Zero array length
+      setMemory();                         //#                                     // Save address of array
     end
   endtask
 
