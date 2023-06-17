@@ -475,19 +475,8 @@ module fpga1                                                                    
         result = allocs;                                                        // Array zero means undefined
         allocs = allocs + 1;                                                    // Array zero means undefined
       end
-      // ###
-      arraySizes[targetLocationArea] = 0;                                       // Zero array length
-      //setMemory();                         //# Causes the problem             // Save address of array
-      case(targetArena)
-        1: begin                                                                // Update array
-          heapMem[targetLocation] = result;
-          targetArraySize1 = arraySizes[targetLocationArea];
-          targetArraySize2 = targetArraySize1 > targetIndex ? targetArraySize1 : targetIndex + 1;
-          arraySizes[targetLocationArea] = targetArraySize2;
-        end
-        2: localMem[targetLocation] = result;                                   // Local memory
-      endcase
-
+      arraySizes[result] = 0;                                                   // Zero array length
+      setMemory();                           //# Causes the problem             // Save address of array
     end
   endtask
 
