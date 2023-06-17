@@ -477,7 +477,17 @@ module fpga1                                                                    
       end
       // ###
       arraySizes[targetLocationArea] = 0;                                       // Zero array length
-      //setMemory();                         //#                                     // Save address of array
+      //setMemory();                         //# Causes the problem             // Save address of array
+      case(targetArena)
+        1: begin                                                                // Update array
+          heapMem[targetLocation] = result;
+          targetArraySize1 = arraySizes[targetLocationArea];
+          targetArraySize2 = targetArraySize1 > targetIndex ? targetArraySize1 : targetIndex + 1;
+          arraySizes[targetLocationArea] = targetArraySize2;
+        end
+        2: localMem[targetLocation] = result;                                   // Local memory
+      endcase
+
     end
   endtask
 
