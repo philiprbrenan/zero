@@ -485,17 +485,17 @@ module fpga1                                                                    
 
   task mov_instruction();                                                       // Mov
     begin
-      //result = source1Value;
-      ////$display("%4d = Mov %d(%d), %d", result, targetLocation, targetArena, source1Value);
-      //setMemory();                                                              // Save result in target
+      result = source1Value;
+      //$display("%4d = Mov %d(%d), %d", result, targetLocation, targetArena, source1Value);
+      setMemory();                                                              // Save result in target
     end
   endtask
 
 
   task not_instruction();                                                       // Not
     begin
-      //result = source1Value ? 0 : 1;
-      //setMemory();                                                              // Save result in target
+      result = source1Value ? 0 : 1;
+      setMemory();                                                              // Save result in target
     end
   endtask
 
