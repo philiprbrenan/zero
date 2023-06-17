@@ -436,6 +436,9 @@ module fpga1                                                                    
 
 //Memory access functions for instruction execution
 
+  reg signed [MemoryElementWidth-1:0] targetArraySize1 = 0;
+  reg signed [MemoryElementWidth-1:0] targetArraySize2 = 0;
+
   task setMemory();                                                             // Set the target memory location updating the containing array size if necessary
     begin
       case(targetArena)
@@ -446,7 +449,7 @@ module fpga1                                                                    
           //arraySizes[targetLocationArea] >  targetIndex ?
           //arraySizes[targetLocationArea]  : targetIndex + 1;
 
-          localMem[targetLocation]  =
+          targetArraySize1 =
           arraySizes[targetLocationArea] >  targetIndex ?
           arraySizes[targetLocationArea]  : targetIndex + 1;
         end
