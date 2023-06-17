@@ -1,0 +1,20 @@
+//-----------------------------------------------------------------------------
+// Step
+// Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
+//------------------------------------------------------------------------------
+module countUp_tb();                                                            // Run test programs
+
+  reg in = 0;
+
+  step r (.in(in));
+  integer i = 0;
+
+  initial begin
+    for(i = 0; i < 10; ++ i) begin
+      $display("AAAA");
+      #1 in = 1;
+      #1 in = 0;
+    end
+    $finish();
+  end
+endmodule
