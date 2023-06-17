@@ -297,6 +297,28 @@ The current size of an array.
 
 **Example:**
 
+    if (1)                                                                          
+     {Start 1;
+      my $a = Array "aaa";
+      my $b = Array "bbb";
+    
+      Out ArraySize $a, "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+    
+      Out ArraySize $b, "bbb";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      Free $b, "bbb";
+    
+      Out ArraySize $a, "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      Free $a, "aaa";
+    
+      Out ArraySize $a, "aaa";                                                      #FIX - an unalocated array should not be accessible  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      my $e = Execute(suppressOutput=>1);
+      is_deeply $e->outLines, [0, 0, 0, 0];
+     }
+    
     if (1)                                                                             
      {Start 1;
       my $a = Array "aaa";
