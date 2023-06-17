@@ -501,15 +501,15 @@ module fpga1                                                                    
 
   task resize_instruction();                                                    // Resize
     begin
-      //result = source1Value;
-      //arraySizes[targetLocationArea] = result;
+      result = source1Value;
+      arraySizes[targetLocationArea] = result;
     end
   endtask
 
   task subtract_instruction();                                                  // Subtract
     begin
-      //result = source1Value - source2Value;
-      //setMemory();                                                              // Save result in target
+      result = source1Value - source2Value;
+      setMemory();                                                              // Save result in target
     end
   endtask
 
