@@ -8,6 +8,7 @@
 # Count number of ways an if statement actually goes.
 # doubleWrite, not read, rewrite need make-over
 # Initially array dimensions were set automatically by assignment to and array - now we require the resize operation or push/pop; to set the array size
+# Check whether the array being accessed is actually allocated
 use v5.30;
 package Zero::Emulator;
 our $VERSION = 20230519;                                                        # Version
@@ -17,7 +18,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Time::HiRes qw(time);
-eval "use Test::More tests=>392" unless caller;
+eval "use Test::More tests=>396" unless caller;
 
 makeDieConfess;
 our $memoryTechnique;                                                           # Undef or the address of a sub that loads the memory handlers into an execution environment.
@@ -4151,6 +4152,21 @@ Change at watched arena: 2, area: 0(stackArea), address: 1
     1     6 mov
 Current value: 2 New value: 5
 END
+ }
+
+#latest:;
+if (1)                                                                          ##ArraySize
+ {Start 1;
+  my $a = Array "aaa";
+  my $b = Array "bbb";
+  Out ArraySize $a, "aaa";
+  Out ArraySize $b, "bbb";
+  Free $b, "bbb";
+  Out ArraySize $a, "aaa";
+  Free $a, "aaa";
+  Out ArraySize $a, "aaa";                                                      #FIX - an unalocated array should not be accessible
+  my $e = Execute(suppressOutput=>1);
+  is_deeply $e->outLines, [0, 0, 0, 0];
  }
 
 #latest:;
