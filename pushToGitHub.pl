@@ -24,6 +24,7 @@ my $macos   = 0;                                                                
 my $windows = 0;                                                                # Windows if true
 my $openBsd = 0;                                                                # OpenBsd if true
 my $freeBsd = 0;                                                                # FreeBsd if true - fails
+my $fpga1   = 1;                                                                # Fpga 1
 
 sub pod($$$)                                                                    # Write pod file
  {my ($in, $out, $intro) = @_;                                                  # Input, output file, introduction
@@ -62,7 +63,8 @@ push my @files,
 
 #@files = ();                                                                   # No files
 #@files = grep {/pushToGitHub\.pl\Z/} @files;                                   # Just control file unless commented out
-#@files = grep {/\.sv\Z/} @files;                                                # Just sv files
+#@files = grep {/\.sv\Z/} @files;                                               # Just sv files
+#@files = grep {/fpga1.sv\Z/} @files;                                            # Just sv files
 
 for my $s(@files)                                                               # Upload each selected file
  {my $c = readFile($s);                                                         # Load file
@@ -99,7 +101,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout\@v2
+    - uses: actions/checkout\@v3
       with:
         ref: 'main'
 END
@@ -171,7 +173,7 @@ END
     runs-on: macos-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         ref: 'main'
 
@@ -186,7 +188,7 @@ END
         shell: wsl-bash {0}                                                     # Use Windows Services For Linux as the command line in subsequent steps
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         ref: 'main'
 
@@ -271,11 +273,18 @@ END
         export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         (cd verilog/countUp; perl -I\$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl)
 
+END
+
+
+  $y .= <<END if $fpga1;                                                        # Low level tests - fpga1
     - name: fpga1
       run: |
         export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         (cd verilog/fpga1;   perl -I\$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl)
+
 END
+
+
 
   lll "Ubuntu work flow for $repo ", writeFileUsingSavedToken($user, $repo, $wf, $y);
  }
