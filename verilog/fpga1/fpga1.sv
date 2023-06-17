@@ -474,12 +474,12 @@ module fpga1                                                                    
         result = freedArrays[freedArraysTop];
       end
       else begin
-        result = allocs;                                                        // Array zero means undefined
-        allocs = allocs + 1;                                                    // Array zero means undefined
+        result = allocs;                                                          // Array zero means undefined
+        allocs = allocs + 1;                                                      // Array zero means undefined
       end
-
-      arraySizes[targetLocationArea] = 0;                                       // Zero array length
-      setMemory();                                                              // Save address of array
+      //
+      //arraySizes[targetLocationArea] = 0;                                       // Zero array length
+      //setMemory();                                                              // Save address of array
     end
   endtask
 
