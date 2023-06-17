@@ -477,7 +477,7 @@ module fpga1                                                                    
       end
       // ###
       arraySizes[targetLocationArea] = 0;                                       // Zero array length
-      setMemory();                         //#                                     // Save address of array
+      //setMemory();                         //#                                     // Save address of array
     end
   endtask
 
