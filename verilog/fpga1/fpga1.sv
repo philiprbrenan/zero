@@ -469,17 +469,17 @@ module fpga1                                                                    
 
   task array_instruction();                                                     // Array
     begin
-      //if (freedArraysTop > 0) begin                                             // Reuse an array
-      //  freedArraysTop = freedArraysTop - 1;
-      //  result = freedArrays[freedArraysTop];
-      //end
-      //else begin
-      //  result = allocs;                                                          // Array zero means undefined
-      //  allocs = allocs + 1;                                                      // Array zero means undefined
-      //end
-      //
-      //arraySizes[targetLocationArea] = 0;                                       // Zero array length
-      //setMemory();                                                              // Save address of array
+      if (freedArraysTop > 0) begin                                             // Reuse an array
+        freedArraysTop = freedArraysTop - 1;
+        result = freedArrays[freedArraysTop];
+      end
+      else begin
+        result = allocs;                                                        // Array zero means undefined
+        allocs = allocs + 1;                                                    // Array zero means undefined
+      end
+
+      arraySizes[targetLocationArea] = 0;                                       // Zero array length
+      setMemory();                                                              // Save address of array
     end
   endtask
 
