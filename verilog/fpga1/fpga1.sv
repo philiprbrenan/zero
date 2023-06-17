@@ -13,9 +13,9 @@ module fpga1                                                                    
 
   parameter integer NInstructions  = 1000;  // 40s                              // Number of instruction slots in code memory
   parameter integer NArea          =   10;  // 40s                              // Size of each area on the heap
-  parameter integer NArrays        = 1000;  // long                                    // Maximum number of arrays
+  parameter integer NArrays        = 1000;  // long AAAA                        // Maximum number of arrays
   parameter integer NHeap          =    1;  //NArea*NArrays;                    // Amount of heap memory
-  parameter integer NLocal         =    1;                                      // Size of local memory
+  parameter integer NLocal         = 1000;                                      // Size of local memory
   parameter integer NIn            = 1000;  // 40                               // Size of input area
   parameter integer NOut           = 1000;  // 40                               // Size of output area
   parameter integer NFreedArrays   = 1000;  // 40                               // Size of output area
@@ -441,6 +441,7 @@ module fpga1                                                                    
       case(targetArena)
         1: begin                                                                // Update array
           heapMem[targetLocation] = result;
+// The next line makes place and route very slow    AAAA
           //arraySizes[targetLocationArea]  =
           //arraySizes[targetLocationArea] >  targetIndex ?
           //arraySizes[targetLocationArea]  : targetIndex + 1;
