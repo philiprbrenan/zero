@@ -478,7 +478,7 @@ module fpga1                                                                    
   task free_instruction();
     begin                                                                       // Free
       freedArrays[freedArraysTop] = targetValue;  //*                             // Allocate
-      //freedArraysTop = freedArraysTop + 1;                                      // Push
+      freedArraysTop = freedArraysTop + 1;                                      // Push
       //arraySizes[targetValue] = 0;                                              // Zero array length
     end
   endtask
