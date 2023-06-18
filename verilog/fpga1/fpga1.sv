@@ -791,25 +791,25 @@ module fpga1                                                                    
 
   task push_instruction();                                                      // push
     begin
-    //  p = arraySizes[targetValue];
-    //  if (p + 1 < NArea) begin
-    //    heapMem[p] = source1Value;
-    //    arraySizes[targetValue] = p + 1;
-    //    result = source1Value;
-    //  end
+      p = arraySizes[targetValue];
+      if (p + 1 < NArea) begin
+        heapMem[p] = source1Value;
+        arraySizes[targetValue] = p + 1;
+        result = source1Value;
+      end
     end
   endtask
 
   task pop_instruction();                                                       // pop
     begin
-    //  p = arraySizes[source1Value];
-    //  if (p > 0) begin
-    //    p = p - 1;
-    //    arraySizes[source1Value] = p;
-    //    result = heapMem[p];
-    //    setMemory();
-    //    result = source1Value;
-    //  end
+      p = arraySizes[source1Value];
+      if (p > 0) begin
+        p = p - 1;
+        arraySizes[source1Value] = p;
+        result = heapMem[p];
+        setMemory();
+        result = source1Value;
+      end
     end
   endtask
 
