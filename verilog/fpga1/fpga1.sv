@@ -471,14 +471,14 @@ module fpga1                                                                    
         allocs = allocs + 1;                                                    // Array zero means undefined
       end
       arraySizes[result] = 0;                                                   // Zero array length
-      setMemory();                           //# Causes the problem             // Save address of array
+      setMemory();                                                              // Save address of array
     end
   endtask
 
   task free_instruction();
     begin                                                                       // Free
-      //freedArrays[freedArraysTop] = targetValue;
-      //freedArraysTop = freedArraysTop + 1;
+      freedArrays[freedArraysTop] = targetValue;  //*                             // Allocate
+      //freedArraysTop = freedArraysTop + 1;                                      // Push
       //arraySizes[targetValue] = 0;                                              // Zero array length
     end
   endtask
