@@ -3,8 +3,8 @@
 // Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
 module fpga1                                                                    // Run test programs
- (input  wire loadCode,                                                         // Load code on positive edge
-  input  wire clock,                                                            // Execute the next instruction
+ (input  wire clock,                                                            // Execute the next instruction
+  input  wire run,                                                              // Run - clock at lest once to allow code to be loaded
   output reg  finished,                                                         // Goes high when the program has finished
   output reg  success);                                                         // Goes high on finish if all the tests passed
 
@@ -20,7 +20,7 @@ module fpga1                                                                    
   parameter integer NOut           =   2;  // 40                                // Size of output area
   parameter integer NFreedArrays   =   2;  // 40                                // Size of output area
 
-  reg startable;                                                                // Goes high when the program has been loaded and we are ready to run
+  reg runnable;                                                                // Goes high when the program has been loaded and we are ready to run
   reg signed [ InstructionNWidth-1:0]         code[NInstructions:0];            // Code memory
   reg signed [MemoryElementWidth-1:0]   arraySizes[NArrays      :0];            // Size of each array
   reg signed [MemoryElementWidth-1:0]      heapMem[NHeap        :0];            // Heap memory
@@ -167,30 +167,27 @@ module fpga1                                                                    
 
 // Execute each test progam
 
-  always @(posedge loadCode) begin                                              // Load code
-    startable  = 0;
-    ip         = 0;
-    finished   = 0;
-    success    = 0;
-    Add_test();
-    initializeMemory();
-    startable = 1;
-  end
-
   always @(posedge clock) begin                                                 // Execute instruction
-    if (startable) begin
+    if (run) begin
       if (ip >= 0 && ip < NInstructionEnd) begin                                // Ip in range
         executeInstruction();
         ip = ip + 1;
       end
       else begin;                                                               // Finished
+        runnable = 0;
+        success  = outMem[0] == 5;
         finished = 1;
       end
     end
-  end
-
-  always @(posedge finished) begin                                              // Evaluate results of program execution
-    success = outMem[0] == 5;
+    else begin
+      runnable   = 0;
+      ip         = 0;
+      finished   = 0;
+      success    = 0;
+      Add_test();
+      initializeMemory();
+      runnable = 1;
+    end
   end
 
 //Single instruction execution
