@@ -26,6 +26,7 @@ module fpga1                                                                    
   reg signed [MemoryElementWidth-1:0]      heapMem[NHeap        :0];            // Heap memory
   reg signed [MemoryElementWidth-1:0]     localMem[NLocal       :0];            // Local memory
   reg signed [MemoryElementWidth-1:0]       outMem[NOut         :0];            // Out channel
+  reg signed [MemoryElementWidth-1:0]        inMem[NIn          :0];            // In channel
   reg signed [MemoryElementWidth-1:0]  freedArrays[NFreedArrays :0];            // Freed arrays list implemented as a stack
   reg signed [MemoryElementWidth-1:0]   arrayShift[NArea        :0];            // Array shift area
 
@@ -937,9 +938,9 @@ module fpga1                                                                    
 
   task in_instruction();
     begin                                                                       // in
-     result = 0;
+     result = inMem[inMemPos];
      setMemory();
-     inMemPos = inMemPos + 1;
+     inMemPos = (inMemPos + 1) % NIn;
     end
   endtask
 
