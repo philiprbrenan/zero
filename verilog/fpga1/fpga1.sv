@@ -192,7 +192,7 @@ module fpga1                                                                    
       freedArraysTop = 0;
 
       Add_test();
-      initializeMemory();
+      //initializeMemory();
       runnable       = 1;
     end
   end
