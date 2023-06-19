@@ -891,6 +891,7 @@ my sub freeArea($$$$)                                                           
   $exec->FreeMemoryArea->($exec, $arena, $area);
 
   push $exec->freedArrays->[$arena]->@*, $area;                                 # Save array for reuse
+  $exec->memoryType->[$arena][$area] = undef;                                      # Mark the array as not in use
  }
 
 my sub pushArea($$$$)                                                           #P Push a value onto the specified heap array.
@@ -4166,7 +4167,13 @@ if (1)                                                                          
   Free $a, "aaa";
   Out ArraySize $a, "aaa";                                                      #FIX - an unalocated array should not be accessible
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->outLines, [0, 0, 0, 0];
+  is_deeply $e->out, <<END;
+0
+0
+0
+No name associated with array: 0 in arena 1
+    1    11 arraySize
+END
  }
 
 #latest:;
