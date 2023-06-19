@@ -46,7 +46,7 @@ sub pod($$$)                                                                    
   confess "Cannot extract documentation for file: $in";
  }
 
-if (1)                                                                          # Documentation
+if (0)                                                                          # Documentation
  {pod fpf($home, q(lib/Zero/Emulator.pm)), fpf($home, q(Emulator.md)), &introEmulator;
   pod fpf($home, q(lib/Zero/BTree.pm)),    fpf($home, q(BTree.md)),    &introBTree;
 
