@@ -522,52 +522,52 @@ module fpga1                                                                    
       case(p)                                                                   // Arrays can be dynamic but only up to a fixed size so that we can unroll the loop that finds an element
         1:
           begin
-            if (heapMem[q+0] == source2Value) result = 1;
+            if      (heapMem[q+0] == source2Value) result = 1;
           end
         2:
           begin
-            if (heapMem[q+0] == source2Value) result = 1;
-            if (heapMem[q+1] == source2Value) result = 2;
+            if      (heapMem[q+0] == source2Value) result = 1;
+            else if (heapMem[q+1] == source2Value) result = 2;
           end
         3:
           begin
-            if (heapMem[q+0] == source2Value) result = 1;
-            if (heapMem[q+1] == source2Value) result = 2;
-            if (heapMem[q+2] == source2Value) result = 3;
+            if      (heapMem[q+0] == source2Value) result = 1;
+            else if (heapMem[q+1] == source2Value) result = 2;
+            else if (heapMem[q+2] == source2Value) result = 3;
           end
         4:
           begin
-            if (heapMem[q+0] == source2Value) result = 1;
-            if (heapMem[q+1] == source2Value) result = 2;
-            if (heapMem[q+2] == source2Value) result = 3;
-            if (heapMem[q+3] == source2Value) result = 4;
+            if      (heapMem[q+0] == source2Value) result = 1;
+            else if (heapMem[q+1] == source2Value) result = 2;
+            else if (heapMem[q+2] == source2Value) result = 3;
+            else if (heapMem[q+3] == source2Value) result = 4;
           end
         5:
           begin
-            if (heapMem[q+0] == source2Value) result = 1;
-            if (heapMem[q+1] == source2Value) result = 2;
-            if (heapMem[q+2] == source2Value) result = 3;
-            if (heapMem[q+3] == source2Value) result = 4;
-            if (heapMem[q+4] == source2Value) result = 5;
+            if      (heapMem[q+0] == source2Value) result = 1;
+            else if (heapMem[q+1] == source2Value) result = 2;
+            else if (heapMem[q+2] == source2Value) result = 3;
+            else if (heapMem[q+3] == source2Value) result = 4;
+            else if (heapMem[q+4] == source2Value) result = 5;
           end
         6:
           begin
             if (heapMem[q+0] == source2Value) result = 1;
-            if (heapMem[q+1] == source2Value) result = 2;
-            if (heapMem[q+2] == source2Value) result = 3;
-            if (heapMem[q+3] == source2Value) result = 4;
-            if (heapMem[q+4] == source2Value) result = 5;
-            if (heapMem[q+5] == source2Value) result = 6;
+            else if (heapMem[q+1] == source2Value) result = 2;
+            else if (heapMem[q+2] == source2Value) result = 3;
+            else if (heapMem[q+3] == source2Value) result = 4;
+            else if (heapMem[q+4] == source2Value) result = 5;
+            else if (heapMem[q+5] == source2Value) result = 6;
           end
         7:
           begin
-            if (heapMem[q+0] == source2Value) result = 1;
-            if (heapMem[q+1] == source2Value) result = 2;
-            if (heapMem[q+2] == source2Value) result = 3;
-            if (heapMem[q+3] == source2Value) result = 4;
-            if (heapMem[q+4] == source2Value) result = 5;
-            if (heapMem[q+5] == source2Value) result = 6;
-            if (heapMem[q+6] == source2Value) result = 7;
+            if      (heapMem[q+0] == source2Value) result = 1;
+            else if (heapMem[q+1] == source2Value) result = 2;
+            else if (heapMem[q+2] == source2Value) result = 3;
+            else if (heapMem[q+3] == source2Value) result = 4;
+            else if (heapMem[q+4] == source2Value) result = 5;
+            else if (heapMem[q+5] == source2Value) result = 6;
+            else if (heapMem[q+6] == source2Value) result = 7;
           end
       endcase
       setMemory();
