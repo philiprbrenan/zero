@@ -443,14 +443,14 @@ module fpga1                                                                    
 
 //Implementation of each instruction
 
-  task add_instruction();                                                       // Add
+  task add_instruction();                                                       // add
     begin
       result = source1Value + source2Value;
       setMemory();
     end
   endtask
 
-  task array_instruction();                                                     // Array
+  task array_instruction();                                                     // array
     begin
       if (freedArraysTop > 0) begin                                             // Reuse an array
         freedArraysTop = freedArraysTop - 1;
@@ -466,14 +466,14 @@ module fpga1                                                                    
   endtask
 
   task free_instruction();
-    begin                                                                       // Free
-      freedArrays[freedArraysTop] = targetValue;  //*                             // Allocate
+    begin                                                                       // free
+      freedArrays[freedArraysTop] = targetValue;  //*                           // Allocate
       freedArraysTop = freedArraysTop + 1;                                      // Push
-      //arraySizes[targetValue] = 0;                                              // Zero array length
+      //arraySizes[targetValue] = 0;                                            // Zero array length
     end
   endtask
 
-  task mov_instruction();                                                       // Mov
+  task mov_instruction();                                                       // mov
     begin
       result = source1Value;
       //$display("%4d = Mov %d(%d), %d", result, targetLocation, targetArena, source1Value);
@@ -482,21 +482,21 @@ module fpga1                                                                    
   endtask
 
 
-  task not_instruction();                                                       // Not
+  task not_instruction();                                                       // not
     begin
       result = source1Value ? 0 : 1;
       setMemory();                                                              // Save result in target
     end
   endtask
 
-  task resize_instruction();                                                    // Resize
+  task resize_instruction();                                                    // resize
     begin
       result = source1Value;
       arraySizes[targetLocationArea] = result;
     end
   endtask
 
-  task subtract_instruction();                                                  // Subtract
+  task subtract_instruction();                                                  // subtract
     begin
       result = source1Value - source2Value;
       setMemory();                                                              // Save result in target
@@ -512,20 +512,20 @@ module fpga1                                                                    
   endtask
 
   task arrayIndex_instruction();
-    begin                                                                       // ArrayIndex
+    begin                                                                       // arrayIndex
       begin
         q <= source1Value * NArea;                                              // Array location
         p <= arraySizes[source1Value];                                          // Length of array
         result <= 0;
       end
-      for(i = 0; i < NArea; i = i + 1) begin                                    // We can do this by doing all the comparison in parallel then doing one ghot to binary by using and/or gates to syhntheisze the appropriate index for each possibility
+      for(i = 0; i < NArea; i = i + 1) begin                                    // We can do this by doing all the comparisons in parallel then doing one ghot to binary by using and/or gates to syhntheisze the appropriate index for each possibility
         result = i < p && heapMem[q+i] == source2Value ? i+1 : result;
       end
       setMemory();
     end
   endtask
 
-  task arrayCountGreater_instruction();                                         // Count the elements in an array greater than the specified value
+  task arrayCountGreater_instruction();                                         // arrayCountGreater
     begin
       begin
         q <= source1Value * NArea;                                              // Array location
@@ -540,7 +540,7 @@ module fpga1                                                                    
   endtask
 
   task arrayCountLess_instruction();
-    begin                                                                       // ArrayIndex
+    begin                                                                       // arrayCountLess
       begin
         q <= source1Value * NArea;                                              // Array location
         p <= arraySizes[source1Value];                                          // Length of array
@@ -554,21 +554,21 @@ module fpga1                                                                    
   endtask
 
   task shiftLeft_instruction();
-    begin                                                                       // ShiftLeft
+    begin                                                                       // shiftLeft
       result = targetValue << source1Value;
       setMemory();
     end
   endtask
 
   task shiftRight_instruction();
-    begin                                                                       // ShiftLeft
+    begin                                                                       // shiftLeft
       result = targetValue >> source1Value;
       setMemory();
     end
   endtask
 
   task jEq_instruction();
-    begin                                                                       // Jeq
+    begin                                                                       // jeq
       if (source1Value == source2Value) begin
         ip = ip + targetArea - 1;
       end
@@ -576,7 +576,7 @@ module fpga1                                                                    
   endtask
 
   task jFalse_instruction();
-    begin                                                                       // JFalse
+    begin                                                                       // jFalse
       if (source1Value == 0) begin
         ip = ip + targetArea - 1;
       end
@@ -584,7 +584,7 @@ module fpga1                                                                    
   endtask
 
   task jGe_instruction();
-    begin                                                                       // JGe
+    begin                                                                       // jGe
       if (source1Value >= source2Value) begin
         ip = ip + targetArea - 1;
       end
@@ -592,7 +592,7 @@ module fpga1                                                                    
   endtask
 
   task jGt_instruction();
-    begin                                                                       // JGt
+    begin                                                                       // jGt
       if (source1Value >  source2Value) begin
         ip = ip + targetArea - 1;
       end
@@ -600,7 +600,7 @@ module fpga1                                                                    
   endtask
 
   task jLe_instruction();
-    begin                                                                       // JLe
+    begin                                                                       // jLe
       if (source1Value <= source2Value) begin
         ip = ip + targetArea - 1;
       end
@@ -608,7 +608,7 @@ module fpga1                                                                    
   endtask
 
   task jLt_instruction();
-    begin                                                                       // JLt
+    begin                                                                       // jLt
       if (source1Value <  source2Value) begin
         ip = ip + targetArea - 1;
       end
@@ -616,7 +616,7 @@ module fpga1                                                                    
   endtask
 
   task jNe_instruction();
-    begin                                                                       // JNe
+    begin                                                                       // jNe
       if (source1Value != source2Value) begin
         ip = ip + targetArea - 1;
       end
@@ -624,7 +624,7 @@ module fpga1                                                                    
   endtask
 
   task jTrue_instruction();
-    begin                                                                       // JTrue
+    begin                                                                       // jTrue
       if (source1Value != 0) begin
         ip = ip + targetArea - 1;
       end
@@ -632,12 +632,12 @@ module fpga1                                                                    
   endtask
 
   task jmp_instruction();
-    begin                                                                       // Jmp
+    begin                                                                       // jmp
       ip = ip + targetArea - 1;
     end
   endtask
 
-  task push_instruction();                                                      // Push
+  task push_instruction();                                                      // push
     begin
       p = arraySizes[targetValue];
       if (p + 1 < NArea) begin
@@ -648,7 +648,7 @@ module fpga1                                                                    
     end
   endtask
 
-  task pop_instruction();                                                       // Pop
+  task pop_instruction();                                                       // pop
     begin
       p = arraySizes[source1Value];
       if (p > 0) begin
@@ -661,14 +661,14 @@ module fpga1                                                                    
     end
   endtask
 
-  task arraySize_instruction();                                                 // Array size
+  task arraySize_instruction();                                                 // arraySize
     begin
       result = arraySizes[source1Value];
       setMemory();
     end
   endtask
 
-  task shiftUp_instruction();                                                   // Shift up an array in parallel by first copying every element in parallel then copying back just the elements we need into their new positions
+  task shiftUp_instruction();                                                   // shiftUp - shift an array up in parallel by first copying every element in parallel then copying back just the elements we need into their new positions
     begin
       if (targetIndex < NArea) begin
         p = targetLocationArea * NArea;                                         // Array Start
@@ -686,9 +686,7 @@ module fpga1                                                                    
     end
   endtask
 
-  integer signed ml_i, ml_l, ml_q, ml_p, ml_n;
-
-  task moveLong_instruction();                                                  // Move long - we assume there is no overlap between source and destination
+  task moveLong_instruction();                                                  // moveLong - we assume there is no overlap between source and destination
     begin
       for(i = 0; i < NArea; i = i + 1) begin
         if (i < source2Value) begin
@@ -698,7 +696,7 @@ module fpga1                                                                    
     end
   endtask
 
-  task in_instruction();                                                        // In
+  task in_instruction();                                                        // in
     begin
      result = inMem[inMemPos];
      setMemory();
@@ -706,7 +704,7 @@ module fpga1                                                                    
     end
   endtask
 
-  task inSize_instruction();                                                    // In size
+  task inSize_instruction();                                                    // inSize
     begin
      if (inMemEnd > inMemPos) result =       inMemEnd - inMemPos;
      else                     result = NIn + inMemEnd - inMemPos;
