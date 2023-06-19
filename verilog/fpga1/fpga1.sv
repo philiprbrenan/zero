@@ -529,8 +529,8 @@ module fpga1                                                                    
   task arrayCountGreater_instruction();
     begin                                                                       // ArrayIndex
       begin
-        q <= source1Value * NArea;                                               // Array location
-        p <= arraySizes[source1Value];                                           // Length of array
+        q <= source1Value * NArea;                                              // Array location
+        p <= arraySizes[source1Value];                                          // Length of array
         result <= 0;
       end;
       for(i = 0; i < NArea; i = i + 1) begin                                    // We can do this by doing all the comparison in parallel then doing one ghot to binary by using and/or gates to syhntheisze the appropriate index for each possibility
@@ -542,63 +542,15 @@ module fpga1                                                                    
 
   task arrayCountLess_instruction();
     begin                                                                       // ArrayIndex
-      //begin
-      //  q = source1Value * NArea;                                               // Array location
-      //  p = arraySizes[source1Value];                                           // Length of array
-      //  result = 0;
-      //  r1 = 0; r2 = 0; r3 = 0; r4 = 0; r5 = 0; r6 = 0; r7 = 0; r8 = 0;
-      //end
-      //case(p)                                                                   // Arrays can be dynamic but only up to a fixed size so that we can unroll the loop that finds an element
-      //  1:
-      //      begin if (heapMem[q+0] < source2Value) r1 = 1; end
-      //  2:
-      //    begin
-      //      begin if (heapMem[q+0] < source2Value) r1 = 1; end
-      //      begin if (heapMem[q+1] < source2Value) r2 = 1; end
-      //    end
-      //  3:
-      //    begin
-      //      begin if (heapMem[q+0] < source2Value) r1 = 1; end
-      //      begin if (heapMem[q+1] < source2Value) r2 = 1; end
-      //      begin if (heapMem[q+2] < source2Value) r3 = 1; end
-      //    end
-      //  4:
-      //    begin
-      //      begin if (heapMem[q+0] < source2Value) r1 = 1; end
-      //      begin if (heapMem[q+1] < source2Value) r2 = 1; end
-      //      begin if (heapMem[q+2] < source2Value) r3 = 1; end
-      //      begin if (heapMem[q+3] < source2Value) r4 = 1; end
-      //    end
-      //  5:
-      //    begin
-      //      begin if (heapMem[q+0] < source2Value) r1 = 1; end
-      //      begin if (heapMem[q+1] < source2Value) r2 = 1; end
-      //      begin if (heapMem[q+2] < source2Value) r3 = 1; end
-      //      begin if (heapMem[q+3] < source2Value) r4 = 1; end
-      //      begin if (heapMem[q+4] < source2Value) r5 = 1; end
-      //    end
-      //  6:
-      //    begin
-      //      begin if (heapMem[q+0] < source2Value) r1 = 1; end
-      //      begin if (heapMem[q+1] < source2Value) r2 = 1; end
-      //      begin if (heapMem[q+2] < source2Value) r3 = 1; end
-      //      begin if (heapMem[q+3] < source2Value) r4 = 1; end
-      //      begin if (heapMem[q+4] < source2Value) r5 = 1; end
-      //      begin if (heapMem[q+5] < source2Value) r6 = 1; end
-      //    end
-      //  7:
-      //    begin
-      //      begin if (heapMem[q+0] < source2Value) r1 = 1; end
-      //      begin if (heapMem[q+1] < source2Value) r2 = 1; end
-      //      begin if (heapMem[q+2] < source2Value) r3 = 1; end
-      //      begin if (heapMem[q+3] < source2Value) r4 = 1; end
-      //      begin if (heapMem[q+4] < source2Value) r5 = 1; end
-      //      begin if (heapMem[q+5] < source2Value) r6 = 1; end
-      //      begin if (heapMem[q+6] < source2Value) r7 = 1; end
-      //    end
-      //endcase
-      //result = r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8;
-      //setMemory();
+      begin
+        q <= source1Value * NArea;                                              // Array location
+        p <= arraySizes[source1Value];                                          // Length of array
+        result <= 0;
+      end;
+      for(i = 0; i < NArea; i = i + 1) begin                                    // We can do this by doing all the comparison in parallel then doing one ghot to binary by using and/or gates to syhntheisze the appropriate index for each possibility
+        result = result + (i < p && heapMem[q+i] < source2Value) ? 1 : 0;
+      end
+      setMemory();
     end
   endtask
 
@@ -712,106 +664,26 @@ module fpga1                                                                    
 
   task arraySize_instruction();
     begin                                                                       // arraySize
-    //  result = arraySizes[source1Value];
-    //  setMemory();
+      result = arraySizes[source1Value];
+      setMemory();
     end
   endtask
                                                                                 // Shift up an array in parallel by first copying every element in parallel then copying back just the elements we need into their new positions
   task shiftUp_instruction();
     begin
-      //if (targetIndex < NArea) begin
-      //  p = targetLocationArea * NArea;                                         // Array Start
-      //  begin
-      //    arraySizes[targetLocationArea] = arraySizes[targetLocationArea] + 1;  // New size of array
-      //    if (NArea > 0) arrayShift[0] = heapMem[p + 0];                        // Move data into staging area
-      //    if (NArea > 1) arrayShift[1] = heapMem[p + 1];
-      //    if (NArea > 2) arrayShift[2] = heapMem[p + 2];
-      //    if (NArea > 3) arrayShift[3] = heapMem[p + 3];
-      //    if (NArea > 4) arrayShift[4] = heapMem[p + 4];
-      //    if (NArea > 5) arrayShift[5] = heapMem[p + 5];
-      //    if (NArea > 6) arrayShift[6] = heapMem[p + 6];
-      //    if (NArea > 7) arrayShift[7] = heapMem[p + 7];
-      //    if (NArea > 8) arrayShift[8] = heapMem[p + 8];
-      //    if (NArea > 9) arrayShift[9] = heapMem[p + 9];
-      //  end
-      //  case(targetIndex)                                                       // Destage data into one position higher
-      //    0: begin
-      //      if (NArea > 0) heapMem[p + 0] = source1Value;
-      //      if (NArea > 1) heapMem[p + 1] = arrayShift[0];
-      //      if (NArea > 2) heapMem[p + 2] = arrayShift[1];
-      //      if (NArea > 3) heapMem[p + 3] = arrayShift[2];
-      //      if (NArea > 4) heapMem[p + 4] = arrayShift[3];
-      //      if (NArea > 5) heapMem[p + 5] = arrayShift[4];
-      //      if (NArea > 6) heapMem[p + 6] = arrayShift[5];
-      //      if (NArea > 7) heapMem[p + 7] = arrayShift[6];
-      //      if (NArea > 8) heapMem[p + 8] = arrayShift[7];
-      //      if (NArea > 9) heapMem[p + 9] = arrayShift[8];
-      //    end
-      //    1: begin
-      //      if (NArea > 1) heapMem[p + 1] = source1Value;
-      //      if (NArea > 2) heapMem[p + 2] = arrayShift[1];
-      //      if (NArea > 3) heapMem[p + 3] = arrayShift[2];
-      //      if (NArea > 4) heapMem[p + 4] = arrayShift[3];
-      //      if (NArea > 5) heapMem[p + 5] = arrayShift[4];
-      //      if (NArea > 6) heapMem[p + 6] = arrayShift[5];
-      //      if (NArea > 7) heapMem[p + 7] = arrayShift[6];
-      //      if (NArea > 8) heapMem[p + 8] = arrayShift[7];
-      //      if (NArea > 9) heapMem[p + 9] = arrayShift[8];
-      //    end
-      //    2: begin
-      //      if (NArea > 2) heapMem[p + 2] = source1Value;
-      //      if (NArea > 3) heapMem[p + 3] = arrayShift[2];
-      //      if (NArea > 4) heapMem[p + 4] = arrayShift[3];
-      //      if (NArea > 5) heapMem[p + 5] = arrayShift[4];
-      //      if (NArea > 6) heapMem[p + 6] = arrayShift[5];
-      //      if (NArea > 7) heapMem[p + 7] = arrayShift[6];
-      //      if (NArea > 8) heapMem[p + 8] = arrayShift[7];
-      //      if (NArea > 9) heapMem[p + 9] = arrayShift[8];
-      //    end
-      //    3: begin
-      //      if (NArea > 3) heapMem[p + 3] = source1Value;
-      //      if (NArea > 4) heapMem[p + 4] = arrayShift[3];
-      //      if (NArea > 5) heapMem[p + 5] = arrayShift[4];
-      //      if (NArea > 6) heapMem[p + 6] = arrayShift[5];
-      //      if (NArea > 7) heapMem[p + 7] = arrayShift[6];
-      //      if (NArea > 8) heapMem[p + 8] = arrayShift[7];
-      //      if (NArea > 9) heapMem[p + 9] = arrayShift[8];
-      //    end
-      //    4: begin
-      //      if (NArea > 4) heapMem[p + 4] = source1Value;
-      //      if (NArea > 5) heapMem[p + 5] = arrayShift[4];
-      //      if (NArea > 6) heapMem[p + 6] = arrayShift[5];
-      //      if (NArea > 7) heapMem[p + 7] = arrayShift[6];
-      //      if (NArea > 8) heapMem[p + 8] = arrayShift[7];
-      //      if (NArea > 9) heapMem[p + 9] = arrayShift[8];
-      //    end
-      //    5: begin
-      //      if (NArea > 5) heapMem[p + 5] = source1Value;
-      //      if (NArea > 6) heapMem[p + 6] = arrayShift[5];
-      //      if (NArea > 7) heapMem[p + 7] = arrayShift[6];
-      //      if (NArea > 8) heapMem[p + 8] = arrayShift[7];
-      //      if (NArea > 9) heapMem[p + 9] = arrayShift[8];
-      //    end
-      //    6: begin
-      //      if (NArea > 6) heapMem[p + 6] = source1Value;
-      //      if (NArea > 7) heapMem[p + 7] = arrayShift[6];
-      //      if (NArea > 8) heapMem[p + 8] = arrayShift[7];
-      //      if (NArea > 9) heapMem[p + 9] = arrayShift[8];
-      //    end
-      //    7: begin
-      //      if (NArea > 7) heapMem[p + 7] = source1Value;
-      //      if (NArea > 8) heapMem[p + 8] = arrayShift[7];
-      //      if (NArea > 9) heapMem[p + 9] = arrayShift[8];
-      //    end
-      //    8: begin
-      //      if (NArea > 8) heapMem[p + 8] = source1Value;
-      //      if (NArea > 9) heapMem[p + 9] = arrayShift[8];
-      //    end
-      //    9: begin
-      //      if (NArea > 9) heapMem[p + 9] = source1Value;
-      //    end
-      //  endcase
-      //end
+      if (targetIndex < NArea) begin
+        p = targetLocationArea * NArea;                                         // Array Start
+        begin
+          arraySizes[targetLocationArea] = arraySizes[targetLocationArea] + 1;  // New size of array
+          for(i = 0; i < NArea; i = i + 1) begin
+            arrayShift[i] = heapMem[p+i];
+          end
+          heapMem[p + targetIndex] = source1Value;                              // Move up
+          for(i = 0; i < NArea; i = i + 1) begin
+            heapMem[p+i] = i > targetIndex ? arrayShift[i-targetIndex] : heapMem[p+i] ;
+          end
+        end
+      end
     end
   endtask
 
