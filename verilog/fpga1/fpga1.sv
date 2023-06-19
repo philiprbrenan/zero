@@ -241,67 +241,54 @@ module fpga1                                                                    
   endtask
   task arrayDump_instruction();
     begin                                                                       // arrayDump
-     $display("arrayDump");
     end
   endtask
   task assert_instruction();
     begin                                                                       // assert
-     $display("assert");
     end
   endtask
   task assertEq_instruction();
     begin                                                                       // assertEq
-     $display("assertEq");
     end
   endtask
   task assertFalse_instruction();
     begin                                                                       // assertFalse
-     $display("assertFalse");
     end
   endtask
   task assertGe_instruction();
     begin                                                                       // assertGe
-     $display("assertGe");
     end
   endtask
   task assertGt_instruction();
     begin                                                                       // assertGt
-     $display("assertGt");
     end
   endtask
   task assertLe_instruction();
     begin                                                                       // assertLe
-     $display("assertLe");
     end
   endtask
   task assertLt_instruction();
     begin                                                                       // assertLt
-     $display("assertLt");
     end
   endtask
   task assertNe_instruction();
     begin                                                                       // assertNe
-    //$display("assertNe");
     end
   endtask
   task assertTrue_instruction();
     begin                                                                       // assertTrue
-     $display("assertTrue");
     end
   endtask
   task call_instruction();
     begin                                                                       // call
-     $display("call");
     end
   endtask
   task confess_instruction();
     begin                                                                       // confess
-     $display("confess");
     end
   endtask
   task dump_instruction();
     begin                                                                       // dump
-     $display("dump");
     end
   endtask
   task label_instruction();
@@ -310,92 +297,74 @@ module fpga1                                                                    
   endtask
   task loadAddress_instruction();
     begin                                                                       // loadAddress
-     $display("loadAddress");
     end
   endtask
   task loadArea_instruction();
     begin                                                                       // loadArea
-     $display("loadArea");
     end
   endtask
   task nop_instruction();
     begin                                                                       // nop
-     $display("nop");
     end
   endtask
   task parallelContinue_instruction();
     begin                                                                       // parallelContinue
-    //$display("parallelContinue");
     end
   endtask
   task parallelStart_instruction();
     begin                                                                       // parallelStart
-    //$display("parallelStart");
     end
   endtask
   task parallelStop_instruction();
     begin                                                                       // parallelStop
-    // $display("parallelStop");
     end
   endtask
   task paramsGet_instruction();
     begin                                                                       // paramsGet
-     $display("paramsGet");
     end
   endtask
   task paramsPut_instruction();
     begin                                                                       // paramsPut
-     $display("paramsPut");
     end
   endtask
   task random_instruction();
     begin                                                                       // random
-     $display("random");
     end
   endtask
   task randomSeed_instruction();
     begin                                                                       // randomSeed
-     $display("randomSeed");
     end
   endtask
   task return_instruction();
     begin                                                                       // return
-     $display("return");
     end
   endtask
   task returnGet_instruction();
     begin                                                                       // returnGet
-     $display("returnGet");
     end
   endtask
   task returnPut_instruction();
     begin                                                                       // returnPut
-     $display("returnPut");
     end
   endtask
   task shiftDown_instruction();
     begin                                                                       // shiftDown
-     $display("shiftDown");
     end
   endtask
   task tally_instruction();
     begin                                                                       // tally
-     $display("tally");
     end
   endtask
   task trace_instruction();
     begin                                                                       // trace
-     $display("trace");
     end
   endtask
   task traceLabels_instruction();
     begin                                                                       // traceLabels
-     $display("traceLabels");
     end
   endtask
   task watch_instruction();
     begin                                                                       // watch
-     $display("watch");
     end
   endtask
 
@@ -453,17 +422,16 @@ module fpga1                                                                    
   endtask
 
   task free_instruction();
-    begin                                                                       // free
-      freedArrays[freedArraysTop] = targetValue;  //*                           // Allocate
+    begin                                                                       // Free
+      freedArrays[freedArraysTop] = targetValue;                                // Allocate
       freedArraysTop = freedArraysTop + 1;                                      // Push
-      //arraySizes[targetValue] = 0;                                            // Zero array length
+      arraySizes[targetValue] = 0; //**                                            // Zero array length
     end
   endtask
 
   task mov_instruction();                                                       // mov
     begin
       result = source1Value;
-      //$display("%4d = Mov %d(%d), %d", result, targetLocation, targetArena, source1Value);
       setMemory();                                                              // Save result in target
     end
   endtask
@@ -494,7 +462,6 @@ module fpga1                                                                    
     begin
       outMem[outMemPos] = source1Value;
       outMemPos = outMemPos + 1;
-//$display("Out %d",source1Value);
     end
   endtask
 
