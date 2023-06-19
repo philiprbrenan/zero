@@ -11,7 +11,7 @@ module add                                                                      
   parameter integer InstructionNWidth  = 256;                                   // Number of bits in an instruction
   parameter integer MemoryElementWidth =  12;                                   // Memory element width
 
-  parameter integer NInstructions  =   2;  // 40s                               // Number of instruction slots in code memory
+  parameter integer NInstructions  = 1140;  // 40s                               // Number of instruction slots in code memory
   parameter integer NArea          =   2;  // 40s                               // Size of each area on the heap
   parameter integer NArrays        =   2;  // long AAAA                         // Maximum number of arrays
   parameter integer NHeap          =   2;  //NArea*NArrays;                     // Amount of heap memory
