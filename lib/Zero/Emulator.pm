@@ -1182,7 +1182,7 @@ sub checkArrayName($$$$)                                                        
 
   my $Number = $exec->getMemoryType($arena, $area);                             # Area has a name
   if (!defined($Number))
-   {stackTraceAndExit($exec, "No name associated with array: $area in arena $arena");
+   {stackTraceAndExit($exec, "No such with array: $area in arena $arena");
     return 0;
    }
   if ($number != $Number)                                                       # Name does not match supplied name
@@ -4171,7 +4171,7 @@ if (1)                                                                          
 0
 0
 0
-No name associated with array: 0 in arena 1
+No such with array: 0 in arena 1
     1    11 arraySize
 END
  }
