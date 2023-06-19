@@ -64,15 +64,9 @@ push my @files,
 # grep {$perlXmp or !/\.pl\Z/}                                                  # No changes expected
   searchDirectoryTreesForMatchingFiles($home, qw(.pm .pl .md .sv .tb .cst));    # Files
 
-#@files = ();                                                                   # No files
-#@files = grep {/pushToGitHub\.pl\Z/} @files;                                   # Just control file unless commented out
-#@files = grep {/\.pm\Z/} @files;                                               # pm files
-#@files = grep {/\.sv\Z/} @files;                                               # Just sv files
-#@files = grep {/(add.sv|pushToGitHub.pl|cst)\Z/} @files;                       # Just sv files
-
 my @uploadFiles;                                                                # Locate files to upload
 if (-e $timeFile)
- {my $T = eval readFile($timeFile);
+ {my $T = eval readFile($timeFile);                                             # Last upload time
   for my $file(@files)
    {my $t = fileModTime($file);
     push @uploadFiles, $file unless defined($T) and $T >= $t;
