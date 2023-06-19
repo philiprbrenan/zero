@@ -1656,7 +1656,7 @@ if (1)                                                                          
    };
   my $e = Execute(suppressOutput=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
   is_deeply $e->outLines, [0, 1, 22, 0, 1, 33];
-  #say STDERR generateVerilogMachineCode("BTreeController");
+  say STDERR generateVerilogMachineCode("BTreeController");
  }
 
 
