@@ -64,7 +64,7 @@ push my @files,
 #@files = ();                                                                   # No files
 #@files = grep {/pushToGitHub\.pl\Z/} @files;                                   # Just control file unless commented out
 #@files = grep {/\.sv\Z/} @files;                                               # Just sv files
-@files = grep {/fpga1.sv\Z/} @files;                                            # Just sv files
+@files = grep {/add.sv|pushToGitHub.pl\Z/} @files;                                              # Just sv files
 
 for my $s(@files)                                                               # Upload each selected file
  {my $c = readFile($s);                                                         # Load file
@@ -276,15 +276,13 @@ END
 END
 
 
-  $y .= <<END if $fpga1;                                                        # Low level tests - fpga1
-    - name: fpga1
+  $y .= <<END if $fpga1;                                                        # Low level tests - add
+    - name: add
       run: |
         export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        (cd verilog/fpga1;   perl -I\$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl)
+        (cd verilog/fpga/add; perl -I\$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl)
 
 END
-
-
 
   lll "Ubuntu work flow for $repo ", writeFileUsingSavedToken($user, $repo, $wf, $y);
  }
