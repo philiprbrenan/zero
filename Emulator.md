@@ -320,7 +320,7 @@ The current size of an array.
     0
     0
     0
-    No name associated with array: 0 in arena 1
+    No such with array: 0 in arena 1
         1    11 arraySize
     END
      }
