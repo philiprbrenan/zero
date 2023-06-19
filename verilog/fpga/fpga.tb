@@ -19,6 +19,7 @@ module fpga_tb();                                                               
     #10000;
     ok(passedOut == 124, "aaa");
     checkAllTestsPassed(1);
+    $finish();
   end
 
 endmodule
