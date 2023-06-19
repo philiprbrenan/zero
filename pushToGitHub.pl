@@ -62,9 +62,9 @@ push my @files,
   searchDirectoryTreesForMatchingFiles($home, qw(.pm .pl .md .sv .tb .cst));    # Files
 
 #@files = ();                                                                   # No files
-#@files = grep {/pushToGitHub\.pl\Z/} @files;                                   # Just control file unless commented out
+@files = grep {/pushToGitHub\.pl\Z/} @files;                                   # Just control file unless commented out
 #@files = grep {/\.sv\Z/} @files;                                               # Just sv files
-@files = grep {/(add.sv|pushToGitHub.pl|cst)\Z/} @files;                                              # Just sv files
+#@files = grep {/(add.sv|pushToGitHub.pl|cst)\Z/} @files;                                              # Just sv files
 
 for my $s(@files)                                                               # Upload each selected file
  {my $c = readFile($s);                                                         # Load file
