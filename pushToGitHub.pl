@@ -14,17 +14,18 @@ use feature qw(say current_sub);
 
 makeDieConfess;
 
-my $home    = q(/home/phil/perl/cpan/ZeroEmulator/);                            # Local files
-my $user    = q(philiprbrenan);                                                 # User
-my $repo    = q(zero);                                                          # Store code here so it can be referenced from a browser
-my $wf      = q(.github/workflows/main.yml);                                    # Work flow on Ubuntu
-my $repoUrl = q(https://github.com/philiprbrenan/zero);
-my $perlXmp = 1;                                                                # Perl examples if true
-my $macos   = 0;                                                                # Macos if true
-my $windows = 0;                                                                # Windows if true
-my $openBsd = 0;                                                                # OpenBsd if true
-my $freeBsd = 0;                                                                # FreeBsd if true - fails
-my $fpga1   = 1;                                                                # Fpga 1
+my $home     = q(/home/phil/perl/cpan/ZeroEmulator/);                           # Local files
+my $user     = q(philiprbrenan);                                                # User
+my $repo     = q(zero);                                                         # Store code here so it can be referenced from a browser
+my $wf       = q(.github/workflows/main.yml);                                   # Work flow on Ubuntu
+my $repoUrl  = q(https://github.com/philiprbrenan/zero);
+my $timeFile = q(zzzFileTimes.data);
+my $perlXmp  = 1;                                                               # Perl examples if true
+my $macos    = 0;                                                               # Macos if true
+my $windows  = 0;                                                               # Windows if true
+my $openBsd  = 0;                                                               # OpenBsd if true
+my $freeBsd  = 0;                                                               # FreeBsd if true - fails
+my $fpga1    = 1;                                                               # Fpga 1
 
 sub pod($$$)                                                                    # Write pod file
  {my ($in, $out, $intro) = @_;                                                  # Input, output file, introduction
@@ -62,15 +63,37 @@ push my @files,
   searchDirectoryTreesForMatchingFiles($home, qw(.pm .pl .md .sv .tb .cst));    # Files
 
 #@files = ();                                                                   # No files
-@files = grep {/pushToGitHub\.pl\Z/} @files;                                   # Just control file unless commented out
+#@files = grep {/pushToGitHub\.pl\Z/} @files;                                   # Just control file unless commented out
+#@files = grep {/\.pm\Z/} @files;                                               # pm files
 #@files = grep {/\.sv\Z/} @files;                                               # Just sv files
-#@files = grep {/(add.sv|pushToGitHub.pl|cst)\Z/} @files;                                              # Just sv files
+#@files = grep {/(add.sv|pushToGitHub.pl|cst)\Z/} @files;                       # Just sv files
 
-for my $s(@files)                                                               # Upload each selected file
+my @uploadFiles;                                                                # Locate files to upload
+if (-e $timeFile)
+ {my $tf = evalFile($timeFile);
+  for my $file(@files)
+   {my $t = fileModTime($file);
+    my $T = $$tf{$t};
+    push @uploadFiles, $file unless defined($T) and $T >= $t;
+   }
+ }
+else
+ {@uploadFiles = @files;
+ }
+
+for my $s(@uploadFiles)                                                         # Upload each selected file
  {my $c = readFile($s);                                                         # Load file
   my $t = swapFilePrefix $s, $home;
   my $w = writeFileUsingSavedToken($user, $repo, $t, $c);
   lll "$w $s $t";
+ }
+
+if (1)                                                                          # Save current file times
+ {my %times;
+  for my $file(@files)
+   {$times{$file} = fileModTime($file);
+   }
+  dumpFile($timeFile, \%times);
  }
 
 sub run
