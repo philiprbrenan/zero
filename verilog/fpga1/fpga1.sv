@@ -20,15 +20,15 @@ module fpga1                                                                    
   parameter integer NOut           =   2;  // 40                                // Size of output area
   parameter integer NFreedArrays   =   2;  // 40                                // Size of output area
 
-  reg runnable;                                                                // Goes high when the program has been loaded and we are ready to run
-  reg signed [ InstructionNWidth-1:0]         code[NInstructions:0];            // Code memory
-  reg signed [MemoryElementWidth-1:0]   arraySizes[NArrays      :0];            // Size of each array
-  reg signed [MemoryElementWidth-1:0]      heapMem[NHeap        :0];            // Heap memory
-  reg signed [MemoryElementWidth-1:0]     localMem[NLocal       :0];            // Local memory
-  reg signed [MemoryElementWidth-1:0]       outMem[NOut         :0];            // Out channel
-  reg signed [MemoryElementWidth-1:0]        inMem[NIn          :0];            // In channel
-  reg signed [MemoryElementWidth-1:0]  freedArrays[NFreedArrays :0];            // Freed arrays list implemented as a stack
-  reg signed [MemoryElementWidth-1:0]   arrayShift[NArea        :0];            // Array shift area
+  reg runnable;                                                                 // Goes high when the program has been loaded and we are ready to run
+  reg signed [ InstructionNWidth-1:0]         code[NInstructions-1:0];          // Code memory
+  reg signed [MemoryElementWidth-1:0]   arraySizes[NArrays-1      :0];          // Size of each array
+  reg signed [MemoryElementWidth-1:0]      heapMem[NHeap-1        :0];          // Heap memory
+  reg signed [MemoryElementWidth-1:0]     localMem[NLocal-1       :0];          // Local memory
+  reg signed [MemoryElementWidth-1:0]       outMem[NOut-1         :0];          // Out channel
+  reg signed [MemoryElementWidth-1:0]        inMem[NIn-1          :0];          // In channel
+  reg signed [MemoryElementWidth-1:0]  freedArrays[NFreedArrays-1 :0];          // Freed arrays list implemented as a stack
+  reg signed [MemoryElementWidth-1:0]   arrayShift[NArea-1        :0];          // Array shift area
 
   integer signed  NInstructionEnd;                                              // Limit of instructions for the current program
   integer signed         inMemPos;                                              // Current position in input channel
@@ -179,7 +179,7 @@ module fpga1                                                                    
         finished = 1;
       end
     end
-    else begin
+    else begin                                                                  // Initialize if not running
       runnable       = 0;
       ip             = 0;
       finished       = 0;
