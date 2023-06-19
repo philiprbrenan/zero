@@ -152,19 +152,6 @@ module fpga1                                                                    
     end
   endtask
 
-  task initializeMemory();                                                      // Initialize memory so we start in a known state
-    begin;
-      allocs         = 0;                                                       // Largest number of arrays in use at any one time so far
-      freedArraysTop = 0;                                                       // Start freed arrays stack
-      outMemPos      = 0;                                                       // Output channel position
-      for(i = 0; i < NOut;          i = i + 1)       outMem[i] = 'bx;           // Reset the output channel
-      for(i = 0; i < NHeap;         i = i + 1)      heapMem[i] = 'bx;           // Reset heap memory
-      for(i = 0; i < NLocal;        i = i + 1)     localMem[i] = 'bx;           // Reset local memory
-      for(i = 0; i < NArrays;       i = i + 1)   arraySizes[i] =  0;            // Set array sizes
-    end
-  endtask
-
-
 // Execute each test progam
 
   always @(posedge clock) begin                                                 // Execute instruction
@@ -192,7 +179,6 @@ module fpga1                                                                    
       freedArraysTop = 0;
 
       Add_test();
-      //initializeMemory();
       runnable       = 1;
     end
   end
