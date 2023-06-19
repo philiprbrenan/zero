@@ -46,11 +46,13 @@ sub pod($$$)                                                                    
   confess "Cannot extract documentation for file: $in";
  }
 
-pod fpf($home, q(lib/Zero/Emulator.pm)), fpf($home, q(Emulator.md)), &introEmulator;
-pod fpf($home, q(lib/Zero/BTree.pm)),    fpf($home, q(BTree.md)),    &introBTree;
+if (1)                                                                          # Documentation
+ {pod fpf($home, q(lib/Zero/Emulator.pm)), fpf($home, q(Emulator.md)), &introEmulator;
+  pod fpf($home, q(lib/Zero/BTree.pm)),    fpf($home, q(BTree.md)),    &introBTree;
 
-expandWellKnownWordsInMarkDownFile                                              # Documentation
-  fpe($home, qw(README md2)), fpe $home, qw(README md);
+  expandWellKnownWordsInMarkDownFile                                            # Documentation
+    fpe($home, qw(README md2)), fpe $home, qw(README md);
+ }
 
 &run();                                                                         # Upload run configuration
 
