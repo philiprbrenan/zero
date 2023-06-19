@@ -9,7 +9,7 @@ module fpga1                                                                    
   output reg  success);                                                         // Goes high on finish if all the tests passed
 
   parameter integer InstructionNWidth  = 256;                                   // Number of bits in an instruction
-  parameter integer MemoryElementWidth =  12;                                   // Memory width
+  parameter integer MemoryElementWidth =  12;                                   // Memory element width
 
   parameter integer NInstructions  =   2;  // 40s                               // Number of instruction slots in code memory
   parameter integer NArea          =   2;  // 40s                               // Size of each area on the heap
@@ -137,19 +137,6 @@ module fpga1                                                                    
      (targetDAddress == 0 ? targetAddress :
       targetDAddress == 1 ? localMem[targetDelta + targetAddress]           :
       targetDAddress == 2 ? localMem[targetDelta + localMem[targetAddress]] : 0) : 0;
-
-  task printInstruction();                                                      // Print an instruction
-    begin;
-      $display("targetAddress =%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Location=%4x value=%4x",
-        targetAddress, targetArea, targetDAddress, targetDArea, targetArena, targetDelta, targetLocation, targetValue);
-
-      $display("source1Address=%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Value   =%4x",
-        source1Address, source1Area, source1DAddress, source1DArea, source1Arena, source1Delta, source1Value);
-
-      $display("source2Address=%4x Area=%4x DAddress=%4x DArea=%4x Arena=%4x Delta=%4x Value   =%4x",
-        source2Address, source2Area, source2DAddress, source2DArea, source2Arena, source2Delta, source2Value);
-    end
-  endtask
 
 // Execute each test progam
 
