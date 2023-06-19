@@ -184,6 +184,13 @@ module fpga1                                                                    
       ip         = 0;
       finished   = 0;
       success    = 0;
+      inMemPos   = 0;                                              // Current position in input channel
+      inMemEnd   = 0;                                              // End of input channel, this is the next element that would have been added.
+      outMemPos  = 0;                                              // Position in output channel
+      result     = 0;                                              // Result of an instruction execution
+      allocs     = 0;                                              // Maximum number of array allocations in use at any one time
+      freedArraysTop = 0;                                              // Position in freed arrays stack
+
       Add_test();
       initializeMemory();
       runnable = 1;
