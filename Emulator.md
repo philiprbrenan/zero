@@ -316,7 +316,13 @@ The current size of an array.
       Out ArraySize $a, "aaa";                                                      #FIX - an unalocated array should not be accessible  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1);
-      is_deeply $e->outLines, [0, 0, 0, 0];
+      is_deeply $e->out, <<END;
+    0
+    0
+    0
+    No name associated with array: 0 in arena 1
+        1    11 arraySize
+    END
      }
     
     if (1)                                                                             
