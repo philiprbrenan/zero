@@ -519,57 +519,9 @@ module fpga1                                                                    
         p = arraySizes[source1Value];                                           // Length of array
         result = 0;
       end
-      case(p)                                                                   // Arrays can be dynamic but only up to a fixed size so that we can unroll the loop that finds an element
-        1:
-          begin
-            if      (heapMem[q+0] == source2Value) result = 1;
-          end
-        2:
-          begin
-            if      (heapMem[q+0] == source2Value) result = 1;
-            else if (heapMem[q+1] == source2Value) result = 2;
-          end
-        3:
-          begin
-            if      (heapMem[q+0] == source2Value) result = 1;
-            else if (heapMem[q+1] == source2Value) result = 2;
-            else if (heapMem[q+2] == source2Value) result = 3;
-          end
-        4:
-          begin
-            if      (heapMem[q+0] == source2Value) result = 1;
-            else if (heapMem[q+1] == source2Value) result = 2;
-            else if (heapMem[q+2] == source2Value) result = 3;
-            else if (heapMem[q+3] == source2Value) result = 4;
-          end
-        5:
-          begin
-            if      (heapMem[q+0] == source2Value) result = 1;
-            else if (heapMem[q+1] == source2Value) result = 2;
-            else if (heapMem[q+2] == source2Value) result = 3;
-            else if (heapMem[q+3] == source2Value) result = 4;
-            else if (heapMem[q+4] == source2Value) result = 5;
-          end
-        6:
-          begin
-            if (heapMem[q+0] == source2Value) result = 1;
-            else if (heapMem[q+1] == source2Value) result = 2;
-            else if (heapMem[q+2] == source2Value) result = 3;
-            else if (heapMem[q+3] == source2Value) result = 4;
-            else if (heapMem[q+4] == source2Value) result = 5;
-            else if (heapMem[q+5] == source2Value) result = 6;
-          end
-        7:
-          begin
-            if      (heapMem[q+0] == source2Value) result = 1;
-            else if (heapMem[q+1] == source2Value) result = 2;
-            else if (heapMem[q+2] == source2Value) result = 3;
-            else if (heapMem[q+3] == source2Value) result = 4;
-            else if (heapMem[q+4] == source2Value) result = 5;
-            else if (heapMem[q+5] == source2Value) result = 6;
-            else if (heapMem[q+6] == source2Value) result = 7;
-          end
-      endcase
+      for(i = 0; i < NArea; i = i + 1) begin                                    // We can do this by doing all the comparison in parallel then doing one ghot to binary by using and/or gates to syhntheisze the appropriate index for each possibility
+        result = i < p && heapMem[q+i] == source2Value ? i+1 : result;
+      end
       setMemory();
     end
   endtask
