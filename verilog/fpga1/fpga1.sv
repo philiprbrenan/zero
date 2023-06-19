@@ -515,9 +515,9 @@ module fpga1                                                                    
   task arrayIndex_instruction();
     begin                                                                       // ArrayIndex
       begin
-        q = source1Value * NArea;                                               // Array location
-        p = arraySizes[source1Value];                                           // Length of array
-        result = 0;
+        q <= source1Value * NArea;                                              // Array location
+        p <= arraySizes[source1Value];                                          // Length of array
+        result <= 0;
       end
       for(i = 0; i < NArea; i = i + 1) begin                                    // We can do this by doing all the comparison in parallel then doing one ghot to binary by using and/or gates to syhntheisze the appropriate index for each possibility
         result = i < p && heapMem[q+i] == source2Value ? i+1 : result;
@@ -528,63 +528,15 @@ module fpga1                                                                    
 
   task arrayCountGreater_instruction();
     begin                                                                       // ArrayIndex
-      //begin
-      //  q = source1Value * NArea;                                               // Array location
-      //  p = arraySizes[source1Value];                                           // Length of array
-      //  result = 0;
-      //  r1 = 0; r2 = 0; r3 = 0; r4 = 0; r5 = 0; r6 = 0; r7 = 0; r8 = 0;
-      //end;
-      //case(p)                                                                   // Arrays can be dynamic but only up to a fixed size so that we can unroll the loop that finds an element
-      //  1:
-      //      begin if (heapMem[q+0] > source2Value) r1 = 1; end
-      //  2:
-      //    begin
-      //      begin if (heapMem[q+0] > source2Value) r1 = 1; end
-      //      begin if (heapMem[q+1] > source2Value) r2 = 1; end
-      //    end
-      //  3:
-      //    begin
-      //      begin if (heapMem[q+0] > source2Value) r1 = 1; end
-      //      begin if (heapMem[q+1] > source2Value) r2 = 1; end
-      //      begin if (heapMem[q+2] > source2Value) r3 = 1; end
-      //    end
-      //  4:
-      //    begin
-      //      begin if (heapMem[q+0] > source2Value) r1 = 1; end
-      //      begin if (heapMem[q+1] > source2Value) r2 = 1; end
-      //      begin if (heapMem[q+2] > source2Value) r3 = 1; end
-      //      begin if (heapMem[q+3] > source2Value) r4 = 1; end
-      //    end
-      //  5:
-      //    begin
-      //      begin if (heapMem[q+0] > source2Value) r1 = 1; end
-      //      begin if (heapMem[q+1] > source2Value) r2 = 1; end
-      //      begin if (heapMem[q+2] > source2Value) r3 = 1; end
-      //      begin if (heapMem[q+3] > source2Value) r4 = 1; end
-      //      begin if (heapMem[q+4] > source2Value) r5 = 1; end
-      //    end
-      //  6:
-      //    begin
-      //      begin if (heapMem[q+0] > source2Value) r1 = 1; end
-      //      begin if (heapMem[q+1] > source2Value) r2 = 1; end
-      //      begin if (heapMem[q+2] > source2Value) r3 = 1; end
-      //      begin if (heapMem[q+3] > source2Value) r4 = 1; end
-      //      begin if (heapMem[q+4] > source2Value) r5 = 1; end
-      //      begin if (heapMem[q+5] > source2Value) r6 = 1; end
-      //    end
-      //  7:
-      //    begin
-      //      begin if (heapMem[q+0] > source2Value) r1 = 1; end
-      //      begin if (heapMem[q+1] > source2Value) r2 = 1; end
-      //      begin if (heapMem[q+2] > source2Value) r3 = 1; end
-      //      begin if (heapMem[q+3] > source2Value) r4 = 1; end
-      //      begin if (heapMem[q+4] > source2Value) r5 = 1; end
-      //      begin if (heapMem[q+5] > source2Value) r6 = 1; end
-      //      begin if (heapMem[q+6] > source2Value) r7 = 1; end
-      //    end
-      //endcase
-      //result = r1 + r2 + r3 + r4 + r5 + r6 + r7 + r8;
-      //setMemory();
+      begin
+        q <= source1Value * NArea;                                               // Array location
+        p <= arraySizes[source1Value];                                           // Length of array
+        result <= 0;
+      end;
+      for(i = 0; i < NArea; i = i + 1) begin                                    // We can do this by doing all the comparison in parallel then doing one ghot to binary by using and/or gates to syhntheisze the appropriate index for each possibility
+        result = result + (i < p && heapMem[q+i] > source2Value) ? 1 : 0;
+      end
+      setMemory();
     end
   endtask
 
