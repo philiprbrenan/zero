@@ -59,7 +59,7 @@ push my @files,
   grep {!/_build/}
   grep {!/Build.PL/}
   grep {!/blib/}
-  grep {$perlXmp or !/\.pl\Z/}                                                  # No changes expected
+# grep {$perlXmp or !/\.pl\Z/}                                                  # No changes expected
   searchDirectoryTreesForMatchingFiles($home, qw(.pm .pl .md .sv .tb .cst));    # Files
 
 #@files = ();                                                                   # No files
@@ -70,7 +70,7 @@ push my @files,
 
 my @uploadFiles;                                                                # Locate files to upload
 if (-e $timeFile)
- {my $tf = evalFile($timeFile);
+ {my $tf = eval readFile($timeFile);
   for my $file(@files)
    {my $t = fileModTime($file);
     my $T = $$tf{$t};
