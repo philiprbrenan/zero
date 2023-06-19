@@ -87,7 +87,7 @@ for my $s(@uploadFiles)                                                         
   lll "$w $s $t";
  }
 
-writeFile($timeFile, time);                                                     # Save current tim
+owf($timeFile, time);                                                           # Save current time
 
 sub run
  {my $d = dateTimeStamp;
