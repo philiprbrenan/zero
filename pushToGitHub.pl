@@ -70,10 +70,9 @@ push my @files,
 
 my @uploadFiles;                                                                # Locate files to upload
 if (-e $timeFile)
- {my $tf = eval readFile($timeFile);
+ {my $T = eval readFile($timeFile);
   for my $file(@files)
    {my $t = fileModTime($file);
-    my $T = $$tf{$t};
     push @uploadFiles, $file unless defined($T) and $T >= $t;
    }
  }
@@ -88,13 +87,7 @@ for my $s(@uploadFiles)                                                         
   lll "$w $s $t";
  }
 
-if (1)                                                                          # Save current file times
- {my %times;
-  for my $file(@files)
-   {$times{$file} = fileModTime($file);
-   }
-  dumpFile($timeFile, \%times);
- }
+writeFile($timeFile, time);                                                     # Save current tim
 
 sub run
  {my $d = dateTimeStamp;
