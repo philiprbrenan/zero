@@ -1,5 +1,6 @@
   task startTest();                                                             // Mov_test: load code
     begin
+      for(i = 0; i < NInstructions; i = i + 1) code[i] = 0;
       NInstructionEnd = 6;
 
       code[   0] = 'h0000002300000000000000000000210000000000000120000000000000000000;                                                                          // mov
