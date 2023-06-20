@@ -1,5 +1,6 @@
   task startTest();                                                             // Array_scans: load code
     begin
+      for(i = 0; i < NInstructions; i = i + 1) code[i] = 0;
       NInstructionEnd = 28;
 
       code[   0] = 'h0000000100000000000000000000210000000000000320000000000000000000;                                                                          // array
