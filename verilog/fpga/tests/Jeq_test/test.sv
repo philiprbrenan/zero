@@ -1,7 +1,7 @@
+  parameter integer NInstructions = 12;
+
   task startTest();                                                             // Jeq_test: load code
     begin
-      for(i = 0; i < NInstructions; i = i + 1) code[i] = 0;
-      NInstructionEnd = 12;
 
       code[   0] = 'h0000002000000000000000000000010000000000000120000000000000000000;                                                                          // label
       code[   1] = 'h0000002300000000000000000000210000000000000120000000000000000000;                                                                          // mov
@@ -21,6 +21,7 @@
   task endTest();                                                               // Jeq_test: Evaluate results in out channel
     begin
       success = 1;
-
+      success = success && outMem[0] == 111;
+      success = success && outMem[1] == 333;
     end
   endtask
