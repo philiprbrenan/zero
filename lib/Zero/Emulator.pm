@@ -2978,8 +2978,8 @@ sub generateVerilogMachineCode($;$)                                             
   my $L = int($l / $N);
 
   my @v = <<END;
-  task $name();
-    begin                                                                       // $name
+  task startTest();                                                             // $name: load code
+    begin
       NInstructionEnd = $L;
 END
 
@@ -2993,12 +2993,28 @@ END
     end
   endtask
 END
-  my $o =
-  push @v, <<END if $out;
+
+  my @o = <<END;                                                                # Check results
+  task endTest();                                                               // $name: Evaluate results in out channel
+    begin
+      success = 1;
 END
-  my $c = join "\n", @v;
-  my $f = fpe "../../verilog/tests", $name, q(sv);
-  my $C = readFile $f;
+
+  for my $i(keys @$out)                                                         # Out channel expected content
+   {push @o, <<END;
+      success = success && outMem[$i] == $$out[$i];
+END
+   }
+  push @o, <<END;                                                               # Finish results checking
+    end
+  endtask
+END
+
+  push @v, join "\n", @o if $out;                                               # Add results checking is present
+
+  my $c = join "\n", @v;                                                        # Write out if different from what we already have.  If it is the same do not disturb the time stamp because pushToGitHub relies on the timestamp to decide which files to push
+  my $f = fpe "../../verilog/fpga/tests", $name, qw(test sv);                   # This folder will be included to pull in this test
+  my $C = -e $f ? readFile($f) : '';
   owf $f, $c unless $c eq $C;
  }
 
