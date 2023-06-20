@@ -1537,6 +1537,14 @@ sub Zero::Emulator::Assembly::execute($%)                                       
       $exec->timeDelta = 0;
      },
 
+    arrayOut=> sub                                                              # Write array to the output channel
+     {my $i = currentInstruction $exec;
+      my $a = right $exec, $i->target;
+      my $m = $exec->GetMemoryArea->($exec, arenaHeap, $a);
+      $exec->output($_) for @$m;
+      $exec->timeDelta = 0;
+     },
+
     in=> sub                                                                    # Read the next value from the input channel
      {my $i = currentInstruction $exec;
       my $t = $exec->latestLeftTarget;
@@ -2049,6 +2057,11 @@ sub ArrayCountGreater($$;$) {                                                   
 sub ArrayDump($)                                                                #i Dump an array.
  {my ($target) = @_;                                                            # Array to dump, title of dump
   $assembly->instruction(action=>"arrayDump", xTarget($target), nSource);
+ }
+
+sub ArrayOut($)                                                                 #I Write an array to out
+ {my ($target) = @_;                                                            # Array to dump, title of dump
+  $assembly->instruction(action=>"arrayOut", xTarget($target), nSource);
  }
 
 sub ArrayIndex($$;$) {                                                          #i Store in the target location the 1 based index of the second source operand in the array referenced by the first source operand if the secound source operand is present somwhere in the array else store 0 into the target location.  If the sought element appears in multiple locations, any one of these locations can be chosen.  The business of returning a zero based result with -1 signalling an error would have led to the confusion of "try catch" and we certainly do not want that.
@@ -2765,14 +2778,18 @@ sub instructionMap()                                                            
  }
 
 my sub instructionList()                                                        #P Create a list of instructions.
- {my @i = grep {m(\s+#i)} readFile $0;
-  my @j;                                                                        # Description of instruction
-  for my $i(@i)
-   {my @parse     = split /[ (){}]+/, $i, 5;
+ {my sub parseInstruction($)                                                    # Parse an instruction definition
+   {my ($line) = @_;                                                            # Line of source code
+    my @parse = split /[ (){}]+/, $line, 5;
     my $name = $parse[1];
     my $sig  = $parse[2];
-    my $comment = $i =~ s(\A.*?#i\s*) ()r;
-    push @j, [$name, $sig, $comment];
+    my $comment = $line =~ s(\A.*?#i\s*) ()r;
+    [$name, $sig, $comment];
+   };
+  my @i = readFile $0;                                                          # Source file
+  my @j;                                                                        # Description of initial instruction
+  for my $i(grep {m(\s+#i)} @i)                                                 # Initial instructions were sorted into order
+   {push @j, parseInstruction($i);
    }
   [sort {$$a[0] cmp $$b[0]} @j]
 }
@@ -2961,10 +2978,8 @@ sub generateVerilogMachineCode($)                                               
   my $L = int($l / $N);
 
   my @v = <<END;
-  reg[255:0] code[$L];
-                                                                                // Load program '$name' into code memory
   task $name();
-    begin
+    begin                                                                       // $name
       NInstructionEnd = $L;
 END
 
@@ -2978,7 +2993,8 @@ END
     end
   endtask
 END
-  join "\n", @v;
+  my $c = join "\n", @v;
+  owf fpe("../../verilog/tests", $name, q(sv)), $c;
  }
 
 my sub verilogInstructionDecode()                                               #P Create a verilog case statement to decode each instruction in the code array
@@ -3127,7 +3143,7 @@ if (1)                                                                          
   Out  $a;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [5];
-  #say STDERR generateVerilogMachineCode("Add_test"); exit;
+  generateVerilogMachineCode("Add_test") if $testSet == 1;
  }
 
 #latest:;
@@ -3137,7 +3153,7 @@ if (1)                                                                          
   Out $a;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [2];
-  #say STDERR generateVerilogMachineCode("Subtract_test"); exit;
+  generateVerilogMachineCode("Subtract_test") if $testSet == 1;
  }
 
 #latest:;
@@ -3175,7 +3191,7 @@ if (1)                                                                          
 0
 1
 END
-  #say STDERR generateVerilogMachineCode("Not_test"); exit;
+  generateVerilogMachineCode("Not_test") if $testSet == 1;
  }
 
 #latest:;
@@ -3186,7 +3202,7 @@ if (1)                                                                          
   Out $a;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [2];
-  #say STDERR generateVerilogMachineCode("ShiftLeft_test"); exit;
+  generateVerilogMachineCode("ShiftLeft_test") if $testSet == 1;
  }
 
 #latest:;
@@ -3197,7 +3213,7 @@ if (1)                                                                          
   Out $a;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [2];
-  #say STDERR generateVerilogMachineCode("ShiftRight_test"); exit;
+  generateVerilogMachineCode("ShiftRight_test") if $testSet == 1;
  }
 
 #latest:;
@@ -3261,7 +3277,7 @@ if (1)                                                                          
   Mov     [$a,  1, "aaa"],  22;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->Heap->($e, 0), [11, 22];
-  #say STDERR generateVerilogMachineCode("Array_test");  exit;
+  generateVerilogMachineCode("Array_test") if $testSet == 1;
  }
 
 #latest:;
@@ -3273,7 +3289,7 @@ if (1)                                                                          
   Out \1;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [11];
-  #say STDERR generateVerilogMachineCode("Array_test");  exit;
+  generateVerilogMachineCode("Array_test") if $testSet == 1;
  }
 
 #latest:;
@@ -3374,7 +3390,7 @@ if (1)                                                                          
   Out $c;
   Out $d;
   my $e = &$ee(suppressOutput=>1);
-  #say STDERR generateVerilogMachineCode("Pop_test");  exit;
+  generateVerilogMachineCode("Pop_test") if $testSet == 1;
 
   #say STDERR $e->PrintLocal->($e); x;
   is_deeply $e->PrintLocal->($e), <<END;
@@ -3657,12 +3673,13 @@ if (1)                                                                          
   AssertFalse 0;
   AssertTrue  0;
   my $e = &$ee(suppressOutput=>1, trace=>1);
+  #say STDERR dump($e->out);
 
   is_deeply $e->out, <<END;
-    1     0     0     9   assertFalse
+    1     0     0    10   assertFalse
 AssertTrue 0 failed
     1     2 assertTrue
-    2     1     0    15    assertTrue
+    2     1     0    16    assertTrue
 END
  }
 
@@ -3672,12 +3689,13 @@ if (1)                                                                          
   AssertTrue  1;
   AssertFalse 1;
   my $e = &$ee(suppressOutput=>1, trace=>1);
+  #say STDERR dump($e->out);
 
   is_deeply $e->out, <<END;
-    1     0     0    15    assertTrue
+    1     0     0    16    assertTrue
 AssertFalse 1 failed
     1     2 assertFalse
-    2     1     0     9   assertFalse
+    2     1     0    10   assertFalse
 END
  }
 
@@ -3890,7 +3908,7 @@ if (1)                                                                          
 
   my $e = &$ee(suppressOutput=>0);
   is_deeply $e->Heap->($e, 0), [99, 0, 1, 2];
-  #say STDERR generateVerilogMachineCode("Shift_up_test");  exit;
+  generateVerilogMachineCode("Shift_up_test") if $testSet == 1;
  }
 
 #latest:;
@@ -3921,7 +3939,7 @@ if (1)                                                                          
 
   my $e = &$ee(suppressOutput=>0);
   is_deeply $e->Heap->($e, 0), [0, 1, 99, 2];
-  #say STDERR generateVerilogMachineCode("Shift_up_test_2");  exit;
+  generateVerilogMachineCode("Shift_up_test_2") if $testSet == 1;
  }
 
 #latest:;
@@ -4121,17 +4139,17 @@ if (1)                                                                          
 
   is_deeply $e->out, <<END;
 Trace: 1
-    1     0     0    58         trace
-    2     1     1    28           jNe
-    3     5     0    31         label
-    4     6     1    34           mov  [0, 3, stackArea] = 3
-    5     7     1    34           mov  [0, 4, stackArea] = 4
-    6     8     0    31         label
-    7     9     1    28           jNe
-    8    10     1    34           mov  [0, 1, stackArea] = 1
-    9    11     1    34           mov  [0, 2, stackArea] = 1
-   10    12     1    30           jmp
-   11    16     0    31         label
+    1     0     0    59         trace
+    2     1     1    29           jNe
+    3     5     0    32         label
+    4     6     1    35           mov  [0, 3, stackArea] = 3
+    5     7     1    35           mov  [0, 4, stackArea] = 4
+    6     8     0    32         label
+    7     9     1    29           jNe
+    8    10     1    35           mov  [0, 1, stackArea] = 1
+    9    11     1    35           mov  [0, 2, stackArea] = 1
+   10    12     1    31           jmp
+   11    16     0    32         label
 END
 
   is_deeply scalar($e->notExecuted->@*), 6;
@@ -4319,7 +4337,7 @@ if (1)                                                                          
 2
 3
 END
-  #say STDERR generateVerilogMachineCode("Array_scans");  exit;
+  generateVerilogMachineCode("Array_scans") if $testSet == 1;
  }
 
 #latest:;
@@ -4472,7 +4490,7 @@ if (1)
 
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [0,0,0];
-  #say STDERR generateVerilogMachineCode("Free");
+  generateVerilogMachineCode("Free");
  }
 
 #latest:;
@@ -4493,7 +4511,7 @@ if (1)                                                                          
    };
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [111, 333];
-  #say STDERR generateVerilogMachineCode("Jeq_test"); exit;
+  generateVerilogMachineCode("Jeq_test");
  }
 
 #latest:;
@@ -4504,7 +4522,7 @@ if (1)                                                                          
   Push $a, 2,     "aaa";
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->Heap->($e, 0), [1..2];
-  #say STDERR generateVerilogMachineCode("Push_test"); exit;
+  generateVerilogMachineCode("Push_test");
  }
 
 #latest:;
@@ -4518,7 +4536,7 @@ if (1)                                                                          
   Out $c;
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [1..3];
-  #say STDERR generateVerilogMachineCode("Mov_test");
+  generateVerilogMachineCode("Mov_test");
  }
 
 #latest:;
@@ -4540,7 +4558,7 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->heap(0), bless([11, 77, 88, 44, 55], "aaa");
   is_deeply $e->heap(1), bless([66, 77, 88, 99],     "bbb");
-  #say STDERR generateVerilogMachineCode("MoveLong_test");
+  generateVerilogMachineCode("MoveLong_test");
  }
 
 #latest:;
@@ -4553,7 +4571,7 @@ if (1)                                                                          
    };
   my $e = Execute(suppressOutput=>1, in => [33,22,11]);
   is_deeply $e->outLines, [3,33, 2,22, 1,11];
-  #say STDERR generateVerilogMachineCode("In_test");
+  generateVerilogMachineCode("In_test");
  }
 
 =pod
