@@ -310,7 +310,7 @@ sub fpgaLowLevelTests                                                           
     my ($b) = fpe $h, qw(tangnano9k cst);                                       # Device description
 
     my $y = <<END;
-    - name: $test
+    - name: $m
       run: |
         export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog -I$i -DTEST $v; synth_gowin -top fpga -json $j"
