@@ -1,7 +1,7 @@
+  parameter integer NInstructions = 28;
+
   task startTest();                                                             // Array_scans: load code
     begin
-      for(i = 0; i < NInstructions; i = i + 1) code[i] = 0;
-      NInstructionEnd = 28;
 
       code[   0] = 'h0000000100000000000000000000210000000000000320000000000000000000;                                                                          // array
       code[   1] = 'h0000002300000000000000000000150000000000000a20000000000000000000;                                                                          // mov
@@ -37,6 +37,17 @@
   task endTest();                                                               // Array_scans: Evaluate results in out channel
     begin
       success = 1;
-
+      success = success && outMem[0] == 3;
+      success = success && outMem[1] == 2;
+      success = success && outMem[2] == 1;
+      success = success && outMem[3] == 0;
+      success = success && outMem[4] == 3;
+      success = success && outMem[5] == 2;
+      success = success && outMem[6] == 1;
+      success = success && outMem[7] == 0;
+      success = success && outMem[8] == 0;
+      success = success && outMem[9] == 1;
+      success = success && outMem[10] == 2;
+      success = success && outMem[11] == 3;
     end
   endtask
