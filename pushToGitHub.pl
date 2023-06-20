@@ -325,6 +325,8 @@ END
       with:
         path: $h
 END
+
+  join "\n", @y;
  }
 
 sub introEmulator{&introEmulator1.&introEmulator2}
