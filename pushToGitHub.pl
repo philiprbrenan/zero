@@ -18,8 +18,9 @@ my $home     = q(/home/phil/perl/cpan/ZeroEmulator/);                           
 my $user     = q(philiprbrenan);                                                # User
 my $repo     = q(zero);                                                         # Store code here so it can be referenced from a browser
 my $wf       = q(.github/workflows/main.yml);                                   # Work flow on Ubuntu
-my $repoUrl  = q(https://github.com/philiprbrenan/zero);
-my $timeFile = q(zzzFileTimes.data);
+my $repoUrl  = q(https://github.com/philiprbrenan/zero);                        # Repo
+my $timeFile = q(zzzFileTimes.data);                                            # Last upload time
+my $testsDir = fpd $home, qw(verilog fpga tests);                               # Tests folder
 my $perlXmp  = 1;                                                               # Perl examples if true
 my $macos    = 0;                                                               # Macos if true
 my $windows  = 0;                                                               # Windows if true
@@ -287,16 +288,39 @@ END
 
 END
 
-
-  $y .= <<END if $fpga1;                                                        # Low level tests - add
-    - name: add
-      run: |
-        export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        (cd verilog/fpga/add; perl -I\$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl)
-
-END
+  $y .= &fpgaLowLevelTests;                                                     # Low level tests
 
   lll "Ubuntu work flow for $repo ", writeFileUsingSavedToken($user, $repo, $wf, $y);
+ }
+
+sub fpgaLowLevelTests                                                           # Low level tests
+ {my @tests = searchDirectoryTreeForSubFolders($testsDir);
+
+  my @y;
+  for my $test(@tests)                                                          # Each test
+   {my $m = $test =~ s($testsDir) ()r;                                          # Test name
+    next unless $test;
+    my $h   = fpd qw(verilog fpga);                                             # Home folder
+    my $v   = fpe $h, $m, q(sv);                                                # Source file
+    my $i   = fpd $h, qw(tests), $m;                                            # Include folder containing test
+    my $j   = fpe $i, $m, qw(json);                                             # Json description
+    my $p   = fpe $i, $m, qw(pnr);                                              # Place and route
+    my $P   = fpe $i, $m, qw(fs);                                               # Bit stream
+    my $d   = q(GW1NR-LV9QN88PC6/I5);                                           # Device
+    my ($b) = fpe $h, qw(tangnano9k cst);                                       # Device description
+
+    my $y = <<END;
+    - name: $test
+      run: |
+        export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
+        yosys -q -p "read_verilog -I$i -DTEST $v; synth_gowin -top fpga -json $j"
+        nextpnr-gowin -v --debug --json $j --write $p --device "$d" --family GW1N-9C --cst $b
+        gowin_pack -d GW1N-9C -o $P $p
+
+END
+    push @y, $y;
+   }
+  join "\n", @y
  }
 
 sub introEmulator{&introEmulator1.&introEmulator2}
