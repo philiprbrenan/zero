@@ -11,7 +11,12 @@ module fpga                                                                     
   parameter integer InstructionNWidth  = 256;                                   // Number of bits in an instruction
   parameter integer MemoryElementWidth =  12;                                   // Memory element width
 
-  parameter integer NInstructions  = 114;  // 40s makes run very long if big                               // Number of instruction slots in code memory
+  `ifdef TEST
+    `include "test.sv"
+  `else
+    `include "tests/Add_test/test.sv"
+  `endif
+
   parameter integer NArea          =   2;  // 40s                               // Size of each area on the heap
   parameter integer NArrays        =   2;  // long AAAA                         // Maximum number of arrays
   parameter integer NHeap          =   2;  //NArea*NArrays;                     // Amount of heap memory
@@ -30,7 +35,6 @@ module fpga                                                                     
   reg signed [MemoryElementWidth-1:0]  freedArrays[NFreedArrays-1 :0];          // Freed arrays list implemented as a stack
   reg signed [MemoryElementWidth-1:0]   arrayShift[NArea-1        :0];          // Array shift area
 
-  integer signed  NInstructionEnd;                                              // Limit of instructions for the current program
   integer signed         inMemPos;                                              // Current position in input channel
   integer signed         inMemEnd;                                              // End of input channel, this is the next element that would have been added.
   integer signed        outMemPos;                                              // Position in output channel
@@ -140,38 +144,18 @@ module fpga                                                                     
 
 // Execute each test progam
 
-  `ifdef TEST
-     `include "test.sv"
-  `else
-  task startTest();                                                             // Add_test: load code
-    begin
-      for(i = 0; i < NInstructions; i = i + 1) code[i] = 0;
-      NInstructionEnd = 2;
-
-      code[   0] = 'h0000000000000000000000000000210000000000000320000000000000022000;                                                                          // add
-      code[   1] = 'h0000002700000000000000000000010000000000000021000000000000000000;                                                                          // out
-    end
-  endtask
-
-  task endTest();                                                               // Add_test: Evaluate results in out channel
-    begin
-      success = 1;
-
-      success = success && outMem[0] == 5;
-
-    end
-  endtask  `endif
-
   always @(posedge clock) begin                                                 // Execute instruction
     if (run) begin
-      if (ip >= 0 && ip < NInstructionEnd) begin                                // Ip in range
+      if (ip >= 0 && ip < NInstructions) begin                                  // Ip in range
         executeInstruction();
+$display("AAAA %d", ip);
         ip = ip + 1;
       end
       else begin;                                                               // Finished
         runnable = 0;
         endTest();
         finished = 1;
+$display("BBBB %d", outMem[0]);
       end
     end
     else begin                                                                  // Initialize if not running
