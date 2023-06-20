@@ -295,19 +295,19 @@ END
 
 sub fpgaLowLevelTests                                                           # Low level tests
  {my @tests = searchDirectoryTreeForSubFolders($testsDir);
+  my $h = fpd qw(verilog fpga);                                                 # Home folder
+  my $v = fpe $h, qw(fpga sv);                                                  # Source file
+  my $d = q(GW1NR-LV9QN88PC6/I5);                                               # Device
+  my $b = fpe $h, qw(tangnano9k cst);                                           # Device description
 
   my @y;
   for my $test(@tests)                                                          # Each test
    {my $m = $test =~ s($testsDir) ()r;                                          # Test name
     next unless $m;
-    my $h   = fpd qw(verilog fpga);                                             # Home folder
-    my $v   = fpe $h, qw(fpga sv);                                              # Source file
-    my $i   = fpd $h, qw(tests), $m;                                            # Include folder containing test
-    my $j   = fpe $i, $m, qw(json);                                             # Json description
-    my $p   = fpe $i, $m, qw(pnr);                                              # Place and route
-    my $P   = fpe $i, $m, qw(fs);                                               # Bit stream
-    my $d   = q(GW1NR-LV9QN88PC6/I5);                                           # Device
-    my ($b) = fpe $h, qw(tangnano9k cst);                                       # Device description
+    my $i = fpd $h, qw(tests), $m;                                              # Include folder containing test
+    my $j = fpe $i, $m, qw(json);                                               # Json description
+    my $p = fpe $i, $m, qw(pnr);                                                # Place and route
+    my $P = fpe $i, $m, qw(fs);                                                 # Bit stream
 
     my $y = <<END;
     - name: $m
@@ -320,7 +320,11 @@ sub fpgaLowLevelTests                                                           
 END
     push @y, $y;
    }
-  join "\n", @y
+  push @y, <<END;
+    - uses: actions/upload-artifact\@v3
+      with:
+        path: $h
+END
  }
 
 sub introEmulator{&introEmulator1.&introEmulator2}
