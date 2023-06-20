@@ -1,7 +1,7 @@
+  parameter integer NInstructions = 4;
+
   task startTest();                                                             // Array_test: load code
     begin
-      for(i = 0; i < NInstructions; i = i + 1) code[i] = 0;
-      NInstructionEnd = 4;
 
       code[   0] = 'h0000000100000000000000000000210000000000000320000000000000000000;                                                                          // array
       code[   1] = 'h0000002300000000000000000001150000000000000b20000000000000000000;                                                                          // mov
@@ -13,6 +13,6 @@
   task endTest();                                                               // Array_test: Evaluate results in out channel
     begin
       success = 1;
-
+      success = success && outMem[0] == 11;
     end
   endtask
