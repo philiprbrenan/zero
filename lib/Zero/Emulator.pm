@@ -4577,6 +4577,6 @@ if (1)                                                                          
  }
 
 =pod
-(\A.{80})\s+(#.*\Z) \1\2
+ (\A.{80})\s+(#.*\Z) \1\2
 say STDERR '  is_deeply $e->out, <<END;', "\n", $e->out, "END"; exit;
 =cut
