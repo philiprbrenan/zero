@@ -1,7 +1,7 @@
+  parameter integer NInstructions = 9;
+
   task startTest();                                                             // In_test: load code
     begin
-      for(i = 0; i < NInstructions; i = i + 1) code[i] = 0;
-      NInstructionEnd = 9;
 
       code[   0] = 'h0000002000000000000000000000010000000000000120000000000000000000;                                                                          // label
       code[   1] = 'h0000001600000000000000000000210000000000000000000000000000000000;                                                                          // inSize
@@ -18,6 +18,11 @@
   task endTest();                                                               // In_test: Evaluate results in out channel
     begin
       success = 1;
-
+      success = success && outMem[0] == 3;
+      success = success && outMem[1] == 33;
+      success = success && outMem[2] == 2;
+      success = success && outMem[3] == 22;
+      success = success && outMem[4] == 1;
+      success = success && outMem[5] == 11;
     end
   endtask
