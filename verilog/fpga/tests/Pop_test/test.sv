@@ -1,7 +1,7 @@
+  parameter integer NInstructions = 7;
+
   task startTest();                                                             // Pop_test: load code
     begin
-      for(i = 0; i < NInstructions; i = i + 1) code[i] = 0;
-      NInstructionEnd = 7;
 
       code[   0] = 'h0000000100000000000000000000210000000000000320000000000000000000;                                                                          // array
       code[   1] = 'h0000002e00000000000000000000210000000000000120000000000000032000;                                                                          // push
@@ -16,6 +16,7 @@
   task endTest();                                                               // Pop_test: Evaluate results in out channel
     begin
       success = 1;
-
+      success = success && outMem[0] == 2;
+      success = success && outMem[1] == 1;
     end
   endtask
