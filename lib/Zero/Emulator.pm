@@ -2970,8 +2970,8 @@ sub GenerateMachineCodeDisAssembleExecute(%)                                    
 
 #D1 Generate Verilog
 
-sub generateVerilogMachineCode($)                                               # Generate machine code and print it out in Verilog format
- {my ($name) = @_;                                                              # Name of subroutine to contain generated code
+sub generateVerilogMachineCode($;$)                                             # Generate machine code and print it out in Verilog format
+ {my ($name, $out) = @_;                                                        # Name of subroutine to contain generated code, optional expected results in out channel
   my $string = GenerateMachineCode;
   my $N = 32;
   my $l = length($string);
@@ -2992,6 +2992,9 @@ END
   push @v, <<END;
     end
   endtask
+END
+  my $o =
+  push @v, <<END if $out;
 END
   my $c = join "\n", @v;
   my $f = fpe "../../verilog/tests", $name, q(sv);
@@ -3144,8 +3147,8 @@ if (1)                                                                          
   my $a = Add 3, 2;
   Out  $a;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->outLines, [5];
-  generateVerilogMachineCode("Add_test") if $testSet == 1 and $debug;
+  is_deeply $e->outLines, my $expect = [5];
+  generateVerilogMachineCode("Add_test", $expect) if $testSet == 1 and $debug;
  }
 
 #latest:;
