@@ -1,7 +1,7 @@
+  parameter integer NInstructions = 12;
+
   task startTest();                                                             // MoveLong_test: load code
     begin
-      for(i = 0; i < NInstructions; i = i + 1) code[i] = 0;
-      NInstructionEnd = 12;
 
       code[   0] = 'h0000000100000000000000000000210000000000000320000000000000000000;                                                                          // array
       code[   1] = 'h0000000100000000000000000001210000000000000420000000000000000000;                                                                          // array
@@ -21,6 +21,5 @@
   task endTest();                                                               // MoveLong_test: Evaluate results in out channel
     begin
       success = 1;
-
     end
   endtask
