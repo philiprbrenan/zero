@@ -301,7 +301,7 @@ sub fpgaLowLevelTests                                                           
    {my $m = $test =~ s($testsDir) ()r;                                          # Test name
     next unless $m;
     my $h   = fpd qw(verilog fpga);                                             # Home folder
-    my $v   = fpe $h, $m, q(sv);                                                # Source file
+    my $v   = fpe $h, qw(fpga sv);                                              # Source file
     my $i   = fpd $h, qw(tests), $m;                                            # Include folder containing test
     my $j   = fpe $i, $m, qw(json);                                             # Json description
     my $p   = fpe $i, $m, qw(pnr);                                              # Place and route
