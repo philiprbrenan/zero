@@ -299,7 +299,7 @@ sub fpgaLowLevelTests                                                           
   my @y;
   for my $test(@tests)                                                          # Each test
    {my $m = $test =~ s($testsDir) ()r;                                          # Test name
-    next unless $test;
+    next unless $m;
     my $h   = fpd qw(verilog fpga);                                             # Home folder
     my $v   = fpe $h, $m, q(sv);                                                # Source file
     my $i   = fpd $h, qw(tests), $m;                                            # Include folder containing test
