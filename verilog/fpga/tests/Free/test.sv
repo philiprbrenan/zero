@@ -1,7 +1,7 @@
+  parameter integer NInstructions = 9;
+
   task startTest();                                                             // Free: load code
     begin
-      for(i = 0; i < NInstructions; i = i + 1) code[i] = 0;
-      NInstructionEnd = 9;
 
       code[   0] = 'h0000000100000000000000000000210000000000000320000000000000000000;                                                                          // array
       code[   1] = 'h0000002700000000000000000000010000000000000021000000000000000000;                                                                          // out
@@ -18,6 +18,8 @@
   task endTest();                                                               // Free: Evaluate results in out channel
     begin
       success = 1;
-
+      success = success && outMem[0] == 0;
+      success = success && outMem[1] == 0;
+      success = success && outMem[2] == 0;
     end
   endtask
