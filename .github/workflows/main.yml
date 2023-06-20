@@ -1,4 +1,4 @@
-# Test 2023-06-20 at 04:33:11
+# Test 2023-06-20 at 04:35:29
 
 name: Test
 
@@ -99,14 +99,6 @@ jobs:
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         (cd verilog/countUp; perl -I$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl)
-
-    - name: 
-      run: |
-        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog -Iverilog/fpga/tests/ -DTEST verilog/fpga/.sv; synth_gowin -top fpga -json verilog/fpga/tests/.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/.json --write verilog/fpga/tests/.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/.fs verilog/fpga/tests/.pnr
-
 
     - name: Add_test
       run: |
