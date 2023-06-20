@@ -2994,7 +2994,9 @@ END
   endtask
 END
   my $c = join "\n", @v;
-  owf fpe("../../verilog/tests", $name, q(sv)), $c;
+  my $f = fpe "../../verilog/tests", $name, q(sv);
+  my $C = readFile $f;
+  owf $f, $c unless $c eq $C;
  }
 
 my sub verilogInstructionDecode()                                               #P Create a verilog case statement to decode each instruction in the code array
