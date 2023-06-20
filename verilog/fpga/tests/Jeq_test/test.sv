@@ -1,5 +1,6 @@
   task startTest();                                                             // Jeq_test: load code
     begin
+      for(i = 0; i < NInstructions; i = i + 1) code[i] = 0;
       NInstructionEnd = 12;
 
       code[   0] = 'h0000002000000000000000000000010000000000000120000000000000000000;                                                                          // label
