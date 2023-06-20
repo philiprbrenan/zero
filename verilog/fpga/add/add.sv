@@ -140,6 +140,20 @@ module add                                                                      
 
 // Execute each test progam
 
+  task startTest();                                                             // Load program 'Add_test' into code memory    begin
+    begin
+      NInstructionEnd = 2;
+      code[   0] = 'h0000000000000000000000000000210000000000000320000000000000022000;
+      code[   1] = 'h0000002600000000000000000000010000000000000021000000000000000000;
+    end
+  endtask
+
+  task endTest();                                                               // Evaluate results in out channel
+    begin
+      success  = outMem[0] == 5;
+    end
+  endtask
+
   always @(posedge clock) begin                                                 // Execute instruction
     if (run) begin
       if (ip >= 0 && ip < NInstructionEnd) begin                                // Ip in range
@@ -148,7 +162,7 @@ module add                                                                      
       end
       else begin;                                                               // Finished
         runnable = 0;
-        success  = outMem[0] == 5;
+        endTest();
         finished = 1;
       end
     end
@@ -164,7 +178,7 @@ module add                                                                      
       allocs         = 0;
       freedArraysTop = 0;
 
-      Add_test();
+      startTest();
       runnable       = 1;
     end
   end
@@ -365,16 +379,6 @@ module add                                                                      
   endtask
   task watch_instruction();
     begin                                                                       // watch
-    end
-  endtask
-
-//Programs to execute as tests
-
-  task Add_test();                                                              // Load program 'Add_test' into code memory    begin
-    begin
-      NInstructionEnd = 2;
-      code[   0] = 'h0000000000000000000000000000210000000000000320000000000000022000;
-      code[   1] = 'h0000002600000000000000000000010000000000000021000000000000000000;
     end
   endtask
 
