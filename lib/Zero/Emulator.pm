@@ -3145,7 +3145,7 @@ if (1)                                                                          
   Out  $a;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [5];
-  generateVerilogMachineCode("Add_test") if $testSet == 1;
+  generateVerilogMachineCode("Add_test") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -3155,7 +3155,7 @@ if (1)                                                                          
   Out $a;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [2];
-  generateVerilogMachineCode("Subtract_test") if $testSet == 1;
+  generateVerilogMachineCode("Subtract_test") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -3193,7 +3193,7 @@ if (1)                                                                          
 0
 1
 END
-  generateVerilogMachineCode("Not_test") if $testSet == 1;
+  generateVerilogMachineCode("Not_test") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -3204,7 +3204,7 @@ if (1)                                                                          
   Out $a;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [2];
-  generateVerilogMachineCode("ShiftLeft_test") if $testSet == 1;
+  generateVerilogMachineCode("ShiftLeft_test") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -3215,7 +3215,7 @@ if (1)                                                                          
   Out $a;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [2];
-  generateVerilogMachineCode("ShiftRight_test") if $testSet == 1;
+  generateVerilogMachineCode("ShiftRight_test") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -3279,7 +3279,7 @@ if (1)                                                                          
   Mov     [$a,  1, "aaa"],  22;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->Heap->($e, 0), [11, 22];
-  generateVerilogMachineCode("Array_test") if $testSet == 1;
+  generateVerilogMachineCode("Array_test") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -3291,7 +3291,7 @@ if (1)                                                                          
   Out \1;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [11];
-  generateVerilogMachineCode("Array_test") if $testSet == 1;
+  generateVerilogMachineCode("Array_test") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -3392,7 +3392,7 @@ if (1)                                                                          
   Out $c;
   Out $d;
   my $e = &$ee(suppressOutput=>1);
-  generateVerilogMachineCode("Pop_test") if $testSet == 1;
+  generateVerilogMachineCode("Pop_test") if $testSet == 1 and $debug;
 
   #say STDERR $e->PrintLocal->($e); x;
   is_deeply $e->PrintLocal->($e), <<END;
@@ -3910,7 +3910,7 @@ if (1)                                                                          
 
   my $e = &$ee(suppressOutput=>0);
   is_deeply $e->Heap->($e, 0), [99, 0, 1, 2];
-  generateVerilogMachineCode("Shift_up_test") if $testSet == 1;
+  generateVerilogMachineCode("Shift_up_test") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -3941,7 +3941,7 @@ if (1)                                                                          
 
   my $e = &$ee(suppressOutput=>0);
   is_deeply $e->Heap->($e, 0), [0, 1, 99, 2];
-  generateVerilogMachineCode("Shift_up_test_2") if $testSet == 1;
+  generateVerilogMachineCode("Shift_up_test_2") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -4339,7 +4339,7 @@ if (1)                                                                          
 2
 3
 END
-  generateVerilogMachineCode("Array_scans") if $testSet == 1;
+  generateVerilogMachineCode("Array_scans") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -4492,7 +4492,7 @@ if (1)
 
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [0,0,0];
-  generateVerilogMachineCode("Free");
+  generateVerilogMachineCode("Free") if $debug;
  }
 
 #latest:;
@@ -4513,7 +4513,7 @@ if (1)                                                                          
    };
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [111, 333];
-  generateVerilogMachineCode("Jeq_test");
+  generateVerilogMachineCode("Jeq_test") if $debug;
  }
 
 #latest:;
@@ -4524,7 +4524,7 @@ if (1)                                                                          
   Push $a, 2,     "aaa";
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->Heap->($e, 0), [1..2];
-  generateVerilogMachineCode("Push_test");
+  generateVerilogMachineCode("Push_test") if $debug;
  }
 
 #latest:;
@@ -4538,7 +4538,7 @@ if (1)                                                                          
   Out $c;
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [1..3];
-  generateVerilogMachineCode("Mov_test");
+  generateVerilogMachineCode("Mov_test") if $debug;
  }
 
 #latest:;
@@ -4560,7 +4560,7 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->heap(0), bless([11, 77, 88, 44, 55], "aaa");
   is_deeply $e->heap(1), bless([66, 77, 88, 99],     "bbb");
-  generateVerilogMachineCode("MoveLong_test");
+  generateVerilogMachineCode("MoveLong_test") if $debug;
  }
 
 #latest:;
@@ -4573,7 +4573,7 @@ if (1)                                                                          
    };
   my $e = Execute(suppressOutput=>1, in => [33,22,11]);
   is_deeply $e->outLines, [3,33, 2,22, 1,11];
-  generateVerilogMachineCode("In_test");
+  generateVerilogMachineCode("In_test") if $debug;
  }
 
 =pod
