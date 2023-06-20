@@ -1,25 +1,33 @@
 //-----------------------------------------------------------------------------
-// Fpga implementation and testing of NWay Trees
+// Test fpga
 // Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
-module fpga_tb();                                                               // Run test programs
+module fpga_tb();                                                               // Test fpga
+  reg clock = 0;                                                                // Execute the next instruction
+  reg run   = 0;                                                                // Execute the next instruction
+  reg finished;                                                                 // Goes high when the program has finished
+  reg success;                                                                  // Goes high on finish if all the tests passed
 
-  reg      startIn = 0;                                                         // Start tests in fpga
-  reg[7:0] passedOut;                                                           // Number of tests passed
-
-  `include "../tests.sv"                                                        // Test routines
+  `include "tests.sv"                                                           // Test routines
 
   fpga f                                                                        // Fpga
-   (.startIn(startIn),
-    .passedOut(passedOut)
+   (.clock    (clock   ),
+    .run      (run),
+    .finished (finished),
+    .success  (success )
    );
 
+  integer steps = 0;
+
   initial begin                                                                 // Test the fpga
-    startIn = 1;
-    #10000;
-    ok(passedOut == 124, "aaa");
+    clock = 0; #1 clock = 1;
+    clock = 0; #1 clock = 1;
+    for(steps = 0; steps < 2; ++steps) begin
+      clock = 0; run = 1; #1 clock = 1;
+    end
+    #1
+    ok(success == 1, "aaa");
     checkAllTestsPassed(1);
-    $finish();
   end
 
 endmodule
