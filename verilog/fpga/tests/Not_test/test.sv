@@ -1,7 +1,7 @@
+  parameter integer NInstructions = 6;
+
   task startTest();                                                             // Not_test: load code
     begin
-      for(i = 0; i < NInstructions; i = i + 1) code[i] = 0;
-      NInstructionEnd = 6;
 
       code[   0] = 'h0000002300000000000000000000210000000000000320000000000000000000;                                                                          // mov
       code[   1] = 'h0000002600000000000000000001210000000000000021000000000000000000;                                                                          // not
@@ -15,6 +15,8 @@
   task endTest();                                                               // Not_test: Evaluate results in out channel
     begin
       success = 1;
-
+      success = success && outMem[0] == 3;
+      success = success && outMem[1] == 0;
+      success = success && outMem[2] == 1;
     end
   endtask
