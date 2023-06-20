@@ -1,5 +1,6 @@
   task startTest();                                                             // Subtract_test: load code
     begin
+      for(i = 0; i < NInstructions; i = i + 1) code[i] = 0;
       NInstructionEnd = 2;
 
       code[   0] = 'h0000003900000000000000000000210000000000000420000000000000022000;                                                                          // subtract
