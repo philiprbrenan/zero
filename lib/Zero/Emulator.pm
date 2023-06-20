@@ -2980,6 +2980,7 @@ sub generateVerilogMachineCode($;$)                                             
   my @v = <<END;
   task startTest();                                                             // $name: load code
     begin
+      for(i = 0; i < NInstructions; i = i + 1) code[i] = 0;
       NInstructionEnd = $L;
 END
 
