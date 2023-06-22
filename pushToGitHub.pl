@@ -86,6 +86,44 @@ for my $s(@uploadFiles)                                                         
 
 owf($timeFile, time);                                                           # Save current time
 
+sub job                                                                         # Create a job that runs on Ubuntu
+ {my ($job) = @_;                                                               # Job name
+   <<"END";
+
+  $job:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout\@v3
+      with:
+        ref: 'main'
+
+    - uses: actions/checkout\@v3
+      with:
+        repository: philiprbrenan/DataTableText
+        path: dtt
+
+    - name: Cpan
+      run:  sudo cpan install -T Data::Dump
+END
+ }
+
+sub yosys {<<END}                                                               # Install yosys
+    - name: Yosys
+      run:  wget -q https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2023-06-14/oss-cad-suite-linux-x64-20230614.tgz
+
+    - name: Yosys unzip
+      run: gunzip  oss-cad-suite-linux-x64-20230614.tgz
+
+    - name: Yosys untar
+      run: tar -xf oss-cad-suite-linux-x64-20230614.tar
+
+    - name: countUp
+      run: |
+        export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
+        (cd verilog/countUp; perl -I\$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl)
+END
+
 sub run
  {my $d = dateTimeStamp;
 
@@ -101,6 +139,7 @@ sub run
           perl examples/selectionSort.pl
 END
 
+  my $j = job("test");
   my $y = <<"END";
 # Test $d
 
@@ -110,23 +149,10 @@ on:
   push
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout\@v3
-      with:
-        ref: 'main'
+$j
 END
 
   $y .= <<END;                                                                  # High level tests using Perl and Verilog
-    - uses: actions/checkout\@v3
-      with:
-        repository: philiprbrenan/DataTableText
-        path: dtt
-
-    - name: Cpan
-      run:  sudo cpan install -T Data::Dump
 
     - name: Ubuntu update
       run:  sudo apt update
@@ -257,30 +283,7 @@ END
           cpan install -T Data::Dump Data::Table::Text
 END
 
-  $y .= <<END;                                                                   # Low level tests - convert verilog to fpga bitstream using yosys
-  fpga:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout\@v3
-
-    - uses: actions/checkout\@v3
-      with:
-        repository: philiprbrenan/DataTableText
-        path: dtt
-
-    - name: Cpan
-      run:  sudo cpan install -T Data::Dump
-
-    - name: Get
-      run:  wget -q https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2023-06-14/oss-cad-suite-linux-x64-20230614.tgz
-
-    - name: gunzip
-      run: gunzip  oss-cad-suite-linux-x64-20230614.tgz
-
-    - name: tar
-      run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-
+  $y .= job("fpga").yosys().<<END;                                              # Low level tests - convert verilog to fpga bitstream using yosys
     - name: countUp
       run: |
         export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
