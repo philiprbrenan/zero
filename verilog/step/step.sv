@@ -7,6 +7,8 @@ module step
 
   reg[2:0] mid1 = 0;
   reg[2:0] mid2 = 0;
+  reg[2:0] mid3;
+  assign mid3 = {mid1[1],mid2[1]}[1];
 
   always @(posedge in) begin
     $display("BBBB1");
