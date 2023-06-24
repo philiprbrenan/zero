@@ -149,6 +149,7 @@ sub Zero::Emulator::Assembly::instruction($%)                                   
       context=>   stackTrace(),                                                 # The call context in which this instruction was created
       executed=>  0,                                                            # The number of times this instruction was executed
       step=>      0,                                                            # The last time (in steps from the start) that this instruction was executed
+      entry=>     0,                                                            # An entry point into the code
     );
     return $i;
    }
@@ -412,7 +413,8 @@ sub Zero::Emulator::Assembly::assemble($%)                                      
     next unless $i->action =~ m(\A(j|call))i;
     if (my $l = $i->target->address)                                            # Label
      {if (defined(my $t = $labels{$l}))                                         # Found label
-       {$i->jump = $Block->Reference($t - $c, 1);                               # Relative jump
+       {$i->jump = $Block->Reference($t - $c, 1);                               # Relative jump.
+        $$code[$i->target->address]->entry = $t - $c < 0;                       # Such a jump could be negative which would make the target the start of an executable sub sequence
        }
       else
        {my $a = $i->action;
@@ -421,6 +423,7 @@ sub Zero::Emulator::Assembly::assemble($%)                                      
      }
    }
 
+  $$code[0]->entry = 1;                                                         # Execution starts at the first instruction
   $Block->labels = {%labels};                                                   # Labels created during assembly
   $Block
  }
