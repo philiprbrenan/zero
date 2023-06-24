@@ -1,4 +1,4 @@
-# Test 2023-06-22 at 22:43:28
+# Test 2023-06-24 at 21:36:45
 
 name: Test
 
@@ -131,14 +131,6 @@ jobs:
         yosys -q -p "read_verilog -Iverilog/fpga/tests/Array_test/ -DTEST verilog/fpga/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Array_test/Array_test.json"
         nextpnr-gowin -v --debug --json verilog/fpga/tests/Array_test/Array_test.json --write verilog/fpga/tests/Array_test/Array_test.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tangnano9k.cst
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/Array_test/Array_test.fs verilog/fpga/tests/Array_test/Array_test.pnr
-
-
-    - name: BTree
-      run: |
-        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog -Iverilog/fpga/tests/BTree/ -DTEST verilog/fpga/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/BTree.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/BTree.json --write verilog/fpga/tests/BTree/BTree.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/BTree.fs verilog/fpga/tests/BTree/BTree.pnr
 
 
     - name: Free
