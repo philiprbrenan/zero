@@ -2985,18 +2985,29 @@ sub generateVerilogMachineCode($)                                               
     begin
 END
 
+  my $z = 0;                                                                    # Number of zeroes
+ #my @b;
   for my $i(0..$L-1)                                                            # Each instruction
-   {my $s = unpack "H*", substr($string, $i*$N, $N);
-    my $c = pad sprintf(qq(      code[%4d] = 'h$s;), $i), 80;
-    push @v, $c."// ".$assembly->code->[$i]->action;
+   {my $b = unpack "b*", substr($string, $i*$N, $N);                            # Instruction in binary
+    #push @b, $b;                                                               # Save instruction in binary
+    $z += length($b =~ s(1) ()gsr);                                             # Count zeroes in instructions
+    my $c = pad sprintf(qq(      code[%4d] = 'b$b;), $i), 80;                   # Pad instruction description so it prints evenly
+    push @v, $c."// ".$assembly->code->[$i]->action;                            # Opcode
    }
 
-  push @v, <<END;
-    end
-  endtask
+  #owf("../../verilog/fpga/tests/$name/test.txt", dump(\@b));                   # Dump machine code in binary for analysis
+
+  if (0)                                                                        # Compression statistics
+   {my $n = $L * $N * 8; my $o = $n - $z; my $r = $z / $o;                      # Assume 8 bits in a byte
+    push @v, <<END;
+// Zeroes: $z, ones: $o, ratio: $r too high
 END
+  }
 
   my @o = <<END;                                                                # Check results
+    end
+  endtask
+
   task endTest();                                                               // $name: Evaluate results in out channel
     begin
       success = 1;
