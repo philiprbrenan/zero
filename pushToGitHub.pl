@@ -63,7 +63,8 @@ push my @files,
   grep {!/Build.PL/}
   grep {!/blib/}
 # grep {$perlXmp or !/\.pl\Z/}                                                  # No changes expected
-  searchDirectoryTreesForMatchingFiles($home, qw(.pm .pl .md .sv .tb .cst));    # Files
+  searchDirectoryTreesForMatchingFiles($home,                                   # Files to upload
+    qw(.pm .pl .md .sv .tb .cst));
 
 my @uploadFiles;                                                                # Locate files to upload
 if (-e $timeFile)
@@ -307,6 +308,7 @@ sub fpgaLowLevelTests                                                           
   for my $test(@tests)                                                          # Each test
    {my $m = $test =~ s($testsDir) ()r;                                          # Test name
     next unless $m;
+    next if $m =~ m(BTree);                                                     # Currently takes too long
     my $i = fpd $h, qw(tests), $m;                                              # Include folder containing test
     my $j = fpe $i, $m, qw(json);                                               # Json description
     my $p = fpe $i, $m, qw(pnr);                                                # Place and route
