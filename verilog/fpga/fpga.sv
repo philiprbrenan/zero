@@ -148,14 +148,12 @@ module fpga                                                                     
     if (run) begin
       if (ip >= 0 && ip < NInstructions) begin                                  // Ip in range
         executeInstruction();
-$display("AAAA %d", ip);
         ip = ip + 1;
       end
       else begin;                                                               // Finished
         runnable = 0;
         endTest();
         finished = 1;
-$display("BBBB %d", outMem[0]);
       end
     end
     else begin                                                                  // Initialize if not running
@@ -462,7 +460,7 @@ $display("BBBB %d", outMem[0]);
   task out_instruction();                                                       // Out
     begin
       outMem[outMemPos] = source1Value;
-      outMemPos = outMemPos + 1;
+      outMemPos = (outMemPos + 1) % NOut;
     end
   endtask
 
