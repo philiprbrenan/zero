@@ -18,7 +18,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Time::HiRes qw(time);
-eval "use Test::More tests=>396" unless caller;
+eval "use Test::More tests=>400" unless caller;
 
 makeDieConfess;
 our $memoryTechnique;                                                           # Undef or the address of a sub that loads the memory handlers into an execution environment.
@@ -45,7 +45,8 @@ sub ExecutionEnvironment(%)                                                     
     GetMemoryArrays=>       \&getMemoryArrays,                                  # Low level memory access - arenas in use
     GetMemoryLocation=>    \&getMemoryLocation,                                 # Low level memory access - location
     Heap=>                 \&heap,                                              # Get the contents of the specified array
-    in=>                    $options{in}//[],                                   # The input chnnel.  the L<In> instruction reads one element at a time from this array.
+    in=>                    $options{in}//[],                                   # The input channel.  the L<In> instruction reads one element at a time from this array.
+    inOriginally=>          [($options{in}//[])->@*],                            # A copy of the input channel that does not get consumed by the execution of  the program so that we can use it to construct tests
     instructionCounts=>     {},                                                 # The number of times each actual instruction is executed
     instructionPointer=>    0,                                                  # Current instruction
     lastAssignAddress=>     undef,                                              # Last assignment performed - address
@@ -414,7 +415,7 @@ sub Zero::Emulator::Assembly::assemble($%)                                      
     if (my $l = $i->target->address)                                            # Label
      {if (defined(my $t = $labels{$l}))                                         # Found label
        {$i->jump = $Block->Reference($t - $c, 1);                               # Relative jump.
-        $$code[$i->target->address]->entry = $t - $c < 0;                       # Such a jump could be negative which would make the target the start of an executable sub sequence
+        $$code[$t]->entry = $t - $c < 0  ? 1 : 0;                               # Such a jump could be negative which would make the target the start of an executable sub sequence
        }
       else
        {my $a = $i->action;
@@ -2774,7 +2775,7 @@ sub Sequential(@)                                                               
 my $instructions = Zero::Emulator::Assembly::execute(undef);
 my @instructions = sort keys %$instructions;
 my %instructions = map {$instructions[$_]=>$_} keys @instructions;
-#say STDERR "IIII\n", dump(\%instructions), formatTable(\@instructions); exit;
+#say STDERR "Instruction op codes\n", dump(\%instructions), formatTable(\@instructions); exit;
 
 sub instructionMap()                                                            #P Instruction map
  {return \%instructions
@@ -2807,14 +2808,14 @@ my sub instructionListReadMe()                                                  
   $s
  }
 
-my sub instructionListMapping()                                                 #P Map instructions to small integers.
- {my $i = instructionList;
-  my @n = map {$$_[0]} @$i;                                                     # Description of instruction
-  my $n = join ' ', @n;
-  say STDERR <<END;
-my \@instructions = qw($n);
-END
-}
+#my sub instructionListMapping()                                                 #P Map instructions to small integers.
+# {my $i = instructionList;
+#  my @n = map {$$_[0]} @$i;                                                     # Description of instruction
+#  my $n = join ' ', @n;
+#  say STDERR <<END;
+#my \@instructions = qw($n);
+#END
+#}
 #instructionListMapping(); exit;
 
 my sub rerefValue($$)                                                           #P Re-reference a value.
@@ -2900,6 +2901,7 @@ sub Zero::Emulator::Assembly::packInstruction($$)                               
   my  $a = '';
   my $n = $instructions{$i->action};
   vec($a, 0, 32) = $n;
+
   vec($a, 1, 32) = 0;
   $a .= $code->packRef($i, $i->target,  0);
   $a .= $code->packRef($i, $i->source,  1);
@@ -2973,10 +2975,10 @@ sub GenerateMachineCodeDisAssembleExecute(%)                                    
 
 #D1 Generate Verilog
 
-sub generateVerilogMachineCode($)                                               # Generate machine code and print it out in Verilog format. We need the just completed execution environment so we can examine the out channel for the expected results.
+sub generateVerilogMachineCode($$)                                              # Generate machine code and print it out in Verilog format. We need the just completed execution environment so we can examine the out channel for the expected results.
  {my ($exec, $name) = @_;                                                       # Execution environment of completed run, name of subroutine to contain generated code
   @_ == 2 or confess "Two parameters";
-  my $string = GenerateMachineCode;
+  my $string = GenerateMachineCode;                                             # Generate machine code as one long string
   my $N = 32;
   my $l = length($string);
   my $L = int($l / $N);
@@ -2991,10 +2993,10 @@ END
   my $z = 0;                                                                    # Number of zeroes
  #my @b;
   for my $i(0..$L-1)                                                            # Each instruction
-   {my $b = unpack "b*", substr($string, $i*$N, $N);                            # Instruction in binary
+   {my $b = unpack "H*", substr($string, $i*$N, $N);                            # Instruction in binary
     #push @b, $b;                                                               # Save instruction in binary
     $z += length($b =~ s(1) ()gsr);                                             # Count zeroes in instructions
-    my $c = pad sprintf(qq(      code[%4d] = 'b$b;), $i), 80;                   # Pad instruction description so it prints evenly
+    my $c = pad sprintf(qq(      code[%4d] = 'h$b;), $i), 80;                   # Pad instruction description so it prints evenly
     push @v, $c."// ".$assembly->code->[$i]->action;                            # Opcode
    }
 
@@ -3066,12 +3068,196 @@ END
 }
 #say STDERR verilogInstructionDecode(); exit;
 
+#D1 Compile to verilog                                                          # Compile each sub sequence of instructions into equivalent verilog.  A sub sequence starts at an instruction marked as an entry point
+
+sub CompileToVerilog(%)                                                         # Execution environment for a block of code.
+ {my (%options) = @_;                                                           # Execution options
+
+  genHash(q(Zero::CompileToVerilog),                                            # Compile to verilog
+    NArea=>                 $options{NArea} // 4,                               # The size of an array in the heap area
+    code=>                  [],                                                 # Generated code
+   );
+ }
+
+sub Zero::CompileToVerilog::deref($$)                                           # Compile a reference in assembler format to a corresponding verilog expression
+ {my ($compile, $ref, $field) = @_;                                             # Compile, reference, field required
+  @_ == 3 or confess "Three parameters";
+
+  my $NArea = $compile->NArea;                                                  # We have to fix the area size in advance to make this process efficient
+
+  my sub heapAddr($$$)                                                          # Heap memory address
+   {my ($delta, $area, $address) = @_;                                          # Delta, area, address
+    "$delta + $area*$NArea + $address";                                         # Heap memory address
+   }
+
+  my sub heapMem($$$)                                                           # Heap memory value
+   {my ($delta, $area, $address) = @_;                                          # Delta, area, address
+    "heapMem[".heapAdr($delta, $area, $address)."]";                            # Heap memory value
+   }
+
+  my sub localAdr($$)                                                           # Local memory address
+   {my ($delta, $address) = @_;                                                 # Delta, address
+    "$delta+localMem[$address]";
+   }
+
+  my sub localMem($$)                                                           # Local memory value
+   {my ($delta, $address) = @_;                                                 # Delta, address
+    "localMem[$delta+$address]";
+   }
+
+  my $Area      = $ref->area    ;                                               # Components of a reference
+  my $Address   = $ref->address ;
+  my $Arena     = $ref->arena   ;
+  my $DArea     = $ref->dArea   ;
+  my $DAddress  = $ref->dAddress;
+  my $Delta     = $ref->delta   ;
+
+  my $Value     =                                                               # Source vlue
+    $Arena      == 0 ? 0 :
+    $Arena      == 1 ?
+     (                  $DAddress == 0 ? $Address :
+      $DArea    == 0 && $DAddress == 1 ? heapMem ($Delta, $Area,              $Address)              :
+      $DArea    == 0 && $DAddress == 2 ? heapMem ($Delta, $Area,              localMem(0, $Address)) :
+      $DArea    == 1 && $DAddress == 1 ? heapMem ($Delta, localMem(0, $Area), $Address)              :
+      $DArea    == 1 && $DAddress == 2 ? heapMem ($Delta, localMem(0, $Area), localMem(0, $Address)) : 0) :
+    $Arena      == 2 ?
+     ($DAddress == 0 ? $Address :
+      $DAddress == 1 ? localMem($Delta, $Address)              :
+      $DAddress == 2 ? localMem($Delta, localMem(0, $Address)) : 0) : 0;
+
+  my $Location  =                                                               # Source location
+    $Arena      == 0 ? 0 :
+    $Arena      == 1 ?
+     (                  $DAddress == 0 ? $Address :
+      $DArea    == 0 && $DAddress == 1 ? heapAdr ($Delta, $Area,              $Address)              :
+      $DArea    == 0 && $DAddress == 2 ? heapAdr ($Delta, $Area,              localMem(0, $Address)) :
+      $DArea    == 1 && $DAddress == 1 ? heapAdr ($Delta, localMem(0, $Area), $Address)              :
+      $DArea    == 1 && $DAddress == 2 ? heapAdr ($Delta, localMem(0, $Area), localMem(0, $Address)) : 0) :
+    $Arena      == 2 ?
+     ($DAddress == 0 ? $Address :
+      $DAddress == 1 ? localAdr($Delta, $Address)            :
+      $DAddress == 2 ? localAdr($Delta, localMem(0, $Address)) : 0) : 0;
+
+  my $targetLocation  =                                                          # Target as a location
+    $Arena      == 0 ? 0 :
+    $Arena      == 1 ?
+     ($DArea    == 0 && $DAddress == 1 ? heapMem($Delta, $Area,              $Address)              :
+      $DArea    == 0 && $DAddress == 2 ? heapMem($Delta, $Area,              localMem(0, $Address)) :
+      $DArea    == 1 && $DAddress == 1 ? heapMem($Delta, localMem(0, $Area), $Address)              :
+      $DArea    == 1 && $DAddress == 2 ? heapMem($Delta, localMem(0, $Area), localMem(0, $Address)) : 0) :
+    $Arena      == 2 ?
+     ($DAddress == 1 ?  "localMem[$Delta + $Address]"   :
+      $DAddress == 2 ?  localMem($Delta, $Address) : 0) : 0;
+
+  my $targetIndex  =                                                            # Target index within array
+    $Arena      == 1 ?
+     ($DAddress == 1 ? $Delta + $Address          :
+      $DAddress == 2 ? localAdr($Delta, $Address) : 0)  : 0;
+
+  my $targetLocationArea =                                                      # Number of array containing target
+      $Arena    == 1 && $DArea == 0 ? $Area :
+      $Arena    == 1 && $DArea == 1 ? localMem(0, $Area): 0;
+
+  my $targetValue =                                                             # Target as value
+    $Arena      == 0 ? 0 :
+    $Arena      == 1 ?
+     (                  $DAddress == 0 ? $Address :
+      $DArea    == 0 && $DAddress == 1 ? heapMem ($Delta, $Area,              $Address)           :
+      $DArea    == 0 && $DAddress == 2 ? heapMem ($Delta, $Area,              localMem(0, $Address)) :
+      $DArea    == 1 && $DAddress == 1 ? heapMem ($Delta, localMem(0, $Area), $Address)           :
+      $DArea    == 1 && $DAddress == 2 ? heapMem ($Delta, localMem(0, $Area), localMem(0, $Address)) : 0) :
+    $Arena      == 2 ?
+     ($DAddress == 0 ? $Address :
+      $DAddress == 1 ? localMem($Delta, $Address)           :
+      $DAddress == 2 ? localMem($Delta, localMem(0, $Address)) : 0) : 0;
+
+  return $Value              if $field eq q(Value)             ;                # Source vlue
+  return $Location           if $field eq q(Location)          ;                # Source location
+  return $targetLocation     if $field eq q(targetLocation)    ;                # Target as a location
+  return $targetIndex        if $field eq q(targetIndex)       ;                # Target index within array
+  return $targetLocationArea if $field eq q(targetLocationArea);                # Number of array containing target
+  return $targetValue        if $field eq q(targetValue)       ;                # Target as value
+
+  confess "No field selected";
+ }
+
+sub compileToVerilog($$)                                                        # Compile each sub sequence of instructions into equivalent verilog.  A sub sequence starts at an instruction marked as an entry point
+ {my ($exec, $name) = @_;                                                       # Execution environment of completed run, name of subroutine to contain generated code
+  @_ == 2 or confess "Two parameters";
+
+  my $compile = CompileToVerilog(NArea=>10);                                    # Compilation environment
+
+  my @c;                                                                        # Generated code
+
+  my $gen =                                                                     # Code generation for each instruction
+   {inSize=> sub                                                                # InSize
+     {my ($i) = @_;                                                             # Instruction
+      my $t   = $compile->deref($i->target, q(targetLocation));
+      push @c, <<END;
+              if (inMemEnd > inMemPos) $t =       inMemEnd - inMemPos;
+              else                     $t = NIn + inMemEnd - inMemPos;
+END
+     },
+
+    out=> sub                                                                   # Out
+     {my ($i) = @_;                                                             # Instruction
+      my $s   = $compile->deref($i->source, q(Value));
+      push @c, <<END;
+              outMem[outMemPos] = $s;
+              outMemPos = (outMemPos + 1) % ;
+END
+     },
+   };
+
+  my $code = $exec->block->code;                                                # Using an execution environment gives us access to sample input and output thus allowing the creation of a test for the generated code.
+
+  push @c, <<END;                                                               # A case statement to select the next sub sequence to execute
+  always @(posedge clock) begin
+      case(ip)
+END
+
+  my $subSeq = 0;                                                               # Sub sequence
+  for my $i(@$code)                                                             # Each instruction
+   {my $action = $i->action;
+    my $number = $i->number;
+
+    if ($i->entry)                                                              # Start a new subsequence
+     {my $n = sprintf "%4d", $i->number;
+      push @c, <<END if $subSeq;
+            end
+END
+      ++$subSeq;                                                                # Sub sequence
+
+      push @c, <<END;
+      $n: begin : subSequence$subSeq;
+END
+     }
+
+    push @c, <<END;                                                             # Next instruction in this sequence
+// $number - $action
+END
+
+    if (my $a = $$gen{$i->action})                                              # Action for this instruction
+     {&$a($i)
+     }
+   }
+  push @c, <<END;                                                               # End of last sub sequence
+            end
+      endcase
+    end
+END
+  $compile->code = \@c;
+  my $c = join "", @c;
+  say STDERR "AAAA\n$c";
+  $compile
+ }
+
 #D0
 
-my sub instructionListExport()                                                  #P Create an export statement.
+my sub instructionListExport()                                                  #P Create an export statementto enable isage in other Perl programs.
  {my $i = instructionList;
   say STDERR '@EXPORT_OK   = qw(', (join ' ', map {$$_[0]} @$i), ");\n";
-}
+ }
 #instructionListExport; exit;
 
 use Exporter qw(import);
@@ -4610,6 +4796,25 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1, in => [33,22,11]);
   is_deeply $e->outLines, [3,33, 2,22, 1,11];
   $e->generateVerilogMachineCode("In_test") if $debug;
+ }
+
+#latest:;
+if (1)                                                                          ##compileToVerilog
+ {Start 1;
+  Out 1;
+  Out 2;
+  Out 3;
+  ForIn
+   {my ($i, $v, $Check, $Next, $End) = @_;
+    Out $i;
+    Out $v;
+   };
+  my $e = Execute(suppressOutput=>1, in => [33,22,11]);
+  is_deeply $e->in, [];
+  is_deeply $e->inOriginally, [33, 22, 11];
+  is_deeply $e->outLines, [1,2,3, 3,33, 2,22, 1,11];
+  is_deeply [map {$_->entry} $e->block->code->@*], [qw(1 0 0 1 0 0 0 0 0 0 0 0)]; # Sub sequence start points
+  $e->compileToVerilog("ForIn_test") if $debug;
  }
 
 =pod
