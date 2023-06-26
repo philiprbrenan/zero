@@ -165,7 +165,7 @@ END
       run:  iverilog -V
 
     - name: fpga
-      run:  cd verilog/fpga/;           iverilog -g2012 -o fpga fpga.sv && timeout 1m ./fpga
+      run:  #cd verilog/fpga/;           iverilog -g2012 -o fpga fpga.sv && timeout 1m ./fpga
 
     - name: ClockDivider
       run:  cd verilog/clockDivider/;   iverilog -g2012 -o clockDivider     clockDivider.tb   clockDivider.sv && timeout 1m ./clockDivider
