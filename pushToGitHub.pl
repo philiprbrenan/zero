@@ -322,7 +322,7 @@ sub fpgaLowLevelTests                                                           
     my $j = fpe $i, qw(json);                                                   # Json description
     my $p = fpe $i, qw(pnr);                                                    # Place and route
     my $P = fpe $i, qw(fs);                                                     # Bit stream
-    my $b = fpe $i, qw(tangnano9k cst);                                         # Device description
+    my $b = fpe $h, $m, qw(tangnano9k cst);                                     # Device description
 
     my $y = <<END;
     - name: $m verilog
