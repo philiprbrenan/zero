@@ -22,5 +22,6 @@ module fpga_tb();                                                               
   always @(posedge finished) begin                                              // Finished
     ok(success == 1, "Success");
     checkAllTestsPassed(1);
+    $finish();
   end
 endmodule
