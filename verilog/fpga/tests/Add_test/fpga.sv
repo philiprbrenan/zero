@@ -45,7 +45,7 @@ module fpga                                                                     
     freedArraysTop = 0;
   end
 
-  always @(posedge clock, negedge clock) begin                                  // Each instruction
+  always @(clock) begin                                                         // Each instruction
     steps = steps + 1;
     case(ip)
 
