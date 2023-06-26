@@ -1,0 +1,30 @@
+//-----------------------------------------------------------------------------
+// Test fpga
+// Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
+//------------------------------------------------------------------------------
+module fpga_tb();                                                               // Test fpga
+  reg run   = 0;                                                                // Execute the next instruction
+  reg finished;                                                                 // Goes high when the program has finished
+  reg success;                                                                  // Goes high on finish if all the tests passed
+
+  `include "tests.sv"                                                           // Test routines
+
+  fpga f                                                                        // Fpga
+   (.run      (run),
+    .finished (finished),
+    .success  (success )
+   );
+
+  integer steps = 0;
+
+  initial begin                                                                 // Test the fpga
+    run = 0; #1 run = 1;
+  end
+
+  always @(posedge finished) begin                                              // Finished
+    ok(success == 1, "aaa");
+    checkAllTestsPassed(1);
+    $finish();
+  end
+
+endmodule
