@@ -309,7 +309,7 @@ sub fpgaLowLevelTests                                                           
    {my $m = $test =~ s($testsDir) ()r;                                          # Test name
     next unless $m;
     next if $m =~ m(BTree);                                                     # Currently takes too long
-    my $i = fpd $h, $m, qw(fpga);                                               # Include folder containing test
+    my $i = fpf $h, $m, qw(fpga);                                               # Include folder containing test
     my $v = fpe $i, qw(sv);                                                     # Source file
     my $t = fpe $i, qw(tb);                                                     # Test bench
     my $j = fpe $i, qw(json);                                                   # Json description
