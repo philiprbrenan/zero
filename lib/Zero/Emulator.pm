@@ -2978,6 +2978,9 @@ sub GenerateMachineCodeDisAssembleExecute(%)                                    
 sub generateVerilogMachineCode($$)                                              # Generate machine code and print it out in Verilog format. We need the just completed execution environment so we can examine the out channel for the expected results.
  {my ($exec, $name) = @_;                                                       # Execution environment of completed run, name of subroutine to contain generated code
   @_ == 2 or confess "Two parameters";
+
+  return $exec->compileToVerilog($name);                                        # How to do all the generate machine code stuff to develop and test dereferencing - but it is now no longer needed as long as teh compiled verilog an be palced on a fpga.
+
   my $string = GenerateMachineCode;                                             # Generate machine code as one long string
   my $N = 32;
   my $l = length($string);
@@ -2991,23 +2994,12 @@ sub generateVerilogMachineCode($$)                                              
 END
 
   my $z = 0;                                                                    # Number of zeroes
- #my @b;
   for my $i(0..$L-1)                                                            # Each instruction
    {my $b = unpack "H*", substr($string, $i*$N, $N);                            # Instruction in binary
-    #push @b, $b;                                                               # Save instruction in binary
     $z += length($b =~ s(1) ()gsr);                                             # Count zeroes in instructions
     my $c = pad sprintf(qq(      code[%4d] = 'h$b;), $i), 80;                   # Pad instruction description so it prints evenly
     push @v, $c."// ".$assembly->code->[$i]->action;                            # Opcode
    }
-
-  #owf("../../verilog/fpga/tests/$name/test.txt", dump(\@b));                   # Dump machine code in binary for analysis
-
-  if (0)                                                                        # Compression statistics
-   {my $n = $L * $N * 8; my $o = $n - $z; my $r = $z / $o;                      # Assume 8 bits in a byte
-    push @v, <<END;
-// Zeroes: $z, ones: $o, ratio: $r too high
-END
-  }
 
   my @o = <<END;                                                                # Check results
     end
@@ -3075,13 +3067,15 @@ sub CompileToVerilog(%)                                                         
 
   genHash(q(Zero::CompileToVerilog),                                            # Compile to verilog
     NArea=>                 $options{NArea} // 4,                               # The size of an array in the heap area
-    code=>                  [],                                                 # Generated code
+    code=>                  '',                                                 # Generated code
+    testBench=>             '',                                                 # Test bench for generated code
+    constraints=>           '',                                                 # Constraints file
    );
  }
 
 sub Zero::CompileToVerilog::deref($$)                                           # Compile a reference in assembler format to a corresponding verilog expression
- {my ($compile, $ref, $field) = @_;                                             # Compile, reference, field required
-  @_ == 3 or confess "Three parameters";
+ {my ($compile, $ref) = @_;                                                     # Compile, reference
+  @_ == 2 or confess "Two parameters";
 
   my $NArea = $compile->NArea;                                                  # We have to fix the area size in advance to make this process efficient
 
@@ -3171,14 +3165,16 @@ sub Zero::CompileToVerilog::deref($$)                                           
       $DAddress == 1 ? localMem($Delta, $Address)           :
       $DAddress == 2 ? localMem($Delta, localMem(0, $Address)) : 0) : 0;
 
-  return $Value              if $field eq q(Value)             ;                # Source vlue
-  return $Location           if $field eq q(Location)          ;                # Source location
-  return $targetLocation     if $field eq q(targetLocation)    ;                # Target as a location
-  return $targetIndex        if $field eq q(targetIndex)       ;                # Target index within array
-  return $targetLocationArea if $field eq q(targetLocationArea);                # Number of array containing target
-  return $targetValue        if $field eq q(targetValue)       ;                # Target as value
 
-  confess "No field selected";
+  genHash(q(Zero::Emulator::Deref),                                             # Memory operations
+    Value              => $Value,                                               # Source vlue
+    Location           => $Location,                                            # Source location
+    targetLocation     => $targetLocation,                                      # Target as a location
+    targetIndex        => $targetIndex,                                         # Target index within array
+    targetLocationArea => $targetLocationArea,                                  # Number of array containing target
+    Area               => $Area,                                                # Area
+    targetValue        => $targetValue,                                         # Target as value
+   )
  }
 
 sub compileToVerilog($$)                                                        # Compile each sub sequence of instructions into equivalent verilog.  A sub sequence starts at an instruction marked as an entry point
@@ -3190,65 +3186,336 @@ sub compileToVerilog($$)                                                        
   my @c;                                                                        # Generated code
 
   my $gen =                                                                     # Code generation for each instruction
-   {inSize=> sub                                                                # InSize
+   {add=> sub                                                                   # Add
      {my ($i) = @_;                                                             # Instruction
-      my $t   = $compile->deref($i->target, q(targetLocation));
+      my $s1  = $compile->deref($i->source )->Value;
+      my $s2  = $compile->deref($i->source2)->Value;
+      my $t   = $compile->deref($i->target)->targetLocation;
+      my $n   = $i->number + 1;
       push @c, <<END;
-              if (inMemEnd > inMemPos) $t =       inMemEnd - inMemPos;
-              else                     $t = NIn + inMemEnd - inMemPos;
+              $t = $s1 + $s2;
+              ip = $n;
+END
+     },
+
+    in=> sub                                                                    # In
+     {my ($i) = @_;                                                             # Instruction
+      my $t   = $compile->deref($i->target)->targetLocation;
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              if (inMemPos < NIn) begin
+                $t = inMem[inMemPos];
+                inMemPos = inMemPos + 1;
+              end
+              ip = $n;
+END
+     },
+
+    inSize=> sub                                                                # InSize
+     {my ($i) = @_;                                                             # Instruction
+      my $t   = $compile->deref($i->target)->targetLocation;
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              $t = NIn - inMemPos;
+              ip = $n;
+END
+     },
+
+    jFalse=> sub                                                                # jFalse
+     {my ($i) = @_;                                                             # Instruction
+      my $s   = $compile->deref($i->source)->Value;
+      my $n   = $i->number + 1;
+      my $j   = $i->number + $i->jump->address;
+      push @c, <<END;
+              ip = $s == 0 ? $j : $n;
+END
+     },
+
+    jmp=> sub                                                                   # jmp
+     {my ($i) = @_;                                                             # Instruction
+      my $j   = $i->number + $i->jump->address;
+      push @c, <<END;
+              ip = $j;
+END
+     },
+
+    label=> sub                                                                 # label
+     {my ($i) = @_;                                                             # Instruction
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              ip = $n;
+END
+     },
+
+    mov=> sub                                                                   # Mov
+     {my ($i) = @_;                                                             # Instruction
+      my $s   = $compile->deref($i->source)->Value;
+      my $t   = $compile->deref($i->target)->targetLocation;
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              $t = $s;
+              ip = $n;
+END
+     },
+
+    not=> sub                                                                   # Not
+     {my ($i) = @_;                                                             # Instruction
+      my $s   = $compile->deref($i->source)->Value;
+      my $t   = $compile->deref($i->target)->targetLocation;
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              $t = !$s;
+              ip = $n;
 END
      },
 
     out=> sub                                                                   # Out
      {my ($i) = @_;                                                             # Instruction
-      my $s   = $compile->deref($i->source, q(Value));
+      my $s   = $compile->deref($i->source)->Value;
+      my $n   = $i->number + 1;
       push @c, <<END;
               outMem[outMemPos] = $s;
-              outMemPos = (outMemPos + 1) % ;
+              outMemPos = (outMemPos + 1) % NOut;
+              ip = $n;
+END
+     },
+
+    shiftLeft=> sub                                                             # Shift left
+     {my ($i) = @_;                                                             # Instruction
+      my $s   = $compile->deref($i->source )->Value;
+      my $t   = $compile->deref($i->target)->targetValue;
+      my $T   = $compile->deref($i->target)->targetLocation;
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              $t = $T << $s;
+              ip = $n;
+END
+     },
+
+    shiftRight=> sub                                                            # Shift right
+     {my ($i) = @_;                                                             # Instruction
+      my $s   = $compile->deref($i->source )->Value;
+      my $t   = $compile->deref($i->target)->targetValue;
+      my $T   = $compile->deref($i->target)->targetLocation;
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              $t = $T >> $s;
+              ip = $n;
+END
+     },
+
+    subtract=> sub                                                              # Subtract
+     {my ($i) = @_;                                                             # Instruction
+      my $s1  = $compile->deref($i->source )->Value;
+      my $s2  = $compile->deref($i->source2)->Value;
+      my $t   = $compile->deref($i->target)->targetLocation;
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              $t = $s1 - $s2;
+              ip = $n;
 END
      },
    };
 
-  my $code = $exec->block->code;                                                # Using an execution environment gives us access to sample input and output thus allowing the creation of a test for the generated code.
-
   push @c, <<END;                                                               # A case statement to select the next sub sequence to execute
-  always @(posedge clock) begin
-      case(ip)
+//-----------------------------------------------------------------------------
+// Fpga test
+// Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
+//------------------------------------------------------------------------------
+module fpga                                                                     // Run test programs
+ (input  wire run,                                                              // Run - clock at lest once to allow code to be loaded
+  output reg  finished,                                                         // Goes high when the program has finished
+  output reg  success);                                                         // Goes high on finish if all the tests passed
+
+  parameter integer MemoryElementWidth =  12;                                   // Memory element width
+
+  parameter integer NArea          =    4;                                      // Size of each area on the heap
+  parameter integer NArrays        =   20;                                      // Maximum number of arrays
+  parameter integer NHeap          =  100;                                      // Amount of heap memory
+  parameter integer NLocal         =  100;                                      // Size of local memory
+  parameter integer NOut           =  100;                                      // Size of output area
+  parameter integer NFreedArrays   =   20;                                      // Size of output area
 END
 
-  my $subSeq = 0;                                                               # Sub sequence
+  if (my $n = sprintf "%4d", scalar $exec->inOriginally->@*)                    # Input queue length
+   {push @c, <<END;
+  parameter integer NIn            =  $n;                                     // Size of input area
+END
+   }
+
+  push @c, <<END;                                                               # A case statement to select the next sub sequence to execute
+  reg [MemoryElementWidth-1:0]   arraySizes[NArrays-1      :0];                 // Size of each array
+  reg [MemoryElementWidth-1:0]      heapMem[NHeap-1        :0];                 // Heap memory
+  reg [MemoryElementWidth-1:0]     localMem[NLocal-1       :0];                 // Local memory
+  reg [MemoryElementWidth-1:0]       outMem[NOut-1         :0];                 // Out channel
+  reg [MemoryElementWidth-1:0]        inMem[NIn-1          :0];                 // In channel
+  reg [MemoryElementWidth-1:0]  freedArrays[NFreedArrays-1 :0];                 // Freed arrays list implemented as a stack
+  reg [MemoryElementWidth-1:0]   arrayShift[NArea-1        :0];                 // Array shift area
+
+  integer inMemPos;                                                             // Current position in input channel
+  integer outMemPos;                                                            // Position in output channel
+  integer allocs;                                                               // Maximum number of array allocations in use at any one time
+  integer freedArraysTop;                                                       // Position in freed arrays stack
+
+  integer ip;                                                                   // Instruction pointer
+  integer clock;                                                                // Clock
+  integer steps;                                                                // Number of steps executed so far
+
+  always @(posedge run) begin                                                   // Initialize
+    ip             = 0;
+    clock          = 0;
+    steps          = 0;
+    finished       = 0;
+    success        = 0;
+    inMemPos       = 0;
+    outMemPos      = 0;
+    allocs         = 0;
+    freedArraysTop = 0;
+END
+
+  if (1)                                                                        # Create input queue
+   {my @i = $exec->inOriginally->@*;
+    for my $i(keys @i)
+     {my $I = $i[$i];
+      push @c, <<END;
+    inMem[$i] = $I;
+END
+     }
+   }
+
+   push @c, <<END;                                                              # End of initialization
+  end
+END
+
+  if (1)                                                                        # A case statement to select each instruction to be executed in order
+   {my $steps = $exec->totalInstructions + 1;                                   # The extra step is to allow the tests to be analyzed by the test bench
+    push @c, <<END;
+
+  always @(posedge clock, negedge clock) begin                                  // Each instruction
+    steps = steps + 1;
+    if (steps > $steps) \$finish();
+    case(ip)
+END
+   }
+
+  my $code = $exec->block->code;                                                # Using an execution environment gives us access to sample input and output thus allowing the creation of a test for the generated code.
+
   for my $i(@$code)                                                             # Each instruction
    {my $action = $i->action;
     my $number = $i->number;
+    my $n      = sprintf "%5d", $number;
 
-    if ($i->entry)                                                              # Start a new subsequence
-     {my $n = sprintf "%4d", $i->number;
-      push @c, <<END if $subSeq;
-            end
-END
-      ++$subSeq;                                                                # Sub sequence
+    push @c, <<END;
 
-      push @c, <<END;
-      $n: begin : subSequence$subSeq;
-END
-     }
-
-    push @c, <<END;                                                             # Next instruction in this sequence
-// $number - $action
+      $n :
+      begin                                                                     // $action
 END
 
-    if (my $a = $$gen{$i->action})                                              # Action for this instruction
+    if (my $a = $$gen{$action})                                                 # Action for this instruction
      {&$a($i)
      }
+    else
+     {confess "Need implementation of $action";
+     }
+
+    push @c, <<END;
+      end
+END
    }
   push @c, <<END;                                                               # End of last sub sequence
-            end
-      endcase
-    end
+      default: begin
+        success  = 1;
 END
-  $compile->code = \@c;
-  my $c = join "", @c;
-  say STDERR "AAAA\n$c";
+
+  if (1)                                                                        # Check output queue matches out expectations
+   {my @o = $exec->outLines->@*;
+    for my $o(keys @o)
+     {my $O = $o[$o];
+      push @c, <<END;
+        success  = success && outMem[$o] == $O;
+END
+     }
+   }
+
+  push @c, <<END;                                                               # End of last sub sequence
+        finished = 1;
+      end
+    endcase
+    clock <= ~ clock;                                                           // Must be non sequential to fire the next iteration
+  end
+endmodule
+END
+  $compile->code = join '', @c;
+
+  $compile->testBench = <<'END';                                                # Test bench
+//-----------------------------------------------------------------------------
+// Test fpga
+// Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
+//------------------------------------------------------------------------------
+module fpga_tb();                                                               // Test fpga
+  reg run   = 0;                                                                // Execute the next instruction
+  reg finished;                                                                 // Goes high when the program has finished
+  reg success;                                                                  // Goes high on finish if all the tests passed
+
+  `include "tests.sv"                                                           // Test routines
+
+  fpga f                                                                        // Fpga
+   (.run      (run),
+    .finished (finished),
+    .success  (success )
+   );
+
+  initial begin                                                                 // Test the fpga
+    run = 0; #1 run = 1;
+  end
+
+  always @(posedge finished) begin                                              // Finished
+    ok(success == 1, "Success");
+    checkAllTestsPassed(1);
+  end
+endmodule
+END
+
+  $compile->constraints = <<'END';                                              # Constraints file
+//Part Number: GW1NR-LV9QN88PC6/I5
+
+IO_LOC "clk" 52;
+IO_LOC "led[0]" 10;
+IO_LOC "led[1]" 11;
+IO_LOC "led[2]" 13;
+IO_LOC "led[3]" 14;
+IO_LOC "led[4]" 15;
+IO_LOC "led[5]" 16;
+IO_LOC "key" 3;
+IO_LOC "rst" 4;
+
+CLOCK_LOC "led[0]" BUFS;
+CLOCK_LOC "led[1]" BUFS;
+CLOCK_LOC "led[2]" BUFS;
+CLOCK_LOC "led[3]" BUFS;
+CLOCK_LOC "led[4]" BUFS;
+CLOCK_LOC "led[5]" BUFS;
+
+// true LVDS pins
+IO_LOC "tlvds_p" 25,26;
+END
+
+  if (1)                                                                        # Write code
+   {my $D = fpd qw(../../verilog fpga tests), $name;                            # Folder to write into
+    my $S = fpe $D, qw(fpga sv);                                                # Code
+    my $s = join "", $compile->code;
+    owf($S, $s);
+
+    my $T = setFileExtension $S, "tb";                                          # Test bench
+    my $t = join "", $compile->testBench;
+    owf($T, $t);
+
+    my $C = fpe $D, qw(tangnano9k cst);                                         # Constraints
+    my $c = join "", $compile->constraints;
+    owf($C, $c);
+#   say STDERR "AAAA\n$S\n$T\n$C";
+   }
+
   $compile
  }
 
