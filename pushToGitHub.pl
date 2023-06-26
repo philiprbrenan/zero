@@ -301,6 +301,8 @@ sub fpgaLowLevelTests                                                           
  {my @tests = searchDirectoryTreeForSubFolders($testsDir);
   my $h = fpd qw(verilog fpga);                                                 # Home folder
   my $v = fpe $h, qw(fpga sv);                                                  # Source file
+  my $t = fpe $h, qw(fpga tb);                                                  # Test bench
+  my $f = q(GW1N-9C);                                                           # Device family
   my $d = q(GW1NR-LV9QN88PC6/I5);                                               # Device
   my $b = fpe $h, qw(tangnano9k cst);                                           # Device description
 
@@ -315,11 +317,15 @@ sub fpgaLowLevelTests                                                           
     my $P = fpe $i, $m, qw(fs);                                                 # Bit stream
 
     my $y = <<END;
-    - name: $m
+    - name: $m verilog
+      run: |
+        rm -f fpga; iverilog -I. -g2012 -o fpga verilog/fpga/tests/$test/fpga.tb $v && timeout 1m ./fpga
+
+    - name: $m yosys
       run: |
         export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog -I$i -DTEST $v; synth_gowin -top fpga -json $j"
-        nextpnr-gowin -v --debug --json $j --write $p --device "$d" --family GW1N-9C --cst $b
+        nextpnr-gowin -v --debug --json $j --write $p --device "$d" --family $f --cst $b
         gowin_pack -d GW1N-9C -o $P $p
 
 END
