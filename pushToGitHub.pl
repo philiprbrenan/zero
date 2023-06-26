@@ -153,6 +153,11 @@ jobs:
 $j
 END
 
+=pod
+    - name: fpga
+      run:  cd verilog/fpga/;           iverilog -g2012 -o fpga fpga.sv && timeout 1m ./fpga
+=cut
+
   $y .= <<END;                                                                  # High level tests using Perl and Verilog
 
     - name: Ubuntu update
@@ -163,9 +168,6 @@ END
 
     - name: Verilog Version
       run:  iverilog -V
-
-    - name: fpga
-      run:  #cd verilog/fpga/;           iverilog -g2012 -o fpga fpga.sv && timeout 1m ./fpga
 
     - name: ClockDivider
       run:  cd verilog/clockDivider/;   iverilog -g2012 -o clockDivider     clockDivider.tb   clockDivider.sv && timeout 1m ./clockDivider
