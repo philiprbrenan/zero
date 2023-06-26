@@ -7,14 +7,11 @@ module countUp_tb();                                                            
   reg in = 0;
 
   step r (.in(in));
-  integer i = 0;
 
   initial begin
-    for(i = 0; i < 10; ++ i) begin
-      $display("AAAA");
-      #1 in = 1;
-      #1 in = 0;
-    end
+    $display("AAAA");
+    #1 in = 1;
+    #1 in = 0;
     $finish();
   end
 endmodule
