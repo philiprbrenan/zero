@@ -3388,12 +3388,10 @@ END
 END
 
   if (1)                                                                        # A case statement to select each instruction to be executed in order
-   {my $steps = $exec->totalInstructions + 1;                                   # The extra step is to allow the tests to be analyzed by the test bench
-    push @c, <<END;
+   {push @c, <<END;
 
   always @(posedge clock, negedge clock) begin                                  // Each instruction
     steps = steps + 1;
-    if (steps > $steps) \$finish();
     case(ip)
 END
    }
@@ -3437,14 +3435,18 @@ END
      }
    }
 
-  push @c, <<END;                                                               # End of last sub sequence
+  if (1)                                                                        # Show finish
+   {my $steps = sprintf "%6d", $exec->totalInstructions + 1;                    # The extra step is to allow the tests to be analyzed by the test bench
+    push @c, <<END;                                                             # End of last sub sequence
         finished = 1;
       end
     endcase
-    clock <= ~ clock;                                                           // Must be non sequential to fire the next iteration
+    if (steps <= $steps) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
   end
 endmodule
 END
+   }
+
   $compile->code = join '', @c;
 
   $compile->testBench = <<'END';                                                # Test bench
@@ -3472,6 +3474,7 @@ module fpga_tb();                                                               
   always @(posedge finished) begin                                              // Finished
     ok(success == 1, "Success");
     checkAllTestsPassed(1);
+    $finish();
   end
 endmodule
 END
