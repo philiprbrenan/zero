@@ -310,7 +310,6 @@ sub fpgaLowLevelTests                                                           
   my $h = fpd qw(verilog fpga tests);                                           # Home folder
   my $f = q(GW1N-9C);                                                           # Device family
   my $d = q(GW1NR-LV9QN88PC6/I5);                                               # Device
-  my $b = fpe $h, qw(tangnano9k cst);                                           # Device description
 
   my @y;
   for my $test(@tests)                                                          # Each test
@@ -323,6 +322,7 @@ sub fpgaLowLevelTests                                                           
     my $j = fpe $i, qw(json);                                                   # Json description
     my $p = fpe $i, qw(pnr);                                                    # Place and route
     my $P = fpe $i, qw(fs);                                                     # Bit stream
+    my $b = fpe $i, qw(tangnano9k cst);                                         # Device description
 
     my $y = <<END;
     - name: $m verilog
