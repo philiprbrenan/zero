@@ -299,9 +299,7 @@ END
 
 sub fpgaLowLevelTests                                                           # Low level tests
  {my @tests = searchDirectoryTreeForSubFolders($testsDir);
-  my $h = fpd qw(verilog fpga);                                                 # Home folder
-  my $v = fpe $h, qw(fpga sv);                                                  # Source file
-  my $t = fpe $h, qw(fpga tb);                                                  # Test bench
+  my $h = fpd qw(verilog fpga tests);                                           # Home folder
   my $f = q(GW1N-9C);                                                           # Device family
   my $d = q(GW1NR-LV9QN88PC6/I5);                                               # Device
   my $b = fpe $h, qw(tangnano9k cst);                                           # Device description
@@ -311,10 +309,12 @@ sub fpgaLowLevelTests                                                           
    {my $m = $test =~ s($testsDir) ()r;                                          # Test name
     next unless $m;
     next if $m =~ m(BTree);                                                     # Currently takes too long
-    my $i = fpd $h, qw(tests), $m;                                              # Include folder containing test
-    my $j = fpe $i, $m, qw(json);                                               # Json description
-    my $p = fpe $i, $m, qw(pnr);                                                # Place and route
-    my $P = fpe $i, $m, qw(fs);                                                 # Bit stream
+    my $i = fpd $h, qw(tests), $m, qw(fpga);                                    # Include folder containing test
+    my $v = fpe $i, qw(sv);                                                     # Source file
+    my $t = fpe $i, qw(tb);                                                     # Test bench
+    my $j = fpe $i, qw(json);                                                   # Json description
+    my $p = fpe $i, qw(pnr);                                                    # Place and route
+    my $P = fpe $i, qw(fs);                                                     # Bit stream
 
     my $y = <<END;
     - name: $m verilog
