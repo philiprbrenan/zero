@@ -3358,7 +3358,7 @@ END
   integer freedArraysTop;                                                       // Position in freed arrays stack
 
   integer ip;                                                                   // Instruction pointer
-  integer clock;                                                                // Clock
+  reg     clock;                                                                // Clock - has to be one bit wide for yosys
   integer steps;                                                                // Number of steps executed so far
 
   always @(posedge run) begin                                                   // Initialize
