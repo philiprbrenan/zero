@@ -1,4 +1,4 @@
-# Test 2023-06-26 at 04:56:48
+# Test 2023-06-26 at 05:00:09
 
 name: Test
 
@@ -120,7 +120,7 @@ jobs:
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/Add_test/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Add_test/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/Add_test/fpga.json --write verilog/fpga/tests/Add_test/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Add_test/fpga/tangnano9k.cst
+        nextpnr-gowin -v --debug --json verilog/fpga/tests/Add_test/fpga.json --write verilog/fpga/tests/Add_test/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Add_test/tangnano9k.cst
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/Add_test/fpga.fs verilog/fpga/tests/Add_test/fpga.pnr
 
 
@@ -132,7 +132,7 @@ jobs:
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/Not_test/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Not_test/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/Not_test/fpga.json --write verilog/fpga/tests/Not_test/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Not_test/fpga/tangnano9k.cst
+        nextpnr-gowin -v --debug --json verilog/fpga/tests/Not_test/fpga.json --write verilog/fpga/tests/Not_test/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Not_test/tangnano9k.cst
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/Not_test/fpga.fs verilog/fpga/tests/Not_test/fpga.pnr
 
 
@@ -144,7 +144,7 @@ jobs:
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/ShiftLeft_test/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/ShiftLeft_test/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/ShiftLeft_test/fpga.json --write verilog/fpga/tests/ShiftLeft_test/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/ShiftLeft_test/fpga/tangnano9k.cst
+        nextpnr-gowin -v --debug --json verilog/fpga/tests/ShiftLeft_test/fpga.json --write verilog/fpga/tests/ShiftLeft_test/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/ShiftLeft_test/tangnano9k.cst
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/ShiftLeft_test/fpga.fs verilog/fpga/tests/ShiftLeft_test/fpga.pnr
 
 
@@ -156,7 +156,7 @@ jobs:
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/ShiftRight_test/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/ShiftRight_test/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/ShiftRight_test/fpga.json --write verilog/fpga/tests/ShiftRight_test/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/ShiftRight_test/fpga/tangnano9k.cst
+        nextpnr-gowin -v --debug --json verilog/fpga/tests/ShiftRight_test/fpga.json --write verilog/fpga/tests/ShiftRight_test/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/ShiftRight_test/tangnano9k.cst
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/ShiftRight_test/fpga.fs verilog/fpga/tests/ShiftRight_test/fpga.pnr
 
 
@@ -168,7 +168,7 @@ jobs:
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/Subtract_test/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Subtract_test/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/Subtract_test/fpga.json --write verilog/fpga/tests/Subtract_test/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Subtract_test/fpga/tangnano9k.cst
+        nextpnr-gowin -v --debug --json verilog/fpga/tests/Subtract_test/fpga.json --write verilog/fpga/tests/Subtract_test/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Subtract_test/tangnano9k.cst
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/Subtract_test/fpga.fs verilog/fpga/tests/Subtract_test/fpga.pnr
 
 
