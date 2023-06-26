@@ -290,6 +290,12 @@ END
         export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         (cd verilog/countUp; perl -I\$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl)
 
+    - name: Verilog
+      run:  sudo apt -y install iverilog
+
+    - name: Verilog Version
+      run:  iverilog -V
+
 END
 
   $y .= &fpgaLowLevelTests;                                                     # Low level tests
