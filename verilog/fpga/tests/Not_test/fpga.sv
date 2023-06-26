@@ -47,7 +47,6 @@ module fpga                                                                     
 
   always @(posedge clock, negedge clock) begin                                  // Each instruction
     steps = steps + 1;
-    if (steps > 7) $finish();
     case(ip)
 
           0 :
@@ -96,6 +95,6 @@ module fpga                                                                     
         finished = 1;
       end
     endcase
-    clock <= ~ clock;                                                           // Must be non sequential to fire the next iteration
+    if (steps <=      7) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
   end
 endmodule
