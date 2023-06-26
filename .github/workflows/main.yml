@@ -1,4 +1,4 @@
-# Test 2023-06-26 at 03:30:36
+# Test 2023-06-26 at 03:31:07
 
 name: Test
 
@@ -111,7 +111,7 @@ jobs:
 
     - name: Add_test verilog
       run: |
-        rm -f fpga; iverilog -I. -g2012 -o fpga verilog/fpga/tests//home/phil/perl/cpan/ZeroEmulator/verilog/fpga/tests/Add_test/fpga.tb verilog/fpga/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -I. -g2012 -o fpga verilog/fpga/fpga.tb verilog/fpga/fpga.sv && timeout 1m ./fpga
 
     - name: Add_test yosys
       run: |
@@ -123,7 +123,7 @@ jobs:
 
     - name: Not_test verilog
       run: |
-        rm -f fpga; iverilog -I. -g2012 -o fpga verilog/fpga/tests//home/phil/perl/cpan/ZeroEmulator/verilog/fpga/tests/Not_test/fpga.tb verilog/fpga/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -I. -g2012 -o fpga verilog/fpga/fpga.tb verilog/fpga/fpga.sv && timeout 1m ./fpga
 
     - name: Not_test yosys
       run: |
@@ -135,7 +135,7 @@ jobs:
 
     - name: ShiftLeft_test verilog
       run: |
-        rm -f fpga; iverilog -I. -g2012 -o fpga verilog/fpga/tests//home/phil/perl/cpan/ZeroEmulator/verilog/fpga/tests/ShiftLeft_test/fpga.tb verilog/fpga/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -I. -g2012 -o fpga verilog/fpga/fpga.tb verilog/fpga/fpga.sv && timeout 1m ./fpga
 
     - name: ShiftLeft_test yosys
       run: |
@@ -147,7 +147,7 @@ jobs:
 
     - name: ShiftRight_test verilog
       run: |
-        rm -f fpga; iverilog -I. -g2012 -o fpga verilog/fpga/tests//home/phil/perl/cpan/ZeroEmulator/verilog/fpga/tests/ShiftRight_test/fpga.tb verilog/fpga/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -I. -g2012 -o fpga verilog/fpga/fpga.tb verilog/fpga/fpga.sv && timeout 1m ./fpga
 
     - name: ShiftRight_test yosys
       run: |
@@ -159,7 +159,7 @@ jobs:
 
     - name: Subtract_test verilog
       run: |
-        rm -f fpga; iverilog -I. -g2012 -o fpga verilog/fpga/tests//home/phil/perl/cpan/ZeroEmulator/verilog/fpga/tests/Subtract_test/fpga.tb verilog/fpga/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -I. -g2012 -o fpga verilog/fpga/fpga.tb verilog/fpga/fpga.sv && timeout 1m ./fpga
 
     - name: Subtract_test yosys
       run: |
