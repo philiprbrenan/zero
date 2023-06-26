@@ -325,7 +325,7 @@ sub fpgaLowLevelTests                                                           
     my $y = <<END;
     - name: $m verilog
       run: |
-        rm -f fpga; iverilog -I. -g2012 -o fpga $t $v && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga $t $v && timeout 1m ./fpga
 
     - name: $m yosys
       run: |
