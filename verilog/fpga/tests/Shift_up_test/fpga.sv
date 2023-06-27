@@ -12,17 +12,17 @@ module fpga                                                                     
   parameter integer NArea          =    4;                                      // Size of each area on the heap
   parameter integer NArrays        =   20;                                      // Maximum number of arrays
   parameter integer NHeap          =  100;                                      // Amount of heap memory
-  parameter integer NLocal         =  100;                                      // Size of local memory
+  parameter integer NLocal         =  600;                                      // Size of local memory
   parameter integer NOut           =  100;                                      // Size of output area
-  parameter integer NFreedArrays   =   20;                                      // Size of output area
+  parameter integer NFreedArrays   =   20;                                      // Freed arrays
   parameter integer NIn            =     0;                                     // Size of input area
-  reg [MemoryElementWidth-1:0]   arraySizes[NArrays-1      :0];                 // Size of each array
-  reg [MemoryElementWidth-1:0]      heapMem[NHeap-1        :0];                 // Heap memory
-  reg [MemoryElementWidth-1:0]     localMem[NLocal-1       :0];                 // Local memory
-  reg [MemoryElementWidth-1:0]       outMem[NOut-1         :0];                 // Out channel
-  reg [MemoryElementWidth-1:0]        inMem[NIn-1          :0];                 // In channel
-  reg [MemoryElementWidth-1:0]  freedArrays[NFreedArrays-1 :0];                 // Freed arrays list implemented as a stack
-  reg [MemoryElementWidth-1:0]   arrayShift[NArea-1        :0];                 // Array shift area
+  reg [MemoryElementWidth-1:0]   arraySizes[NArrays-1:0];                       // Size of each array
+  reg [MemoryElementWidth-1:0]      heapMem[NHeap-1  :0];                       // Heap memory
+  reg [MemoryElementWidth-1:0]     localMem[NLocal-1 :0];                       // Local memory
+  reg [MemoryElementWidth-1:0]       outMem[NOut-1   :0];                       // Out channel
+  reg [MemoryElementWidth-1:0]        inMem[NIn-1    :0];                       // In channel
+  reg [MemoryElementWidth-1:0]  freedArrays[NArrays-1:0];                       // Freed arrays list implemented as a stack
+  reg [MemoryElementWidth-1:0]   arrayShift[NArea-1  :0];                       // Array shift area
 
   integer inMemPos;                                                             // Current position in input channel
   integer outMemPos;                                                            // Position in output channel
@@ -85,14 +85,14 @@ module fpga                                                                     
 
           4 :
       begin                                                                     // shiftUp
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * 0 + i]; // Copy source array
+              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[0+0] + i]; // Copy source array
               for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
                 if (i > 0) begin
-                  heapMem[NArea * 0 + i + 1] = heapMem[NArea * 0 + i];
+                  heapMem[NArea * localMem[0+0] + i + 1] = heapMem[NArea * localMem[0+0] + i];
                 end
               end
-              heapMem[NArea * 0 + 0 + 1] = 99;                                // Insert new value
-              arraySizes[0] = arraySizes[0] + 1;                              // Increase array size
+              heapMem[NArea * localMem[0+0] + 0 + 1] = 99;                                // Insert new value
+              arraySizes[localMem[0+0]] = arraySizes[localMem[0+0]] + 1;                              // Increase array size
               ip = 5;
       end
       default: begin
