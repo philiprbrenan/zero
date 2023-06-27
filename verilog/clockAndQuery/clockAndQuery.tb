@@ -14,7 +14,7 @@ module ClockAndQueryTB();                                                       
 
   integer i, j;                                                                 // Loop control
 
-  `include "../tests.sv"                                                        // Test routines
+  `include "tests.sv"                                                           // Test routines
 
   ClockAndQuery                                                                 // Clock and query
    c
