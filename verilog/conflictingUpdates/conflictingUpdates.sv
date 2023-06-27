@@ -26,7 +26,7 @@ module conflictingUpdates
     case(in)
       0 : ip = 3;
       1 : ip = 2;
-      2 : ip = 1
+      2 : ip = 1;
       default : ip = 0;
     endcase
     $display("BBBB %2d", ip);
