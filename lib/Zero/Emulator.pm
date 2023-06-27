@@ -92,8 +92,8 @@ sub ExecutionEnvironment(%)                                                     
     traceLabels=>           undef,                                              # Trace changes in execution flow
     watch=>                 [],                                                 # Addresses to watch for changes
     widestAreaInArena=>     [],                                                 # Track highest array access in each arena
-    latestLeftTarget=>      undef,                                              # The most recent value of the target operand valuated as a left operand
-    latestRightSource=>     undef,                                              # The most recent value of the source operand valuated as a right operand
+    latestLeftTarget=>      undef,                                              # The most recent value of the target operand evaluated as a left operand
+    latestRightSource=>     undef,                                              # The most recent value of the source operand evaluated as a right operand
    );
 
   $memoryTechnique->($exec)       if $memoryTechnique;                          # Load memory handlers if a different memory handling system has been requested
@@ -702,7 +702,7 @@ sub stringPushMemoryArea($$$)                                                   
   my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
   my $t = $exec->memoryStringElements;                                          # User width of a heap area
   my $l = vec($exec->memoryStringLengths, $area, $w);                           # Length of area
-  $l < $t-1 or                                                                  # Check ther is enough space available
+  $l < $t-1 or                                                                  # Check there is enough space available
     confess "Area overflow, area: $area, "
     ."position: $l, value: $value";
   vec($exec->memoryString, $area*$t + $l, $w) = $value;                         # Push element
@@ -3079,7 +3079,7 @@ sub Zero::CompileToVerilog::deref($$)                                           
 
   my $NArea = $compile->NArea;                                                  # We have to fix the area size in advance to make this process efficient
 
-  my sub heapAddr($$$)                                                          # Heap memory address
+  my sub heapAdr($$$)                                                           # Heap memory address
    {my ($delta, $area, $address) = @_;                                          # Delta, area, address
     "$delta + $area*$NArea + $address";                                         # Heap memory address
    }
@@ -3167,7 +3167,7 @@ sub Zero::CompileToVerilog::deref($$)                                           
 
 
   genHash(q(Zero::Emulator::Deref),                                             # Memory operations
-    Value              => $Value,                                               # Source vlue
+    Value              => $Value,                                               # Source value
     Location           => $Location,                                            # Source location
     targetLocation     => $targetLocation,                                      # Target as a location
     targetIndex        => $targetIndex,                                         # Target index within array
@@ -3194,6 +3194,82 @@ sub compileToVerilog($$)                                                        
       my $n   = $i->number + 1;
       push @c, <<END;
               $t = $s1 + $s2;
+              ip = $n;
+END
+     },
+
+    array=> sub                                                                 # Array
+     {my ($i) = @_;                                                             # Instruction
+      my $t   = $compile->deref($i->target)->targetLocation;
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              if (freedArraysTop > 0) begin
+                freedArraysTop = freedArraysTop - 1;
+                $t = freedArrays[freedArraysTop];
+              end
+              else begin
+                $t = allocs;
+                allocs = allocs + 1;
+
+              end
+              arraySizes[$t] = 0;
+              ip = $n;
+END
+     },
+
+    arrayCountLess=> sub                                                        # ArrayCountLess
+     {my ($i) = @_;                                                             # Instruction
+      my $s = $compile->deref($i->source2)->Value;
+      my $a = $compile->deref($i->source) ->Value;
+      my $t = $compile->deref($i->target)->targetLocation;
+      my $n = $i->number + 1;
+      push @c, <<END;
+              j = 0;
+              for(i = 0; i < NArea; i = i + 1) begin
+                if (heapMem[$a * NArea + i] < $s) j = j + 1;
+              end
+              $t = j;
+              ip = $n;
+END
+     },
+
+    arrayCountGreater=> sub                                                     # ArrayCountGreater
+     {my ($i) = @_;                                                             # Instruction
+      my $s = $compile->deref($i->source2)->Value;
+      my $a = $compile->deref($i->source) ->Value;
+      my $t = $compile->deref($i->target)->targetLocation;
+      my $n = $i->number + 1;
+      push @c, <<END;
+              j = 0;
+              for(i = 0; i < NArea; i = i + 1) begin
+                if (heapMem[$a * NArea + i] > $s) j = j + 1;
+              end
+              $t = j;
+              ip = $n;
+END
+     },
+
+    arrayIndex=> sub                                                            # ArrayIndex
+     {my ($i) = @_;                                                             # Instruction
+      my $s = $compile->deref($i->source2)->Value;
+      my $a = $compile->deref($i->source) ->Value;
+      my $t = $compile->deref($i->target)->targetLocation;
+      my $n = $i->number + 1;
+      push @c, <<END;
+              for(i = 0; i < NArea; i = i + 1) begin
+                if (heapMem[$a * NArea + i] == $s) $t = i + 1;
+              end
+              ip = $n;
+END
+     },
+
+    free=> sub                                                                  # Free array
+     {my ($i) = @_;                                                             # Instruction
+      my $t   = $compile->deref($i->target)->Value;
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              freedArrays[freedArraysTop] = $t;
+              freedArraysTop = freedArraysTop + 1;
               ip = $n;
 END
      },
@@ -3231,6 +3307,17 @@ END
 END
      },
 
+    jEq=> sub                                                                   # jEq
+     {my ($i) = @_;                                                             # Instruction
+      my $s   = $compile->deref($i->source )->Value;
+      my $s2  = $compile->deref($i->source2)->Value;
+      my $j   = $i->number + $i->jump->address;
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              ip = $s == $s2 ? $j : $n;
+END
+     },
+
     jmp=> sub                                                                   # jmp
      {my ($i) = @_;                                                             # Instruction
       my $j   = $i->number + $i->jump->address;
@@ -3258,6 +3345,37 @@ END
 END
      },
 
+#  reg [MemoryElementWidth-1:0]   arraySizes[NArrays-1      :0];                 // Size of each array
+#  reg [MemoryElementWidth-1:0]      heapMem[NHeap-1        :0];                 // Heap memory
+#  reg [MemoryElementWidth-1:0]     localMem[NLocal-1       :0];                 // Local memory
+#  reg [MemoryElementWidth-1:0]       outMem[NOut-1         :0];                 // Out channel
+#  reg [MemoryElementWidth-1:0]        inMem[NIn-1          :0];                 // In channel
+#  reg [MemoryElementWidth-1:0]  freedArrays[NFreedArrays-1 :0];                 // Freed arrays list implemented as a stack
+#  reg [MemoryElementWidth-1:0]   arrayShift[NArea-1        :0];                 // Array shift area
+#
+#  integer inMemPos;                                                             // Current position in input channel
+#  integer outMemPos;                                                            // Position in output channel
+#  integer allocs;                                                               // Maximum number of array allocations in use at any one time
+#  integer freedArraysTop;                                                       // Position in freed arrays stack
+
+    moveLong=> sub                                                              # Move long
+     {my ($i) = @_;                                                             # Instruction
+      my $si  = $compile->deref($i->source )->targetIndex;
+      my $sa  = $compile->deref($i->source )->targetLocationArea;
+      my $ti  = $compile->deref($i->source )->targetIndex;
+      my $ta  = $compile->deref($i->source )->targetLocationArea;
+      my $l   = $compile->deref($i->source2)->Value;
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
+                if (i < $l) begin
+                  heapMem[NArea * $ta + $ti + i] = heapMem[NArea * $sa + $si + i];
+                end
+              end
+              ip = $n;
+END
+     },
+
     not=> sub                                                                   # Not
      {my ($i) = @_;                                                             # Instruction
       my $s   = $compile->deref($i->source)->Value;
@@ -3280,11 +3398,35 @@ END
 END
      },
 
+    pop=> sub                                                                   # Pop
+     {my ($i) = @_;                                                             # Instruction
+      my $s   = $compile->deref($i->source)->Value;
+      my $t   = $compile->deref($i->target)->targetLocation;
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              arraySizes[$s] = arraySizes[$s] - 1;
+              $t = outMem[$s * NArea + arraySizes[$s]];
+              ip = $n;
+END
+     },
+
+    push=> sub                                                                  # Push
+     {my ($i) = @_;                                                             # Instruction
+      my $s   = $compile->deref($i->source)->Value;
+      my $t   = $compile->deref($i->target)->Value;
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              outMem[$t * NArea + arraySizes[$t]] = $s;
+              arraySizes[$t]    = arraySizes[$t] + 1;
+              ip = $n;
+END
+     },
+
     shiftLeft=> sub                                                             # Shift left
      {my ($i) = @_;                                                             # Instruction
       my $s   = $compile->deref($i->source )->Value;
-      my $t   = $compile->deref($i->target)->targetValue;
-      my $T   = $compile->deref($i->target)->targetLocation;
+      my $T   = $compile->deref($i->target)->targetValue;
+      my $t   = $compile->deref($i->target)->targetLocation;
       my $n   = $i->number + 1;
       push @c, <<END;
               $t = $T << $s;
@@ -3295,11 +3437,30 @@ END
     shiftRight=> sub                                                            # Shift right
      {my ($i) = @_;                                                             # Instruction
       my $s   = $compile->deref($i->source )->Value;
-      my $t   = $compile->deref($i->target)->targetValue;
-      my $T   = $compile->deref($i->target)->targetLocation;
+      my $T   = $compile->deref($i->target)->targetValue;
+      my $t   = $compile->deref($i->target)->targetLocation;
       my $n   = $i->number + 1;
       push @c, <<END;
               $t = $T >> $s;
+              ip = $n;
+END
+     },
+
+    shiftUp=> sub                                                               # Shift up
+     {my ($i) = @_;                                                             # Instruction
+      my $s   = $compile->deref($i->source)->Value;
+      my $a   = $compile->deref($i->target)->Area;
+      my $o   = $compile->deref($i->target)->targetIndex;
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * $a + i]; // Copy source array
+              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
+                if (i > $o) begin
+                  heapMem[NArea * $a + i + 1] = heapMem[NArea * $a + i];
+                end
+              end
+              heapMem[NArea * $a + $o + 1] = $s;                                // Insert new value
+              arraySizes[$a] = arraySizes[$a] + 1;                              // Increase array size
               ip = $n;
 END
      },
@@ -3360,6 +3521,7 @@ END
   integer ip;                                                                   // Instruction pointer
   reg     clock;                                                                // Clock - has to be one bit wide for yosys
   integer steps;                                                                // Number of steps executed so far
+  integer i, j;                                                                 // A useful counter
 
   always @(posedge run) begin                                                   // Initialize
     ip             = 0;
@@ -4805,6 +4967,53 @@ if (1)                                                                          
 # 5=0   15=1  25=2  35=3
 
 #latest:;
+if (1)                                                                          ##ArrayIndex
+ {Start 1;
+  my $a = Array "aaa";
+  Mov   [$a, 0, "aaa"], 10;
+  Mov   [$a, 1, "aaa"], 20;
+  Mov   [$a, 2, "aaa"], 30;
+
+  Out ArrayIndex       ($a, 20);
+  my $e = Execute(suppressOutput=>1);
+  is_deeply $e->out, <<END;
+2
+END
+  $e->generateVerilogMachineCode("ArrayIndex") if $testSet == 1 and $debug;
+ }
+
+#latest:;
+if (1)                                                                          ##ArrayCountLess
+ {Start 1;
+  my $a = Array "aaa";
+  Mov   [$a, 0, "aaa"], 10;
+  Mov   [$a, 1, "aaa"], 20;
+  Mov   [$a, 2, "aaa"], 30;
+
+  Out ArrayCountLess($a, 20);
+  my $e = Execute(suppressOutput=>1);
+  is_deeply $e->out, <<END;
+1
+END
+  $e->generateVerilogMachineCode("ArrayCountLess") if $testSet == 1 and $debug;
+ }
+
+#latest:;
+if (1)                                                                          ##ArrayCountGreater
+ {Start 1;
+  my $a = Array "aaa";
+  Mov   [$a, 0, "aaa"], 10;
+  Mov   [$a, 1, "aaa"], 20;
+  Mov   [$a, 2, "aaa"], 30;
+
+  Out ArrayCountGreater($a, 15);
+  my $e = Execute(suppressOutput=>1);
+  is_deeply $e->out, <<END;
+2
+END
+  $e->generateVerilogMachineCode("ArrayCountGreaterIndex") if $testSet == 1 and $debug;
+ }
+
 if (1)                                                                          ##ArrayIndex ##ArrayCountLess ##ArrayCountGreater
  {Start 1;
   my $a = Array "aaa";
