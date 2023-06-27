@@ -3318,6 +3318,61 @@ END
 END
      },
 
+    jGe=> sub                                                                   # jGe
+     {my ($i) = @_;                                                             # Instruction
+      my $s   = $compile->deref($i->source )->Value;
+      my $s2  = $compile->deref($i->source2)->Value;
+      my $j   = $i->number + $i->jump->address;
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              ip = $s >= $s2 ? $j : $n;
+END
+     },
+
+    jGt=> sub                                                                   # jGt
+     {my ($i) = @_;                                                             # Instruction
+      my $s   = $compile->deref($i->source )->Value;
+      my $s2  = $compile->deref($i->source2)->Value;
+      my $j   = $i->number + $i->jump->address;
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              ip = $s >  $s2 ? $j : $n;
+END
+     },
+
+    jLe=> sub                                                                   # jLe
+     {my ($i) = @_;                                                             # Instruction
+      my $s   = $compile->deref($i->source )->Value;
+      my $s2  = $compile->deref($i->source2)->Value;
+      my $j   = $i->number + $i->jump->address;
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              ip = $s <= $s2 ? $j : $n;
+END
+     },
+
+    jLt=> sub                                                                   # jLt
+     {my ($i) = @_;                                                             # Instruction
+      my $s   = $compile->deref($i->source )->Value;
+      my $s2  = $compile->deref($i->source2)->Value;
+      my $j   = $i->number + $i->jump->address;
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              ip = $s <  $s2 ? $j : $n;
+END
+     },
+
+    jNe=> sub                                                                   # jNe
+     {my ($i) = @_;                                                             # Instruction
+      my $s   = $compile->deref($i->source )->Value;
+      my $s2  = $compile->deref($i->source2)->Value;
+      my $j   = $i->number + $i->jump->address;
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              ip = $s != $s2 ? $j : $n;
+END
+     },
+
     jmp=> sub                                                                   # jmp
      {my ($i) = @_;                                                             # Instruction
       my $j   = $i->number + $i->jump->address;
@@ -3344,19 +3399,6 @@ END
               ip = $n;
 END
      },
-
-#  reg [MemoryElementWidth-1:0]   arraySizes[NArrays-1      :0];                 // Size of each array
-#  reg [MemoryElementWidth-1:0]      heapMem[NHeap-1        :0];                 // Heap memory
-#  reg [MemoryElementWidth-1:0]     localMem[NLocal-1       :0];                 // Local memory
-#  reg [MemoryElementWidth-1:0]       outMem[NOut-1         :0];                 // Out channel
-#  reg [MemoryElementWidth-1:0]        inMem[NIn-1          :0];                 // In channel
-#  reg [MemoryElementWidth-1:0]  freedArrays[NFreedArrays-1 :0];                 // Freed arrays list implemented as a stack
-#  reg [MemoryElementWidth-1:0]   arrayShift[NArea-1        :0];                 // Array shift area
-#
-#  integer inMemPos;                                                             // Current position in input channel
-#  integer outMemPos;                                                            // Position in output channel
-#  integer allocs;                                                               // Maximum number of array allocations in use at any one time
-#  integer freedArraysTop;                                                       // Position in freed arrays stack
 
     moveLong=> sub                                                              # Move long
      {my ($i) = @_;                                                             # Instruction
