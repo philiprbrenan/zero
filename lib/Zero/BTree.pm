@@ -66,7 +66,8 @@ sub New($)                                                                      
     sub {Mov [$t, $Tree->address(q(MaximumNumberOfKeys)), 'Tree'], $n},         # Save maximum number of keys per node
     sub {Mov [$t, $Tree->address(q(root)),                'Tree'],  0},         # Clear root
     sub {Mov [$t, $Tree->address(q(keys)),                'Tree'],  0},         # Clear keys
-    sub {Mov [$t, $Tree->address(q(nodes)),               'Tree'],  0};         # Clear nodes
+    sub {Mov [$t, $Tree->address(q(nodes)),               'Tree'],  0},         # Clear nodes
+  ;
   $t
  }
 
@@ -1404,7 +1405,7 @@ if (1)                                                                          
   AssertNe FindResult_found, FindResult_cmp(Find($t, -1));                      # Should not be present
   AssertNe FindResult_found, FindResult_cmp(Find($t, $N));
 
-  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, "";                                                        # No asserts
   $e->generateVerilogMachineCode("BTree/insert/66");
  }
@@ -1579,11 +1580,11 @@ if (1)                                                                          
   Iterate {} $t;                                                                # Iterate tree without doing anything in the body to see the pure iteration overhead
   Tally 0;
 
-  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1, in=>[@r],
+  my $e = Execute(suppressOutput=>1, in=>[@r],
     stringMemory=>1, maximumArraySize=>7);
   is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
   is_deeply $e->widestAreaInArena,   [undef, 6, 536];
-  is_deeply $e->namesOfWidestArrays, [undef, 0, 0];
+  is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
   is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
 
   #say STDERR dump $e->tallyCount;
