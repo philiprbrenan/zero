@@ -287,10 +287,6 @@ END
 END
 
   $y .= job("fpga").yosys().<<END;                                              # Low level tests - convert verilog to fpga bitstream using yosys
-    - name: countUp
-      run: |
-        export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        (cd verilog/countUp; perl -I\$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl)
 
     - name: Verilog
       run:  sudo apt -y install iverilog
