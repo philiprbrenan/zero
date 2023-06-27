@@ -1,4 +1,4 @@
-# Test 2023-06-26 at 05:00:09
+# Test 2023-06-27 at 03:08:38
 
 name: Test
 
@@ -124,6 +124,138 @@ jobs:
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/Add_test/fpga.fs verilog/fpga/tests/Add_test/fpga.pnr
 
 
+    - name: ArrayCountGreaterIndex verilog
+      run: |
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ArrayCountGreaterIndex/fpga.tb verilog/fpga/tests/ArrayCountGreaterIndex/fpga.sv && timeout 1m ./fpga
+
+    - name: ArrayCountGreaterIndex yosys
+      run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
+        yosys -q -p "read_verilog verilog/fpga/tests/ArrayCountGreaterIndex/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/ArrayCountGreaterIndex/fpga.json"
+        nextpnr-gowin -v --debug --json verilog/fpga/tests/ArrayCountGreaterIndex/fpga.json --write verilog/fpga/tests/ArrayCountGreaterIndex/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/ArrayCountGreaterIndex/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o verilog/fpga/tests/ArrayCountGreaterIndex/fpga.fs verilog/fpga/tests/ArrayCountGreaterIndex/fpga.pnr
+
+
+    - name: ArrayCountLess verilog
+      run: |
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ArrayCountLess/fpga.tb verilog/fpga/tests/ArrayCountLess/fpga.sv && timeout 1m ./fpga
+
+    - name: ArrayCountLess yosys
+      run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
+        yosys -q -p "read_verilog verilog/fpga/tests/ArrayCountLess/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/ArrayCountLess/fpga.json"
+        nextpnr-gowin -v --debug --json verilog/fpga/tests/ArrayCountLess/fpga.json --write verilog/fpga/tests/ArrayCountLess/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/ArrayCountLess/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o verilog/fpga/tests/ArrayCountLess/fpga.fs verilog/fpga/tests/ArrayCountLess/fpga.pnr
+
+
+    - name: ArrayIndex verilog
+      run: |
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ArrayIndex/fpga.tb verilog/fpga/tests/ArrayIndex/fpga.sv && timeout 1m ./fpga
+
+    - name: ArrayIndex yosys
+      run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
+        yosys -q -p "read_verilog verilog/fpga/tests/ArrayIndex/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/ArrayIndex/fpga.json"
+        nextpnr-gowin -v --debug --json verilog/fpga/tests/ArrayIndex/fpga.json --write verilog/fpga/tests/ArrayIndex/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/ArrayIndex/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o verilog/fpga/tests/ArrayIndex/fpga.fs verilog/fpga/tests/ArrayIndex/fpga.pnr
+
+
+    - name: Array_scans verilog
+      run: |
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Array_scans/fpga.tb verilog/fpga/tests/Array_scans/fpga.sv && timeout 1m ./fpga
+
+    - name: Array_scans yosys
+      run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
+        yosys -q -p "read_verilog verilog/fpga/tests/Array_scans/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Array_scans/fpga.json"
+        nextpnr-gowin -v --debug --json verilog/fpga/tests/Array_scans/fpga.json --write verilog/fpga/tests/Array_scans/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Array_scans/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Array_scans/fpga.fs verilog/fpga/tests/Array_scans/fpga.pnr
+
+
+    - name: Array_test verilog
+      run: |
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Array_test/fpga.tb verilog/fpga/tests/Array_test/fpga.sv && timeout 1m ./fpga
+
+    - name: Array_test yosys
+      run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
+        yosys -q -p "read_verilog verilog/fpga/tests/Array_test/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Array_test/fpga.json"
+        nextpnr-gowin -v --debug --json verilog/fpga/tests/Array_test/fpga.json --write verilog/fpga/tests/Array_test/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Array_test/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Array_test/fpga.fs verilog/fpga/tests/Array_test/fpga.pnr
+
+
+    - name: ForIn_test verilog
+      run: |
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ForIn_test/fpga.tb verilog/fpga/tests/ForIn_test/fpga.sv && timeout 1m ./fpga
+
+    - name: ForIn_test yosys
+      run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
+        yosys -q -p "read_verilog verilog/fpga/tests/ForIn_test/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/ForIn_test/fpga.json"
+        nextpnr-gowin -v --debug --json verilog/fpga/tests/ForIn_test/fpga.json --write verilog/fpga/tests/ForIn_test/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/ForIn_test/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o verilog/fpga/tests/ForIn_test/fpga.fs verilog/fpga/tests/ForIn_test/fpga.pnr
+
+
+    - name: Free verilog
+      run: |
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Free/fpga.tb verilog/fpga/tests/Free/fpga.sv && timeout 1m ./fpga
+
+    - name: Free yosys
+      run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
+        yosys -q -p "read_verilog verilog/fpga/tests/Free/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Free/fpga.json"
+        nextpnr-gowin -v --debug --json verilog/fpga/tests/Free/fpga.json --write verilog/fpga/tests/Free/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Free/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Free/fpga.fs verilog/fpga/tests/Free/fpga.pnr
+
+
+    - name: In_test verilog
+      run: |
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/In_test/fpga.tb verilog/fpga/tests/In_test/fpga.sv && timeout 1m ./fpga
+
+    - name: In_test yosys
+      run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
+        yosys -q -p "read_verilog verilog/fpga/tests/In_test/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/In_test/fpga.json"
+        nextpnr-gowin -v --debug --json verilog/fpga/tests/In_test/fpga.json --write verilog/fpga/tests/In_test/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/In_test/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o verilog/fpga/tests/In_test/fpga.fs verilog/fpga/tests/In_test/fpga.pnr
+
+
+    - name: Jeq_test verilog
+      run: |
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Jeq_test/fpga.tb verilog/fpga/tests/Jeq_test/fpga.sv && timeout 1m ./fpga
+
+    - name: Jeq_test yosys
+      run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
+        yosys -q -p "read_verilog verilog/fpga/tests/Jeq_test/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Jeq_test/fpga.json"
+        nextpnr-gowin -v --debug --json verilog/fpga/tests/Jeq_test/fpga.json --write verilog/fpga/tests/Jeq_test/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Jeq_test/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Jeq_test/fpga.fs verilog/fpga/tests/Jeq_test/fpga.pnr
+
+
+    - name: Mov_test verilog
+      run: |
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Mov_test/fpga.tb verilog/fpga/tests/Mov_test/fpga.sv && timeout 1m ./fpga
+
+    - name: Mov_test yosys
+      run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
+        yosys -q -p "read_verilog verilog/fpga/tests/Mov_test/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Mov_test/fpga.json"
+        nextpnr-gowin -v --debug --json verilog/fpga/tests/Mov_test/fpga.json --write verilog/fpga/tests/Mov_test/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Mov_test/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Mov_test/fpga.fs verilog/fpga/tests/Mov_test/fpga.pnr
+
+
+    - name: MoveLong_test verilog
+      run: |
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/MoveLong_test/fpga.tb verilog/fpga/tests/MoveLong_test/fpga.sv && timeout 1m ./fpga
+
+    - name: MoveLong_test yosys
+      run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
+        yosys -q -p "read_verilog verilog/fpga/tests/MoveLong_test/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/MoveLong_test/fpga.json"
+        nextpnr-gowin -v --debug --json verilog/fpga/tests/MoveLong_test/fpga.json --write verilog/fpga/tests/MoveLong_test/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/MoveLong_test/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o verilog/fpga/tests/MoveLong_test/fpga.fs verilog/fpga/tests/MoveLong_test/fpga.pnr
+
+
     - name: Not_test verilog
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Not_test/fpga.tb verilog/fpga/tests/Not_test/fpga.sv && timeout 1m ./fpga
@@ -134,6 +266,30 @@ jobs:
         yosys -q -p "read_verilog verilog/fpga/tests/Not_test/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Not_test/fpga.json"
         nextpnr-gowin -v --debug --json verilog/fpga/tests/Not_test/fpga.json --write verilog/fpga/tests/Not_test/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Not_test/tangnano9k.cst
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/Not_test/fpga.fs verilog/fpga/tests/Not_test/fpga.pnr
+
+
+    - name: Pop_test verilog
+      run: |
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Pop_test/fpga.tb verilog/fpga/tests/Pop_test/fpga.sv && timeout 1m ./fpga
+
+    - name: Pop_test yosys
+      run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
+        yosys -q -p "read_verilog verilog/fpga/tests/Pop_test/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Pop_test/fpga.json"
+        nextpnr-gowin -v --debug --json verilog/fpga/tests/Pop_test/fpga.json --write verilog/fpga/tests/Pop_test/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Pop_test/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Pop_test/fpga.fs verilog/fpga/tests/Pop_test/fpga.pnr
+
+
+    - name: Push_test verilog
+      run: |
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Push_test/fpga.tb verilog/fpga/tests/Push_test/fpga.sv && timeout 1m ./fpga
+
+    - name: Push_test yosys
+      run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
+        yosys -q -p "read_verilog verilog/fpga/tests/Push_test/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Push_test/fpga.json"
+        nextpnr-gowin -v --debug --json verilog/fpga/tests/Push_test/fpga.json --write verilog/fpga/tests/Push_test/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Push_test/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Push_test/fpga.fs verilog/fpga/tests/Push_test/fpga.pnr
 
 
     - name: ShiftLeft_test verilog
@@ -158,6 +314,30 @@ jobs:
         yosys -q -p "read_verilog verilog/fpga/tests/ShiftRight_test/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/ShiftRight_test/fpga.json"
         nextpnr-gowin -v --debug --json verilog/fpga/tests/ShiftRight_test/fpga.json --write verilog/fpga/tests/ShiftRight_test/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/ShiftRight_test/tangnano9k.cst
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/ShiftRight_test/fpga.fs verilog/fpga/tests/ShiftRight_test/fpga.pnr
+
+
+    - name: Shift_up_test verilog
+      run: |
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Shift_up_test/fpga.tb verilog/fpga/tests/Shift_up_test/fpga.sv && timeout 1m ./fpga
+
+    - name: Shift_up_test yosys
+      run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
+        yosys -q -p "read_verilog verilog/fpga/tests/Shift_up_test/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Shift_up_test/fpga.json"
+        nextpnr-gowin -v --debug --json verilog/fpga/tests/Shift_up_test/fpga.json --write verilog/fpga/tests/Shift_up_test/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Shift_up_test/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Shift_up_test/fpga.fs verilog/fpga/tests/Shift_up_test/fpga.pnr
+
+
+    - name: Shift_up_test_2 verilog
+      run: |
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Shift_up_test_2/fpga.tb verilog/fpga/tests/Shift_up_test_2/fpga.sv && timeout 1m ./fpga
+
+    - name: Shift_up_test_2 yosys
+      run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
+        yosys -q -p "read_verilog verilog/fpga/tests/Shift_up_test_2/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Shift_up_test_2/fpga.json"
+        nextpnr-gowin -v --debug --json verilog/fpga/tests/Shift_up_test_2/fpga.json --write verilog/fpga/tests/Shift_up_test_2/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Shift_up_test_2/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Shift_up_test_2/fpga.fs verilog/fpga/tests/Shift_up_test_2/fpga.pnr
 
 
     - name: Subtract_test verilog
