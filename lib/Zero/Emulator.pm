@@ -18,7 +18,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Time::HiRes qw(time);
-eval "use Test::More tests=>412" unless caller;
+eval "use Test::More tests=>402" unless caller;
 
 makeDieConfess;
 our $memoryTechnique;                                                           # Undef or the address of a sub that loads the memory handlers into an execution environment.
@@ -94,6 +94,7 @@ sub ExecutionEnvironment(%)                                                     
     widestAreaInArena=>     [],                                                 # Track highest array access in each arena
     latestLeftTarget=>      undef,                                              # The most recent value of the target operand evaluated as a left operand
     latestRightSource=>     undef,                                              # The most recent value of the source operand evaluated as a right operand
+    compileToVerilogTests=> {},                                                 # Make sure that all the compile to verilog tests have distinct names
    );
 
   $memoryTechnique->($exec)       if $memoryTechnique;                          # Load memory handlers if a different memory handling system has been requested
@@ -2274,7 +2275,7 @@ sub ForArray(&$$%)                                                              
 sub ForIn(&%)                                                                   #i For loop to process each element remaining in the input channel
  {my ($block, %options) = @_;                                                   # Block of code, area, area name, options
   my ($Check, $Next, $End) = (label, label, label);
-  setLabel($Check);                                                            # Check
+  setLabel($Check);                                                             # Check
     my $s = InSize;
     JFalse($End, $s);
      my $a = In;
@@ -2979,6 +2980,9 @@ sub generateVerilogMachineCode($$)                                              
  {my ($exec, $name) = @_;                                                       # Execution environment of completed run, name of subroutine to contain generated code
   @_ == 2 or confess "Two parameters";
 
+  if ($exec->compileToVerilogTests->{$name}++)
+   {confess "Duplicate compile to verilog test nanme: $name";
+   }
   return $exec->compileToVerilog($name);                                        # How to do all the generate machine code stuff to develop and test dereferencing - but it is now no longer needed as long as teh compiled verilog an be palced on a fpga.
 
   my $string = GenerateMachineCode;                                             # Generate machine code as one long string
@@ -3066,7 +3070,7 @@ sub CompileToVerilog(%)                                                         
  {my (%options) = @_;                                                           # Execution options
 
   genHash(q(Zero::CompileToVerilog),                                            # Compile to verilog
-    NArea=>                 $options{NArea} // 4,                               # The size of an array in the heap area
+    NArea=>                 $options{NArea} // 10,                              # The size of an array in the heap area
     code=>                  '',                                                 # Generated code
     testBench=>             '',                                                 # Test bench for generated code
     constraints=>           '',                                                 # Constraints file
@@ -3181,7 +3185,8 @@ sub compileToVerilog($$)                                                        
  {my ($exec, $name) = @_;                                                       # Execution environment of completed run, name of subroutine to contain generated code
   @_ == 2 or confess "Two parameters";
 
-  my $compile = CompileToVerilog(NArea=>10);                                    # Compilation environment
+  my $NArea = 10;                                                               # We have to fix the area size in advance to make this process efficient
+  my $compile = CompileToVerilog(NArea=>$NArea);                                # Compilation environment
 
   my @c;                                                                        # Generated code
 
@@ -3213,6 +3218,17 @@ END
 
               end
               arraySizes[$t] = 0;
+              ip = $n;
+END
+     },
+
+    arraySize=> sub                                                             # ArraySize
+     {my ($i) = @_;                                                             # Instruction
+      my $s   = $compile->deref($i->source)->Value;
+      my $t   = $compile->deref($i->target)->targetLocation;
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              $t = arraySizes[$s];
               ip = $n;
 END
      },
@@ -3430,8 +3446,8 @@ END
      {my ($i) = @_;                                                             # Instruction
       my $si  = $compile->deref($i->source )->targetIndex;
       my $sa  = $compile->deref($i->source )->targetLocationArea;
-      my $ti  = $compile->deref($i->source )->targetIndex;
-      my $ta  = $compile->deref($i->source )->targetLocationArea;
+      my $ti  = $compile->deref($i->target )->targetIndex;
+      my $ta  = $compile->deref($i->target )->targetLocationArea;
       my $l   = $compile->deref($i->source2)->Value;
       my $n   = $i->number + 1;
       push @c, <<END;
@@ -3535,10 +3551,10 @@ END
               for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * $a + i]; // Copy source array
               for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
                 if (i > $o) begin
-                  heapMem[NArea * $a + i + 1] = heapMem[NArea * $a + i];
+                  heapMem[NArea * $a + i] = arrayShift[i-1];
                 end
               end
-              heapMem[NArea * $a + $o + 1] = $s;                                // Insert new value
+              heapMem[NArea * $a + $o] = $s;                                    // Insert new value
               arraySizes[$a] = arraySizes[$a] + 1;                              // Increase array size
               ip = $n;
 END
@@ -3569,7 +3585,7 @@ module fpga                                                                     
 
   parameter integer MemoryElementWidth =  12;                                   // Memory element width
 
-  parameter integer NArea          =    4;                                      // Size of each area on the heap
+  parameter integer NArea          = $NArea;                                    // Size of each area on the heap
   parameter integer NArrays        =   20;                                      // Maximum number of arrays
   parameter integer NHeap          =  100;                                      // Amount of heap memory
   parameter integer NLocal         =  600;                                      // Size of local memory
@@ -3756,7 +3772,7 @@ END
 
     my $C = fpe $D, qw(tangnano9k cst);                                         # Constraints
     my $c = join "", $compile->constraints;
-    owf($C, $c);
+    owf($C, $c) unless -e $C and $c eq readFile $C;
 #   say STDERR "AAAA\n$S\n$T\n$C";
    }
 
@@ -3832,6 +3848,7 @@ if (1)                                                                          
   Out $i0;
   my $e = Execute(suppressOutput=>1, in=>[88, 44]);
   is_deeply $e->outLines, [88, 44, 2, 1, 0];
+  $e->generateVerilogMachineCode("InSize") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -3878,7 +3895,7 @@ if (1)                                                                          
   Out  $a;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [5];
-  $e->generateVerilogMachineCode("Add_test") if $testSet == 1 and $debug;
+  $e->generateVerilogMachineCode("Add") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -3888,7 +3905,7 @@ if (1)                                                                          
   Out $a;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [2];
-  $e->generateVerilogMachineCode("Subtract_test") if $testSet == 1 and $debug;
+  $e->generateVerilogMachineCode("Subtract") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -3926,7 +3943,7 @@ if (1)                                                                          
 0
 1
 END
-  $e->generateVerilogMachineCode("Not_test") if $testSet == 1 and $debug;
+  $e->generateVerilogMachineCode("Not") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -3937,7 +3954,7 @@ if (1)                                                                          
   Out $a;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [2];
-  $e->generateVerilogMachineCode("ShiftLeft_test") if $testSet == 1 and $debug;
+  $e->generateVerilogMachineCode("ShiftLeft") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -3948,7 +3965,7 @@ if (1)                                                                          
   Out $a;
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [2];
-  $e->generateVerilogMachineCode("ShiftRight_test") if $testSet == 1 and $debug;
+  $e->generateVerilogMachineCode("ShiftRight") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -3962,6 +3979,7 @@ if (1)                                                                          
   setLabel($b);
   my $e = &$ee(suppressOutput=>1);
   is_deeply $e->outLines, [2];
+  $e->generateVerilogMachineCode("Jmp") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -4010,21 +4028,16 @@ if (1)                                                                          
   my $a = Array "aaa";
   Mov     [$a,  0, "aaa"],  11;
   Mov     [$a,  1, "aaa"],  22;
-  my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->Heap->($e, 0), [11, 22];
-  $e->generateVerilogMachineCode("Array_test") if $testSet == 1 and $debug;
- }
+  my $A = Array "aaa";
+  Mov     [$A,  1, "aaa"],  33;
+  my $B = Mov [$A, \1, "aaa"];
+  Out     [$a,  \0, "aaa"];
+  Out     [$a,  \1, "aaa"];
+  Out     $B;
 
-#latest:;
-if (1)                                                                          ##Mov ##Array
- {Start 1;
-  my $a = Array "aaa";
-  Mov     [$a,  1, "aaa"],  11;
-  Mov  1, [$a, \1, "aaa"];
-  Out \1;
   my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->outLines, [11];
-  $e->generateVerilogMachineCode("Array_test") if $testSet == 1 and $debug;
+  is_deeply $e->outLines, [11, 22, 33];
+  $e->generateVerilogMachineCode("Array") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -4125,7 +4138,6 @@ if (1)                                                                          
   Out $c;
   Out $d;
   my $e = &$ee(suppressOutput=>1);
-  $e->generateVerilogMachineCode("Pop_test") if $testSet == 1 and $debug;
 
   #say STDERR $e->PrintLocal->($e); x;
   is_deeply $e->PrintLocal->($e), <<END;
@@ -4133,6 +4145,8 @@ Memory    0    1    2    3    4    5    6    7    8    9   10   11   12   13   1
 Local:    0    2    1
 END
   is_deeply $e->Heap->($e, 0), [];
+  is_deeply $e->outLines, [2, 1];
+  $e->generateVerilogMachineCode("Pop") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -4159,7 +4173,7 @@ END
  }
 
 #latest:;
-if (1)                                                                          ##Alloc ##Mov
+if (1)                                                                          ##Array ##Mov
  {Start 1;
   my $a = Array "alloc";
   my $b = Mov 99;
@@ -4449,7 +4463,7 @@ END
  }
 
 #latest:;
-if (1)                                                                          ##Alloc ##Mov ##Call
+if (1)                                                                          ##Array ##Mov ##Call
  {Start 1;
   my $a = Array "aaa";
   Dump;
@@ -4461,7 +4475,7 @@ END
  }
 
 #latest:;
-if (1)                                                                          ##Alloc ##Mov ##Call ##ParamsPut ##ParamsGet
+if (1)                                                                          ##Array ##Mov ##Call ##ParamsPut ##ParamsGet
  {Start 1;
   my $a = Array "aaa";
   my $i = Mov 1;
@@ -4485,7 +4499,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (0)                                                                          ##Alloc ##Clear
+if (0)                                                                          ##Array ##Clear
  {Start 1;
   my $a = Array "aaa";
   #Clear $a, 10, 'aaa';
@@ -4576,7 +4590,7 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          ##Alloc ##Mov ##Call
+if (1)                                                                          ##Array ##Mov ##Call
  {Start 1;
   my $set = Procedure 'set', sub
    {my $a = ParamsGet 0;
@@ -4634,47 +4648,69 @@ END
 #latest:;
 if (1)                                                                          ##ShiftUp
  {Start 1;
+  my $b = Array "array";
   my $a = Array "array";
 
   Mov [$a, 0, 'array'], 0;
   Mov [$a, 1, 'array'], 1;
   Mov [$a, 2, 'array'], 2;
+  Resize $a, 3, 'array';
+
   ShiftUp [$a, 0, 'array'], 99;
 
-  my $e = &$ee(suppressOutput=>0);
-  is_deeply $e->Heap->($e, 0), [99, 0, 1, 2];
-  $e->generateVerilogMachineCode("Shift_up_test") if $testSet == 1 and $debug;
+  ForArray
+   {my ($i, $a, $Check, $Next, $End) = @_;
+    Out $a;
+   } $a, "array";
+
+  my $e = &$ee(suppressOutput=>1);
+  is_deeply $e->outLines,      [99, 0, 1, 2];
+  $e->generateVerilogMachineCode("Shift_up") if $testSet == 1 and $debug;
  }
 
 #latest:;
 if (1)                                                                          ##ShiftUp
  {Start 1;
+  my $b = Array "array";
   my $a = Array "array";
 
   Mov [$a, 0, 'array'], 0;
   Mov [$a, 1, 'array'], 1;
   Mov [$a, 2, 'array'], 2;
+  Resize $a, 3, 'array';
   ShiftUp [$a, 1, 'array'], 99;
 
-  my $e = &$ee(suppressOutput=>0);
-  is_deeply $e->Heap->($e, 0), [0, 99, 1, 2];
+  ForArray
+   {my ($i, $a, $Check, $Next, $End) = @_;
+    Out $a;
+   } $a, "array";
+
+  my $e = &$ee(suppressOutput=>1);
+  is_deeply $e->outLines, [0, 99, 1, 2];
  }
 
 #latest:;
 if (1)                                                                          ##ShiftUp ##Sequential
  {Start 1;
+  my $b = Array "array";
   my $a = Array "array";
 
   Sequential
     sub{Mov [$a, 0, 'array'], 0},
     sub{Mov [$a, 1, 'array'], 1},
-    sub{Mov [$a, 2, 'array'], 2};
+    sub{Mov [$a, 2, 'array'], 2},
+    sub{Resize $a, 3, 'array'};
 
   ShiftUp [$a, 2, 'array'], 99;
 
-  my $e = &$ee(suppressOutput=>0);
-  is_deeply $e->Heap->($e, 0), [0, 1, 99, 2];
-  $e->generateVerilogMachineCode("Shift_up_test_2") if $testSet == 1 and $debug;
+  ForArray
+   {my ($i, $a, $Check, $Next, $End) = @_;
+    Out $a;
+   } $a, "array";
+
+  my $e = &$ee(suppressOutput=>1);
+  is_deeply $e->outLines,      [0, 1, 99, 2];
+  $e->generateVerilogMachineCode("Shift_up_2") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -4729,84 +4765,91 @@ if (1)                                                                          
  }
 
 #latest:;
-if (1)                                                                          ##Alloc ##Mov ##Jeq ##Jne ##Jle ##Jlt ##Jge ##Jgt
+if (1)                                                                          ##JTrue ##JFalse ##Jeq ##Jne ##Jle ##Jlt ##Jge ##Jgt
  {Start 1;
-  my $a = Array "aaa";
-  my $b = Array "bbb";
-  Mov [$a, 0, 'aaa'], $b;
-  Mov [$b, 0, 'bbb'], 99;
-
   For
-   {my ($i, $check, $next, $end) = @_;
-    my $c = Mov [$a, \0, 'aaa'];
-    my $d = Mov [$c, \0, 'bbb'];
-    Jeq $next, $d, $d;
-    Jne $next, $d, $d;
-    Jle $next, $d, $d;
-    Jlt $next, $d, $d;
-    Jge $next, $d, $d;
-    Jgt $next, $d, $d;
-   } 3;
-
+   {my ($a, $check, $next, $end) = @_;
+    Block
+     {my ($start, $good, $bad, $end) = @_;
+      JTrue $end, $a;
+      Out 1;
+     };
+    Block
+     {my ($start, $good, $bad, $end) = @_;
+      JFalse $end, $a;
+      Out 2;
+     };
+    Block
+     {my ($start, $good, $bad, $end) = @_;
+      JTrue $end, $a;
+      Out 3;
+     };
+    Block
+     {my ($start, $good, $bad, $end) = @_;
+      JFalse $end, $a;
+      Out 4;
+     };
+    Block
+     {my ($start, $good, $bad, $end) = @_;
+      Jeq $end, $a, 3;
+      Out 5;
+     };
+    Block
+     {my ($start, $good, $bad, $end) = @_;
+      Jne $end, $a, 3;
+      Out 6;
+     };
+    Block
+     {my ($start, $good, $bad, $end) = @_;
+      Jle $end, $a, 3;
+      Out 7;
+     };
+    Block
+     {my ($start, $good, $bad, $end) = @_;
+      Jlt  $end, $a, 3;
+      Out 8;
+     };
+    Block
+     {my ($start, $good, $bad, $end) = @_;
+      Jge  $end, $a, 3;
+      Out 9;
+     };
+    Block
+     {my ($start, $good, $bad, $end) = @_;
+      Jgt  $end, $a, 3;
+      Out 10;
+     };
+   } 5;
   my $e = &$ee(suppressOutput=>1);
-
-  is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       24 instructions executed";
-  is_deeply $e->Heap->($e, 0), [1];
-  is_deeply $e->Heap->($e, 1), [99];
+  is_deeply $e->outLines, [1, 3, 5, 9, 10, 2, 4, 5, 9, 10, 2, 4, 5, 9, 10, 2, 4, 6, 8, 10, 2, 4, 5, 7, 8];
+  $e->generateVerilogMachineCode("JFalse") if $testSet == 1 and $debug;
  }
 
 #latest:;
-if (1)                                                                          ##JTrue ##JFalse
- {Start 1;
-  my $a = Mov 1;
-  Block
-   {my ($start, $good, $bad, $end) = @_;
-    JTrue $end, $a;
-    Out 1;
-   };
-  Block
-   {my ($start, $good, $bad, $end) = @_;
-    JFalse $end, $a;
-    Out 2;
-   };
-  Mov $a, 0;
-  Block
-   {my ($start, $good, $bad, $end) = @_;
-    JTrue $end, $a;
-    Out 3;
-   };
-  Block
-   {my ($start, $good, $bad, $end) = @_;
-    JFalse $end, $a;
-    Out 4;
-   };
-  my $e = &$ee(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-2
-3
-END
- }
-
-#latest:;
-if (1)                                                                          ##Alloc ##Mov
+if (1)                                                                          ##Array ##Mov
  {Start 1;
   my $a = Array 'aaa';
   my $b = Mov 2;                                                                # Location to move to in a
+  Mov [$a,  0, 'aaa'], 1;
+  Mov [$a,  1, 'aaa'], 2;
+  Mov [$a,  2, 'aaa'], 3;
 
   For
    {my ($i, $check, $next, $end) = @_;
-    Mov [$a, \$b, 'aaa'], 1;
-    Jeq $next, [$a, \$b, 'aaa'], 1;
+    Out 1;
+    Jeq $next, [$a, \$i, 'aaa'], 2;
+    Out 2;
    } 3;
 
   my $e = &$ee(suppressOutput=>1);
 
   is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       19 instructions executed";
-  is_deeply $e->Heap->($e, 0), [undef, undef, 1];
+  is_deeply $e->outLines, [1, 2, 1, 1, 2];
+  $e->generateVerilogMachineCode("Mov2") if $testSet == 1 and $debug;
  }
 
 #latest:;
-if (1)                                                                          ##Alloc
+if (1)                                                                          ##Array
  {Start 1;
 
   For                                                                           # Allocate and free several times to demonstrate area reuse
@@ -5039,7 +5082,10 @@ if (1)                                                                          
   my $e = &$ee(suppressOutput=>1, maximumArraySize=>11);
   is_deeply $e->Heap->($e, 0), [0 .. 9];
   is_deeply $e->Heap->($e, 1), [100, 101, 4, 5, 6, 105 .. 109];
+  $e->generateVerilogMachineCode("MoveLong_1") if $testSet == 1 and $debug;
  }
+
+####### Continue to check that all Verilog tests produce Out that is testable
 
 #      0     1     2
 #     10    20    30
@@ -5293,7 +5339,7 @@ if (1)                                                                          
    };
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [111, 333];
-  $e->generateVerilogMachineCode("Jeq_test") if $debug;
+  $e->generateVerilogMachineCode("Jeq") if $debug;
  }
 
 #latest:;
@@ -5302,9 +5348,16 @@ if (1)                                                                          
   my $a = Array   "aaa";
   Push $a, 1,     "aaa";
   Push $a, 2,     "aaa";
+
+  ForArray
+   {my ($i, $a, $Check, $Next, $End) = @_;
+    Out $a;
+   } $a, "aaa";
+
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->Heap->($e, 0), [1..2];
-  $e->generateVerilogMachineCode("Push_test") if $debug;
+  is_deeply $e->outLines,      [1..2];
+  $e->generateVerilogMachineCode("Push") if $debug;
  }
 
 #latest:;
@@ -5318,7 +5371,7 @@ if (1)                                                                          
   Out $c;
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [1..3];
-  $e->generateVerilogMachineCode("Mov_test") if $debug;
+  $e->generateVerilogMachineCode("Mov") if $debug;
  }
 
 #latest:;
@@ -5326,21 +5379,46 @@ if (1)                                                                          
  {Start 1;
   my $a = Array "aaa";
   my $b = Array "bbb";
-  Mov [$a, \0, 'aaa'], 11;
-  Mov [$a, \1, 'aaa'], 22;
-  Mov [$a, \2, 'aaa'], 33;
-  Mov [$a, \3, 'aaa'], 44;
-  Mov [$a, \4, 'aaa'], 55;
-  Mov [$b, \0, 'bbb'], 66;
-  Mov [$b, \1, 'bbb'], 77;
-  Mov [$b, \2, 'bbb'], 88;
-  Mov [$b, \3, 'bbb'], 99;
+  Mov [$a, \0, 'aaa'],  11;
+  Mov [$a, \1, 'aaa'],  22;
+  Mov [$a, \2, 'aaa'],  33;
+  Mov [$a, \3, 'aaa'],  44;
+  Mov [$a, \4, 'aaa'],  55;
+  Mov [$b, \0, 'bbb'],  66;
+  Mov [$b, \1, 'bbb'],  77;
+  Mov [$b, \2, 'bbb'],  88;
+  Mov [$b, \3, 'bbb'],  99;
+  Mov [$b, \4, 'bbb'], 101;
+  Resize $a, 5, 'aaa';
+  Resize $b, 5, 'bbb';
 
-  MoveLong [$a, \1, 'aaa'], [$b, \1, 'bbb'], 2;
+  ForArray
+   {my ($i, $a, $Check, $Next, $End) = @_;
+    Out $a;
+   } $a, "aaa";
+
+  ForArray
+   {my ($i, $b, $Check, $Next, $End) = @_;
+    Out $b;
+   } $b, "bbb";
+
+  MoveLong [$a, \1, 'aaa'], [$b, \2, 'bbb'], 2;
+
+  ForArray
+   {my ($i, $a, $Check, $Next, $End) = @_;
+    Out $a;
+   } $a, "aaa";
+
+  ForArray
+   {my ($i, $b, $Check, $Next, $End) = @_;
+    Out $b;
+   } $b, "bbb";
+
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->heap(0), bless([11, 77, 88, 44, 55], "aaa");
-  is_deeply $e->heap(1), bless([66, 77, 88, 99],     "bbb");
-  $e->generateVerilogMachineCode("MoveLong_test") if $debug;
+  is_deeply $e->heap(0), bless([11, 88, 99, 44, 55], "aaa");
+  is_deeply $e->heap(1), bless([66, 77, 88, 99, 101],"bbb");
+  is_deeply $e->outLines, [11, 22, 33, 44, 55, 66, 77, 88, 99, 101, 11, 88, 99, 44, 55, 66, 77, 88, 99, 101];
+  $e->generateVerilogMachineCode("MoveLong_2") if $debug;
  }
 
 #latest:;
@@ -5353,7 +5431,7 @@ if (1)                                                                          
    };
   my $e = Execute(suppressOutput=>1, in => [33,22,11]);
   is_deeply $e->outLines, [3,33, 2,22, 1,11];
-  $e->generateVerilogMachineCode("In_test") if $debug;
+  $e->generateVerilogMachineCode("In") if $debug;
  }
 
 #latest:;
@@ -5372,7 +5450,7 @@ if (1)                                                                          
   is_deeply $e->inOriginally, [33, 22, 11];
   is_deeply $e->outLines, [1,2,3, 3,33, 2,22, 1,11];
   is_deeply [map {$_->entry} $e->block->code->@*], [qw(1 0 0 1 0 0 0 0 0 0 0 0)]; # Sub sequence start points
-  $e->compileToVerilog("ForIn_test") if $debug;
+  $e->compileToVerilog("ForIn") if $debug;
  }
 
 =pod
