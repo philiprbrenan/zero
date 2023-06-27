@@ -995,6 +995,7 @@ if (1)                                                                          
 0
 END
   is_deeply $e->heap(0), [ 0, 0, 3, 0];
+  $e->generateVerilogMachineCode("BTree/basic/1");
  }
 
 #latest:;
@@ -1020,6 +1021,7 @@ if (1)                                                                          
 5
 END
   is_deeply $e->heap(0), [ 3, 5, 3, 1];
+  $e->generateVerilogMachineCode("BTree/basic/2");
  }
 
 #latest:;
@@ -1033,6 +1035,7 @@ if (1)                                                                          
   is_deeply $e->heap(1), [0, 1, 0, 0, 2, 3, 0];
   is_deeply $e->heap(2), [];
   is_deeply $e->heap(3), [];
+  $e->generateVerilogMachineCode("BTree/basic/3");
  }
 
 #latest:;
@@ -1061,6 +1064,7 @@ if (1)                                                                          
   is_deeply $e->heap(2), bless([10, 20, 30, 40, 50, 60, 70], "Keys");
   is_deeply $e->heap(3), bless([10, 20, 30, 40, 50, 60, 70], "Data");
   is_deeply $e->heap(4), bless([5, 15, 25, 35, 45, 55, 65, 75], "Down");
+  $e->generateVerilogMachineCode("BTree/basic/4");
  }
 
 #latest:;
@@ -1090,6 +1094,7 @@ if (1)                                                                          
   is_deeply $e->heap(2), bless([10, 20, 26, 30, 40, 50, 60, 70], "Keys");
   is_deeply $e->heap(3), bless([10, 20, 26, 30, 40, 50, 60, 70], "Data");
   is_deeply $e->heap(4), bless([5, 15, 25, 26, 35, 45, 55, 65, 75], "Down");
+  $e->generateVerilogMachineCode("BTree/basic/5");
  }
 
 #latest:;
@@ -1126,6 +1131,7 @@ if (1)                                                                          
   is_deeply $e->heap(6), bless([2010, 2020, 2030, 2040, 2050, 2060, 2070], "Keys");
   is_deeply $e->heap(7), bless([2010, 2020, 2030, 2040, 2050, 2060, 2070], "Data");
   is_deeply $e->heap(8), bless([2005, 2015, 2025, 2035, 2045, 2055, 2065, 2075], "Down");
+  $e->generateVerilogMachineCode("BTree/basic/6");
  }
 
 #latest:;
@@ -1159,6 +1165,7 @@ if (1)                                                                          
   is_deeply $e->heap(6), bless([14, 15, 43 .. 47], "Keys");
   is_deeply $e->heap(7), bless([24, 25, 53 .. 57], "Data");
   is_deeply $e->heap(8), bless([34, 35, 36, 64 .. 67, 99], "Down");
+  $e->generateVerilogMachineCode("BTree/basic/7");
  }
 
 #latest:;
@@ -1183,6 +1190,7 @@ if (1)                                                                          
   is_deeply $e->heap(2), bless([1, 1, 0, 0, 3, 4, 0], "Node");
   is_deeply $e->heap(3), bless([1], "Keys");
   is_deeply $e->heap(4), bless([11], "Data");
+  $e->generateVerilogMachineCode("BTree/insert/01");
  }
 
 #latest:;
@@ -1197,6 +1205,7 @@ if (1)                                                                          
   is_deeply $e->heap(2), bless([2, 1, 0, 0, 3, 4, 0], "Node");
   is_deeply $e->heap(3), bless([1, 2], "Keys");
   is_deeply $e->heap(4), bless([11, 22], "Data");
+  $e->generateVerilogMachineCode("BTree/insert/02");
  }
 
 #latest:;
@@ -1210,6 +1219,7 @@ if (1)                                                                          
   is_deeply $e->heap(2), bless([3, 1, 0, 0, 3, 4, 0], "Node");
   is_deeply $e->heap(3), bless([1, 2, 3], "Keys");
   is_deeply $e->heap(4), bless([11, 22, 33], "Data");
+  $e->generateVerilogMachineCode("BTree/insert/03");
  }
 
 #latest:;
@@ -1230,6 +1240,7 @@ if (1)                                                                          
   is_deeply $e->heap(9 ), bless([3, 4], "Keys");
   is_deeply $e->heap(10), bless([33, 44], "Data");
   is_deeply $e->heap(11), bless([5, 8], "Down");
+  $e->generateVerilogMachineCode("BTree/insert/04");
  }
 
 #latest:;
@@ -1254,6 +1265,7 @@ if (1)                                                                          
   is_deeply $e->heap(12), bless([1, 4, 2, 0, 13, 14, 0], "Node");
   is_deeply $e->heap(13), bless([5], "Keys");
   is_deeply $e->heap(14), bless([55], "Data");
+  $e->generateVerilogMachineCode("BTree/insert/05");
  }
 
 #latest:;
@@ -1277,6 +1289,7 @@ if (1)                                                                          
   is_deeply $e->heap(12), bless([2, 4, 2, 0, 13, 14, 0], "Node");
   is_deeply $e->heap(13), bless([5, 6], "Keys");
   is_deeply $e->heap(14), bless([55, 66], "Data");
+  $e->generateVerilogMachineCode("BTree/insert/06");
  }
 
 #latest:;
@@ -1312,7 +1325,7 @@ if (1)                                                                          
   is_deeply $e->heap(13), bless([3], "Keys");
   is_deeply $e->heap(14), bless([3], "Data");
   is_deeply $e->outLines, [0..5];
-  $e->generateVerilogMachineCode("BTree_1");
+  $e->generateVerilogMachineCode("BTree/insert/06R");
  }
 
 #latest:;
@@ -1364,6 +1377,8 @@ if (1)
 
   my $e = Execute(suppressOutput=>1, in=>[10, 1,8,5,6,3,4,7,2,9,0]);
   is_deeply $e->outLines, [0..9];
+   $e->generateVerilogMachineCode("BTree/in/1");
+
  }
 
 #latest:;
@@ -1391,6 +1406,7 @@ if (1)                                                                          
 
   my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
   is_deeply $e->out, "";                                                        # No asserts
+  $e->generateVerilogMachineCode("BTree/insert/66");
  }
 
 #latest:;
@@ -1520,7 +1536,7 @@ END
         6       12    16             26          34    38          46       52             62             72          80    84             94    98            108         116   120   124            134   138               150               162            172            182            192            202         210
   2  4     8 10    14    18    22 24    28    32    36    40    44    48 50    54    58 60    64    68 70    74    78    82    86 88    92    96   100102   106   110   114   118   122   126128   132   136   140142   146148   152154   158160   164   168170   174176   180   184186   190   194   198200   204   208   212214
 END
-
+  $e->generateVerilogMachineCode("BTree/in/2");
  }
 
 #latest:;
@@ -1656,7 +1672,7 @@ if (1)                                                                          
    };
   my $e = Execute(suppressOutput=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
   is_deeply $e->outLines, [0, 1, 22, 0, 1, 33];
-  #$e->generateVerilogMachineCode("BTree");
+  $e->generateVerilogMachineCode("BTree/in/3");
  }
 
 # (\A.{80})\s+(#.*\Z) \1\2
