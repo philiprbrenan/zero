@@ -1,4 +1,4 @@
-# Test 2023-06-27 at 04:01:35
+# Test 2023-06-27 at 04:17:45
 
 name: Test
 
@@ -97,10 +97,6 @@ jobs:
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
 
-    - name: countUp
-      run: |
-        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        (cd verilog/countUp; perl -I$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl)
     - name: countUp
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
