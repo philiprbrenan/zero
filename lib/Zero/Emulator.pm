@@ -2943,7 +2943,7 @@ sub disAssemble($)                                                              
   my $n = length($mc) / 32;                                                     # The instructions are formatted into 32 byte blocks
   for my $i(1..$n)
    {my $c = substr($mc, ($i-1)*32, 32);
-    my $i = $C->instruction
+    my $i = $C->instruction                                                     #Fix: Need to remove fields not used by each instruction so that they are not inadvertantly interpreted later on
      (action=>  unpackInstruction(substr($c,  0, 8)),
       target=>  $C->unpackRef    (substr($c,  8, 8), 0),
       source=>  $C->unpackRef    (substr($c, 16, 8), 1),
@@ -3085,7 +3085,8 @@ sub Zero::CompileToVerilog::deref($$)                                           
 
   my sub heapAdr($$$)                                                           # Heap memory address
    {my ($delta, $area, $address) = @_;                                          # Delta, area, address
-    "$delta + $area*$NArea + $address";                                         # Heap memory address
+    return "$delta + $area*$NArea + $address" unless $delta == 0;               # Heap memory address
+                    "$area*$NArea + $address"                                   # Heap memory address
    }
 
   my sub heapMem($$$)                                                           # Heap memory value
@@ -3095,7 +3096,8 @@ sub Zero::CompileToVerilog::deref($$)                                           
 
   my sub localAdr($$)                                                           # Local memory address
    {my ($delta, $address) = @_;                                                 # Delta, address
-    "$delta+localMem[$address]";
+    return "$delta+localMem[$address]" unless $delta == 0;
+                  "localMem[$address]";
    }
 
   my sub localMem($$)                                                           # Local memory value
@@ -3190,6 +3192,14 @@ sub compileToVerilog($$)                                                        
 
   my @c;                                                                        # Generated code
 
+  my sub skip                                                                   # Skip this instruction and continue at the next one
+   {my ($i) = @_;                                                             # Instruction
+    my $n   = $i->number + 1;
+    push @c, <<END;
+            ip = $n;
+END
+   }
+
   my $gen =                                                                     # Code generation for each instruction
    {add=> sub                                                                   # Add
      {my ($i) = @_;                                                             # Instruction
@@ -3279,21 +3289,9 @@ END
 END
      },
 
-    assert=> sub                                                                # Assert
-     {my ($i) = @_;                                                             # Instruction
-      my $n = $i->number + 1;
-      push @c, <<END;
-              ip = $n;
-END
-     },
-
-    assertNe=> sub                                                              # AssertNe
-     {my ($i) = @_;                                                             # Instruction
-      my $n = $i->number + 1;
-      push @c, <<END;
-              ip = $n;
-END
-     },
+    assert=>   \&skip,                                                          # Assert
+    assertEq=> \&skip,                                                          # AssertEq
+    assertNe=> \&skip,                                                          # AssertNe
 
     free=> sub                                                                  # Free array
      {my ($i) = @_;                                                             # Instruction
@@ -3571,6 +3569,7 @@ END
               ip = $n;
 END
      },
+    tally=> \&skip,                                                             # Tally
    };
 
   push @c, <<END;                                                               # A case statement to select the next sub sequence to execute
