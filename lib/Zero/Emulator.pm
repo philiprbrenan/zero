@@ -3323,6 +3323,16 @@ END
 END
      },
 
+    jTrue=> sub                                                                 # jTrue
+     {my ($i) = @_;                                                             # Instruction
+      my $s   = $compile->deref($i->source)->Value;
+      my $n   = $i->number + 1;
+      my $j   = $i->number + $i->jump->address;
+      push @c, <<END;
+              ip = $s != 0 ? $j : $n;
+END
+     },
+
     jEq=> sub                                                                   # jEq
      {my ($i) = @_;                                                             # Instruction
       my $s   = $compile->deref($i->source )->Value;
@@ -3518,7 +3528,7 @@ END
     shiftUp=> sub                                                               # Shift up
      {my ($i) = @_;                                                             # Instruction
       my $s   = $compile->deref($i->source)->Value;
-      my $a   = $compile->deref($i->target)->Area;
+      my $a   = $compile->deref($i->target)->targetLocationArea;
       my $o   = $compile->deref($i->target)->targetIndex;
       my $n   = $i->number + 1;
       push @c, <<END;
@@ -3562,9 +3572,9 @@ module fpga                                                                     
   parameter integer NArea          =    4;                                      // Size of each area on the heap
   parameter integer NArrays        =   20;                                      // Maximum number of arrays
   parameter integer NHeap          =  100;                                      // Amount of heap memory
-  parameter integer NLocal         =  100;                                      // Size of local memory
+  parameter integer NLocal         =  600;                                      // Size of local memory
   parameter integer NOut           =  100;                                      // Size of output area
-  parameter integer NFreedArrays   =   20;                                      // Size of output area
+  parameter integer NFreedArrays   =   20;                                      // Freed arrays
 END
 
   if (my $n = sprintf "%4d", scalar $exec->inOriginally->@*)                    # Input queue length
@@ -3574,13 +3584,13 @@ END
    }
 
   push @c, <<END;                                                               # A case statement to select the next sub sequence to execute
-  reg [MemoryElementWidth-1:0]   arraySizes[NArrays-1      :0];                 // Size of each array
-  reg [MemoryElementWidth-1:0]      heapMem[NHeap-1        :0];                 // Heap memory
-  reg [MemoryElementWidth-1:0]     localMem[NLocal-1       :0];                 // Local memory
-  reg [MemoryElementWidth-1:0]       outMem[NOut-1         :0];                 // Out channel
-  reg [MemoryElementWidth-1:0]        inMem[NIn-1          :0];                 // In channel
-  reg [MemoryElementWidth-1:0]  freedArrays[NFreedArrays-1 :0];                 // Freed arrays list implemented as a stack
-  reg [MemoryElementWidth-1:0]   arrayShift[NArea-1        :0];                 // Array shift area
+  reg [MemoryElementWidth-1:0]   arraySizes[NArrays-1:0];                       // Size of each array
+  reg [MemoryElementWidth-1:0]      heapMem[NHeap-1  :0];                       // Heap memory
+  reg [MemoryElementWidth-1:0]     localMem[NLocal-1 :0];                       // Local memory
+  reg [MemoryElementWidth-1:0]       outMem[NOut-1   :0];                       // Out channel
+  reg [MemoryElementWidth-1:0]        inMem[NIn-1    :0];                       // In channel
+  reg [MemoryElementWidth-1:0]  freedArrays[NArrays-1:0];                       // Freed arrays list implemented as a stack
+  reg [MemoryElementWidth-1:0]   arrayShift[NArea-1  :0];                       // Array shift area
 
   integer inMemPos;                                                             // Current position in input channel
   integer outMemPos;                                                            // Position in output channel
