@@ -125,10 +125,7 @@ sub yosys {<<END}                                                               
         (cd verilog/countUp; perl -I\$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl)
 END
 
-sub run
- {my $d = dateTimeStamp;
-
-  my $run = <<END;
+sub highLevel{<<END}                                                            # High level perl tests
         run: |
           perl lib/Zero/Emulator.pm
           perl lib/Zero/BTree.pm
@@ -140,8 +137,10 @@ sub run
           perl examples/selectionSort.pl
 END
 
-  my $j = job("test");
-  my $y = <<"END";
+sub run
+ {my $d = dateTimeStamp;
+
+  my $y = <<"END".job("test");
 # Test $d
 
 name: Test
@@ -150,7 +149,6 @@ on:
   push
 
 jobs:
-$j
 END
 
 =pod
@@ -158,7 +156,7 @@ END
       run:  cd verilog/fpga/;           iverilog -g2012 -o fpga fpga.sv && timeout 1m ./fpga
 =cut
 
-  $y .= <<END;                                                                  # High level tests using Perl and Verilog
+  $y .= <<END;                                                                  # High level tests using Perl on Ubuntu
 
     - name: Ubuntu update
       run:  sudo apt update
@@ -168,18 +166,6 @@ END
 
     - name: Verilog Version
       run:  iverilog -V
-
-    - name: ClockDivider
-      run:  cd verilog/clockDivider/;   iverilog -g2012 -o clockDivider     clockDivider.tb   clockDivider.sv && timeout 1m ./clockDivider
-
-    - name: ClockAndQuery
-      run:  cd verilog/clockAndQuery/;  iverilog -g2012 -o clockAndQuery   clockAndQuery.tb  clockAndQuery.sv && timeout 1m ./clockAndQuery
-
-    - name: CircularBuffer
-      run:  cd verilog/circularBuffer/; iverilog -g2012 -o circularBuffer circularBuffer.tb circularBuffer.sv && timeout 1m ./circularBuffer
-
-    - name: CountUp
-      run:  cd verilog/countUp/; iverilog -g2012 -o countUp countUp.tb countUp.sv && timeout 1m ./countUp
 
     - name: Emulator
       run:  perl -I\$GITHUB_WORKSPACE/dtt/lib lib/Zero/Emulator.pm
@@ -210,7 +196,23 @@ END
 
 END
 
-  $y .= <<'END'.$run if $macos;
+  $y .= job("fpga").yosys().<<END;                                              # Low level tests using verilog and yosys
+    - name: countUp
+      run: |
+        export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
+        (cd verilog/countUp; perl -I\$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl)
+
+    - name: Verilog
+      run:  sudo apt -y install iverilog
+
+    - name: Verilog Version
+      run:  iverilog -V
+
+END
+
+  $y .= &fpgaLowLevelTests;                                                     # Low level tests using Verilog on Ubuntu
+
+  $y .= <<'END'.run() if $macos;                                                # High level on Mac if requested
   testMac:
     runs-on: macos-latest
 
@@ -221,7 +223,7 @@ END
 
 END
 
-  $y .= <<'END'.$run if $windows;
+  $y .= <<'END'.run() if $windows;                                              # High level on windows if requested
   testWindows:
     runs-on: windows-latest
 
@@ -248,7 +250,7 @@ END
 
 END
 
-  $y .= <<'END'.$run if $openBsd;
+  $y .= <<'END'.run() if $openBsd;                                              # High level on openBSD if requested
   testOpenBsd:
     runs-on: macos-12
     name: OpenBSD
@@ -267,7 +269,8 @@ END
           cpan install -T Data::Dump Data::Table::Text
 END
 
-  $y .= <<'END'.$run if $freeBsd;
+  $y .= <<'END'.run() if $freeBsd;                                              # High level on freeBSD if requested
+  #
   testFreeBsd:
     runs-on: macos-12
     name: FreeBSD
@@ -285,22 +288,6 @@ END
         prepare: |
           cpan install -T Data::Dump Data::Table::Text
 END
-
-  $y .= job("fpga").yosys().<<END;                                              # Low level tests - convert verilog to fpga bitstream using yosys
-    - name: countUp
-      run: |
-        export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        (cd verilog/countUp; perl -I\$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl)
-
-    - name: Verilog
-      run:  sudo apt -y install iverilog
-
-    - name: Verilog Version
-      run:  iverilog -V
-
-END
-
-  $y .= &fpgaLowLevelTests;                                                     # Low level tests
 
   lll "Ubuntu work flow for $repo ", writeFileUsingSavedToken($user, $repo, $wf, $y);
  }
