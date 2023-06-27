@@ -32,6 +32,7 @@ module fpga                                                                     
   integer ip;                                                                   // Instruction pointer
   reg     clock;                                                                // Clock - has to be one bit wide for yosys
   integer steps;                                                                // Number of steps executed so far
+  integer i, j;                                                                 // A useful counter
 
   always @(posedge run) begin                                                   // Initialize
     ip             = 0;
