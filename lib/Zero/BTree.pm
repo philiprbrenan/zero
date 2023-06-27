@@ -1312,7 +1312,7 @@ if (1)                                                                          
   is_deeply $e->heap(13), bless([3], "Keys");
   is_deeply $e->heap(14), bless([3], "Data");
   is_deeply $e->outLines, [0..5];
-# say STDERR generateVerilogMachineCode("BTree_1"); exit;
+  $e->generateVerilogMachineCode("BTree_1");
  }
 
 #latest:;
@@ -1656,7 +1656,7 @@ if (1)                                                                          
    };
   my $e = Execute(suppressOutput=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
   is_deeply $e->outLines, [0, 1, 22, 0, 1, 33];
-  $e->generateVerilogMachineCode("BTree");
+  #$e->generateVerilogMachineCode("BTree");
  }
 
 # (\A.{80})\s+(#.*\Z) \1\2
