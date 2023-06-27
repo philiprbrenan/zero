@@ -14,7 +14,7 @@ module CircularBufferTB();                                                      
   reg[NWidth:0] out;                                                            // Output channel
   reg[NSize :0] outRemainder;                                                   // Data available in buffer. This field plus inRemainder equals the size of the buffer
 
-  `include "../tests.sv"                                                           // Test routines
+  `include "tests.sv"                                                           // Test routines
 
   CircularBuffer                                                                // Create a circular buffer
    c
