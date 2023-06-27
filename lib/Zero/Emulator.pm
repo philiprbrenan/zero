@@ -3263,6 +3263,22 @@ END
 END
      },
 
+    assert=> sub                                                                # Assert
+     {my ($i) = @_;                                                             # Instruction
+      my $n = $i->number + 1;
+      push @c, <<END;
+              ip = $n;
+END
+     },
+
+    assertNe=> sub                                                              # AssertNe
+     {my ($i) = @_;                                                             # Instruction
+      my $n = $i->number + 1;
+      push @c, <<END;
+              ip = $n;
+END
+     },
+
     free=> sub                                                                  # Free array
      {my ($i) = @_;                                                             # Instruction
       my $t   = $compile->deref($i->target)->Value;
@@ -3460,6 +3476,17 @@ END
       push @c, <<END;
               outMem[$t * NArea + arraySizes[$t]] = $s;
               arraySizes[$t]    = arraySizes[$t] + 1;
+              ip = $n;
+END
+     },
+
+    resize=> sub                                                                # Resize
+     {my ($i) = @_;                                                             # Instruction
+      my $s   = $compile->deref($i->source)->Value;
+      my $t   = $compile->deref($i->target)->Value;
+      my $n   = $i->number + 1;
+      push @c, <<END;
+              arraySizes[$t] = $s;
               ip = $n;
 END
      },
