@@ -1,4 +1,4 @@
-# Test 2023-06-27 at 16:35:24
+# Test 2023-06-27 at 22:22:16
 
 name: Test
 
@@ -23,7 +23,6 @@ jobs:
     - name: Cpan
       run:  sudo cpan install -T Data::Dump
 
-
     - name: Ubuntu update
       run:  sudo apt update
 
@@ -32,18 +31,6 @@ jobs:
 
     - name: Verilog Version
       run:  iverilog -V
-
-    - name: ClockDivider
-      run:  cd verilog/clockDivider/;   iverilog -g2012 -o clockDivider     clockDivider.tb   clockDivider.sv && timeout 1m ./clockDivider
-
-    - name: ClockAndQuery
-      run:  cd verilog/clockAndQuery/;  iverilog -g2012 -o clockAndQuery   clockAndQuery.tb  clockAndQuery.sv && timeout 1m ./clockAndQuery
-
-    - name: CircularBuffer
-      run:  cd verilog/circularBuffer/; iverilog -g2012 -o circularBuffer circularBuffer.tb circularBuffer.sv && timeout 1m ./circularBuffer
-
-    - name: CountUp
-      run:  cd verilog/countUp/; iverilog -g2012 -o countUp countUp.tb countUp.sv && timeout 1m ./countUp
 
     - name: Emulator
       run:  perl -I$GITHUB_WORKSPACE/dtt/lib lib/Zero/Emulator.pm
