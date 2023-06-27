@@ -7,7 +7,7 @@ module CLockDividerTB();                                                        
   reg clock;                                                                    // Clock which drives both input and output
   reg[NSize-1:0] out;                                                           // Output channel
 
-  `include "../tests.sv"                                                           // Test routines
+  `include "tests.sv"                                                           // Test routines
 
   ClockDivider                                                                  // Create a circular buffer
    c
