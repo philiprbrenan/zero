@@ -83,199 +83,209 @@ module fpga                                                                     
       end
 
           4 :
-      begin                                                                     // arrayIndex
-              for(i = 0; i < NArea; i = i + 1) begin
-                if (heapMem[localMem[0+0] * NArea + i] == 30) localMem[0 + 1] = i + 1;
-              end
+      begin                                                                     // resize
+              arraySizes[localMem[0+0]] = 3;
               ip = 5;
       end
 
           5 :
-      begin                                                                     // out
-              outMem[outMemPos] = localMem[0+1];
-              outMemPos = (outMemPos + 1) % NOut;
+      begin                                                                     // arrayIndex
+              localMem[0 + 1] = 0;
+              for(i = 0; i < NArea; i = i + 1) begin
+                if (heapMem[localMem[0+0] * NArea + i] == 30) localMem[0 + 1] = i + 1;
+              end
               ip = 6;
       end
 
           6 :
-      begin                                                                     // arrayIndex
-              for(i = 0; i < NArea; i = i + 1) begin
-                if (heapMem[localMem[0+0] * NArea + i] == 20) localMem[0 + 2] = i + 1;
-              end
+      begin                                                                     // out
+              outMem[outMemPos] = localMem[0+1];
+              outMemPos = (outMemPos + 1) % NOut;
               ip = 7;
       end
 
           7 :
-      begin                                                                     // out
-              outMem[outMemPos] = localMem[0+2];
-              outMemPos = (outMemPos + 1) % NOut;
+      begin                                                                     // arrayIndex
+              localMem[0 + 2] = 0;
+              for(i = 0; i < NArea; i = i + 1) begin
+                if (heapMem[localMem[0+0] * NArea + i] == 20) localMem[0 + 2] = i + 1;
+              end
               ip = 8;
       end
 
           8 :
-      begin                                                                     // arrayIndex
-              for(i = 0; i < NArea; i = i + 1) begin
-                if (heapMem[localMem[0+0] * NArea + i] == 10) localMem[0 + 3] = i + 1;
-              end
+      begin                                                                     // out
+              outMem[outMemPos] = localMem[0+2];
+              outMemPos = (outMemPos + 1) % NOut;
               ip = 9;
       end
 
           9 :
-      begin                                                                     // out
-              outMem[outMemPos] = localMem[0+3];
-              outMemPos = (outMemPos + 1) % NOut;
+      begin                                                                     // arrayIndex
+              localMem[0 + 3] = 0;
+              for(i = 0; i < NArea; i = i + 1) begin
+                if (heapMem[localMem[0+0] * NArea + i] == 10) localMem[0 + 3] = i + 1;
+              end
               ip = 10;
       end
 
          10 :
-      begin                                                                     // arrayIndex
-              for(i = 0; i < NArea; i = i + 1) begin
-                if (heapMem[localMem[0+0] * NArea + i] == 15) localMem[0 + 4] = i + 1;
-              end
+      begin                                                                     // out
+              outMem[outMemPos] = localMem[0+3];
+              outMemPos = (outMemPos + 1) % NOut;
               ip = 11;
       end
 
          11 :
-      begin                                                                     // out
-              outMem[outMemPos] = localMem[0+4];
-              outMemPos = (outMemPos + 1) % NOut;
+      begin                                                                     // arrayIndex
+              localMem[0 + 4] = 0;
+              for(i = 0; i < NArea; i = i + 1) begin
+                if (heapMem[localMem[0+0] * NArea + i] == 15) localMem[0 + 4] = i + 1;
+              end
               ip = 12;
       end
 
          12 :
+      begin                                                                     // out
+              outMem[outMemPos] = localMem[0+4];
+              outMemPos = (outMemPos + 1) % NOut;
+              ip = 13;
+      end
+
+         13 :
       begin                                                                     // arrayCountLess
               j = 0;
               for(i = 0; i < NArea; i = i + 1) begin
                 if (heapMem[localMem[0+0] * NArea + i] < 35) j = j + 1;
               end
               localMem[0 + 5] = j;
-              ip = 13;
-      end
-
-         13 :
-      begin                                                                     // out
-              outMem[outMemPos] = localMem[0+5];
-              outMemPos = (outMemPos + 1) % NOut;
               ip = 14;
       end
 
          14 :
+      begin                                                                     // out
+              outMem[outMemPos] = localMem[0+5];
+              outMemPos = (outMemPos + 1) % NOut;
+              ip = 15;
+      end
+
+         15 :
       begin                                                                     // arrayCountLess
               j = 0;
               for(i = 0; i < NArea; i = i + 1) begin
                 if (heapMem[localMem[0+0] * NArea + i] < 25) j = j + 1;
               end
               localMem[0 + 6] = j;
-              ip = 15;
-      end
-
-         15 :
-      begin                                                                     // out
-              outMem[outMemPos] = localMem[0+6];
-              outMemPos = (outMemPos + 1) % NOut;
               ip = 16;
       end
 
          16 :
+      begin                                                                     // out
+              outMem[outMemPos] = localMem[0+6];
+              outMemPos = (outMemPos + 1) % NOut;
+              ip = 17;
+      end
+
+         17 :
       begin                                                                     // arrayCountLess
               j = 0;
               for(i = 0; i < NArea; i = i + 1) begin
                 if (heapMem[localMem[0+0] * NArea + i] < 15) j = j + 1;
               end
               localMem[0 + 7] = j;
-              ip = 17;
-      end
-
-         17 :
-      begin                                                                     // out
-              outMem[outMemPos] = localMem[0+7];
-              outMemPos = (outMemPos + 1) % NOut;
               ip = 18;
       end
 
          18 :
+      begin                                                                     // out
+              outMem[outMemPos] = localMem[0+7];
+              outMemPos = (outMemPos + 1) % NOut;
+              ip = 19;
+      end
+
+         19 :
       begin                                                                     // arrayCountLess
               j = 0;
               for(i = 0; i < NArea; i = i + 1) begin
                 if (heapMem[localMem[0+0] * NArea + i] < 5) j = j + 1;
               end
               localMem[0 + 8] = j;
-              ip = 19;
-      end
-
-         19 :
-      begin                                                                     // out
-              outMem[outMemPos] = localMem[0+8];
-              outMemPos = (outMemPos + 1) % NOut;
               ip = 20;
       end
 
          20 :
+      begin                                                                     // out
+              outMem[outMemPos] = localMem[0+8];
+              outMemPos = (outMemPos + 1) % NOut;
+              ip = 21;
+      end
+
+         21 :
       begin                                                                     // arrayCountGreater
               j = 0;
               for(i = 0; i < NArea; i = i + 1) begin
                 if (heapMem[localMem[0+0] * NArea + i] > 35) j = j + 1;
               end
               localMem[0 + 9] = j;
-              ip = 21;
-      end
-
-         21 :
-      begin                                                                     // out
-              outMem[outMemPos] = localMem[0+9];
-              outMemPos = (outMemPos + 1) % NOut;
               ip = 22;
       end
 
          22 :
+      begin                                                                     // out
+              outMem[outMemPos] = localMem[0+9];
+              outMemPos = (outMemPos + 1) % NOut;
+              ip = 23;
+      end
+
+         23 :
       begin                                                                     // arrayCountGreater
               j = 0;
               for(i = 0; i < NArea; i = i + 1) begin
                 if (heapMem[localMem[0+0] * NArea + i] > 25) j = j + 1;
               end
               localMem[0 + 10] = j;
-              ip = 23;
-      end
-
-         23 :
-      begin                                                                     // out
-              outMem[outMemPos] = localMem[0+10];
-              outMemPos = (outMemPos + 1) % NOut;
               ip = 24;
       end
 
          24 :
+      begin                                                                     // out
+              outMem[outMemPos] = localMem[0+10];
+              outMemPos = (outMemPos + 1) % NOut;
+              ip = 25;
+      end
+
+         25 :
       begin                                                                     // arrayCountGreater
               j = 0;
               for(i = 0; i < NArea; i = i + 1) begin
                 if (heapMem[localMem[0+0] * NArea + i] > 15) j = j + 1;
               end
               localMem[0 + 11] = j;
-              ip = 25;
-      end
-
-         25 :
-      begin                                                                     // out
-              outMem[outMemPos] = localMem[0+11];
-              outMemPos = (outMemPos + 1) % NOut;
               ip = 26;
       end
 
          26 :
+      begin                                                                     // out
+              outMem[outMemPos] = localMem[0+11];
+              outMemPos = (outMemPos + 1) % NOut;
+              ip = 27;
+      end
+
+         27 :
       begin                                                                     // arrayCountGreater
               j = 0;
               for(i = 0; i < NArea; i = i + 1) begin
                 if (heapMem[localMem[0+0] * NArea + i] > 5) j = j + 1;
               end
               localMem[0 + 12] = j;
-              ip = 27;
+              ip = 28;
       end
 
-         27 :
+         28 :
       begin                                                                     // out
               outMem[outMemPos] = localMem[0+12];
               outMemPos = (outMemPos + 1) % NOut;
-              ip = 28;
+              ip = 29;
       end
       default: begin
         success  = 1;
@@ -294,6 +304,6 @@ module fpga                                                                     
         finished = 1;
       end
     endcase
-    if (steps <=     29) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
+    if (steps <=     30) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
   end
 endmodule
