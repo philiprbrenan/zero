@@ -1,4 +1,4 @@
-# Test 2023-06-28 at 03:16:13
+# Test 2023-06-28 at 03:16:52
 
 name: Test
 
@@ -6,6 +6,7 @@ on:
   push:
     paths:
       - '**.pm'
+      - '**pushToGitHub.pl'
 
 jobs:
 
