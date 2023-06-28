@@ -118,11 +118,6 @@ sub yosys {<<END}                                                               
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-
-    - name: countUp
-      run: |
-        export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        (cd verilog/countUp; perl -I\$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl)
 END
 
 sub highLevel{<<END}                                                            # High level perl tests
@@ -200,11 +195,6 @@ END
 END
 
   $y .= job("fpga").yosys().<<END;                                              # Low level tests using verilog and yosys
-    - name: countUp
-      run: |
-        export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        (cd verilog/countUp; perl -I\$GITHUB_WORKSPACE/dtt/lib pushToGitHub.pl)
-
     - name: Verilog
       run:  sudo apt -y install iverilog
 
