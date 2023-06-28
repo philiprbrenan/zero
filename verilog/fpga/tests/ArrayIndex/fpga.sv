@@ -84,6 +84,7 @@ module fpga                                                                     
 
           4 :
       begin                                                                     // arrayIndex
+              localMem[0 + 1] = 0;
               for(i = 0; i < NArea; i = i + 1) begin
                 if (heapMem[localMem[0+0] * NArea + i] == 20) localMem[0 + 1] = i + 1;
               end
