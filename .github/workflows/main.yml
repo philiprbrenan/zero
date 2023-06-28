@@ -1,9 +1,11 @@
-# Test 2023-06-28 at 02:34:17
+# Test 2023-06-28 at 03:16:05
 
 name: Test
 
 on:
-  push
+  push:
+    paths:
+      - '**.pm'
 
 jobs:
 
@@ -99,568 +101,520 @@ jobs:
     - name: Verilog Version
       run:  iverilog -V
 
-    - name: Add verilog
+    - name: verilog Add/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Add/fpga.tb verilog/fpga/tests/Add/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga Add/fpga.tb Add/fpga.sv && timeout 1m ./fpga
 
-    - name: Array verilog
+    - name: verilog Array/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Array/fpga.tb verilog/fpga/tests/Array/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga Array/fpga.tb Array/fpga.sv && timeout 1m ./fpga
 
-    - name: ArrayCountGreaterIndex verilog
+    - name: verilog ArrayCountGreaterIndex/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ArrayCountGreaterIndex/fpga.tb verilog/fpga/tests/ArrayCountGreaterIndex/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga ArrayCountGreaterIndex/fpga.tb ArrayCountGreaterIndex/fpga.sv && timeout 1m ./fpga
 
-    - name: ArrayCountLess verilog
+    - name: verilog ArrayCountLess/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ArrayCountLess/fpga.tb verilog/fpga/tests/ArrayCountLess/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga ArrayCountLess/fpga.tb ArrayCountLess/fpga.sv && timeout 1m ./fpga
 
-    - name: ArrayIndex verilog
+    - name: verilog ArrayIndex/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ArrayIndex/fpga.tb verilog/fpga/tests/ArrayIndex/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga ArrayIndex/fpga.tb ArrayIndex/fpga.sv && timeout 1m ./fpga
 
-    - name: Array_scans verilog
+    - name: verilog Array_scans/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Array_scans/fpga.tb verilog/fpga/tests/Array_scans/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga Array_scans/fpga.tb Array_scans/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree verilog
+    - name: verilog BTree/basic/1/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/fpga.tb verilog/fpga/tests/BTree/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga BTree/basic/1/fpga.tb BTree/basic/1/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree/basic verilog
+    - name: verilog BTree/basic/2/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/fpga.tb verilog/fpga/tests/BTree/basic/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga BTree/basic/2/fpga.tb BTree/basic/2/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree/basic/1 verilog
+    - name: verilog BTree/basic/3/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/1/fpga.tb verilog/fpga/tests/BTree/basic/1/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga BTree/basic/3/fpga.tb BTree/basic/3/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree/basic/2 verilog
+    - name: verilog BTree/basic/4/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/2/fpga.tb verilog/fpga/tests/BTree/basic/2/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga BTree/basic/4/fpga.tb BTree/basic/4/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree/basic/3 verilog
+    - name: verilog BTree/basic/5/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/3/fpga.tb verilog/fpga/tests/BTree/basic/3/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga BTree/basic/5/fpga.tb BTree/basic/5/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree/basic/4 verilog
+    - name: verilog BTree/basic/6/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/4/fpga.tb verilog/fpga/tests/BTree/basic/4/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga BTree/basic/6/fpga.tb BTree/basic/6/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree/basic/5 verilog
+    - name: verilog BTree/basic/7/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/5/fpga.tb verilog/fpga/tests/BTree/basic/5/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga BTree/basic/7/fpga.tb BTree/basic/7/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree/basic/6 verilog
+    - name: verilog BTree/in/1/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/6/fpga.tb verilog/fpga/tests/BTree/basic/6/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga BTree/in/1/fpga.tb BTree/in/1/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree/basic/7 verilog
+    - name: verilog BTree/in/2/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/7/fpga.tb verilog/fpga/tests/BTree/basic/7/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga BTree/in/2/fpga.tb BTree/in/2/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree/in verilog
+    - name: verilog BTree/in/3/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/in/fpga.tb verilog/fpga/tests/BTree/in/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga BTree/in/3/fpga.tb BTree/in/3/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree/in/1 verilog
+    - name: verilog BTree/insert/01/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/in/1/fpga.tb verilog/fpga/tests/BTree/in/1/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga BTree/insert/01/fpga.tb BTree/insert/01/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree/in/2 verilog
+    - name: verilog BTree/insert/02/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/in/2/fpga.tb verilog/fpga/tests/BTree/in/2/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga BTree/insert/02/fpga.tb BTree/insert/02/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree/in/3 verilog
+    - name: verilog BTree/insert/03/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/in/3/fpga.tb verilog/fpga/tests/BTree/in/3/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga BTree/insert/03/fpga.tb BTree/insert/03/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree/insert verilog
+    - name: verilog BTree/insert/04/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/fpga.tb verilog/fpga/tests/BTree/insert/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga BTree/insert/04/fpga.tb BTree/insert/04/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree/insert/01 verilog
+    - name: verilog BTree/insert/05/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/01/fpga.tb verilog/fpga/tests/BTree/insert/01/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga BTree/insert/05/fpga.tb BTree/insert/05/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree/insert/02 verilog
+    - name: verilog BTree/insert/06/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/02/fpga.tb verilog/fpga/tests/BTree/insert/02/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga BTree/insert/06/fpga.tb BTree/insert/06/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree/insert/03 verilog
+    - name: verilog BTree/insert/06R/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/03/fpga.tb verilog/fpga/tests/BTree/insert/03/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga BTree/insert/06R/fpga.tb BTree/insert/06R/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree/insert/04 verilog
+    - name: verilog BTree/insert/66/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/04/fpga.tb verilog/fpga/tests/BTree/insert/04/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga BTree/insert/66/fpga.tb BTree/insert/66/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree/insert/05 verilog
+    - name: verilog ForIn/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/05/fpga.tb verilog/fpga/tests/BTree/insert/05/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga ForIn/fpga.tb ForIn/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree/insert/06 verilog
+    - name: verilog Free/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/06/fpga.tb verilog/fpga/tests/BTree/insert/06/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga Free/fpga.tb Free/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree/insert/06R verilog
+    - name: verilog In/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/06R/fpga.tb verilog/fpga/tests/BTree/insert/06R/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga In/fpga.tb In/fpga.sv && timeout 1m ./fpga
 
-    - name: BTree/insert/66 verilog
+    - name: verilog InSize/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/66/fpga.tb verilog/fpga/tests/BTree/insert/66/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga InSize/fpga.tb InSize/fpga.sv && timeout 1m ./fpga
 
-    - name: ForIn verilog
+    - name: verilog JFalse/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ForIn/fpga.tb verilog/fpga/tests/ForIn/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga JFalse/fpga.tb JFalse/fpga.sv && timeout 1m ./fpga
 
-    - name: Free verilog
+    - name: verilog Jeq/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Free/fpga.tb verilog/fpga/tests/Free/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga Jeq/fpga.tb Jeq/fpga.sv && timeout 1m ./fpga
 
-    - name: In verilog
+    - name: verilog Jmp/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/In/fpga.tb verilog/fpga/tests/In/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga Jmp/fpga.tb Jmp/fpga.sv && timeout 1m ./fpga
 
-    - name: InSize verilog
+    - name: verilog Mov/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/InSize/fpga.tb verilog/fpga/tests/InSize/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga Mov/fpga.tb Mov/fpga.sv && timeout 1m ./fpga
 
-    - name: JFalse verilog
+    - name: verilog Mov2/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/JFalse/fpga.tb verilog/fpga/tests/JFalse/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga Mov2/fpga.tb Mov2/fpga.sv && timeout 1m ./fpga
 
-    - name: Jeq verilog
+    - name: verilog MoveLong_1/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Jeq/fpga.tb verilog/fpga/tests/Jeq/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga MoveLong_1/fpga.tb MoveLong_1/fpga.sv && timeout 1m ./fpga
 
-    - name: Jmp verilog
+    - name: verilog MoveLong_2/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Jmp/fpga.tb verilog/fpga/tests/Jmp/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga MoveLong_2/fpga.tb MoveLong_2/fpga.sv && timeout 1m ./fpga
 
-    - name: Mov verilog
+    - name: verilog Not/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Mov/fpga.tb verilog/fpga/tests/Mov/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga Not/fpga.tb Not/fpga.sv && timeout 1m ./fpga
 
-    - name: Mov2 verilog
+    - name: verilog Pop/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Mov2/fpga.tb verilog/fpga/tests/Mov2/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga Pop/fpga.tb Pop/fpga.sv && timeout 1m ./fpga
 
-    - name: MoveLong_1 verilog
+    - name: verilog Push/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/MoveLong_1/fpga.tb verilog/fpga/tests/MoveLong_1/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga Push/fpga.tb Push/fpga.sv && timeout 1m ./fpga
 
-    - name: MoveLong_2 verilog
+    - name: verilog ShiftLeft/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/MoveLong_2/fpga.tb verilog/fpga/tests/MoveLong_2/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga ShiftLeft/fpga.tb ShiftLeft/fpga.sv && timeout 1m ./fpga
 
-    - name: Not verilog
+    - name: verilog ShiftRight/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Not/fpga.tb verilog/fpga/tests/Not/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga ShiftRight/fpga.tb ShiftRight/fpga.sv && timeout 1m ./fpga
 
-    - name: Pop verilog
+    - name: verilog Shift_up/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Pop/fpga.tb verilog/fpga/tests/Pop/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga Shift_up/fpga.tb Shift_up/fpga.sv && timeout 1m ./fpga
 
-    - name: Push verilog
+    - name: verilog Shift_up_2/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Push/fpga.tb verilog/fpga/tests/Push/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga Shift_up_2/fpga.tb Shift_up_2/fpga.sv && timeout 1m ./fpga
 
-    - name: ShiftLeft verilog
+    - name: verilog Subtract/fpga.sv
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ShiftLeft/fpga.tb verilog/fpga/tests/ShiftLeft/fpga.sv && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga Subtract/fpga.tb Subtract/fpga.sv && timeout 1m ./fpga
 
-    - name: ShiftRight verilog
-      run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ShiftRight/fpga.tb verilog/fpga/tests/ShiftRight/fpga.sv && timeout 1m ./fpga
-
-    - name: Shift_up verilog
-      run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Shift_up/fpga.tb verilog/fpga/tests/Shift_up/fpga.sv && timeout 1m ./fpga
-
-    - name: Shift_up_2 verilog
-      run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Shift_up_2/fpga.tb verilog/fpga/tests/Shift_up_2/fpga.sv && timeout 1m ./fpga
-
-    - name: Subtract verilog
-      run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Subtract/fpga.tb verilog/fpga/tests/Subtract/fpga.sv && timeout 1m ./fpga
-
-    - name: Add yosys
+    - name: yosys Add/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/Add/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Add/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/Add/fpga.json --write verilog/fpga/tests/Add/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Add/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Add/fpga.fs verilog/fpga/tests/Add/fpga.pnr
+        yosys -q -p "read_verilog Add/fpga.sv; synth_gowin -top fpga -json Add/fpga.json"
+        nextpnr-gowin -v --debug --json Add/fpga.json --write Add/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst Add/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o Add/fpga.fs Add/fpga.pnr
 
 
-    - name: Array yosys
+    - name: yosys Array/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/Array/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Array/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/Array/fpga.json --write verilog/fpga/tests/Array/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Array/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Array/fpga.fs verilog/fpga/tests/Array/fpga.pnr
+        yosys -q -p "read_verilog Array/fpga.sv; synth_gowin -top fpga -json Array/fpga.json"
+        nextpnr-gowin -v --debug --json Array/fpga.json --write Array/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst Array/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o Array/fpga.fs Array/fpga.pnr
 
 
-    - name: ArrayCountGreaterIndex yosys
+    - name: yosys ArrayCountGreaterIndex/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/ArrayCountGreaterIndex/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/ArrayCountGreaterIndex/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/ArrayCountGreaterIndex/fpga.json --write verilog/fpga/tests/ArrayCountGreaterIndex/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/ArrayCountGreaterIndex/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/ArrayCountGreaterIndex/fpga.fs verilog/fpga/tests/ArrayCountGreaterIndex/fpga.pnr
+        yosys -q -p "read_verilog ArrayCountGreaterIndex/fpga.sv; synth_gowin -top fpga -json ArrayCountGreaterIndex/fpga.json"
+        nextpnr-gowin -v --debug --json ArrayCountGreaterIndex/fpga.json --write ArrayCountGreaterIndex/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst ArrayCountGreaterIndex/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o ArrayCountGreaterIndex/fpga.fs ArrayCountGreaterIndex/fpga.pnr
 
 
-    - name: ArrayCountLess yosys
+    - name: yosys ArrayCountLess/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/ArrayCountLess/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/ArrayCountLess/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/ArrayCountLess/fpga.json --write verilog/fpga/tests/ArrayCountLess/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/ArrayCountLess/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/ArrayCountLess/fpga.fs verilog/fpga/tests/ArrayCountLess/fpga.pnr
+        yosys -q -p "read_verilog ArrayCountLess/fpga.sv; synth_gowin -top fpga -json ArrayCountLess/fpga.json"
+        nextpnr-gowin -v --debug --json ArrayCountLess/fpga.json --write ArrayCountLess/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst ArrayCountLess/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o ArrayCountLess/fpga.fs ArrayCountLess/fpga.pnr
 
 
-    - name: ArrayIndex yosys
+    - name: yosys ArrayIndex/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/ArrayIndex/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/ArrayIndex/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/ArrayIndex/fpga.json --write verilog/fpga/tests/ArrayIndex/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/ArrayIndex/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/ArrayIndex/fpga.fs verilog/fpga/tests/ArrayIndex/fpga.pnr
+        yosys -q -p "read_verilog ArrayIndex/fpga.sv; synth_gowin -top fpga -json ArrayIndex/fpga.json"
+        nextpnr-gowin -v --debug --json ArrayIndex/fpga.json --write ArrayIndex/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst ArrayIndex/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o ArrayIndex/fpga.fs ArrayIndex/fpga.pnr
 
 
-    - name: Array_scans yosys
+    - name: yosys Array_scans/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/Array_scans/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Array_scans/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/Array_scans/fpga.json --write verilog/fpga/tests/Array_scans/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Array_scans/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Array_scans/fpga.fs verilog/fpga/tests/Array_scans/fpga.pnr
+        yosys -q -p "read_verilog Array_scans/fpga.sv; synth_gowin -top fpga -json Array_scans/fpga.json"
+        nextpnr-gowin -v --debug --json Array_scans/fpga.json --write Array_scans/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst Array_scans/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o Array_scans/fpga.fs Array_scans/fpga.pnr
 
 
-    - name: BTree yosys
+    - name: yosys BTree/basic/1/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/fpga.json --write verilog/fpga/tests/BTree/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/fpga.fs verilog/fpga/tests/BTree/fpga.pnr
+        yosys -q -p "read_verilog BTree/basic/1/fpga.sv; synth_gowin -top fpga -json BTree/basic/1/fpga.json"
+        nextpnr-gowin -v --debug --json BTree/basic/1/fpga.json --write BTree/basic/1/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst BTree/basic/1/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o BTree/basic/1/fpga.fs BTree/basic/1/fpga.pnr
 
 
-    - name: BTree/basic yosys
+    - name: yosys BTree/basic/2/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/basic/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/basic/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/basic/fpga.json --write verilog/fpga/tests/BTree/basic/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/basic/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/basic/fpga.fs verilog/fpga/tests/BTree/basic/fpga.pnr
+        yosys -q -p "read_verilog BTree/basic/2/fpga.sv; synth_gowin -top fpga -json BTree/basic/2/fpga.json"
+        nextpnr-gowin -v --debug --json BTree/basic/2/fpga.json --write BTree/basic/2/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst BTree/basic/2/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o BTree/basic/2/fpga.fs BTree/basic/2/fpga.pnr
 
 
-    - name: BTree/basic/1 yosys
+    - name: yosys BTree/basic/3/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/basic/1/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/basic/1/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/basic/1/fpga.json --write verilog/fpga/tests/BTree/basic/1/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/basic/1/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/basic/1/fpga.fs verilog/fpga/tests/BTree/basic/1/fpga.pnr
+        yosys -q -p "read_verilog BTree/basic/3/fpga.sv; synth_gowin -top fpga -json BTree/basic/3/fpga.json"
+        nextpnr-gowin -v --debug --json BTree/basic/3/fpga.json --write BTree/basic/3/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst BTree/basic/3/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o BTree/basic/3/fpga.fs BTree/basic/3/fpga.pnr
 
 
-    - name: BTree/basic/2 yosys
+    - name: yosys BTree/basic/4/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/basic/2/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/basic/2/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/basic/2/fpga.json --write verilog/fpga/tests/BTree/basic/2/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/basic/2/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/basic/2/fpga.fs verilog/fpga/tests/BTree/basic/2/fpga.pnr
+        yosys -q -p "read_verilog BTree/basic/4/fpga.sv; synth_gowin -top fpga -json BTree/basic/4/fpga.json"
+        nextpnr-gowin -v --debug --json BTree/basic/4/fpga.json --write BTree/basic/4/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst BTree/basic/4/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o BTree/basic/4/fpga.fs BTree/basic/4/fpga.pnr
 
 
-    - name: BTree/basic/3 yosys
+    - name: yosys BTree/basic/5/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/basic/3/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/basic/3/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/basic/3/fpga.json --write verilog/fpga/tests/BTree/basic/3/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/basic/3/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/basic/3/fpga.fs verilog/fpga/tests/BTree/basic/3/fpga.pnr
+        yosys -q -p "read_verilog BTree/basic/5/fpga.sv; synth_gowin -top fpga -json BTree/basic/5/fpga.json"
+        nextpnr-gowin -v --debug --json BTree/basic/5/fpga.json --write BTree/basic/5/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst BTree/basic/5/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o BTree/basic/5/fpga.fs BTree/basic/5/fpga.pnr
 
 
-    - name: BTree/basic/4 yosys
+    - name: yosys BTree/basic/6/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/basic/4/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/basic/4/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/basic/4/fpga.json --write verilog/fpga/tests/BTree/basic/4/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/basic/4/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/basic/4/fpga.fs verilog/fpga/tests/BTree/basic/4/fpga.pnr
+        yosys -q -p "read_verilog BTree/basic/6/fpga.sv; synth_gowin -top fpga -json BTree/basic/6/fpga.json"
+        nextpnr-gowin -v --debug --json BTree/basic/6/fpga.json --write BTree/basic/6/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst BTree/basic/6/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o BTree/basic/6/fpga.fs BTree/basic/6/fpga.pnr
 
 
-    - name: BTree/basic/5 yosys
+    - name: yosys BTree/basic/7/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/basic/5/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/basic/5/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/basic/5/fpga.json --write verilog/fpga/tests/BTree/basic/5/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/basic/5/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/basic/5/fpga.fs verilog/fpga/tests/BTree/basic/5/fpga.pnr
+        yosys -q -p "read_verilog BTree/basic/7/fpga.sv; synth_gowin -top fpga -json BTree/basic/7/fpga.json"
+        nextpnr-gowin -v --debug --json BTree/basic/7/fpga.json --write BTree/basic/7/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst BTree/basic/7/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o BTree/basic/7/fpga.fs BTree/basic/7/fpga.pnr
 
 
-    - name: BTree/basic/6 yosys
+    - name: yosys BTree/in/1/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/basic/6/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/basic/6/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/basic/6/fpga.json --write verilog/fpga/tests/BTree/basic/6/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/basic/6/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/basic/6/fpga.fs verilog/fpga/tests/BTree/basic/6/fpga.pnr
+        yosys -q -p "read_verilog BTree/in/1/fpga.sv; synth_gowin -top fpga -json BTree/in/1/fpga.json"
+        nextpnr-gowin -v --debug --json BTree/in/1/fpga.json --write BTree/in/1/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst BTree/in/1/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o BTree/in/1/fpga.fs BTree/in/1/fpga.pnr
 
 
-    - name: BTree/basic/7 yosys
+    - name: yosys BTree/in/2/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/basic/7/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/basic/7/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/basic/7/fpga.json --write verilog/fpga/tests/BTree/basic/7/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/basic/7/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/basic/7/fpga.fs verilog/fpga/tests/BTree/basic/7/fpga.pnr
+        yosys -q -p "read_verilog BTree/in/2/fpga.sv; synth_gowin -top fpga -json BTree/in/2/fpga.json"
+        nextpnr-gowin -v --debug --json BTree/in/2/fpga.json --write BTree/in/2/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst BTree/in/2/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o BTree/in/2/fpga.fs BTree/in/2/fpga.pnr
 
 
-    - name: BTree/in yosys
+    - name: yosys BTree/in/3/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/in/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/in/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/in/fpga.json --write verilog/fpga/tests/BTree/in/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/in/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/in/fpga.fs verilog/fpga/tests/BTree/in/fpga.pnr
+        yosys -q -p "read_verilog BTree/in/3/fpga.sv; synth_gowin -top fpga -json BTree/in/3/fpga.json"
+        nextpnr-gowin -v --debug --json BTree/in/3/fpga.json --write BTree/in/3/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst BTree/in/3/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o BTree/in/3/fpga.fs BTree/in/3/fpga.pnr
 
 
-    - name: BTree/in/1 yosys
+    - name: yosys BTree/insert/01/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/in/1/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/in/1/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/in/1/fpga.json --write verilog/fpga/tests/BTree/in/1/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/in/1/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/in/1/fpga.fs verilog/fpga/tests/BTree/in/1/fpga.pnr
+        yosys -q -p "read_verilog BTree/insert/01/fpga.sv; synth_gowin -top fpga -json BTree/insert/01/fpga.json"
+        nextpnr-gowin -v --debug --json BTree/insert/01/fpga.json --write BTree/insert/01/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst BTree/insert/01/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o BTree/insert/01/fpga.fs BTree/insert/01/fpga.pnr
 
 
-    - name: BTree/in/2 yosys
+    - name: yosys BTree/insert/02/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/in/2/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/in/2/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/in/2/fpga.json --write verilog/fpga/tests/BTree/in/2/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/in/2/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/in/2/fpga.fs verilog/fpga/tests/BTree/in/2/fpga.pnr
+        yosys -q -p "read_verilog BTree/insert/02/fpga.sv; synth_gowin -top fpga -json BTree/insert/02/fpga.json"
+        nextpnr-gowin -v --debug --json BTree/insert/02/fpga.json --write BTree/insert/02/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst BTree/insert/02/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o BTree/insert/02/fpga.fs BTree/insert/02/fpga.pnr
 
 
-    - name: BTree/in/3 yosys
+    - name: yosys BTree/insert/03/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/in/3/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/in/3/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/in/3/fpga.json --write verilog/fpga/tests/BTree/in/3/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/in/3/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/in/3/fpga.fs verilog/fpga/tests/BTree/in/3/fpga.pnr
+        yosys -q -p "read_verilog BTree/insert/03/fpga.sv; synth_gowin -top fpga -json BTree/insert/03/fpga.json"
+        nextpnr-gowin -v --debug --json BTree/insert/03/fpga.json --write BTree/insert/03/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst BTree/insert/03/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o BTree/insert/03/fpga.fs BTree/insert/03/fpga.pnr
 
 
-    - name: BTree/insert yosys
+    - name: yosys BTree/insert/04/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/insert/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/insert/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/insert/fpga.json --write verilog/fpga/tests/BTree/insert/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/insert/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/insert/fpga.fs verilog/fpga/tests/BTree/insert/fpga.pnr
+        yosys -q -p "read_verilog BTree/insert/04/fpga.sv; synth_gowin -top fpga -json BTree/insert/04/fpga.json"
+        nextpnr-gowin -v --debug --json BTree/insert/04/fpga.json --write BTree/insert/04/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst BTree/insert/04/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o BTree/insert/04/fpga.fs BTree/insert/04/fpga.pnr
 
 
-    - name: BTree/insert/01 yosys
+    - name: yosys BTree/insert/05/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/insert/01/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/insert/01/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/insert/01/fpga.json --write verilog/fpga/tests/BTree/insert/01/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/insert/01/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/insert/01/fpga.fs verilog/fpga/tests/BTree/insert/01/fpga.pnr
+        yosys -q -p "read_verilog BTree/insert/05/fpga.sv; synth_gowin -top fpga -json BTree/insert/05/fpga.json"
+        nextpnr-gowin -v --debug --json BTree/insert/05/fpga.json --write BTree/insert/05/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst BTree/insert/05/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o BTree/insert/05/fpga.fs BTree/insert/05/fpga.pnr
 
 
-    - name: BTree/insert/02 yosys
+    - name: yosys BTree/insert/06/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/insert/02/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/insert/02/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/insert/02/fpga.json --write verilog/fpga/tests/BTree/insert/02/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/insert/02/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/insert/02/fpga.fs verilog/fpga/tests/BTree/insert/02/fpga.pnr
+        yosys -q -p "read_verilog BTree/insert/06/fpga.sv; synth_gowin -top fpga -json BTree/insert/06/fpga.json"
+        nextpnr-gowin -v --debug --json BTree/insert/06/fpga.json --write BTree/insert/06/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst BTree/insert/06/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o BTree/insert/06/fpga.fs BTree/insert/06/fpga.pnr
 
 
-    - name: BTree/insert/03 yosys
+    - name: yosys BTree/insert/06R/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/insert/03/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/insert/03/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/insert/03/fpga.json --write verilog/fpga/tests/BTree/insert/03/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/insert/03/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/insert/03/fpga.fs verilog/fpga/tests/BTree/insert/03/fpga.pnr
+        yosys -q -p "read_verilog BTree/insert/06R/fpga.sv; synth_gowin -top fpga -json BTree/insert/06R/fpga.json"
+        nextpnr-gowin -v --debug --json BTree/insert/06R/fpga.json --write BTree/insert/06R/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst BTree/insert/06R/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o BTree/insert/06R/fpga.fs BTree/insert/06R/fpga.pnr
 
 
-    - name: BTree/insert/04 yosys
+    - name: yosys BTree/insert/66/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/insert/04/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/insert/04/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/insert/04/fpga.json --write verilog/fpga/tests/BTree/insert/04/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/insert/04/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/insert/04/fpga.fs verilog/fpga/tests/BTree/insert/04/fpga.pnr
+        yosys -q -p "read_verilog BTree/insert/66/fpga.sv; synth_gowin -top fpga -json BTree/insert/66/fpga.json"
+        nextpnr-gowin -v --debug --json BTree/insert/66/fpga.json --write BTree/insert/66/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst BTree/insert/66/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o BTree/insert/66/fpga.fs BTree/insert/66/fpga.pnr
 
 
-    - name: BTree/insert/05 yosys
+    - name: yosys ForIn/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/insert/05/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/insert/05/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/insert/05/fpga.json --write verilog/fpga/tests/BTree/insert/05/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/insert/05/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/insert/05/fpga.fs verilog/fpga/tests/BTree/insert/05/fpga.pnr
+        yosys -q -p "read_verilog ForIn/fpga.sv; synth_gowin -top fpga -json ForIn/fpga.json"
+        nextpnr-gowin -v --debug --json ForIn/fpga.json --write ForIn/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst ForIn/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o ForIn/fpga.fs ForIn/fpga.pnr
 
 
-    - name: BTree/insert/06 yosys
+    - name: yosys Free/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/insert/06/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/insert/06/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/insert/06/fpga.json --write verilog/fpga/tests/BTree/insert/06/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/insert/06/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/insert/06/fpga.fs verilog/fpga/tests/BTree/insert/06/fpga.pnr
+        yosys -q -p "read_verilog Free/fpga.sv; synth_gowin -top fpga -json Free/fpga.json"
+        nextpnr-gowin -v --debug --json Free/fpga.json --write Free/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst Free/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o Free/fpga.fs Free/fpga.pnr
 
 
-    - name: BTree/insert/06R yosys
+    - name: yosys In/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/insert/06R/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/insert/06R/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/insert/06R/fpga.json --write verilog/fpga/tests/BTree/insert/06R/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/insert/06R/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/insert/06R/fpga.fs verilog/fpga/tests/BTree/insert/06R/fpga.pnr
+        yosys -q -p "read_verilog In/fpga.sv; synth_gowin -top fpga -json In/fpga.json"
+        nextpnr-gowin -v --debug --json In/fpga.json --write In/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst In/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o In/fpga.fs In/fpga.pnr
 
 
-    - name: BTree/insert/66 yosys
+    - name: yosys InSize/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/BTree/insert/66/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/insert/66/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/BTree/insert/66/fpga.json --write verilog/fpga/tests/BTree/insert/66/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/insert/66/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/insert/66/fpga.fs verilog/fpga/tests/BTree/insert/66/fpga.pnr
+        yosys -q -p "read_verilog InSize/fpga.sv; synth_gowin -top fpga -json InSize/fpga.json"
+        nextpnr-gowin -v --debug --json InSize/fpga.json --write InSize/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst InSize/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o InSize/fpga.fs InSize/fpga.pnr
 
 
-    - name: ForIn yosys
+    - name: yosys JFalse/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/ForIn/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/ForIn/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/ForIn/fpga.json --write verilog/fpga/tests/ForIn/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/ForIn/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/ForIn/fpga.fs verilog/fpga/tests/ForIn/fpga.pnr
+        yosys -q -p "read_verilog JFalse/fpga.sv; synth_gowin -top fpga -json JFalse/fpga.json"
+        nextpnr-gowin -v --debug --json JFalse/fpga.json --write JFalse/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst JFalse/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o JFalse/fpga.fs JFalse/fpga.pnr
 
 
-    - name: Free yosys
+    - name: yosys Jeq/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/Free/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Free/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/Free/fpga.json --write verilog/fpga/tests/Free/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Free/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Free/fpga.fs verilog/fpga/tests/Free/fpga.pnr
+        yosys -q -p "read_verilog Jeq/fpga.sv; synth_gowin -top fpga -json Jeq/fpga.json"
+        nextpnr-gowin -v --debug --json Jeq/fpga.json --write Jeq/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst Jeq/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o Jeq/fpga.fs Jeq/fpga.pnr
 
 
-    - name: In yosys
+    - name: yosys Jmp/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/In/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/In/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/In/fpga.json --write verilog/fpga/tests/In/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/In/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/In/fpga.fs verilog/fpga/tests/In/fpga.pnr
+        yosys -q -p "read_verilog Jmp/fpga.sv; synth_gowin -top fpga -json Jmp/fpga.json"
+        nextpnr-gowin -v --debug --json Jmp/fpga.json --write Jmp/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst Jmp/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o Jmp/fpga.fs Jmp/fpga.pnr
 
 
-    - name: InSize yosys
+    - name: yosys Mov/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/InSize/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/InSize/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/InSize/fpga.json --write verilog/fpga/tests/InSize/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/InSize/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/InSize/fpga.fs verilog/fpga/tests/InSize/fpga.pnr
+        yosys -q -p "read_verilog Mov/fpga.sv; synth_gowin -top fpga -json Mov/fpga.json"
+        nextpnr-gowin -v --debug --json Mov/fpga.json --write Mov/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst Mov/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o Mov/fpga.fs Mov/fpga.pnr
 
 
-    - name: JFalse yosys
+    - name: yosys Mov2/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/JFalse/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/JFalse/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/JFalse/fpga.json --write verilog/fpga/tests/JFalse/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/JFalse/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/JFalse/fpga.fs verilog/fpga/tests/JFalse/fpga.pnr
+        yosys -q -p "read_verilog Mov2/fpga.sv; synth_gowin -top fpga -json Mov2/fpga.json"
+        nextpnr-gowin -v --debug --json Mov2/fpga.json --write Mov2/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst Mov2/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o Mov2/fpga.fs Mov2/fpga.pnr
 
 
-    - name: Jeq yosys
+    - name: yosys MoveLong_1/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/Jeq/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Jeq/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/Jeq/fpga.json --write verilog/fpga/tests/Jeq/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Jeq/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Jeq/fpga.fs verilog/fpga/tests/Jeq/fpga.pnr
+        yosys -q -p "read_verilog MoveLong_1/fpga.sv; synth_gowin -top fpga -json MoveLong_1/fpga.json"
+        nextpnr-gowin -v --debug --json MoveLong_1/fpga.json --write MoveLong_1/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst MoveLong_1/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o MoveLong_1/fpga.fs MoveLong_1/fpga.pnr
 
 
-    - name: Jmp yosys
+    - name: yosys MoveLong_2/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/Jmp/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Jmp/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/Jmp/fpga.json --write verilog/fpga/tests/Jmp/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Jmp/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Jmp/fpga.fs verilog/fpga/tests/Jmp/fpga.pnr
+        yosys -q -p "read_verilog MoveLong_2/fpga.sv; synth_gowin -top fpga -json MoveLong_2/fpga.json"
+        nextpnr-gowin -v --debug --json MoveLong_2/fpga.json --write MoveLong_2/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst MoveLong_2/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o MoveLong_2/fpga.fs MoveLong_2/fpga.pnr
 
 
-    - name: Mov yosys
+    - name: yosys Not/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/Mov/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Mov/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/Mov/fpga.json --write verilog/fpga/tests/Mov/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Mov/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Mov/fpga.fs verilog/fpga/tests/Mov/fpga.pnr
+        yosys -q -p "read_verilog Not/fpga.sv; synth_gowin -top fpga -json Not/fpga.json"
+        nextpnr-gowin -v --debug --json Not/fpga.json --write Not/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst Not/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o Not/fpga.fs Not/fpga.pnr
 
 
-    - name: Mov2 yosys
+    - name: yosys Pop/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/Mov2/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Mov2/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/Mov2/fpga.json --write verilog/fpga/tests/Mov2/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Mov2/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Mov2/fpga.fs verilog/fpga/tests/Mov2/fpga.pnr
+        yosys -q -p "read_verilog Pop/fpga.sv; synth_gowin -top fpga -json Pop/fpga.json"
+        nextpnr-gowin -v --debug --json Pop/fpga.json --write Pop/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst Pop/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o Pop/fpga.fs Pop/fpga.pnr
 
 
-    - name: MoveLong_1 yosys
+    - name: yosys Push/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/MoveLong_1/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/MoveLong_1/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/MoveLong_1/fpga.json --write verilog/fpga/tests/MoveLong_1/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/MoveLong_1/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/MoveLong_1/fpga.fs verilog/fpga/tests/MoveLong_1/fpga.pnr
+        yosys -q -p "read_verilog Push/fpga.sv; synth_gowin -top fpga -json Push/fpga.json"
+        nextpnr-gowin -v --debug --json Push/fpga.json --write Push/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst Push/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o Push/fpga.fs Push/fpga.pnr
 
 
-    - name: MoveLong_2 yosys
+    - name: yosys ShiftLeft/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/MoveLong_2/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/MoveLong_2/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/MoveLong_2/fpga.json --write verilog/fpga/tests/MoveLong_2/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/MoveLong_2/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/MoveLong_2/fpga.fs verilog/fpga/tests/MoveLong_2/fpga.pnr
+        yosys -q -p "read_verilog ShiftLeft/fpga.sv; synth_gowin -top fpga -json ShiftLeft/fpga.json"
+        nextpnr-gowin -v --debug --json ShiftLeft/fpga.json --write ShiftLeft/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst ShiftLeft/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o ShiftLeft/fpga.fs ShiftLeft/fpga.pnr
 
 
-    - name: Not yosys
+    - name: yosys ShiftRight/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/Not/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Not/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/Not/fpga.json --write verilog/fpga/tests/Not/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Not/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Not/fpga.fs verilog/fpga/tests/Not/fpga.pnr
+        yosys -q -p "read_verilog ShiftRight/fpga.sv; synth_gowin -top fpga -json ShiftRight/fpga.json"
+        nextpnr-gowin -v --debug --json ShiftRight/fpga.json --write ShiftRight/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst ShiftRight/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o ShiftRight/fpga.fs ShiftRight/fpga.pnr
 
 
-    - name: Pop yosys
+    - name: yosys Shift_up/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/Pop/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Pop/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/Pop/fpga.json --write verilog/fpga/tests/Pop/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Pop/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Pop/fpga.fs verilog/fpga/tests/Pop/fpga.pnr
+        yosys -q -p "read_verilog Shift_up/fpga.sv; synth_gowin -top fpga -json Shift_up/fpga.json"
+        nextpnr-gowin -v --debug --json Shift_up/fpga.json --write Shift_up/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst Shift_up/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o Shift_up/fpga.fs Shift_up/fpga.pnr
 
 
-    - name: Push yosys
+    - name: yosys Shift_up_2/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/Push/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Push/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/Push/fpga.json --write verilog/fpga/tests/Push/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Push/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Push/fpga.fs verilog/fpga/tests/Push/fpga.pnr
+        yosys -q -p "read_verilog Shift_up_2/fpga.sv; synth_gowin -top fpga -json Shift_up_2/fpga.json"
+        nextpnr-gowin -v --debug --json Shift_up_2/fpga.json --write Shift_up_2/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst Shift_up_2/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o Shift_up_2/fpga.fs Shift_up_2/fpga.pnr
 
 
-    - name: ShiftLeft yosys
+    - name: yosys Subtract/fpga.sv
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/ShiftLeft/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/ShiftLeft/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/ShiftLeft/fpga.json --write verilog/fpga/tests/ShiftLeft/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/ShiftLeft/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/ShiftLeft/fpga.fs verilog/fpga/tests/ShiftLeft/fpga.pnr
-
-
-    - name: ShiftRight yosys
-      run: |
-        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/ShiftRight/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/ShiftRight/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/ShiftRight/fpga.json --write verilog/fpga/tests/ShiftRight/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/ShiftRight/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/ShiftRight/fpga.fs verilog/fpga/tests/ShiftRight/fpga.pnr
-
-
-    - name: Shift_up yosys
-      run: |
-        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/Shift_up/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Shift_up/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/Shift_up/fpga.json --write verilog/fpga/tests/Shift_up/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Shift_up/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Shift_up/fpga.fs verilog/fpga/tests/Shift_up/fpga.pnr
-
-
-    - name: Shift_up_2 yosys
-      run: |
-        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/Shift_up_2/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Shift_up_2/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/Shift_up_2/fpga.json --write verilog/fpga/tests/Shift_up_2/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Shift_up_2/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Shift_up_2/fpga.fs verilog/fpga/tests/Shift_up_2/fpga.pnr
-
-
-    - name: Subtract yosys
-      run: |
-        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog verilog/fpga/tests/Subtract/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Subtract/fpga.json"
-        nextpnr-gowin -v --debug --json verilog/fpga/tests/Subtract/fpga.json --write verilog/fpga/tests/Subtract/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Subtract/tangnano9k.cst
-        gowin_pack -d GW1N-9C -o verilog/fpga/tests/Subtract/fpga.fs verilog/fpga/tests/Subtract/fpga.pnr
+        yosys -q -p "read_verilog Subtract/fpga.sv; synth_gowin -top fpga -json Subtract/fpga.json"
+        nextpnr-gowin -v --debug --json Subtract/fpga.json --write Subtract/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst Subtract/tangnano9k.cst
+        gowin_pack -d GW1N-9C -o Subtract/fpga.fs Subtract/fpga.pnr
 
 
     - uses: actions/upload-artifact@v3
