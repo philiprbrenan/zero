@@ -3585,11 +3585,10 @@ module fpga                                                                     
   parameter integer MemoryElementWidth =  12;                                   // Memory element width
 
   parameter integer NArea          = $NArea;                                    // Size of each area on the heap
-  parameter integer NArrays        =   20;                                      // Maximum number of arrays
-  parameter integer NHeap          =  100;                                      // Amount of heap memory
-  parameter integer NLocal         =  600;                                      // Size of local memory
-  parameter integer NOut           =  100;                                      // Size of output area
-  parameter integer NFreedArrays   =   20;                                      // Freed arrays
+  parameter integer NArrays        =  200;                                      // Maximum number of arrays
+  parameter integer NHeap          = 1000;                                      // Amount of heap memory
+  parameter integer NLocal         = 1000;                                      // Size of local memory
+  parameter integer NOut           =  200;                                      // Size of output area
 END
 
   if (my $n = sprintf "%4d", scalar $exec->inOriginally->@*)                    # Input queue length
