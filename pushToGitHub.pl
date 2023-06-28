@@ -305,9 +305,9 @@ sub fpgaLowLevelTests                                                           
   my @y;
   for my $s(@tests)                                                             # Test run as verilog
    {my $t = setFileExtension $s, q(tb);                                         # Test bench
-    my $S = removeFilePrefix $home, $s;
+
     my $y = <<END;
-    - name: verilog $S
+    - name: $s
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga $t $s && timeout 1m ./fpga
 END
@@ -320,10 +320,9 @@ END
     my $p = setFileExtension $s, q(pnr);                                        # Place and route
     my $P = setFileExtension $s, q(fs);                                         # Bit stream
     my $b = fpe fp($s), qw(tangnano9k cst);                                     # Device description
-    my $S = removeFilePrefix $home, $s;
 
     my $y = <<END;
-    - name: yosys $S
+    - name: yosys $s
       run: |
         export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog $v; synth_gowin -top fpga -json $j"
