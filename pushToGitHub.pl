@@ -299,23 +299,32 @@ sub fpgaLowLevelTests                                                           
   my $d = q(GW1NR-LV9QN88PC6/I5);                                               # Device
 
   my @y;
-  for my $test(@tests)                                                          # Each test
+  for my $test(@tests)                                                          # Test run as verilog
    {my $m = $test =~ s($testsDir) ()r;                                          # Test name
     next unless $m;
-    next if $m =~ m(BTree);                                                     # Currently takes too long
     my $i = fpf $h, $m, qw(fpga);                                               # Include folder containing test
     my $v = fpe $i, qw(sv);                                                     # Source file
     my $t = fpe $i, qw(tb);                                                     # Test bench
+
+    my $y = <<END;
+    - name: $m verilog
+      run: |
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga $t $v && timeout 1m ./fpga
+END
+    push @y, $y;
+   }
+
+  for my $test(@tests)                                                          # Test run on gowin device
+   {my $m = $test =~ s($testsDir) ()r;                                          # Test name
+    next unless $m;
+    my $i = fpf $h, $m, qw(fpga);                                               # Include folder containing test
+    my $v = fpe $i, qw(sv);                                                     # Source file
     my $j = fpe $i, qw(json);                                                   # Json description
     my $p = fpe $i, qw(pnr);                                                    # Place and route
     my $P = fpe $i, qw(fs);                                                     # Bit stream
     my $b = fpe $h, $m, qw(tangnano9k cst);                                     # Device description
 
     my $y = <<END;
-    - name: $m verilog
-      run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga $t $v && timeout 1m ./fpga
-
     - name: $m yosys
       run: |
         export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
