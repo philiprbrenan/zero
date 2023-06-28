@@ -298,6 +298,7 @@ sub fpgaLowLevelTests                                                           
 
     my $y = <<END;
     - name: $s
+      if: \${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga $t $s && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
@@ -314,6 +315,7 @@ END
 
     my $y = <<END;
     - name: yosys $s
+      if: \${{ always() }}
       run: |
         export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog $v; synth_gowin -top fpga -json $j"
