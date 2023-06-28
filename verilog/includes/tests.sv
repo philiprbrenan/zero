@@ -21,11 +21,11 @@ task checkAllTestsPassed(integer NTestsExpected);                               
   begin
     if (testsPassed > 0 && testsFailed > 0) begin                               // Summarize test results
        $display("Passed %1d tests, FAILED %1d tests out of %d tests",  testsPassed, testsFailed, NTestsExpected);
-       $finish(0);
+       $fatal();
     end
     else if (testsFailed > 0) begin
        $display("FAILED %1d tests out of %1d tests", testsFailed, NTestsExpected);
-       $finish(1);
+       $fatal();
     end
     else if (testsPassed > 0 && testsPassed != NTestsExpected) begin
        $display("Passed %1d tests out of %1d tests with no failures ", testsPassed, NTestsExpected);
@@ -37,7 +37,7 @@ task checkAllTestsPassed(integer NTestsExpected);                               
     end
     else begin
        $display("No tests run passed: %1d, failed: %1d, expected %1d", testsPassed, testsFailed, NTestsExpected);
-       $finish(1);
+       $fatal();
     end
   end
 endtask
