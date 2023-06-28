@@ -296,7 +296,7 @@ END
  }
 
 sub fpgaLowLevelTests                                                           # Low level tests
- {my @tests = map {s($testsDir) ()r}                                            # Test these local files
+ {my @tests = map {s($home) ()r}                                                # Test these local files
               searchDirectoryTreesForMatchingFiles($testsDir, qw(.sv));
   my $h = fpd qw(verilog fpga tests);                                           # Home folder
   my $f = q(GW1N-9C);                                                           # Device family
