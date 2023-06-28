@@ -3282,6 +3282,7 @@ END
       my $t = $compile->deref($i->target)->targetLocation;
       my $n = $i->number + 1;
       push @c, <<END;
+              $t = 0;
               for(i = 0; i < NArea; i = i + 1) begin
                 if (heapMem[$a * NArea + i] == $s) $t = i + 1;
               end
@@ -5143,26 +5144,14 @@ if (1)                                                                          
   Mov   [$a, 0, "aaa"], 10;
   Mov   [$a, 1, "aaa"], 20;
   Mov   [$a, 2, "aaa"], 30;
+  Resize $a, 3, "aaa";
 
   Out ArrayIndex       ($a, 30); Out ArrayIndex       ($a, 20); Out ArrayIndex       ($a, 10); Out ArrayIndex       ($a, 15);
   Out ArrayCountLess   ($a, 35); Out ArrayCountLess   ($a, 25); Out ArrayCountLess   ($a, 15); Out ArrayCountLess   ($a,  5);
   Out ArrayCountGreater($a, 35); Out ArrayCountGreater($a, 25); Out ArrayCountGreater($a, 15); Out ArrayCountGreater($a,  5);
 
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->out, <<END;
-3
-2
-1
-0
-3
-2
-1
-0
-0
-1
-2
-3
-END
+  is_deeply $e->outLines, [qw(3 2 1 0 3 2 1 0 0 1 2 3)];
   $e->generateVerilogMachineCode("Array_scans") if $testSet == 1 and $debug;
  }
 
