@@ -299,7 +299,7 @@ sub fpgaLowLevelTests                                                           
     my $y = <<END;
     - name: $s
       run: |
-        rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga $t $s && timeout 1m ./fpga > z1.txt; grep -qv "FAILED" z1.txt
+        rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga $t $s && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 END
     push @y, $y;
