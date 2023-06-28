@@ -1,4 +1,4 @@
-# Test 2023-06-28 at 04:21:52
+# Test 2023-06-28 at 04:55:09
 
 name: Test
 
@@ -93,221 +93,265 @@ jobs:
       run:  iverilog -V
 
     - name: verilog/fpga/tests/Add/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Add/fpga.tb verilog/fpga/tests/Add/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/Array/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Array/fpga.tb verilog/fpga/tests/Array/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/ArrayCountGreaterIndex/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ArrayCountGreaterIndex/fpga.tb verilog/fpga/tests/ArrayCountGreaterIndex/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/ArrayCountLess/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ArrayCountLess/fpga.tb verilog/fpga/tests/ArrayCountLess/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/ArrayIndex/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ArrayIndex/fpga.tb verilog/fpga/tests/ArrayIndex/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/Array_scans/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Array_scans/fpga.tb verilog/fpga/tests/Array_scans/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/BTree/basic/1/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/1/fpga.tb verilog/fpga/tests/BTree/basic/1/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/BTree/basic/2/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/2/fpga.tb verilog/fpga/tests/BTree/basic/2/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/BTree/basic/3/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/3/fpga.tb verilog/fpga/tests/BTree/basic/3/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/BTree/basic/4/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/4/fpga.tb verilog/fpga/tests/BTree/basic/4/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/BTree/basic/5/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/5/fpga.tb verilog/fpga/tests/BTree/basic/5/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/BTree/basic/6/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/6/fpga.tb verilog/fpga/tests/BTree/basic/6/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/BTree/basic/7/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/7/fpga.tb verilog/fpga/tests/BTree/basic/7/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/BTree/in/1/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/in/1/fpga.tb verilog/fpga/tests/BTree/in/1/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/BTree/in/2/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/in/2/fpga.tb verilog/fpga/tests/BTree/in/2/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/BTree/in/3/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/in/3/fpga.tb verilog/fpga/tests/BTree/in/3/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/BTree/insert/01/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/01/fpga.tb verilog/fpga/tests/BTree/insert/01/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/BTree/insert/02/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/02/fpga.tb verilog/fpga/tests/BTree/insert/02/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/BTree/insert/03/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/03/fpga.tb verilog/fpga/tests/BTree/insert/03/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/BTree/insert/04/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/04/fpga.tb verilog/fpga/tests/BTree/insert/04/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/BTree/insert/05/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/05/fpga.tb verilog/fpga/tests/BTree/insert/05/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/BTree/insert/06/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/06/fpga.tb verilog/fpga/tests/BTree/insert/06/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/BTree/insert/06R/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/06R/fpga.tb verilog/fpga/tests/BTree/insert/06R/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/BTree/insert/66/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/66/fpga.tb verilog/fpga/tests/BTree/insert/66/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/ForIn/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ForIn/fpga.tb verilog/fpga/tests/ForIn/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/Free/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Free/fpga.tb verilog/fpga/tests/Free/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/In/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/In/fpga.tb verilog/fpga/tests/In/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/InSize/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/InSize/fpga.tb verilog/fpga/tests/InSize/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/JFalse/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/JFalse/fpga.tb verilog/fpga/tests/JFalse/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/Jeq/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Jeq/fpga.tb verilog/fpga/tests/Jeq/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/Jmp/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Jmp/fpga.tb verilog/fpga/tests/Jmp/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/Mov/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Mov/fpga.tb verilog/fpga/tests/Mov/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/Mov2/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Mov2/fpga.tb verilog/fpga/tests/Mov2/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/MoveLong_1/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/MoveLong_1/fpga.tb verilog/fpga/tests/MoveLong_1/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/MoveLong_2/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/MoveLong_2/fpga.tb verilog/fpga/tests/MoveLong_2/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/Not/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Not/fpga.tb verilog/fpga/tests/Not/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/Pop/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Pop/fpga.tb verilog/fpga/tests/Pop/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/Push/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Push/fpga.tb verilog/fpga/tests/Push/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/ShiftLeft/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ShiftLeft/fpga.tb verilog/fpga/tests/ShiftLeft/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/ShiftRight/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ShiftRight/fpga.tb verilog/fpga/tests/ShiftRight/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/Shift_up/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Shift_up/fpga.tb verilog/fpga/tests/Shift_up/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/Shift_up_2/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Shift_up_2/fpga.tb verilog/fpga/tests/Shift_up_2/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: verilog/fpga/tests/Subtract/fpga.sv
+      if: ${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Subtract/fpga.tb verilog/fpga/tests/Subtract/fpga.sv && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 
     - name: yosys verilog/fpga/tests/Add/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/Add/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Add/fpga.json"
@@ -316,6 +360,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/Array/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/Array/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Array/fpga.json"
@@ -324,6 +369,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/ArrayCountGreaterIndex/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/ArrayCountGreaterIndex/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/ArrayCountGreaterIndex/fpga.json"
@@ -332,6 +378,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/ArrayCountLess/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/ArrayCountLess/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/ArrayCountLess/fpga.json"
@@ -340,6 +387,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/ArrayIndex/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/ArrayIndex/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/ArrayIndex/fpga.json"
@@ -348,6 +396,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/Array_scans/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/Array_scans/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Array_scans/fpga.json"
@@ -356,6 +405,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/BTree/basic/1/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/BTree/basic/1/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/basic/1/fpga.json"
@@ -364,6 +414,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/BTree/basic/2/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/BTree/basic/2/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/basic/2/fpga.json"
@@ -372,6 +423,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/BTree/basic/3/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/BTree/basic/3/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/basic/3/fpga.json"
@@ -380,6 +432,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/BTree/basic/4/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/BTree/basic/4/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/basic/4/fpga.json"
@@ -388,6 +441,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/BTree/basic/5/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/BTree/basic/5/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/basic/5/fpga.json"
@@ -396,6 +450,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/BTree/basic/6/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/BTree/basic/6/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/basic/6/fpga.json"
@@ -404,6 +459,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/BTree/basic/7/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/BTree/basic/7/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/basic/7/fpga.json"
@@ -412,6 +468,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/BTree/in/1/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/BTree/in/1/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/in/1/fpga.json"
@@ -420,6 +477,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/BTree/in/2/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/BTree/in/2/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/in/2/fpga.json"
@@ -428,6 +486,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/BTree/in/3/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/BTree/in/3/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/in/3/fpga.json"
@@ -436,6 +495,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/BTree/insert/01/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/BTree/insert/01/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/insert/01/fpga.json"
@@ -444,6 +504,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/BTree/insert/02/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/BTree/insert/02/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/insert/02/fpga.json"
@@ -452,6 +513,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/BTree/insert/03/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/BTree/insert/03/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/insert/03/fpga.json"
@@ -460,6 +522,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/BTree/insert/04/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/BTree/insert/04/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/insert/04/fpga.json"
@@ -468,6 +531,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/BTree/insert/05/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/BTree/insert/05/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/insert/05/fpga.json"
@@ -476,6 +540,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/BTree/insert/06/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/BTree/insert/06/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/insert/06/fpga.json"
@@ -484,6 +549,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/BTree/insert/06R/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/BTree/insert/06R/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/insert/06R/fpga.json"
@@ -492,6 +558,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/BTree/insert/66/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/BTree/insert/66/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/BTree/insert/66/fpga.json"
@@ -500,6 +567,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/ForIn/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/ForIn/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/ForIn/fpga.json"
@@ -508,6 +576,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/Free/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/Free/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Free/fpga.json"
@@ -516,6 +585,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/In/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/In/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/In/fpga.json"
@@ -524,6 +594,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/InSize/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/InSize/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/InSize/fpga.json"
@@ -532,6 +603,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/JFalse/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/JFalse/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/JFalse/fpga.json"
@@ -540,6 +612,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/Jeq/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/Jeq/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Jeq/fpga.json"
@@ -548,6 +621,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/Jmp/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/Jmp/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Jmp/fpga.json"
@@ -556,6 +630,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/Mov/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/Mov/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Mov/fpga.json"
@@ -564,6 +639,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/Mov2/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/Mov2/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Mov2/fpga.json"
@@ -572,6 +648,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/MoveLong_1/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/MoveLong_1/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/MoveLong_1/fpga.json"
@@ -580,6 +657,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/MoveLong_2/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/MoveLong_2/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/MoveLong_2/fpga.json"
@@ -588,6 +666,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/Not/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/Not/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Not/fpga.json"
@@ -596,6 +675,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/Pop/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/Pop/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Pop/fpga.json"
@@ -604,6 +684,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/Push/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/Push/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Push/fpga.json"
@@ -612,6 +693,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/ShiftLeft/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/ShiftLeft/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/ShiftLeft/fpga.json"
@@ -620,6 +702,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/ShiftRight/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/ShiftRight/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/ShiftRight/fpga.json"
@@ -628,6 +711,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/Shift_up/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/Shift_up/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Shift_up/fpga.json"
@@ -636,6 +720,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/Shift_up_2/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/Shift_up_2/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Shift_up_2/fpga.json"
@@ -644,6 +729,7 @@ jobs:
 
 
     - name: yosys verilog/fpga/tests/Subtract/fpga.sv
+      if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog verilog/fpga/tests/Subtract/fpga.sv; synth_gowin -top fpga -json verilog/fpga/tests/Subtract/fpga.json"
