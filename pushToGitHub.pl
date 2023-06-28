@@ -146,7 +146,9 @@ sub run
 name: Test
 
 on:
-  push
+  push:
+    paths:
+      - '**.pm'
 
 jobs:
 END
@@ -293,39 +295,34 @@ END
  }
 
 sub fpgaLowLevelTests                                                           # Low level tests
- {my @tests = searchDirectoryTreeForSubFolders($testsDir);
+ {my @tests = map {s($testsDir) ()r}                                            # Test these local files
+              searchDirectoryTreesForMatchingFiles($testsDir, qw(.sv));
   my $h = fpd qw(verilog fpga tests);                                           # Home folder
   my $f = q(GW1N-9C);                                                           # Device family
   my $d = q(GW1NR-LV9QN88PC6/I5);                                               # Device
 
   my @y;
-  for my $test(@tests)                                                          # Test run as verilog
-   {my $m = $test =~ s($testsDir) ()r;                                          # Test name
-    next unless $m;
-    my $i = fpf $h, $m, qw(fpga);                                               # Include folder containing test
-    my $v = fpe $i, qw(sv);                                                     # Source file
-    my $t = fpe $i, qw(tb);                                                     # Test bench
-
+  for my $s(@tests)                                                             # Test run as verilog
+   {my $t = setFileExtension $s, q(tb);                                         # Test bench
+    my $S = removeFilePrefix $home, $s;
     my $y = <<END;
-    - name: $m verilog
+    - name: verilog $S
       run: |
-        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga $t $v && timeout 1m ./fpga
+        rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga $t $s && timeout 1m ./fpga
 END
     push @y, $y;
    }
 
-  for my $test(@tests)                                                          # Test run on gowin device
-   {my $m = $test =~ s($testsDir) ()r;                                          # Test name
-    next unless $m;
-    my $i = fpf $h, $m, qw(fpga);                                               # Include folder containing test
-    my $v = fpe $i, qw(sv);                                                     # Source file
-    my $j = fpe $i, qw(json);                                                   # Json description
-    my $p = fpe $i, qw(pnr);                                                    # Place and route
-    my $P = fpe $i, qw(fs);                                                     # Bit stream
-    my $b = fpe $h, $m, qw(tangnano9k cst);                                     # Device description
+  for my $s(@tests)                                                             # Test run on fpga
+   {my $v = setFileExtension $s, q(sv);                                         # Source file
+    my $j = setFileExtension $s, q(json);                                       # Json description
+    my $p = setFileExtension $s, q(pnr);                                        # Place and route
+    my $P = setFileExtension $s, q(fs);                                         # Bit stream
+    my $b = fpe fp($s), qw(tangnano9k cst);                                     # Device description
+    my $S = removeFilePrefix $home, $s;
 
     my $y = <<END;
-    - name: $m yosys
+    - name: yosys $S
       run: |
         export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         yosys -q -p "read_verilog $v; synth_gowin -top fpga -json $j"
