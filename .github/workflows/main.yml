@@ -1,4 +1,4 @@
-# Test 2023-06-28 at 03:22:59
+# Test 2023-06-28 at 03:24:46
 
 name: Test
 
@@ -102,175 +102,175 @@ jobs:
     - name: Verilog Version
       run:  iverilog -V
 
-    - name: verilog verilog/fpga/tests/Add/fpga.sv
+    - name: verilog/fpga/tests/Add/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Add/fpga.tb verilog/fpga/tests/Add/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/Array/fpga.sv
+    - name: verilog/fpga/tests/Array/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Array/fpga.tb verilog/fpga/tests/Array/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/ArrayCountGreaterIndex/fpga.sv
+    - name: verilog/fpga/tests/ArrayCountGreaterIndex/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ArrayCountGreaterIndex/fpga.tb verilog/fpga/tests/ArrayCountGreaterIndex/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/ArrayCountLess/fpga.sv
+    - name: verilog/fpga/tests/ArrayCountLess/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ArrayCountLess/fpga.tb verilog/fpga/tests/ArrayCountLess/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/ArrayIndex/fpga.sv
+    - name: verilog/fpga/tests/ArrayIndex/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ArrayIndex/fpga.tb verilog/fpga/tests/ArrayIndex/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/Array_scans/fpga.sv
+    - name: verilog/fpga/tests/Array_scans/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Array_scans/fpga.tb verilog/fpga/tests/Array_scans/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/BTree/basic/1/fpga.sv
+    - name: verilog/fpga/tests/BTree/basic/1/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/1/fpga.tb verilog/fpga/tests/BTree/basic/1/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/BTree/basic/2/fpga.sv
+    - name: verilog/fpga/tests/BTree/basic/2/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/2/fpga.tb verilog/fpga/tests/BTree/basic/2/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/BTree/basic/3/fpga.sv
+    - name: verilog/fpga/tests/BTree/basic/3/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/3/fpga.tb verilog/fpga/tests/BTree/basic/3/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/BTree/basic/4/fpga.sv
+    - name: verilog/fpga/tests/BTree/basic/4/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/4/fpga.tb verilog/fpga/tests/BTree/basic/4/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/BTree/basic/5/fpga.sv
+    - name: verilog/fpga/tests/BTree/basic/5/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/5/fpga.tb verilog/fpga/tests/BTree/basic/5/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/BTree/basic/6/fpga.sv
+    - name: verilog/fpga/tests/BTree/basic/6/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/6/fpga.tb verilog/fpga/tests/BTree/basic/6/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/BTree/basic/7/fpga.sv
+    - name: verilog/fpga/tests/BTree/basic/7/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/basic/7/fpga.tb verilog/fpga/tests/BTree/basic/7/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/BTree/in/1/fpga.sv
+    - name: verilog/fpga/tests/BTree/in/1/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/in/1/fpga.tb verilog/fpga/tests/BTree/in/1/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/BTree/in/2/fpga.sv
+    - name: verilog/fpga/tests/BTree/in/2/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/in/2/fpga.tb verilog/fpga/tests/BTree/in/2/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/BTree/in/3/fpga.sv
+    - name: verilog/fpga/tests/BTree/in/3/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/in/3/fpga.tb verilog/fpga/tests/BTree/in/3/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/BTree/insert/01/fpga.sv
+    - name: verilog/fpga/tests/BTree/insert/01/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/01/fpga.tb verilog/fpga/tests/BTree/insert/01/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/BTree/insert/02/fpga.sv
+    - name: verilog/fpga/tests/BTree/insert/02/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/02/fpga.tb verilog/fpga/tests/BTree/insert/02/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/BTree/insert/03/fpga.sv
+    - name: verilog/fpga/tests/BTree/insert/03/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/03/fpga.tb verilog/fpga/tests/BTree/insert/03/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/BTree/insert/04/fpga.sv
+    - name: verilog/fpga/tests/BTree/insert/04/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/04/fpga.tb verilog/fpga/tests/BTree/insert/04/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/BTree/insert/05/fpga.sv
+    - name: verilog/fpga/tests/BTree/insert/05/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/05/fpga.tb verilog/fpga/tests/BTree/insert/05/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/BTree/insert/06/fpga.sv
+    - name: verilog/fpga/tests/BTree/insert/06/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/06/fpga.tb verilog/fpga/tests/BTree/insert/06/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/BTree/insert/06R/fpga.sv
+    - name: verilog/fpga/tests/BTree/insert/06R/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/06R/fpga.tb verilog/fpga/tests/BTree/insert/06R/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/BTree/insert/66/fpga.sv
+    - name: verilog/fpga/tests/BTree/insert/66/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/BTree/insert/66/fpga.tb verilog/fpga/tests/BTree/insert/66/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/ForIn/fpga.sv
+    - name: verilog/fpga/tests/ForIn/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ForIn/fpga.tb verilog/fpga/tests/ForIn/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/Free/fpga.sv
+    - name: verilog/fpga/tests/Free/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Free/fpga.tb verilog/fpga/tests/Free/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/In/fpga.sv
+    - name: verilog/fpga/tests/In/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/In/fpga.tb verilog/fpga/tests/In/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/InSize/fpga.sv
+    - name: verilog/fpga/tests/InSize/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/InSize/fpga.tb verilog/fpga/tests/InSize/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/JFalse/fpga.sv
+    - name: verilog/fpga/tests/JFalse/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/JFalse/fpga.tb verilog/fpga/tests/JFalse/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/Jeq/fpga.sv
+    - name: verilog/fpga/tests/Jeq/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Jeq/fpga.tb verilog/fpga/tests/Jeq/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/Jmp/fpga.sv
+    - name: verilog/fpga/tests/Jmp/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Jmp/fpga.tb verilog/fpga/tests/Jmp/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/Mov/fpga.sv
+    - name: verilog/fpga/tests/Mov/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Mov/fpga.tb verilog/fpga/tests/Mov/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/Mov2/fpga.sv
+    - name: verilog/fpga/tests/Mov2/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Mov2/fpga.tb verilog/fpga/tests/Mov2/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/MoveLong_1/fpga.sv
+    - name: verilog/fpga/tests/MoveLong_1/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/MoveLong_1/fpga.tb verilog/fpga/tests/MoveLong_1/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/MoveLong_2/fpga.sv
+    - name: verilog/fpga/tests/MoveLong_2/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/MoveLong_2/fpga.tb verilog/fpga/tests/MoveLong_2/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/Not/fpga.sv
+    - name: verilog/fpga/tests/Not/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Not/fpga.tb verilog/fpga/tests/Not/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/Pop/fpga.sv
+    - name: verilog/fpga/tests/Pop/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Pop/fpga.tb verilog/fpga/tests/Pop/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/Push/fpga.sv
+    - name: verilog/fpga/tests/Push/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Push/fpga.tb verilog/fpga/tests/Push/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/ShiftLeft/fpga.sv
+    - name: verilog/fpga/tests/ShiftLeft/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ShiftLeft/fpga.tb verilog/fpga/tests/ShiftLeft/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/ShiftRight/fpga.sv
+    - name: verilog/fpga/tests/ShiftRight/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/ShiftRight/fpga.tb verilog/fpga/tests/ShiftRight/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/Shift_up/fpga.sv
+    - name: verilog/fpga/tests/Shift_up/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Shift_up/fpga.tb verilog/fpga/tests/Shift_up/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/Shift_up_2/fpga.sv
+    - name: verilog/fpga/tests/Shift_up_2/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Shift_up_2/fpga.tb verilog/fpga/tests/Shift_up_2/fpga.sv && timeout 1m ./fpga
 
-    - name: verilog verilog/fpga/tests/Subtract/fpga.sv
+    - name: verilog/fpga/tests/Subtract/fpga.sv
       run: |
         rm -f fpga; iverilog -Iverilog/ -g2012 -o fpga verilog/fpga/tests/Subtract/fpga.tb verilog/fpga/tests/Subtract/fpga.sv && timeout 1m ./fpga
 
