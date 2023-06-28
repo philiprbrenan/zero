@@ -149,6 +149,7 @@ on:
   push:
     paths:
       - '**.pm'
+      - '**pushToGitHub.pl'
 
 jobs:
 END
