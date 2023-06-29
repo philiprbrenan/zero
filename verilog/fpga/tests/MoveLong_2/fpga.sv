@@ -47,6 +47,7 @@ module fpga                                                                     
 
   always @(clock) begin                                                         // Each instruction
     steps = steps + 1;
+$display("AAAA %4d %4d", steps, ip);
     case(ip)
 
           0 :
@@ -82,60 +83,70 @@ module fpga                                                                     
           2 :
       begin                                                                     // mov
               heapMem[localMem[0+0]*10 + 0] = 11;
+$display("move %10d", 11);
               ip = 3;
       end
 
           3 :
       begin                                                                     // mov
               heapMem[localMem[0+0]*10 + 1] = 22;
+$display("move %10d", 22);
               ip = 4;
       end
 
           4 :
       begin                                                                     // mov
               heapMem[localMem[0+0]*10 + 2] = 33;
+$display("move %10d", 33);
               ip = 5;
       end
 
           5 :
       begin                                                                     // mov
               heapMem[localMem[0+0]*10 + 3] = 44;
+$display("move %10d", 44);
               ip = 6;
       end
 
           6 :
       begin                                                                     // mov
               heapMem[localMem[0+0]*10 + 4] = 55;
+$display("move %10d", 55);
               ip = 7;
       end
 
           7 :
       begin                                                                     // mov
               heapMem[localMem[0+1]*10 + 0] = 66;
+$display("move %10d", 66);
               ip = 8;
       end
 
           8 :
       begin                                                                     // mov
               heapMem[localMem[0+1]*10 + 1] = 77;
+$display("move %10d", 77);
               ip = 9;
       end
 
           9 :
       begin                                                                     // mov
               heapMem[localMem[0+1]*10 + 2] = 88;
+$display("move %10d", 88);
               ip = 10;
       end
 
          10 :
       begin                                                                     // mov
               heapMem[localMem[0+1]*10 + 3] = 99;
+$display("move %10d", 99);
               ip = 11;
       end
 
          11 :
       begin                                                                     // mov
               heapMem[localMem[0+1]*10 + 4] = 101;
+$display("move %10d", 101);
               ip = 12;
       end
 
@@ -165,6 +176,7 @@ module fpga                                                                     
          16 :
       begin                                                                     // mov
               localMem[0 + 3] = 0;
+$display("move %10d", 0);
               ip = 17;
       end
 
@@ -181,6 +193,7 @@ module fpga                                                                     
          19 :
       begin                                                                     // mov
               localMem[0 + 4] = heapMem[localMem[0+0]*10 + localMem[0+3]];
+$display("move %10d", heapMem[localMem[0+0]*10 + localMem[0+3]]);
               ip = 20;
       end
 
@@ -198,6 +211,7 @@ module fpga                                                                     
 
          22 :
       begin                                                                     // add
+$display("add %4d %4d", localMem[0+3], 1);
               localMem[0 + 3] = localMem[0+3] + 1;
               ip = 23;
       end
@@ -226,6 +240,7 @@ module fpga                                                                     
          27 :
       begin                                                                     // mov
               localMem[0 + 6] = 0;
+$display("move %10d", 0);
               ip = 28;
       end
 
@@ -242,6 +257,7 @@ module fpga                                                                     
          30 :
       begin                                                                     // mov
               localMem[0 + 7] = heapMem[localMem[0+1]*10 + localMem[0+6]];
+$display("move %10d", heapMem[localMem[0+1]*10 + localMem[0+6]]);
               ip = 31;
       end
 
@@ -259,6 +275,7 @@ module fpga                                                                     
 
          33 :
       begin                                                                     // add
+$display("add %4d %4d", localMem[0+6], 1);
               localMem[0 + 6] = localMem[0+6] + 1;
               ip = 34;
       end
@@ -297,6 +314,7 @@ module fpga                                                                     
          39 :
       begin                                                                     // mov
               localMem[0 + 9] = 0;
+$display("move %10d", 0);
               ip = 40;
       end
 
@@ -313,6 +331,7 @@ module fpga                                                                     
          42 :
       begin                                                                     // mov
               localMem[0 + 10] = heapMem[localMem[0+0]*10 + localMem[0+9]];
+$display("move %10d", heapMem[localMem[0+0]*10 + localMem[0+9]]);
               ip = 43;
       end
 
@@ -330,6 +349,7 @@ module fpga                                                                     
 
          45 :
       begin                                                                     // add
+$display("add %4d %4d", localMem[0+9], 1);
               localMem[0 + 9] = localMem[0+9] + 1;
               ip = 46;
       end
@@ -358,6 +378,7 @@ module fpga                                                                     
          50 :
       begin                                                                     // mov
               localMem[0 + 12] = 0;
+$display("move %10d", 0);
               ip = 51;
       end
 
@@ -374,6 +395,7 @@ module fpga                                                                     
          53 :
       begin                                                                     // mov
               localMem[0 + 13] = heapMem[localMem[0+1]*10 + localMem[0+12]];
+$display("move %10d", heapMem[localMem[0+1]*10 + localMem[0+12]]);
               ip = 54;
       end
 
@@ -391,6 +413,7 @@ module fpga                                                                     
 
          56 :
       begin                                                                     // add
+$display("add %4d %4d", localMem[0+12], 1);
               localMem[0 + 12] = localMem[0+12] + 1;
               ip = 57;
       end
