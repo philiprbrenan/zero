@@ -47,10 +47,12 @@ module fpga                                                                     
 
   always @(clock) begin                                                         // Each instruction
     steps = steps + 1;
+$display("AAAA %4d %4d", steps, ip);
     case(ip)
 
           0 :
       begin                                                                     // add
+$display("add %4d %4d", 3, 2);
               localMem[0 + 0] = 3 + 2;
               ip = 1;
       end
