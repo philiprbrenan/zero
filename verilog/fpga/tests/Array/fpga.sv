@@ -47,6 +47,7 @@ module fpga                                                                     
 
   always @(clock) begin                                                         // Each instruction
     steps = steps + 1;
+$display("AAAA %4d %4d", steps, ip);
     case(ip)
 
           0 :
@@ -67,12 +68,14 @@ module fpga                                                                     
           1 :
       begin                                                                     // mov
               heapMem[localMem[0+0]*10 + 0] = 11;
+$display("move %10d", 11);
               ip = 2;
       end
 
           2 :
       begin                                                                     // mov
               heapMem[localMem[0+0]*10 + 1] = 22;
+$display("move %10d", 22);
               ip = 3;
       end
 
@@ -94,12 +97,14 @@ module fpga                                                                     
           4 :
       begin                                                                     // mov
               heapMem[localMem[0+1]*10 + 1] = 33;
+$display("move %10d", 33);
               ip = 5;
       end
 
           5 :
       begin                                                                     // mov
               localMem[0 + 2] = heapMem[localMem[0+1]*10 + 1];
+$display("move %10d", heapMem[localMem[0+1]*10 + 1]);
               ip = 6;
       end
 
