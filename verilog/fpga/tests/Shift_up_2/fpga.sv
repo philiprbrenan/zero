@@ -47,6 +47,7 @@ module fpga                                                                     
 
   always @(clock) begin                                                         // Each instruction
     steps = steps + 1;
+$display("AAAA %4d %4d", steps, ip);
     case(ip)
 
           0 :
@@ -82,18 +83,21 @@ module fpga                                                                     
           2 :
       begin                                                                     // mov
               heapMem[localMem[0+1]*10 + 0] = 0;
+$display("move %10d", 0);
               ip = 3;
       end
 
           3 :
       begin                                                                     // mov
               heapMem[localMem[0+1]*10 + 1] = 1;
+$display("move %10d", 1);
               ip = 4;
       end
 
           4 :
       begin                                                                     // mov
               heapMem[localMem[0+1]*10 + 2] = 2;
+$display("move %10d", 2);
               ip = 5;
       end
 
@@ -130,6 +134,7 @@ module fpga                                                                     
           9 :
       begin                                                                     // mov
               localMem[0 + 3] = 0;
+$display("move %10d", 0);
               ip = 10;
       end
 
@@ -146,6 +151,7 @@ module fpga                                                                     
          12 :
       begin                                                                     // mov
               localMem[0 + 4] = heapMem[localMem[0+1]*10 + localMem[0+3]];
+$display("move %10d", heapMem[localMem[0+1]*10 + localMem[0+3]]);
               ip = 13;
       end
 
@@ -163,6 +169,7 @@ module fpga                                                                     
 
          15 :
       begin                                                                     // add
+$display("add %4d %4d", localMem[0+3], 1);
               localMem[0 + 3] = localMem[0+3] + 1;
               ip = 16;
       end
