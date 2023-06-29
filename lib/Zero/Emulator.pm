@@ -9,6 +9,7 @@
 # doubleWrite, not read, rewrite need make-over
 # Initially array dimensions were set automatically by assignment to and array - now we require the resize operation or push/pop; to set the array size
 # Check whether the array being accessed is actually allocated
+# Setting the array size on Mov means that we probably do not need all the resizes
 use v5.30;
 package Zero::Emulator;
 our $VERSION = 20230519;                                                        # Version
@@ -22,6 +23,7 @@ eval "use Test::More tests=>402" unless caller;
 
 makeDieConfess;
 our $memoryTechnique;                                                           # Undef or the address of a sub that loads the memory handlers into an execution environment.
+my  $memoryPrintWidth = 200;
 
 my sub maximumInstructionsToExecute {1e6}                                       # Maximum number of subroutines to execute
 
@@ -560,7 +562,7 @@ sub popMemoryArea($$)                                                           
   pop @$a;                                                                      # Pop
  }
 
-sub printLocal($)                                                               #P Print loal memory
+sub printLocal($)                                                               #P Print local memory
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my @p = join ' ', "Memory", map {sprintf "%4d", $_} 0..31;
@@ -738,6 +740,15 @@ sub stringPrintLocal($)                                                         
   join "\n", @p, '';
  }
 
+sub stringPrintLocalSimple($)                                                   #P Print string local memory assimply as possible
+ {my ($exec) = @_;                                                              # Execution environment
+  @_ == 1 or confess "One parameter";
+  my $s = $exec->memory->[arenaLocal]->[0];
+  my @p = join '', map {sprintf "%4d", ($$s[$_]//0)} 0..$memoryPrintWidth-1;
+
+  say STDERR join "\n", @p, '';
+ }
+
 sub stringPrintHeap($)                                                          #P Print string heap memory
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
@@ -759,6 +770,36 @@ sub stringPrintHeap($)                                                          
    }
 
   join "\n", @p, '';
+ }
+
+sub stringPrintHeapSimple($)                                                    #P Print string heap memory as simply as possible
+ {my ($exec) = @_;                                                              # Execution environment
+  @_ == 1 or confess "One parameter";
+  my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
+  my $s = $exec->memoryString;
+  my $l = length($s);
+  my @v;
+  for my $i(0..$l/4)
+   {push @v, sprintf "%4d", vec($s, $i, $w);
+   }
+  push @v, sprintf "%4d", 0 while @v <= $memoryPrintWidth;
+  pop  @v                   while @v >  $memoryPrintWidth;
+  say STDERR join '', @v;
+ }
+
+sub stringPrintHeapSizesSimple($)                                               #P Print the sizes of the arrays on the heap as simply as possible
+ {my ($exec) = @_;                                                              # Execution environment
+  @_ == 1 or confess "One parameter";
+  my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
+  my $s = $exec->memoryStringLengths;
+  my $l = length($s);
+  my @v;
+  for my $i(0..$l/4)
+   {push @v, sprintf "%4d", vec($s, $i, $w);
+   }
+  push @v, sprintf "%4d", 0 while @v <= $memoryPrintWidth;
+  pop  @v                   while @v >  $memoryPrintWidth;
+  say STDERR join '', @v;
  }
 
 sub setStringMemoryTechnique($)                                                 #P Set the handlers for the string memory allocation technique.
@@ -1752,11 +1793,13 @@ sub Zero::Emulator::Assembly::execute($%)                                       
       my $s = $exec->latestRightSource;
       my $t = $exec->latestLeftTarget;
       my $L = areaLength($exec, $t->area);                                      # Length of target array
-      my $l = $t->address;
-      for my $j(reverse $l..$L)
+      my $l = $t->address;                                                      # Position of move
+#say STDERR "BBBB pos, length", dump($l, $L);
+      for my $j(reverse $l+1..$L)                                               # Was making one move too many?
        {my $S = Address($exec, $t->arena, $t->area, $j-1,   $t->name, 0);
         my $T = Address($exec, $t->arena, $t->area, $j,     $t->name, 0);
         my $v = $S->getMemoryValue;
+#say STDERR "CCCC move index, value", dump($j, $v);
         assign($exec, $T, $v);
        }
       assign($exec, $t, $s);
@@ -1841,13 +1884,16 @@ sub Zero::Emulator::Assembly::execute($%)                                       
       $instruction->step = $step;                                               # Execution step number facilitates debugging
       $exec->timeDelta = undef;                                                 # Record elapsed time for instruction
 
-#say STDERR "XXXX $a";
+#say STDERR sprintf "AAAA %4d %4d %s", $step, $exec->instructionPointer-1, $a;
       $exec->latestLeftTarget  = left  $exec, $instruction->target;             # Precompute this useful value if possible
       $exec->latestRightSource = right $exec, $instruction->source;             # Precompute this useful value if possible
 
 #EEEE Execute
       $implementation->($instruction);                                          # Execute instruction
 
+#stringPrintLocalSimple($exec);
+#stringPrintHeapSimple($exec);
+#stringPrintHeapSizesSimple($exec);
       $exec->tallyInstructionCounts($instruction);                              # Instruction counts
       $exec->traceMemory($instruction);                                         # Trace changes to memory
 #say STDERR $exec->PrintMemory->($exec);
@@ -3050,7 +3096,7 @@ END
     push @s, <<END;                                                             # Implementations
   task $n();
     begin                                                                       // $N
-     \$display("$N");
+//     \$display("$N");
     end
   endtask
 END
@@ -3102,7 +3148,8 @@ sub Zero::CompileToVerilog::deref($$)                                           
 
   my sub localMem($$)                                                           # Local memory value
    {my ($delta, $address) = @_;                                                 # Delta, address
-    "localMem[$delta+$address]";
+    return "localMem[$delta+$address]" unless $delta == 0;
+           "localMem[$address]"
    }
 
   my $Area      = $ref->area    ;                                               # Components of a reference
@@ -3138,7 +3185,7 @@ sub Zero::CompileToVerilog::deref($$)                                           
       $DAddress == 1 ? localAdr($Delta, $Address)            :
       $DAddress == 2 ? localAdr($Delta, localMem(0, $Address)) : 0) : 0;
 
-  my $targetLocation  =                                                          # Target as a location
+  my $targetLocation  =                                                         # Target as a location
     $Arena      == 0 ? 0 :
     $Arena      == 1 ?
      ($DArea    == 0 && $DAddress == 1 ? heapMem($Delta, $Area,              $Address)              :
@@ -3178,6 +3225,7 @@ sub Zero::CompileToVerilog::deref($$)                                           
     targetLocation     => $targetLocation,                                      # Target as a location
     targetIndex        => $targetIndex,                                         # Target index within array
     targetLocationArea => $targetLocationArea,                                  # Number of array containing target
+    Arena              => $Arena,                                               # Arena
     Area               => $Area,                                                # Area
     targetValue        => $targetValue,                                         # Target as value
    )
@@ -3193,7 +3241,7 @@ sub compileToVerilog($$)                                                        
   my @c;                                                                        # Generated code
 
   my sub skip                                                                   # Skip this instruction and continue at the next one
-   {my ($i) = @_;                                                             # Instruction
+   {my ($i) = @_;                                                               # Instruction
     my $n   = $i->number + 1;
     push @c, <<END;
             ip = $n;
@@ -3203,12 +3251,12 @@ END
   my $gen =                                                                     # Code generation for each instruction
    {add=> sub                                                                   # Add
      {my ($i) = @_;                                                             # Instruction
-      my $s1  = $compile->deref($i->source )->Value;
-      my $s2  = $compile->deref($i->source2)->Value;
-      my $t   = $compile->deref($i->target)->targetLocation;
-      my $n   = $i->number + 1;
+      my $a  = $compile->deref($i->source )->Value;
+      my $b  = $compile->deref($i->source2)->Value;
+      my $t  = $compile->deref($i->target)->targetLocation;
+      my $n  = $i->number + 1;
       push @c, <<END;
-              $t = $s1 + $s2;
+              $t = $a + $b;
               ip = $n;
 END
      },
@@ -3247,12 +3295,12 @@ END
      {my ($i) = @_;                                                             # Instruction
       my $s = $compile->deref($i->source2)->Value;
       my $a = $compile->deref($i->source) ->Value;
-      my $t = $compile->deref($i->target)->targetLocation;
+      my $t = $compile->deref($i->target) ->targetLocation;
       my $n = $i->number + 1;
       push @c, <<END;
-              j = 0;
+              j = 0; k = arraySizes[$a];
               for(i = 0; i < NArea; i = i + 1) begin
-                if (heapMem[$a * NArea + i] < $s) j = j + 1;
+                if (i < k && heapMem[$a * NArea + i] < $s) j = j + 1;
               end
               $t = j;
               ip = $n;
@@ -3266,9 +3314,11 @@ END
       my $t = $compile->deref($i->target)->targetLocation;
       my $n = $i->number + 1;
       push @c, <<END;
-              j = 0;
+              j = 0; k = arraySizes[$a];
+//\$display("AAAAA k=%d  source2=%d", k, $s);
               for(i = 0; i < NArea; i = i + 1) begin
-                if (heapMem[$a * NArea + i] > $s) j = j + 1;
+//\$display("AAAAA i=%d  value=%d", i, heapMem[$a * NArea + i]);
+                if (i < k && heapMem[$a * NArea + i] > $s) j = j + 1;
               end
               $t = j;
               ip = $n;
@@ -3282,9 +3332,9 @@ END
       my $t = $compile->deref($i->target)->targetLocation;
       my $n = $i->number + 1;
       push @c, <<END;
-              $t = 0;
+              $t = 0; k = arraySizes[$a];
               for(i = 0; i < NArea; i = i + 1) begin
-                if (heapMem[$a * NArea + i] == $s) $t = i + 1;
+                if (i < k && heapMem[$a * NArea + i] == $s) $t = i + 1;
               end
               ip = $n;
 END
@@ -3434,9 +3484,13 @@ END
      {my ($i) = @_;                                                             # Instruction
       my $s   = $compile->deref($i->source)->Value;
       my $t   = $compile->deref($i->target)->targetLocation;
+      my $A   = $compile->deref($i->target)->Arena;
+      my $a   = $compile->deref($i->target)->targetLocationArea;
+      my $I   = $compile->deref($i->target)->targetIndex;
       my $n   = $i->number + 1;
       push @c, <<END;
               $t = $s;
+              updateArrayLength($A, $a, $I);
               ip = $n;
 END
      },
@@ -3448,11 +3502,13 @@ END
       my $ti  = $compile->deref($i->target )->targetIndex;
       my $ta  = $compile->deref($i->target )->targetLocationArea;
       my $l   = $compile->deref($i->source2)->Value;
+      my $A   = $compile->deref($i->target)->Arena;
       my $n   = $i->number + 1;
       push @c, <<END;
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < $l) begin
                   heapMem[NArea * $ta + $ti + i] = heapMem[NArea * $sa + $si + i];
+                  updateArrayLength($A, $ta, $ti + i);
                 end
               end
               ip = $n;
@@ -3542,15 +3598,18 @@ END
 
     shiftUp=> sub                                                               # Shift up
      {my ($i) = @_;                                                             # Instruction
-      my $s   = $compile->deref($i->source)->Value;
-      my $a   = $compile->deref($i->target)->targetLocationArea;
-      my $o   = $compile->deref($i->target)->targetIndex;
+      my $s   = $compile->deref($i->source)->Value;                             # Value to shift in
+      my $a   = $compile->deref($i->target)->targetLocationArea;                # Number of target array
+      my $o   = $compile->deref($i->target)->targetIndex;                       # Position in target array to shift from
       my $n   = $i->number + 1;
       push @c, <<END;
+//\$display("AAAA %4d %4d shiftUp", steps, ip);
               for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * $a + i]; // Copy source array
+//\$display("BBBB pos=%d array=%d length=%d", $o, $a, arraySizes[$a]);
               for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > $o) begin
+                if (i > $o && i <= arraySizes[$a]) begin
                   heapMem[NArea * $a + i] = arrayShift[i-1];
+//\$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
                 end
               end
               heapMem[NArea * $a + $o] = $s;                                    // Insert new value
@@ -3598,6 +3657,8 @@ END
 END
    }
 
+  my $arenaHeap = arenaHeap;
+
   push @c, <<END;                                                               # A case statement to select the next sub sequence to execute
   reg [MemoryElementWidth-1:0]   arraySizes[NArrays-1:0];                       // Size of each array
   reg [MemoryElementWidth-1:0]      heapMem[NHeap-1  :0];                       // Heap memory
@@ -3615,7 +3676,13 @@ END
   integer ip;                                                                   // Instruction pointer
   reg     clock;                                                                // Clock - has to be one bit wide for yosys
   integer steps;                                                                // Number of steps executed so far
-  integer i, j;                                                                 // A useful counter
+  integer i, j, k;                                                              // A useful counter
+
+  task updateArrayLength(integer arena, integer array, integer index);          // Update array length if we are updating an array
+    begin
+      if (arena == $arenaHeap && arraySizes[array] < index + 1) arraySizes[array] = index + 1;
+    end
+  endtask
 
   always @(posedge run) begin                                                   // Initialize
     ip             = 0;
@@ -3627,6 +3694,9 @@ END
     outMemPos      = 0;
     allocs         = 0;
     freedArraysTop = 0;
+//  for(i = 0; i < NHeap;   ++i)    heapMem[i] = 0;
+//  for(i = 0; i < NLocal;  ++i)   localMem[i] = 0;
+//  for(i = 0; i < NArrays; ++i) arraySizes[i] = 0;
 END
 
   if (1)                                                                        # Create input queue
@@ -3663,6 +3733,7 @@ END
 
       $n :
       begin                                                                     // $action
+//\$display("AAAA %4d %4d $action", steps, ip);
 END
 
     if (my $a = $$gen{$action})                                                 # Action for this instruction
@@ -3698,6 +3769,9 @@ END
       end
     endcase
     if (steps <= $steps) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
+//for(i = 0; i < $memoryPrintWidth; ++i) \$write("%4d",   localMem[i]); \$display("");
+//for(i = 0; i < $memoryPrintWidth; ++i) \$write("%4d",    heapMem[i]); \$display("");
+//for(i = 0; i < $memoryPrintWidth; ++i) \$write("%4d", arraySizes[i]); \$display("");
   end
 endmodule
 END
@@ -5017,7 +5091,7 @@ if (1)                                                                          
    };
 
   my $e = Execute(suppressOutput=>1, trace=>0, in=>[333, 22, 1]);
-
+  $e->generateVerilogMachineCode("ForIn") if $testSet == 1 and $debug;
   is_deeply $e->outLines, [3, 333,  2, 22, 1, 1];
  }
 
