@@ -4,6 +4,9 @@
 # Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 #-------------------------------------------------------------------------------
 # Key compression in each node by eliminating any common prefix present in each key in each node especially useful if we were to add attributes like userid, process, string position, rwx etc to front of each key.  Data does does not need this additional information.
+# Use resize on keys, not on data or down.  Can we use the implicit size of keys to avoid having a size in field the Node?
+# Change Sequential back to parallel - it was too difficult to debug the code with parallel in effect because it kept reordering the code in different ways
+# Area size must be a power of 2 to avoid multiplication
 use v5.30;
 package Zero::BTree;
 our $VERSION = 20230519;                                                        # Version
@@ -13,7 +16,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
-eval "use Test::More tests=>130" unless caller;
+eval "use Test::More tests=>131" unless caller;
 
 makeDieConfess;
 
@@ -698,6 +701,10 @@ sub Insert($$$%)                                                                
         sub {Node_setData  ($n, 0, $data)},
         sub {incKeys($tree)},
         sub {setRoot($tree, $n)};
+      my $K = Node_fieldKeys($n);                                               # Keys array
+      Resize $K, 1, 'Keys';                                                     # Size of keys array
+      my $D = Node_fieldData($n);                                               # Data array
+      Resize $D, 1, 'Data';                                                     # Size of data array
       Jmp $Finish;
      };
 
@@ -712,7 +719,7 @@ sub Insert($$$%)                                                                
       Then
        {IfTrue Node_isLeaf($n),                                                 # Leaf root node
         Then
-         {my $K = Node_fieldKeys($n);                                           # Keys arrays
+         {my $K = Node_fieldKeys($n);                                           # Keys array
           my $e = ArrayIndex $K, $key;
           IfTrue $e,                                                            # Key already exists in leaf root node
           Then
@@ -721,6 +728,9 @@ sub Insert($$$%)                                                                
             Jmp $Finish;
            };
 
+          Resize $K, $nl, "Keys";
+          my $D = Node_fieldData($n);                                           # Data array
+          Resize $D, $nl, "Data";
           my $I = ArrayCountGreater $K, $key;                                   # Greater than all keys in leaf root node
           IfFalse $I,
           Then
@@ -763,7 +773,7 @@ sub Insert($$$%)                                                                
       Node_openLeaf($N, $i1, $key, $data);
      },
     Else
-     {Node_openLeaf($N, $i, $key, $data);
+     {Node_openLeaf($N, $i,  $key, $data);
      };
 
     incKeys($tree);
@@ -1309,7 +1319,7 @@ if (1)                                                                          
    } $t;
 
   my $e = Execute(suppressOutput=>1);
-  is_deeply $e->count, 599;
+  is_deeply $e->count, 609;
 
   is_deeply $e->heap(0 ), bless([6, 4, 3, 2], "Tree");
   is_deeply $e->heap(2 ), bless([2, 1, 0, 0, 3, 4, 11], "Node");
@@ -1361,14 +1371,13 @@ if (1)
  {my $W = 3;
   Start 1;
   my $t = New($W);
-  my $N = In;
 
-  For
-   {my $i = In;
-    my $d = Add $i, $i;
+  ForIn                                                                         # Create tree
+   {my ($i, $k) = @_;
+    my $d = Add $k, $k;
 
-    Insert($t, $i, $d);
-   } $N;
+    Insert($t, $k, $d);
+   };
 
   Iterate
    {my ($find) = @_;
@@ -1376,10 +1385,9 @@ if (1)
     Out $k;
    } $t;
 
-  my $e = Execute(suppressOutput=>1, in=>[10, 1,8,5,6,3,4,7,2,9,0]);
+  my $e = Execute(suppressOutput=>1, in=>[1,8,5,6,3,4,7,2,9,0]);
   is_deeply $e->outLines, [0..9];
-   $e->generateVerilogMachineCode("BTree/in/1");
-
+  $e->generateVerilogMachineCode("BTree/in/1");
  }
 
 #latest:;
@@ -1411,6 +1419,34 @@ if (1)                                                                          
  }
 
 #latest:;
+if (1)                                                                          ##Iterate ##Keys ##FindResult_key ##FindResult_data ##Find ##printTreeKeys ##printTreeData
+ {my $W = 3; my @r = randomArray 22; #107;
+
+  Start 1;
+  my $t = New($W);                                                              # Create tree at expected location in memory
+
+  my $f = FindResult_new;                                                       # Preallocate find result
+
+  ForIn                                                                         # Create tree
+   {my ($i, $k) = @_;
+    my $K = Add $k, $k;
+    Insert($t, $k, $K);
+   };
+
+  Iterate                                                                       # Iterate tree
+   {my ($find) = @_;                                                            # Find result
+    my $k = FindResult_key($find);
+    Out $k;
+   } $t;
+
+  my $e = Execute(suppressOutput=>1, stringMemory=>1, in=>[@r]);
+  is_deeply $e->outLines, [1..@r];                                              # Expected sequence
+  #say STDERR printTreeKeys($e);
+  $e->generateVerilogMachineCode("BTree/in/2");
+ }
+
+#latest:;
+# Same as the above but with more details
 if (1)                                                                          ##Iterate ##Keys ##FindResult_key ##FindResult_data ##Find ##printTreeKeys ##printTreeData
  {my $W = 3; my @r = randomArray 107;
 
@@ -1452,15 +1488,15 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1, in=>[@r]);
   is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-  is_deeply $e->widestAreaInArena,   [undef, 6, 536];
+  is_deeply $e->widestAreaInArena,   [undef, 6, 539];
   is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
   is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  24397;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  24407;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal->{1}, 15456;
+  is_deeply $e->tallyTotal->{1}, 15466;
   is_deeply $e->tallyTotal->{2},  6294;
   is_deeply $e->tallyTotal->{3},  2647;
 #  is_deeply $e->tallyTotal, { 1 => 15456, 2 => 6294, 3 => 2752};
@@ -1478,10 +1514,10 @@ jLe                 461
 jLt                 565
 jNe                 908
 jmp                 878
-mov                7619
+mov                7623
 moveLong            171
 not                 631
-resize              161
+resize              167
 shiftUp             300
 subtract            531
 END
@@ -1537,8 +1573,9 @@ END
         6       12    16             26          34    38          46       52             62             72          80    84             94    98            108         116   120   124            134   138               150               162            172            182            192            202         210
   2  4     8 10    14    18    22 24    28    32    36    40    44    48 50    54    58 60    64    68 70    74    78    82    86 88    92    96   100102   106   110   114   118   122   126128   132   136   140142   146148   152154   158160   164   168170   174176   180   184186   190   194   198200   204   208   212214
 END
-  $e->generateVerilogMachineCode("BTree/in/2");
+  $e->generateVerilogMachineCode("BTree/in/3");
  }
+
 
 #latest:;
 if (1)                                                                          # Generate machine code and use string memory to emulate execution on an FPGA
@@ -1583,20 +1620,20 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1, in=>[@r],
     stringMemory=>1, maximumArraySize=>7);
   is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-  is_deeply $e->widestAreaInArena,   [undef, 6, 536];
+  is_deeply $e->widestAreaInArena,   [undef, 6, 539];
   is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
   is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
 
   #say STDERR dump $e->tallyCount;
-  is_deeply $e->tallyCount,  24397;                                             # Insertion instruction counts
+  is_deeply $e->tallyCount,  24407;                                             # Insertion instruction counts
 
   #say STDERR dump $e->tallyTotal;
-  is_deeply $e->tallyTotal->{1}, 15456;
+  is_deeply $e->tallyTotal->{1}, 15466;
   is_deeply $e->tallyTotal->{2},  6294;
   is_deeply $e->tallyTotal->{3},  2647;
 
   #is_deeply $e->timeParallel,   24260;
-  is_deeply $e->timeSequential, 28657;
+  is_deeply $e->timeSequential, 28667;
 
   #say STDERR formatTable($e->counts);
   is_deeply formatTable($e->counts), <<END;                                     # All instruction codes used in NWay Tree
@@ -1616,10 +1653,10 @@ jLt                  565
 jNe                 1249
 jTrue                146
 jmp                 2093
-mov                12783
+mov                12787
 moveLong             385
 not                 1351
-resize               161
+resize               167
 shiftLeft              2
 shiftUp              300
 subtract            1249
@@ -1673,7 +1710,7 @@ if (1)                                                                          
    };
   my $e = Execute(suppressOutput=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
   is_deeply $e->outLines, [0, 1, 22, 0, 1, 33];
-  $e->generateVerilogMachineCode("BTree/in/3");
+  $e->generateVerilogMachineCode("BTree/in/4");
  }
 
 # (\A.{80})\s+(#.*\Z) \1\2
