@@ -60,13 +60,17 @@ module fpga                                                                     
 
           0 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 1;
       end
 
           1 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[0] = 1;
               updateArrayLength(2, 0, 0);
               ip = 2;
@@ -74,7 +78,9 @@ module fpga                                                                     
 
           2 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[1] = 2;
               updateArrayLength(2, 0, 0);
               ip = 3;
@@ -82,13 +88,17 @@ module fpga                                                                     
 
           3 :
       begin                                                                     // jEq
-//$display("AAAA %4d %4d jEq", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jEq", steps, ip);
+end
               ip = localMem[0] == localMem[1] ? 8 : 4;
       end
 
           4 :
       begin                                                                     // out
-//$display("AAAA %4d %4d out", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d out", steps, ip);
+end
               outMem[outMemPos] = 111;
               outMemPos = (outMemPos + 1) % NOut;
               ip = 5;
@@ -96,13 +106,17 @@ module fpga                                                                     
 
           5 :
       begin                                                                     // jEq
-//$display("AAAA %4d %4d jEq", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jEq", steps, ip);
+end
               ip = localMem[0] == localMem[0] ? 8 : 6;
       end
 
           6 :
       begin                                                                     // out
-//$display("AAAA %4d %4d out", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d out", steps, ip);
+end
               outMem[outMemPos] = 222;
               outMemPos = (outMemPos + 1) % NOut;
               ip = 7;
@@ -110,19 +124,25 @@ module fpga                                                                     
 
           7 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 11;
       end
 
           8 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 9;
       end
 
           9 :
       begin                                                                     // out
-//$display("AAAA %4d %4d out", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d out", steps, ip);
+end
               outMem[outMemPos] = 333;
               outMemPos = (outMemPos + 1) % NOut;
               ip = 10;
@@ -130,13 +150,17 @@ module fpga                                                                     
 
          10 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 11;
       end
 
          11 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 12;
       end
       default: begin
@@ -147,8 +171,10 @@ module fpga                                                                     
       end
     endcase
     if (steps <=     11) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
-//for(i = 0; i < 200; ++i) $write("%2d",   localMem[i]); $display("");
-//for(i = 0; i < 200; ++i) $write("%2d",    heapMem[i]); $display("");
-//for(i = 0; i < 200; ++i) $write("%2d", arraySizes[i]); $display("");
+    if (0) begin
+      for(i = 0; i < 200; ++i) $write("%2d",   localMem[i]); $display("");
+      for(i = 0; i < 200; ++i) $write("%2d",    heapMem[i]); $display("");
+      for(i = 0; i < 200; ++i) $write("%2d", arraySizes[i]); $display("");
+    end
   end
 endmodule
