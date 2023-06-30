@@ -1,7 +1,8 @@
 # [Zero assembler programming language](https://github.com/philiprbrenan/zero) 
 ![Test](https://github.com/philiprbrenan/zero/workflows/Test/badge.svg)
 
-A minimal [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) and [emulator](https://en.wikipedia.org/wiki/Emulator) for the [Zero assembler programming language](https://github.com/philiprbrenan/zero) &#9410;.
+A minimal [assembler](https://en.wikipedia.org/wiki/Assembly_language#Assembler) and [emulator](https://en.wikipedia.org/wiki/Emulator) for the [Zero assembler programming language](https://github.com/philiprbrenan/zero) &#9410; just sufficiently capable
+of implementing the [B-Tree](https://en.wikipedia.org/wiki/B-tree) algorithm.
 
 Open the __Actions__ [tab](https://en.wikipedia.org/wiki/Tab_key) to see the [code](https://en.wikipedia.org/wiki/Computer_program) in action on [Ubuntu](https://ubuntu.com/download/desktop) and [Windows Services for Linux](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux) for [Ubuntu](https://ubuntu.com/download/desktop) on windows.
 
@@ -16,10 +17,17 @@ Includes an implementation of the [B-Tree](https://en.wikipedia.org/wiki/B-tree)
 large, extremely fast, associative memories can be manufactured on an
 industrial scale. In short: a __Database on a Chip__ or a **DoC**.
 
-The initial idea is to produce a small CPU which implements just the
-instructions needed to implement the [B-Tree](https://en.wikipedia.org/wiki/B-tree) algorithm.  The small CPU will then
-be replicated across an [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) or [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) so that the [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)) can be queried in massive
-parallel.
+A minimal CPU will require less [Silicon](https://en.wikipedia.org/wiki/Silicon) surface area to implement than a
+conventional CPU, making it possible to implement more such CPUs on a piece of [Silicon](https://en.wikipedia.org/wiki/Silicon) than would be possible if conventional CPUs were used to implement the
+database.
+
+As the algoritms used by the **DoC** are all fixed in advance there is no need
+for instruction decode logic furthering reducing the amount [Silicon](https://en.wikipedia.org/wiki/Silicon) required
+per CPU while speeding up the processing of each instruction.
+
+The use of many small, fast CPUs will allow many database queries to be
+processed simultaneously in parallel to ibatin much higher performance than can
+be achieved with conventional processors driven by decoded software.
 
 Only one [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)) will be used: typically mapping 64 [bit](https://en.wikipedia.org/wiki/Bit) keys into 64 [bit](https://en.wikipedia.org/wiki/Bit) data. It
 will be useful to add additional data at the front of the keys such as data
@@ -34,36 +42,21 @@ a second such [string](https://en.wikipedia.org/wiki/String_(computer_science)) 
 been represented by a unique number it can be located in one descent through
 the [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)); although a single traversal of the [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)) will no longer yield such [strings](https://en.wikipedia.org/wiki/String_(computer_science)) in alphabetic order.
 
-All communications with the chip will be done via [TcpIp](https://en.wikipedia.org/wiki/Internet_protocol_suite) .  Incoming read requests
-can be done in parallel as long as there are processors left to assign work to.
-An update will have to wait for all existing finds to finish while stalling all
-trailing actions until the update is complete.
+All communications with the chip will be done via [gigabit](https://en.wikipedia.org/wiki/Gigabit_Ethernet) [TcpIp](https://en.wikipedia.org/wiki/Internet_protocol_suite) .  A typical [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) will contain a number of parallel [gigabit](https://en.wikipedia.org/wiki/Gigabit_Ethernet) ethernet transceivers embedded
+in it.  Incoming read requests can be done in parallel as long as there are
+processors left to assign work to. An update will have to wait for all existing
+finds to finish while stalling all trailing actions until the update is
+complete.
 
 Associative lookups are the [sine qua non](https://en.wikipedia.org/wiki/Sine_qua_non) of all [Turing](https://en.wikipedia.org/wiki/Alan_Turing) complete programming languages.
 This arrangement should produce very fast associative lookups - much faster
-than can be performed by any generic system reliant on external software. Usage
-of power and [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) surface area should be reduced by having a minimal CPU to
-perform the lookups. Being able to deliver such lookups faster than can be done
-with conventional software solutions might prove profitable in much the same
-way as graphics chips, crypto mining chips and other such chips have proven to
-be because while we cannot sell good software at any price these days, we can
-still sell hardware.
-
-Memory is addressed via named areas which act as flexible [arrays](https://en.wikipedia.org/wiki/Dynamic_array) with the usual
-indexing, push, pop, index, iteration, resizing and scan operations.  Each
-procedure has its own stack frame implemented as a stack frame area, parameter
-area and return results area. Each area can grow as much as is needed to hold
-data.  Additional [user](https://en.wikipedia.org/wiki/User_(computing)) [memory](https://en.wikipedia.org/wiki/Computer_memory) areas can be allocated and freed as necessary.
-Communication with other systems can be achieved by reading and writing to [arrays](https://en.wikipedia.org/wiki/Dynamic_array) with predetermined names.
-
-References can represent constants via a scalar with zero levels of
-dereferencing; direct addresses by scalars with one level of dereferencing, and
-indirect addresses by scalars with two levels of dereferencing.  A reference
-consisting of an area, an offset within an area and an area name are
-represented as an [array](https://en.wikipedia.org/wiki/Dynamic_array) reference with three entries. A reference to a location
-in the current stack frame is represented as a single scalar with the
-appropriate levels of dereferencing.  The area name is used to confirm that the
-area being processed is the one that should be being processed.
+than can be performed by any generic system reliant on external, dynamically
+decoded software. Usage of power and [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) surface area should be reduced by
+having a minimal CPU to perform the lookups. Being able to deliver such lookups
+faster than can be done with conventional software solutions might prove
+profitable in much the same way as graphics chips, crypto mining chips and
+other such chips have proven to be because while we cannot sell good software
+at any price these days, we can still sell hardware.
 
 If you would like to be involved with this interesting and potentially
 lucrative project, please raise an issue saying so!
@@ -75,6 +68,20 @@ executable instructions and then executes these instructions.
 
 [Documentation](https://metacpan.org/dist/Zero-Emulator/view/Emulator.pod)
 [Code](https://github.com/philiprbrenan/zero/blob/main/lib/Zero/Emulator.pm)
+
+## Memory
+
+Memory is addressed via named areas which act as fixed [arrays](https://en.wikipedia.org/wiki/Dynamic_array) with the usual
+indexing, push, pop, index, iteration, resizing and scan operations.
+
+References to [memory](https://en.wikipedia.org/wiki/Computer_memory) can represent constants via a scalar with zero levels of
+dereferencing; direct addresses by scalars with one level of dereferencing, and
+indirect addresses by scalars with two levels of dereferencing.  A reference
+consisting of an area, an offset within an area and an area name are
+represented as an [array](https://en.wikipedia.org/wiki/Dynamic_array) reference with three entries. A reference to a location
+in the current stack frame is represented as a single scalar with the
+appropriate levels of dereferencing.  The area name is used to confirm that the
+area being processed is the one that should be being processed.
 
 ## Addresses
 
@@ -192,22 +199,17 @@ specifications as writing each instruction by hand is hard work. Using a [prepro
 be captured as macros which can then be called upon as needed to generate the [code](https://en.wikipedia.org/wiki/Computer_program) for an application. The [Zero assembler programming language](https://github.com/philiprbrenan/zero) uses [Perl](http://www.perl.org/) as its macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor). Using [Perl](http://www.perl.org/) as the macro [preprocessor](https://en.wikipedia.org/wiki/Preprocessor) for the [Zero assembler programming language](https://github.com/philiprbrenan/zero) enables macro libraries to be
 published and distributed on [CPAN](https://metacpan.org/author/PRBRENAN) as [Perl](http://www.perl.org/) modules.
 
-## Machine [code](https://en.wikipedia.org/wiki/Computer_program) 
-The [Zero assembler programming language](https://github.com/philiprbrenan/zero) [code](https://en.wikipedia.org/wiki/Computer_program) can be converted to a single [string](https://en.wikipedia.org/wiki/String_(computer_science)) using method:
-**GenerateMachineCode**.  The [string](https://en.wikipedia.org/wiki/String_(computer_science)) of machine [code](https://en.wikipedia.org/wiki/Computer_program) can then be reloaded using
-method: **disAssemble** to [parse](https://en.wikipedia.org/wiki/Parsing) the machine [code](https://en.wikipedia.org/wiki/Computer_program) [string](https://en.wikipedia.org/wiki/String_(computer_science)) back into [code](https://en.wikipedia.org/wiki/Computer_program) that
-can be executed as usual via **Execute**.  Alternatively, the machine [code](https://en.wikipedia.org/wiki/Computer_program) [string](https://en.wikipedia.org/wiki/String_(computer_science)) can be used to [program](https://en.wikipedia.org/wiki/Computer_program) a [Silicon](https://en.wikipedia.org/wiki/Silicon) device such as an [fpga](https://en.wikipedia.org/wiki/Field-programmable_gate_array) to execute the [code](https://en.wikipedia.org/wiki/Computer_program) on a chip .
-
 ## Memory Schemes
 
 Two [memory](https://en.wikipedia.org/wiki/Computer_memory) schemes are available for providing [memory](https://en.wikipedia.org/wiki/Computer_memory) to executing [Zero assembler programming language](https://github.com/philiprbrenan/zero) [programs](https://en.wikipedia.org/wiki/Computer_program). 
 ### Segmented [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme
 
-This is the default [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme. The segmented [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme places each [array](https://en.wikipedia.org/wiki/Dynamic_array) in a separate [Perl](http://www.perl.org/) [array](https://en.wikipedia.org/wiki/Dynamic_array).  The current stack frame, parameter [list](https://en.wikipedia.org/wiki/Linked_list) and
-return results are all held in such [arrays](https://en.wikipedia.org/wiki/Dynamic_array). Each such [array](https://en.wikipedia.org/wiki/Dynamic_array) is dynamically
-extensible to any reasonable size.
+The segmented [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme places each [array](https://en.wikipedia.org/wiki/Dynamic_array) in a separate [Perl](http://www.perl.org/) [array](https://en.wikipedia.org/wiki/Dynamic_array).  This
+is the default [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme because it is easy to implement and easy to debug [code](https://en.wikipedia.org/wiki/Computer_program) that uses it because the underlying [memory](https://en.wikipedia.org/wiki/Computer_memory) is managed by conventional [Perl](http://www.perl.org/) [arrays](https://en.wikipedia.org/wiki/Dynamic_array). The current stack frame, parameter [list](https://en.wikipedia.org/wiki/Linked_list) and return results are all held
+in such [arrays](https://en.wikipedia.org/wiki/Dynamic_array). Each such [array](https://en.wikipedia.org/wiki/Dynamic_array) is dynamically extensible to any reasonable
+size.
 
-A possible downside of this [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme is that the use of different sized [arrays](https://en.wikipedia.org/wiki/Dynamic_array) might eventually fragment the underlying [memory](https://en.wikipedia.org/wiki/Computer_memory). 
+A downside of this [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme is that the use of different sized [arrays](https://en.wikipedia.org/wiki/Dynamic_array) eventually fragments the underlying [memory](https://en.wikipedia.org/wiki/Computer_memory). 
 
 ### String [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme
 
@@ -217,8 +219,8 @@ The advantage of the [string](https://en.wikipedia.org/wiki/String_(computer_sci
 such [arrays](https://en.wikipedia.org/wiki/Dynamic_array) is simple because all freed [arrays](https://en.wikipedia.org/wiki/Dynamic_array) are all the same size and so can
 be reused immediately at the next allocation making allocation and freeing a
 fast operation while allowing blocks of [memory](https://en.wikipedia.org/wiki/Computer_memory) to be recycled indefinitely.
-These capabilities are relvanto to database applications because the purpose of
-a database is to store data for long periods of time across many insert update
+These capabilities are relevant to database applications because the purpose of
+a database is to store data for long periods of time across many insert, update,
 delete cyles.
 
 Another advantage of the [string](https://en.wikipedia.org/wiki/String_(computer_science)) [memory](https://en.wikipedia.org/wiki/Computer_memory) scheme is that all [array](https://en.wikipedia.org/wiki/Dynamic_array) operations can
@@ -233,7 +235,8 @@ a [B-Tree](https://en.wikipedia.org/wiki/B-tree) has a size that varies between 
 
 ## Input and Output channels
 
-There are two channels: **in** for input, **out** for output.
+There are two channels: **in** for input, **out** for output. The content of
+these channels can be captured to assist [test](https://en.wikipedia.org/wiki/Software_testing) preparation.
 
 ### Input
 
@@ -256,7 +259,9 @@ Parallelism typically obtains increased performance through increased power
 consumption. Programmers typically think of trading performance for [memory](https://en.wikipedia.org/wiki/Computer_memory): the
 time space dilemma.  But in designing for [Silicon](https://en.wikipedia.org/wiki/Silicon) we must also consider power
 to get a trilemma of: time, space and power that has to be resolved to produce
-the optimal solution.
+the optimal solution.  It should be noted that amd reports that their fpgas
+typically use 40x as much power and 3x as much time to produce the same result
+as an equivalent asic .
 
 ### Code level parallelism
 
@@ -321,7 +326,7 @@ instruction.
 
 ### N-Way-Tree
 
-An implementation of N-Way-Trees in the [Zero assembler programming language](https://github.com/philiprbrenan/zero) .
+An implementation of N-Way-Trees in the [Zero assembler programming language](https://github.com/philiprbrenan/zero)  .
 
 [Documentation](https://metacpan.org/dist/Zero-Emulator/view/NWayTree.pod)
 [Code](https://github.com/philiprbrenan/zero/blob/main/lib/Zero/NWayTree.pm)
