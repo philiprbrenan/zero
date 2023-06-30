@@ -58,10 +58,8 @@ if (!defined($T) or $T < fileModTime($emulator) or $T < fileModTime($btree))    
   pod $btree,    fpf($home, q(BTree.md)),    &introBTree;
  }
 
-say STDERR dump("AAAA", $T, fileModTime($readMe));
 if (!defined($T) or $T < fileModTime($readMe))                                  # Read me
- {say STDERR "CCCC";
-  expandWellKnownWordsInMarkDownFile $readMe, fpe $home, qw(README md);
+ {expandWellKnownWordsInMarkDownFile $readMe, fpe $home, qw(README md);
  }
 
 &run();                                                                         # Upload run configuration
