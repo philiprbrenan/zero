@@ -440,4 +440,4 @@ Test   17, steps     1018
 
 At the moment I am targetting (this
 device)[https://www.xilinx.com/products/som/kria/k26c-commercial.html] because
-of its high speed ethernet conenctivity and large [memory](https://en.wikipedia.org/wiki/Computer_memory). 
+of its high speed ethernet connectivity and large [memory](https://en.wikipedia.org/wiki/Computer_memory). 
