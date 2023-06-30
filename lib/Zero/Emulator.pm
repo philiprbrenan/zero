@@ -3242,7 +3242,7 @@ sub Zero::CompileToVerilog::deref($$)                                           
     Arena              => $Arena,                                               # Arena
     Area               => $Area,                                                # Area
     targetValue        => $targetValue,                                         # Target as value
-   )
+   );
  }
 
 sub compileToVerilog($$)                                                        # Compile each sub sequence of instructions into equivalent verilog.  A sub sequence starts at an instruction marked as an entry point
