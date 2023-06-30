@@ -3794,7 +3794,7 @@ END
       end
     endcase
     if (steps <= $steps) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
-    if ($traceExecution) begin
+    if (1 || $traceExecution) begin
       for(i = 0; i < $memoryPrintWidth; ++i) \$write("%2d",   localMem[i]); \$display("");
       for(i = 0; i < $memoryPrintWidth; ++i) \$write("%2d",    heapMem[i]); \$display("");
       for(i = 0; i < $memoryPrintWidth; ++i) \$write("%2d", arraySizes[i]); \$display("");
