@@ -306,14 +306,15 @@ END
     push @y, $y;
    }
 
-  for my $s(@tests)                                                             # Test run on fpga
-   {my $v = setFileExtension $s, q(sv);                                         # Source file
-    my $j = setFileExtension $s, q(json);                                       # Json description
-    my $p = setFileExtension $s, q(pnr);                                        # Place and route
-    my $P = setFileExtension $s, q(fs);                                         # Bit stream
-    my $b = fpe fp($s), qw(tangnano9k cst);                                     # Device description
+  if (1)                                                                        # Test run on fpga
+   {for my $s(@tests)                                                           # Tests
+     {my $v = setFileExtension $s, q(sv);                                       # Source file
+      my $j = setFileExtension $s, q(json);                                     # Json description
+      my $p = setFileExtension $s, q(pnr);                                      # Place and route
+      my $P = setFileExtension $s, q(fs);                                       # Bit stream
+      my $b = fpe fp($s), qw(tangnano9k cst);                                   # Device description
 
-    my $y = <<END;
+      my $y = <<END;
     - name: yosys $s
       if: \${{ always() }}
       run: |
@@ -323,7 +324,8 @@ END
         gowin_pack -d GW1N-9C -o $P $p
 
 END
-    push @y, $y;
+      push @y, $y;
+     }
    }
   push @y, <<END;
     - uses: actions/upload-artifact\@v3
