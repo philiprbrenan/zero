@@ -656,7 +656,7 @@ end
       end
     endcase
     if (steps <=    256) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
-    if (0) begin
+    if (1 || 0) begin
       for(i = 0; i < 200; ++i) $write("%2d",   localMem[i]); $display("");
       for(i = 0; i < 200; ++i) $write("%2d",    heapMem[i]); $display("");
       for(i = 0; i < 200; ++i) $write("%2d", arraySizes[i]); $display("");
