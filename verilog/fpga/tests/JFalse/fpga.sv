@@ -10,11 +10,11 @@ module fpga                                                                     
   parameter integer MemoryElementWidth =  12;                                   // Memory element width
 
   parameter integer NArea          = 10;                                    // Size of each area on the heap
-  parameter integer NArrays        =  200;                                      // Maximum number of arrays
-  parameter integer NHeap          = 1000;                                      // Amount of heap memory
-  parameter integer NLocal         = 1000;                                      // Size of local memory
-  parameter integer NOut           =  200;                                      // Size of output area
-  parameter integer NIn            =     0;                                     // Size of input area
+  parameter integer NArrays        =  2000;                                      // Maximum number of arrays
+  parameter integer NHeap          = 10000;                                      // Amount of heap memory
+  parameter integer NLocal         = 10000;                                      // Size of local memory
+  parameter integer NOut           =  2000;                                      // Size of output area
+  parameter integer NIn            =     0;                                       // Size of input area
   reg [MemoryElementWidth-1:0]   arraySizes[NArrays-1:0];                       // Size of each array
   reg [MemoryElementWidth-1:0]      heapMem[NHeap-1  :0];                       // Heap memory
   reg [MemoryElementWidth-1:0]     localMem[NLocal-1 :0];                       // Local memory
@@ -31,7 +31,13 @@ module fpga                                                                     
   integer ip;                                                                   // Instruction pointer
   reg     clock;                                                                // Clock - has to be one bit wide for yosys
   integer steps;                                                                // Number of steps executed so far
-  integer i, j;                                                                 // A useful counter
+  integer i, j, k;                                                              // A useful counter
+
+  task updateArrayLength(input integer arena, input integer array, input integer index); // Update array length if we are updating an array
+    begin
+      if (arena == 1 && arraySizes[array] < index + 1) arraySizes[array] = index + 1;
+    end
+  endtask
 
   always @(posedge run) begin                                                   // Initialize
     ip             = 0;
@@ -43,47 +49,56 @@ module fpga                                                                     
     outMemPos      = 0;
     allocs         = 0;
     freedArraysTop = 0;
+    for(i = 0; i < NHeap;   ++i)    heapMem[i] = 0;
+    for(i = 0; i < NLocal;  ++i)   localMem[i] = 0;
+    for(i = 0; i < NArrays; ++i) arraySizes[i] = 0;
   end
 
   always @(clock) begin                                                         // Each instruction
     steps = steps + 1;
-$display("AAAA %4d %4d", steps, ip);
     case(ip)
 
           0 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 1;
       end
 
           1 :
       begin                                                                     // mov
-              localMem[0 + 0] = 0;
-$display("move %10d", 0);
+//$display("AAAA %4d %4d mov", steps, ip);
+              localMem[0] = 0;
+              updateArrayLength(2, 0, 0);
               ip = 2;
       end
 
           2 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 3;
       end
 
           3 :
       begin                                                                     // jGe
-              ip = localMem[0+0] >= 5 ? 67 : 4;
+//$display("AAAA %4d %4d jGe", steps, ip);
+              ip = localMem[0] >= 5 ? 67 : 4;
       end
 
           4 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 5;
       end
 
           5 :
       begin                                                                     // jTrue
-              ip = localMem[0+0] != 0 ? 9 : 6;
+//$display("AAAA %4d %4d jTrue", steps, ip);
+              ip = localMem[0] != 0 ? 9 : 6;
       end
 
           6 :
       begin                                                                     // out
+//$display("AAAA %4d %4d out", steps, ip);
               outMem[outMemPos] = 1;
               outMemPos = (outMemPos + 1) % NOut;
               ip = 7;
@@ -91,31 +106,37 @@ $display("move %10d", 0);
 
           7 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 8;
       end
 
           8 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 9;
       end
 
           9 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 10;
       end
 
          10 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 11;
       end
 
          11 :
       begin                                                                     // jFalse
-              ip = localMem[0+0] == 0 ? 15 : 12;
+//$display("AAAA %4d %4d jFalse", steps, ip);
+              ip = localMem[0] == 0 ? 15 : 12;
       end
 
          12 :
       begin                                                                     // out
+//$display("AAAA %4d %4d out", steps, ip);
               outMem[outMemPos] = 2;
               outMemPos = (outMemPos + 1) % NOut;
               ip = 13;
@@ -123,31 +144,37 @@ $display("move %10d", 0);
 
          13 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 14;
       end
 
          14 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 15;
       end
 
          15 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 16;
       end
 
          16 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 17;
       end
 
          17 :
       begin                                                                     // jTrue
-              ip = localMem[0+0] != 0 ? 21 : 18;
+//$display("AAAA %4d %4d jTrue", steps, ip);
+              ip = localMem[0] != 0 ? 21 : 18;
       end
 
          18 :
       begin                                                                     // out
+//$display("AAAA %4d %4d out", steps, ip);
               outMem[outMemPos] = 3;
               outMemPos = (outMemPos + 1) % NOut;
               ip = 19;
@@ -155,31 +182,37 @@ $display("move %10d", 0);
 
          19 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 20;
       end
 
          20 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 21;
       end
 
          21 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 22;
       end
 
          22 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 23;
       end
 
          23 :
       begin                                                                     // jFalse
-              ip = localMem[0+0] == 0 ? 27 : 24;
+//$display("AAAA %4d %4d jFalse", steps, ip);
+              ip = localMem[0] == 0 ? 27 : 24;
       end
 
          24 :
       begin                                                                     // out
+//$display("AAAA %4d %4d out", steps, ip);
               outMem[outMemPos] = 4;
               outMemPos = (outMemPos + 1) % NOut;
               ip = 25;
@@ -187,31 +220,37 @@ $display("move %10d", 0);
 
          25 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 26;
       end
 
          26 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 27;
       end
 
          27 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 28;
       end
 
          28 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 29;
       end
 
          29 :
       begin                                                                     // jEq
-              ip = localMem[0+0] == 3 ? 33 : 30;
+//$display("AAAA %4d %4d jEq", steps, ip);
+              ip = localMem[0] == 3 ? 33 : 30;
       end
 
          30 :
       begin                                                                     // out
+//$display("AAAA %4d %4d out", steps, ip);
               outMem[outMemPos] = 5;
               outMemPos = (outMemPos + 1) % NOut;
               ip = 31;
@@ -219,31 +258,37 @@ $display("move %10d", 0);
 
          31 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 32;
       end
 
          32 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 33;
       end
 
          33 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 34;
       end
 
          34 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 35;
       end
 
          35 :
       begin                                                                     // jNe
-              ip = localMem[0+0] != 3 ? 39 : 36;
+//$display("AAAA %4d %4d jNe", steps, ip);
+              ip = localMem[0] != 3 ? 39 : 36;
       end
 
          36 :
       begin                                                                     // out
+//$display("AAAA %4d %4d out", steps, ip);
               outMem[outMemPos] = 6;
               outMemPos = (outMemPos + 1) % NOut;
               ip = 37;
@@ -251,32 +296,37 @@ $display("move %10d", 0);
 
          37 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 38;
       end
 
          38 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 39;
       end
 
          39 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 40;
       end
 
          40 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 41;
       end
 
          41 :
       begin                                                                     // jLe
-$display("Jle %4d %4d", localMem[0+0], 3);
-              ip = localMem[0+0] <= 3 ? 45 : 42;
+//$display("AAAA %4d %4d jLe", steps, ip);
+              ip = localMem[0] <= 3 ? 45 : 42;
       end
 
          42 :
       begin                                                                     // out
+//$display("AAAA %4d %4d out", steps, ip);
               outMem[outMemPos] = 7;
               outMemPos = (outMemPos + 1) % NOut;
               ip = 43;
@@ -284,31 +334,37 @@ $display("Jle %4d %4d", localMem[0+0], 3);
 
          43 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 44;
       end
 
          44 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 45;
       end
 
          45 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 46;
       end
 
          46 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 47;
       end
 
          47 :
       begin                                                                     // jLt
-              ip = localMem[0+0] <  3 ? 51 : 48;
+//$display("AAAA %4d %4d jLt", steps, ip);
+              ip = localMem[0] <  3 ? 51 : 48;
       end
 
          48 :
       begin                                                                     // out
+//$display("AAAA %4d %4d out", steps, ip);
               outMem[outMemPos] = 8;
               outMemPos = (outMemPos + 1) % NOut;
               ip = 49;
@@ -316,31 +372,37 @@ $display("Jle %4d %4d", localMem[0+0], 3);
 
          49 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 50;
       end
 
          50 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 51;
       end
 
          51 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 52;
       end
 
          52 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 53;
       end
 
          53 :
       begin                                                                     // jGe
-              ip = localMem[0+0] >= 3 ? 57 : 54;
+//$display("AAAA %4d %4d jGe", steps, ip);
+              ip = localMem[0] >= 3 ? 57 : 54;
       end
 
          54 :
       begin                                                                     // out
+//$display("AAAA %4d %4d out", steps, ip);
               outMem[outMemPos] = 9;
               outMemPos = (outMemPos + 1) % NOut;
               ip = 55;
@@ -348,31 +410,37 @@ $display("Jle %4d %4d", localMem[0+0], 3);
 
          55 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 56;
       end
 
          56 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 57;
       end
 
          57 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 58;
       end
 
          58 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 59;
       end
 
          59 :
       begin                                                                     // jGt
-              ip = localMem[0+0] >  3 ? 63 : 60;
+//$display("AAAA %4d %4d jGt", steps, ip);
+              ip = localMem[0] >  3 ? 63 : 60;
       end
 
          60 :
       begin                                                                     // out
+//$display("AAAA %4d %4d out", steps, ip);
               outMem[outMemPos] = 10;
               outMemPos = (outMemPos + 1) % NOut;
               ip = 61;
@@ -380,38 +448,45 @@ $display("Jle %4d %4d", localMem[0+0], 3);
 
          61 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 62;
       end
 
          62 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 63;
       end
 
          63 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 64;
       end
 
          64 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 65;
       end
 
          65 :
       begin                                                                     // add
-$display("add %4d %4d", localMem[0+0], 1);
-              localMem[0 + 0] = localMem[0+0] + 1;
+//$display("AAAA %4d %4d add", steps, ip);
+              localMem[0] = localMem[0] + 1;
+              updateArrayLength(2, 0, 0);
               ip = 66;
       end
 
          66 :
       begin                                                                     // jmp
+//$display("AAAA %4d %4d jmp", steps, ip);
               ip = 2;
       end
 
          67 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 68;
       end
       default: begin
@@ -445,5 +520,8 @@ $display("add %4d %4d", localMem[0+0], 1);
       end
     endcase
     if (steps <=    256) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
+//for(i = 0; i < 200; ++i) $write("%2d",   localMem[i]); $display("");
+//for(i = 0; i < 200; ++i) $write("%2d",    heapMem[i]); $display("");
+//for(i = 0; i < 200; ++i) $write("%2d", arraySizes[i]); $display("");
   end
 endmodule
