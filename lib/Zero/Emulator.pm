@@ -22,11 +22,12 @@ use Time::HiRes qw(time);
 eval "use Test::More tests=>402" unless caller;
 
 makeDieConfess;
-our $memoryTechnique;                                                           # Undef or the address of a sub that loads the memory handlers into an execution environment.
-my  $memoryPrintWidth = 200;
-my $traceExecution    = 0;
 
-my sub maximumInstructionsToExecute {1e6}                                       # Maximum number of subroutines to execute
+my $traceExecution               =   0;                                         # Trace execution step by step printing memory at each step
+my $memoryPrintWidth             = 200;                                         # How much memory to print
+my $maximumInstructionsToExecute = 1e6;                                         # Maximum number of subroutines to execute
+
+our $memoryTechnique;                                                           # Undef or the address of a sub that loads the memory handlers into an execution environment.
 
 sub ExecutionEnvironment(%)                                                     # Execution environment for a block of code.
  {my (%options) = @_;                                                           # Execution options
@@ -1871,7 +1872,7 @@ sub Zero::Emulator::Assembly::execute($%)                                       
   createInitialStackEntry($exec);                                               # Variables in initial stack frame
 
   my $mi = $options{maximumInstructionsToExecute} //                            # Prevent run away executions
-                    maximumInstructionsToExecute;
+                   $maximumInstructionsToExecute;
 
 # Instruction loop
 
@@ -1913,7 +1914,7 @@ if ($traceExecution)
 #say STDERR sprintf "%4d %4d  %2d %s", $step, $exec->instructionPointer, $instructionMap{$a}, $a;
 #say STDERR "XXXX", dump($a, $exec->timeDelta, $exec->timeParallel, $exec->timeSequential, $exec->count);
      }
-    if ($step >= maximumInstructionsToExecute)
+    if ($step >= $maximumInstructionsToExecute)
      {confess "Out of instructions after $step";
      }
    }
@@ -3589,7 +3590,6 @@ END
       my $t   = $compile->deref($i->target)->Value;
       my $n   = $i->number + 1;
       push @c, <<END;
-\$display("XXXX array=%d size=%d  s=%d  v=%d", $t, arraySizes[$t], $s, $t * NArea + arraySizes[$t]);
               heapMem[$t * NArea + arraySizes[$t]] = $s;
               arraySizes[$t]    = arraySizes[$t] + 1;
               ip = $n;
