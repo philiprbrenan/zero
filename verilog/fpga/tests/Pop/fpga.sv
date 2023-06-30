@@ -81,7 +81,6 @@ end
 if (0) begin
   $display("AAAA %4d %4d push", steps, ip);
 end
-$display("XXXX array=%d size=%d  s=%d  v=%d", localMem[0], arraySizes[localMem[0]], 1, localMem[0] * NArea + arraySizes[localMem[0]]);
               heapMem[localMem[0] * NArea + arraySizes[localMem[0]]] = 1;
               arraySizes[localMem[0]]    = arraySizes[localMem[0]] + 1;
               ip = 2;
@@ -92,7 +91,6 @@ $display("XXXX array=%d size=%d  s=%d  v=%d", localMem[0], arraySizes[localMem[0
 if (0) begin
   $display("AAAA %4d %4d push", steps, ip);
 end
-$display("XXXX array=%d size=%d  s=%d  v=%d", localMem[0], arraySizes[localMem[0]], 2, localMem[0] * NArea + arraySizes[localMem[0]]);
               heapMem[localMem[0] * NArea + arraySizes[localMem[0]]] = 2;
               arraySizes[localMem[0]]    = arraySizes[localMem[0]] + 1;
               ip = 3;
