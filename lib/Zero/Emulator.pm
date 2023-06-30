@@ -3579,7 +3579,7 @@ END
       my $n   = $i->number + 1;
       push @c, <<END;
               arraySizes[$s] = arraySizes[$s] - 1;
-              $t = outMem[$s * NArea + arraySizes[$s]];
+              $t = heapMem[$s * NArea + arraySizes[$s]];
               ip = $n;
 END
      },
@@ -3872,7 +3872,7 @@ END
 
     my $C = fpe $D, qw(tangnano9k cst);                                         # Constraints
     my $c = join "", $compile->constraints;
-    owf($C, $c) unless -e $C and $c eq readFile $C;
+    owf($C, $c);
 #   say STDERR "AAAA\n$S\n$T\n$C";
    }
 
