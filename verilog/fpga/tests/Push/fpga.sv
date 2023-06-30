@@ -10,11 +10,11 @@ module fpga                                                                     
   parameter integer MemoryElementWidth =  12;                                   // Memory element width
 
   parameter integer NArea          = 10;                                    // Size of each area on the heap
-  parameter integer NArrays        =  200;                                      // Maximum number of arrays
-  parameter integer NHeap          = 1000;                                      // Amount of heap memory
-  parameter integer NLocal         = 1000;                                      // Size of local memory
-  parameter integer NOut           =  200;                                      // Size of output area
-  parameter integer NIn            =     0;                                     // Size of input area
+  parameter integer NArrays        =  2000;                                      // Maximum number of arrays
+  parameter integer NHeap          = 10000;                                      // Amount of heap memory
+  parameter integer NLocal         = 10000;                                      // Size of local memory
+  parameter integer NOut           =  2000;                                      // Size of output area
+  parameter integer NIn            =     0;                                       // Size of input area
   reg [MemoryElementWidth-1:0]   arraySizes[NArrays-1:0];                       // Size of each array
   reg [MemoryElementWidth-1:0]      heapMem[NHeap-1  :0];                       // Heap memory
   reg [MemoryElementWidth-1:0]     localMem[NLocal-1 :0];                       // Local memory
@@ -31,7 +31,13 @@ module fpga                                                                     
   integer ip;                                                                   // Instruction pointer
   reg     clock;                                                                // Clock - has to be one bit wide for yosys
   integer steps;                                                                // Number of steps executed so far
-  integer i, j;                                                                 // A useful counter
+  integer i, j, k;                                                              // A useful counter
+
+  task updateArrayLength(input integer arena, input integer array, input integer index); // Update array length if we are updating an array
+    begin
+      if (arena == 1 && arraySizes[array] < index + 1) arraySizes[array] = index + 1;
+    end
+  endtask
 
   always @(posedge run) begin                                                   // Initialize
     ip             = 0;
@@ -43,103 +49,119 @@ module fpga                                                                     
     outMemPos      = 0;
     allocs         = 0;
     freedArraysTop = 0;
+    for(i = 0; i < NHeap;   ++i)    heapMem[i] = 0;
+    for(i = 0; i < NLocal;  ++i)   localMem[i] = 0;
+    for(i = 0; i < NArrays; ++i) arraySizes[i] = 0;
   end
 
   always @(clock) begin                                                         // Each instruction
     steps = steps + 1;
-$display("AAAA %4d %4d", steps, ip);
     case(ip)
 
           0 :
       begin                                                                     // array
+//$display("AAAA %4d %4d array", steps, ip);
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
-                localMem[0 + 0] = freedArrays[freedArraysTop];
+                localMem[0] = freedArrays[freedArraysTop];
               end
               else begin
-                localMem[0 + 0] = allocs;
+                localMem[0] = allocs;
                 allocs = allocs + 1;
 
               end
-              arraySizes[localMem[0 + 0]] = 0;
+              arraySizes[localMem[0]] = 0;
               ip = 1;
       end
 
           1 :
       begin                                                                     // push
-              outMem[localMem[0+0] * NArea + arraySizes[localMem[0+0]]] = 1;
-              arraySizes[localMem[0+0]]    = arraySizes[localMem[0+0]] + 1;
+//$display("AAAA %4d %4d push", steps, ip);
+              outMem[localMem[0] * NArea + arraySizes[localMem[0]]] = 1;
+              arraySizes[localMem[0]]    = arraySizes[localMem[0]] + 1;
               ip = 2;
       end
 
           2 :
       begin                                                                     // push
-              outMem[localMem[0+0] * NArea + arraySizes[localMem[0+0]]] = 2;
-              arraySizes[localMem[0+0]]    = arraySizes[localMem[0+0]] + 1;
+//$display("AAAA %4d %4d push", steps, ip);
+              outMem[localMem[0] * NArea + arraySizes[localMem[0]]] = 2;
+              arraySizes[localMem[0]]    = arraySizes[localMem[0]] + 1;
               ip = 3;
       end
 
           3 :
       begin                                                                     // arraySize
-              localMem[0 + 1] = arraySizes[localMem[0+0]];
+//$display("AAAA %4d %4d arraySize", steps, ip);
+              localMem[1] = arraySizes[localMem[0]];
               ip = 4;
       end
 
           4 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 5;
       end
 
           5 :
       begin                                                                     // mov
-              localMem[0 + 2] = 0;
-$display("move %10d", 0);
+//$display("AAAA %4d %4d mov", steps, ip);
+              localMem[2] = 0;
+              updateArrayLength(2, 0, 0);
               ip = 6;
       end
 
           6 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 7;
       end
 
           7 :
       begin                                                                     // jGe
-              ip = localMem[0+2] >= localMem[0+1] ? 13 : 8;
+//$display("AAAA %4d %4d jGe", steps, ip);
+              ip = localMem[2] >= localMem[1] ? 13 : 8;
       end
 
           8 :
       begin                                                                     // mov
-              localMem[0 + 3] = heapMem[localMem[0+0]*10 + localMem[0+2]];
-$display("move %10d", heapMem[localMem[0+0]*10 + localMem[0+2]]);
+//$display("AAAA %4d %4d mov", steps, ip);
+              localMem[3] = heapMem[localMem[0]*10 + localMem[2]];
+              updateArrayLength(2, 0, 0);
               ip = 9;
       end
 
           9 :
       begin                                                                     // out
-              outMem[outMemPos] = localMem[0+3];
+//$display("AAAA %4d %4d out", steps, ip);
+              outMem[outMemPos] = localMem[3];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 10;
       end
 
          10 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 11;
       end
 
          11 :
       begin                                                                     // add
-$display("add %4d %4d", localMem[0+2], 1);
-              localMem[0 + 2] = localMem[0+2] + 1;
+//$display("AAAA %4d %4d add", steps, ip);
+              localMem[2] = localMem[2] + 1;
+              updateArrayLength(2, 0, 0);
               ip = 12;
       end
 
          12 :
       begin                                                                     // jmp
+//$display("AAAA %4d %4d jmp", steps, ip);
               ip = 6;
       end
 
          13 :
       begin                                                                     // label
+//$display("AAAA %4d %4d label", steps, ip);
               ip = 14;
       end
       default: begin
@@ -150,5 +172,8 @@ $display("add %4d %4d", localMem[0+2], 1);
       end
     endcase
     if (steps <=     24) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
+//for(i = 0; i < 200; ++i) $write("%2d",   localMem[i]); $display("");
+//for(i = 0; i < 200; ++i) $write("%2d",    heapMem[i]); $display("");
+//for(i = 0; i < 200; ++i) $write("%2d", arraySizes[i]); $display("");
   end
 endmodule
