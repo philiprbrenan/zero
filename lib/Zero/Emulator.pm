@@ -1893,20 +1893,21 @@ sub Zero::Emulator::Assembly::execute($%)                                       
       $instruction->step = $step;                                               # Execution step number facilitates debugging
       $exec->timeDelta = undef;                                                 # Record elapsed time for instruction
 
-if ($traceExecution)
- {say STDERR sprintf "AAAA %4d %4d %s", $step, $exec->instructionPointer-1, $a;
- }
+      if ($traceExecution)
+       {say STDERR sprintf "AAAA %4d %4d %s", $step, $exec->instructionPointer-1, $a;
+       }
+
       $exec->latestLeftTarget  = left  $exec, $instruction->target;             # Precompute this useful value if possible
       $exec->latestRightSource = right $exec, $instruction->source;             # Precompute this useful value if possible
 
 #EEEE Execute
       $implementation->($instruction);                                          # Execute instruction
 
-if ($traceExecution)
- {stringPrintLocalSimple($exec);
-  stringPrintHeapSimple($exec);
-  stringPrintHeapSizesSimple($exec);
- }
+      if ($traceExecution)                                                      # memory trace in a form that is easy to replicate in Verilog
+       {stringPrintLocalSimple($exec);
+        stringPrintHeapSimple($exec);
+        stringPrintHeapSizesSimple($exec);
+       }
 
       $exec->tallyInstructionCounts($instruction);                              # Instruction counts
       $exec->traceMemory($instruction);                                         # Trace changes to memory
@@ -2294,7 +2295,7 @@ sub For(&$%)                                                                    
       Jmp $Check;
     setLabel($End);                                                             # End
    }
-  else
+  else                                                                          # THIS CODE REQUIRES SIGNED ARITHMETIC
    {my $s = $range; my $e = 0;                                                  # Start, end
     ($e, $s) = @$range if ref($s) =~ m(ARRAY);                                  # End, start as a reference
 
@@ -3794,7 +3795,7 @@ END
       end
     endcase
     if (steps <= $steps) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
-    if (1 || $traceExecution) begin
+    if ($traceExecution) begin
       for(i = 0; i < $memoryPrintWidth; ++i) \$write("%2d",   localMem[i]); \$display("");
       for(i = 0; i < $memoryPrintWidth; ++i) \$write("%2d",    heapMem[i]); \$display("");
       for(i = 0; i < $memoryPrintWidth; ++i) \$write("%2d", arraySizes[i]); \$display("");
