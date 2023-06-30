@@ -60,7 +60,9 @@ module fpga                                                                     
 
           0 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[0] = 4;
               updateArrayLength(2, 0, 0);
               ip = 1;
@@ -68,14 +70,18 @@ module fpga                                                                     
 
           1 :
       begin                                                                     // shiftRight
-//$display("AAAA %4d %4d shiftRight", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftRight", steps, ip);
+end
               localMem[0] = localMem[0] >> 1;
               ip = 2;
       end
 
           2 :
       begin                                                                     // out
-//$display("AAAA %4d %4d out", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d out", steps, ip);
+end
               outMem[outMemPos] = localMem[0];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 3;
@@ -87,8 +93,10 @@ module fpga                                                                     
       end
     endcase
     if (steps <=      4) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
-//for(i = 0; i < 200; ++i) $write("%2d",   localMem[i]); $display("");
-//for(i = 0; i < 200; ++i) $write("%2d",    heapMem[i]); $display("");
-//for(i = 0; i < 200; ++i) $write("%2d", arraySizes[i]); $display("");
+    if (0) begin
+      for(i = 0; i < 200; ++i) $write("%2d",   localMem[i]); $display("");
+      for(i = 0; i < 200; ++i) $write("%2d",    heapMem[i]); $display("");
+      for(i = 0; i < 200; ++i) $write("%2d", arraySizes[i]); $display("");
+    end
   end
 endmodule
