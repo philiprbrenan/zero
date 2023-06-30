@@ -60,7 +60,9 @@ module fpga                                                                     
 
           0 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[0] = freedArrays[freedArraysTop];
@@ -76,7 +78,9 @@ module fpga                                                                     
 
           1 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[0]*10 + 2] = 3;
               updateArrayLength(1, localMem[0], 2);
               ip = 2;
@@ -84,7 +88,9 @@ module fpga                                                                     
 
           2 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[0]*10 + 3] = 0;
               updateArrayLength(1, localMem[0], 3);
               ip = 3;
@@ -92,7 +98,9 @@ module fpga                                                                     
 
           3 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[0]*10 + 0] = 0;
               updateArrayLength(1, localMem[0], 0);
               ip = 4;
@@ -100,7 +108,9 @@ module fpga                                                                     
 
           4 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[0]*10 + 1] = 0;
               updateArrayLength(1, localMem[0], 1);
               ip = 5;
@@ -108,7 +118,9 @@ module fpga                                                                     
 
           5 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[1] = freedArrays[freedArraysTop];
@@ -124,13 +136,17 @@ module fpga                                                                     
 
           6 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 7;
       end
 
           7 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[2] = heapMem[localMem[0]*10 + 3];
               updateArrayLength(2, 0, 0);
               ip = 8;
@@ -138,13 +154,17 @@ module fpga                                                                     
 
           8 :
       begin                                                                     // jNe
-//$display("AAAA %4d %4d jNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jNe", steps, ip);
+end
               ip = localMem[2] != 0 ? 31 : 9;
       end
 
           9 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[3] = freedArrays[freedArraysTop];
@@ -160,7 +180,9 @@ module fpga                                                                     
 
          10 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[3]*10 + 0] = 1;
               updateArrayLength(1, localMem[3], 0);
               ip = 11;
@@ -168,7 +190,9 @@ module fpga                                                                     
 
          11 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[3]*10 + 2] = 0;
               updateArrayLength(1, localMem[3], 2);
               ip = 12;
@@ -176,7 +200,9 @@ module fpga                                                                     
 
          12 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[4] = freedArrays[freedArraysTop];
@@ -192,7 +218,9 @@ module fpga                                                                     
 
          13 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[3]*10 + 4] = localMem[4];
               updateArrayLength(1, localMem[3], 4);
               ip = 14;
@@ -200,7 +228,9 @@ module fpga                                                                     
 
          14 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[5] = freedArrays[freedArraysTop];
@@ -216,7 +246,9 @@ module fpga                                                                     
 
          15 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[3]*10 + 5] = localMem[5];
               updateArrayLength(1, localMem[3], 5);
               ip = 16;
@@ -224,7 +256,9 @@ module fpga                                                                     
 
          16 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[3]*10 + 6] = 0;
               updateArrayLength(1, localMem[3], 6);
               ip = 17;
@@ -232,7 +266,9 @@ module fpga                                                                     
 
          17 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[3]*10 + 3] = localMem[0];
               updateArrayLength(1, localMem[3], 3);
               ip = 18;
@@ -240,7 +276,9 @@ module fpga                                                                     
 
          18 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[0]*10 + 1] = heapMem[localMem[0]*10 + 1] + 1;
               updateArrayLength(1, localMem[0], 1);
               ip = 19;
@@ -248,7 +286,9 @@ module fpga                                                                     
 
          19 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[3]*10 + 1] = heapMem[localMem[0]*10 + 1];
               updateArrayLength(1, localMem[3], 1);
               ip = 20;
@@ -256,7 +296,9 @@ module fpga                                                                     
 
          20 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[6] = heapMem[localMem[3]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 21;
@@ -264,7 +306,9 @@ module fpga                                                                     
 
          21 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[6]*10 + 0] = 1;
               updateArrayLength(1, localMem[6], 0);
               ip = 22;
@@ -272,7 +316,9 @@ module fpga                                                                     
 
          22 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[7] = heapMem[localMem[3]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 23;
@@ -280,7 +326,9 @@ module fpga                                                                     
 
          23 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[7]*10 + 0] = 11;
               updateArrayLength(1, localMem[7], 0);
               ip = 24;
@@ -288,7 +336,9 @@ module fpga                                                                     
 
          24 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[0]*10 + 0] = heapMem[localMem[0]*10 + 0] + 1;
               updateArrayLength(1, localMem[0], 0);
               ip = 25;
@@ -296,7 +346,9 @@ module fpga                                                                     
 
          25 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[0]*10 + 3] = localMem[3];
               updateArrayLength(1, localMem[0], 3);
               ip = 26;
@@ -304,7 +356,9 @@ module fpga                                                                     
 
          26 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[8] = heapMem[localMem[3]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 27;
@@ -312,14 +366,18 @@ module fpga                                                                     
 
          27 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[8]] = 1;
               ip = 28;
       end
 
          28 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[9] = heapMem[localMem[3]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 29;
@@ -327,26 +385,34 @@ module fpga                                                                     
 
          29 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[9]] = 1;
               ip = 30;
       end
 
          30 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 1059;
       end
 
          31 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 32;
       end
 
          32 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[10] = heapMem[localMem[2]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 33;
@@ -354,7 +420,9 @@ module fpga                                                                     
 
          33 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[11] = heapMem[localMem[0]*10 + 2];
               updateArrayLength(2, 0, 0);
               ip = 34;
@@ -362,13 +430,17 @@ module fpga                                                                     
 
          34 :
       begin                                                                     // jGe
-//$display("AAAA %4d %4d jGe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jGe", steps, ip);
+end
               ip = localMem[10] >= localMem[11] ? 70 : 35;
       end
 
          35 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[12] = heapMem[localMem[2]*10 + 2];
               updateArrayLength(2, 0, 0);
               ip = 36;
@@ -376,26 +448,34 @@ module fpga                                                                     
 
          36 :
       begin                                                                     // jNe
-//$display("AAAA %4d %4d jNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jNe", steps, ip);
+end
               ip = localMem[12] != 0 ? 69 : 37;
       end
 
          37 :
       begin                                                                     // not
-//$display("AAAA %4d %4d not", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d not", steps, ip);
+end
               localMem[13] = !heapMem[localMem[2]*10 + 6];
               ip = 38;
       end
 
          38 :
       begin                                                                     // jEq
-//$display("AAAA %4d %4d jEq", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jEq", steps, ip);
+end
               ip = localMem[13] == 0 ? 68 : 39;
       end
 
          39 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[14] = heapMem[localMem[2]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 40;
@@ -403,7 +483,9 @@ module fpga                                                                     
 
          40 :
       begin                                                                     // arrayIndex
-//$display("AAAA %4d %4d arrayIndex", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d arrayIndex", steps, ip);
+end
               localMem[15] = 0; k = arraySizes[localMem[14]];
               for(i = 0; i < NArea; i = i + 1) begin
                 if (i < k && heapMem[localMem[14] * NArea + i] == 1) localMem[15] = i + 1;
@@ -413,13 +495,17 @@ module fpga                                                                     
 
          41 :
       begin                                                                     // jEq
-//$display("AAAA %4d %4d jEq", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jEq", steps, ip);
+end
               ip = localMem[15] == 0 ? 46 : 42;
       end
 
          42 :
       begin                                                                     // subtract
-//$display("AAAA %4d %4d subtract", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d subtract", steps, ip);
+end
               localMem[15] = localMem[15] - 1;
               updateArrayLength(2, 0, 0);
               ip = 43;
@@ -427,7 +513,9 @@ module fpga                                                                     
 
          43 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[16] = heapMem[localMem[2]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 44;
@@ -435,7 +523,9 @@ module fpga                                                                     
 
          44 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[16]*10 + localMem[15]] = 11;
               updateArrayLength(1, localMem[16], localMem[15]);
               ip = 45;
@@ -443,26 +533,34 @@ module fpga                                                                     
 
          45 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 1059;
       end
 
          46 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 47;
       end
 
          47 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[14]] = localMem[10];
               ip = 48;
       end
 
          48 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[17] = heapMem[localMem[2]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 49;
@@ -470,14 +568,18 @@ module fpga                                                                     
 
          49 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[17]] = localMem[10];
               ip = 50;
       end
 
          50 :
       begin                                                                     // arrayCountGreater
-//$display("AAAA %4d %4d arrayCountGreater", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d arrayCountGreater", steps, ip);
+end
               j = 0; k = arraySizes[localMem[14]];
 //$display("AAAAA k=%d  source2=%d", k, 1);
               for(i = 0; i < NArea; i = i + 1) begin
@@ -490,13 +592,17 @@ module fpga                                                                     
 
          51 :
       begin                                                                     // jNe
-//$display("AAAA %4d %4d jNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jNe", steps, ip);
+end
               ip = localMem[18] != 0 ? 59 : 52;
       end
 
          52 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[19] = heapMem[localMem[2]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 53;
@@ -504,7 +610,9 @@ module fpga                                                                     
 
          53 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[19]*10 + localMem[10]] = 1;
               updateArrayLength(1, localMem[19], localMem[10]);
               ip = 54;
@@ -512,7 +620,9 @@ module fpga                                                                     
 
          54 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[20] = heapMem[localMem[2]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 55;
@@ -520,7 +630,9 @@ module fpga                                                                     
 
          55 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[20]*10 + localMem[10]] = 11;
               updateArrayLength(1, localMem[20], localMem[10]);
               ip = 56;
@@ -528,7 +640,9 @@ module fpga                                                                     
 
          56 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[2]*10 + 0] = localMem[10] + 1;
               updateArrayLength(1, localMem[2], 0);
               ip = 57;
@@ -536,7 +650,9 @@ module fpga                                                                     
 
          57 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[0]*10 + 0] = heapMem[localMem[0]*10 + 0] + 1;
               updateArrayLength(1, localMem[0], 0);
               ip = 58;
@@ -544,19 +660,25 @@ module fpga                                                                     
 
          58 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 1059;
       end
 
          59 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 60;
       end
 
          60 :
       begin                                                                     // arrayCountLess
-//$display("AAAA %4d %4d arrayCountLess", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d arrayCountLess", steps, ip);
+end
               j = 0; k = arraySizes[localMem[14]];
               for(i = 0; i < NArea; i = i + 1) begin
                 if (i < k && heapMem[localMem[14] * NArea + i] < 1) j = j + 1;
@@ -567,7 +689,9 @@ module fpga                                                                     
 
          61 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[22] = heapMem[localMem[2]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 62;
@@ -575,7 +699,9 @@ module fpga                                                                     
 
          62 :
       begin                                                                     // shiftUp
-//$display("AAAA %4d %4d shiftUp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftUp", steps, ip);
+end
 //$display("AAAA %4d %4d shiftUp", steps, ip);
               for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[22] + i]; // Copy source array
 //$display("BBBB pos=%d array=%d length=%d", localMem[21], localMem[22], arraySizes[localMem[22]]);
@@ -592,7 +718,9 @@ module fpga                                                                     
 
          63 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[23] = heapMem[localMem[2]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 64;
@@ -600,7 +728,9 @@ module fpga                                                                     
 
          64 :
       begin                                                                     // shiftUp
-//$display("AAAA %4d %4d shiftUp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftUp", steps, ip);
+end
 //$display("AAAA %4d %4d shiftUp", steps, ip);
               for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[23] + i]; // Copy source array
 //$display("BBBB pos=%d array=%d length=%d", localMem[21], localMem[23], arraySizes[localMem[23]]);
@@ -617,7 +747,9 @@ module fpga                                                                     
 
          65 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[2]*10 + 0] = heapMem[localMem[2]*10 + 0] + 1;
               updateArrayLength(1, localMem[2], 0);
               ip = 66;
@@ -625,7 +757,9 @@ module fpga                                                                     
 
          66 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[0]*10 + 0] = heapMem[localMem[0]*10 + 0] + 1;
               updateArrayLength(1, localMem[0], 0);
               ip = 67;
@@ -633,31 +767,41 @@ module fpga                                                                     
 
          67 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 1059;
       end
 
          68 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 69;
       end
 
          69 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 70;
       end
 
          70 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 71;
       end
 
          71 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[24] = heapMem[localMem[0]*10 + 3];
               updateArrayLength(2, 0, 0);
               ip = 72;
@@ -665,13 +809,17 @@ module fpga                                                                     
 
          72 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 73;
       end
 
          73 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[26] = heapMem[localMem[24]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 74;
@@ -679,7 +827,9 @@ module fpga                                                                     
 
          74 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[27] = heapMem[localMem[24]*10 + 3];
               updateArrayLength(2, 0, 0);
               ip = 75;
@@ -687,7 +837,9 @@ module fpga                                                                     
 
          75 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[28] = heapMem[localMem[27]*10 + 2];
               updateArrayLength(2, 0, 0);
               ip = 76;
@@ -695,13 +847,17 @@ module fpga                                                                     
 
          76 :
       begin                                                                     // jLt
-//$display("AAAA %4d %4d jLt", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jLt", steps, ip);
+end
               ip = localMem[26] <  localMem[28] ? 296 : 77;
       end
 
          77 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[29] = localMem[28];
               updateArrayLength(2, 0, 0);
               ip = 78;
@@ -709,14 +865,18 @@ module fpga                                                                     
 
          78 :
       begin                                                                     // shiftRight
-//$display("AAAA %4d %4d shiftRight", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftRight", steps, ip);
+end
               localMem[29] = localMem[29] >> 1;
               ip = 79;
       end
 
          79 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[30] = localMem[29] + 1;
               updateArrayLength(2, 0, 0);
               ip = 80;
@@ -724,7 +884,9 @@ module fpga                                                                     
 
          80 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[31] = heapMem[localMem[24]*10 + 2];
               updateArrayLength(2, 0, 0);
               ip = 81;
@@ -732,13 +894,17 @@ module fpga                                                                     
 
          81 :
       begin                                                                     // jEq
-//$display("AAAA %4d %4d jEq", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jEq", steps, ip);
+end
               ip = localMem[31] == 0 ? 178 : 82;
       end
 
          82 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[32] = freedArrays[freedArraysTop];
@@ -754,7 +920,9 @@ module fpga                                                                     
 
          83 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[32]*10 + 0] = localMem[29];
               updateArrayLength(1, localMem[32], 0);
               ip = 84;
@@ -762,7 +930,9 @@ module fpga                                                                     
 
          84 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[32]*10 + 2] = 0;
               updateArrayLength(1, localMem[32], 2);
               ip = 85;
@@ -770,7 +940,9 @@ module fpga                                                                     
 
          85 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[33] = freedArrays[freedArraysTop];
@@ -786,7 +958,9 @@ module fpga                                                                     
 
          86 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[32]*10 + 4] = localMem[33];
               updateArrayLength(1, localMem[32], 4);
               ip = 87;
@@ -794,7 +968,9 @@ module fpga                                                                     
 
          87 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[34] = freedArrays[freedArraysTop];
@@ -810,7 +986,9 @@ module fpga                                                                     
 
          88 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[32]*10 + 5] = localMem[34];
               updateArrayLength(1, localMem[32], 5);
               ip = 89;
@@ -818,7 +996,9 @@ module fpga                                                                     
 
          89 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[32]*10 + 6] = 0;
               updateArrayLength(1, localMem[32], 6);
               ip = 90;
@@ -826,7 +1006,9 @@ module fpga                                                                     
 
          90 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[32]*10 + 3] = localMem[27];
               updateArrayLength(1, localMem[32], 3);
               ip = 91;
@@ -834,7 +1016,9 @@ module fpga                                                                     
 
          91 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[27]*10 + 1] = heapMem[localMem[27]*10 + 1] + 1;
               updateArrayLength(1, localMem[27], 1);
               ip = 92;
@@ -842,7 +1026,9 @@ module fpga                                                                     
 
          92 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[32]*10 + 1] = heapMem[localMem[27]*10 + 1];
               updateArrayLength(1, localMem[32], 1);
               ip = 93;
@@ -850,20 +1036,26 @@ module fpga                                                                     
 
          93 :
       begin                                                                     // not
-//$display("AAAA %4d %4d not", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d not", steps, ip);
+end
               localMem[35] = !heapMem[localMem[24]*10 + 6];
               ip = 94;
       end
 
          94 :
       begin                                                                     // jNe
-//$display("AAAA %4d %4d jNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jNe", steps, ip);
+end
               ip = localMem[35] != 0 ? 123 : 95;
       end
 
          95 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[36] = freedArrays[freedArraysTop];
@@ -879,7 +1071,9 @@ module fpga                                                                     
 
          96 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[32]*10 + 6] = localMem[36];
               updateArrayLength(1, localMem[32], 6);
               ip = 97;
@@ -887,7 +1081,9 @@ module fpga                                                                     
 
          97 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[37] = heapMem[localMem[24]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 98;
@@ -895,7 +1091,9 @@ module fpga                                                                     
 
          98 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[38] = heapMem[localMem[32]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 99;
@@ -903,7 +1101,9 @@ module fpga                                                                     
 
          99 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[29]) begin
                   heapMem[NArea * localMem[38] + 0 + i] = heapMem[NArea * localMem[37] + localMem[30] + i];
@@ -915,7 +1115,9 @@ module fpga                                                                     
 
         100 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[39] = heapMem[localMem[24]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 101;
@@ -923,7 +1125,9 @@ module fpga                                                                     
 
         101 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[40] = heapMem[localMem[32]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 102;
@@ -931,7 +1135,9 @@ module fpga                                                                     
 
         102 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[29]) begin
                   heapMem[NArea * localMem[40] + 0 + i] = heapMem[NArea * localMem[39] + localMem[30] + i];
@@ -943,7 +1149,9 @@ module fpga                                                                     
 
         103 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[41] = heapMem[localMem[24]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 104;
@@ -951,7 +1159,9 @@ module fpga                                                                     
 
         104 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[42] = heapMem[localMem[32]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 105;
@@ -959,7 +1169,9 @@ module fpga                                                                     
 
         105 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[43] = localMem[29] + 1;
               updateArrayLength(2, 0, 0);
               ip = 106;
@@ -967,7 +1179,9 @@ module fpga                                                                     
 
         106 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[43]) begin
                   heapMem[NArea * localMem[42] + 0 + i] = heapMem[NArea * localMem[41] + localMem[30] + i];
@@ -979,7 +1193,9 @@ module fpga                                                                     
 
         107 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[44] = heapMem[localMem[32]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 108;
@@ -987,7 +1203,9 @@ module fpga                                                                     
 
         108 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[45] = localMem[44] + 1;
               updateArrayLength(2, 0, 0);
               ip = 109;
@@ -995,7 +1213,9 @@ module fpga                                                                     
 
         109 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[46] = heapMem[localMem[32]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 110;
@@ -1003,13 +1223,17 @@ module fpga                                                                     
 
         110 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 111;
       end
 
         111 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[47] = 0;
               updateArrayLength(2, 0, 0);
               ip = 112;
@@ -1017,19 +1241,25 @@ module fpga                                                                     
 
         112 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 113;
       end
 
         113 :
       begin                                                                     // jGe
-//$display("AAAA %4d %4d jGe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jGe", steps, ip);
+end
               ip = localMem[47] >= localMem[45] ? 119 : 114;
       end
 
         114 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[48] = heapMem[localMem[46]*10 + localMem[47]];
               updateArrayLength(2, 0, 0);
               ip = 115;
@@ -1037,7 +1267,9 @@ module fpga                                                                     
 
         115 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[48]*10 + 2] = localMem[32];
               updateArrayLength(1, localMem[48], 2);
               ip = 116;
@@ -1045,13 +1277,17 @@ module fpga                                                                     
 
         116 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 117;
       end
 
         117 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[47] = localMem[47] + 1;
               updateArrayLength(2, 0, 0);
               ip = 118;
@@ -1059,19 +1295,25 @@ module fpga                                                                     
 
         118 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 112;
       end
 
         119 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 120;
       end
 
         120 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[49] = heapMem[localMem[24]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 121;
@@ -1079,26 +1321,34 @@ module fpga                                                                     
 
         121 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[49]] = localMem[30];
               ip = 122;
       end
 
         122 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 130;
       end
 
         123 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 124;
       end
 
         124 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[50] = heapMem[localMem[24]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 125;
@@ -1106,7 +1356,9 @@ module fpga                                                                     
 
         125 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[51] = heapMem[localMem[32]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 126;
@@ -1114,7 +1366,9 @@ module fpga                                                                     
 
         126 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[29]) begin
                   heapMem[NArea * localMem[51] + 0 + i] = heapMem[NArea * localMem[50] + localMem[30] + i];
@@ -1126,7 +1380,9 @@ module fpga                                                                     
 
         127 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[52] = heapMem[localMem[24]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 128;
@@ -1134,7 +1390,9 @@ module fpga                                                                     
 
         128 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[53] = heapMem[localMem[32]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 129;
@@ -1142,7 +1400,9 @@ module fpga                                                                     
 
         129 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[29]) begin
                   heapMem[NArea * localMem[53] + 0 + i] = heapMem[NArea * localMem[52] + localMem[30] + i];
@@ -1154,13 +1414,17 @@ module fpga                                                                     
 
         130 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 131;
       end
 
         131 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[24]*10 + 0] = localMem[29];
               updateArrayLength(1, localMem[24], 0);
               ip = 132;
@@ -1168,7 +1432,9 @@ module fpga                                                                     
 
         132 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[32]*10 + 2] = localMem[31];
               updateArrayLength(1, localMem[32], 2);
               ip = 133;
@@ -1176,7 +1442,9 @@ module fpga                                                                     
 
         133 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[54] = heapMem[localMem[31]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 134;
@@ -1184,7 +1452,9 @@ module fpga                                                                     
 
         134 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[55] = heapMem[localMem[31]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 135;
@@ -1192,7 +1462,9 @@ module fpga                                                                     
 
         135 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[56] = heapMem[localMem[55]*10 + localMem[54]];
               updateArrayLength(2, 0, 0);
               ip = 136;
@@ -1200,13 +1472,17 @@ module fpga                                                                     
 
         136 :
       begin                                                                     // jNe
-//$display("AAAA %4d %4d jNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jNe", steps, ip);
+end
               ip = localMem[56] != localMem[24] ? 155 : 137;
       end
 
         137 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[57] = heapMem[localMem[24]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 138;
@@ -1214,7 +1490,9 @@ module fpga                                                                     
 
         138 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[58] = heapMem[localMem[57]*10 + localMem[29]];
               updateArrayLength(2, 0, 0);
               ip = 139;
@@ -1222,7 +1500,9 @@ module fpga                                                                     
 
         139 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[59] = heapMem[localMem[31]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 140;
@@ -1230,7 +1510,9 @@ module fpga                                                                     
 
         140 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[59]*10 + localMem[54]] = localMem[58];
               updateArrayLength(1, localMem[59], localMem[54]);
               ip = 141;
@@ -1238,7 +1520,9 @@ module fpga                                                                     
 
         141 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[60] = heapMem[localMem[24]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 142;
@@ -1246,7 +1530,9 @@ module fpga                                                                     
 
         142 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[61] = heapMem[localMem[60]*10 + localMem[29]];
               updateArrayLength(2, 0, 0);
               ip = 143;
@@ -1254,7 +1540,9 @@ module fpga                                                                     
 
         143 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[62] = heapMem[localMem[31]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 144;
@@ -1262,7 +1550,9 @@ module fpga                                                                     
 
         144 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[62]*10 + localMem[54]] = localMem[61];
               updateArrayLength(1, localMem[62], localMem[54]);
               ip = 145;
@@ -1270,7 +1560,9 @@ module fpga                                                                     
 
         145 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[63] = heapMem[localMem[24]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 146;
@@ -1278,14 +1570,18 @@ module fpga                                                                     
 
         146 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[63]] = localMem[29];
               ip = 147;
       end
 
         147 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[64] = heapMem[localMem[24]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 148;
@@ -1293,14 +1589,18 @@ module fpga                                                                     
 
         148 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[64]] = localMem[29];
               ip = 149;
       end
 
         149 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[65] = localMem[54] + 1;
               updateArrayLength(2, 0, 0);
               ip = 150;
@@ -1308,7 +1608,9 @@ module fpga                                                                     
 
         150 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[31]*10 + 0] = localMem[65];
               updateArrayLength(1, localMem[31], 0);
               ip = 151;
@@ -1316,7 +1618,9 @@ module fpga                                                                     
 
         151 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[66] = heapMem[localMem[31]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 152;
@@ -1324,7 +1628,9 @@ module fpga                                                                     
 
         152 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[66]*10 + localMem[65]] = localMem[32];
               updateArrayLength(1, localMem[66], localMem[65]);
               ip = 153;
@@ -1332,31 +1638,41 @@ module fpga                                                                     
 
         153 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 293;
       end
 
         154 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 177;
       end
 
         155 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 156;
       end
 
         156 :
       begin                                                                     // assertNe
-//$display("AAAA %4d %4d assertNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d assertNe", steps, ip);
+end
             ip = 157;
       end
 
         157 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[67] = heapMem[localMem[31]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 158;
@@ -1364,7 +1680,9 @@ module fpga                                                                     
 
         158 :
       begin                                                                     // arrayIndex
-//$display("AAAA %4d %4d arrayIndex", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d arrayIndex", steps, ip);
+end
               localMem[68] = 0; k = arraySizes[localMem[67]];
               for(i = 0; i < NArea; i = i + 1) begin
                 if (i < k && heapMem[localMem[67] * NArea + i] == localMem[24]) localMem[68] = i + 1;
@@ -1374,7 +1692,9 @@ module fpga                                                                     
 
         159 :
       begin                                                                     // subtract
-//$display("AAAA %4d %4d subtract", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d subtract", steps, ip);
+end
               localMem[68] = localMem[68] - 1;
               updateArrayLength(2, 0, 0);
               ip = 160;
@@ -1382,7 +1702,9 @@ module fpga                                                                     
 
         160 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[69] = heapMem[localMem[24]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 161;
@@ -1390,7 +1712,9 @@ module fpga                                                                     
 
         161 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[70] = heapMem[localMem[69]*10 + localMem[29]];
               updateArrayLength(2, 0, 0);
               ip = 162;
@@ -1398,7 +1722,9 @@ module fpga                                                                     
 
         162 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[71] = heapMem[localMem[24]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 163;
@@ -1406,7 +1732,9 @@ module fpga                                                                     
 
         163 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[72] = heapMem[localMem[71]*10 + localMem[29]];
               updateArrayLength(2, 0, 0);
               ip = 164;
@@ -1414,7 +1742,9 @@ module fpga                                                                     
 
         164 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[73] = heapMem[localMem[24]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 165;
@@ -1422,14 +1752,18 @@ module fpga                                                                     
 
         165 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[73]] = localMem[29];
               ip = 166;
       end
 
         166 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[74] = heapMem[localMem[24]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 167;
@@ -1437,14 +1771,18 @@ module fpga                                                                     
 
         167 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[74]] = localMem[29];
               ip = 168;
       end
 
         168 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[75] = heapMem[localMem[31]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 169;
@@ -1452,7 +1790,9 @@ module fpga                                                                     
 
         169 :
       begin                                                                     // shiftUp
-//$display("AAAA %4d %4d shiftUp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftUp", steps, ip);
+end
 //$display("AAAA %4d %4d shiftUp", steps, ip);
               for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[75] + i]; // Copy source array
 //$display("BBBB pos=%d array=%d length=%d", localMem[68], localMem[75], arraySizes[localMem[75]]);
@@ -1469,7 +1809,9 @@ module fpga                                                                     
 
         170 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[76] = heapMem[localMem[31]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 171;
@@ -1477,7 +1819,9 @@ module fpga                                                                     
 
         171 :
       begin                                                                     // shiftUp
-//$display("AAAA %4d %4d shiftUp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftUp", steps, ip);
+end
 //$display("AAAA %4d %4d shiftUp", steps, ip);
               for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[76] + i]; // Copy source array
 //$display("BBBB pos=%d array=%d length=%d", localMem[68], localMem[76], arraySizes[localMem[76]]);
@@ -1494,7 +1838,9 @@ module fpga                                                                     
 
         172 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[77] = heapMem[localMem[31]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 173;
@@ -1502,7 +1848,9 @@ module fpga                                                                     
 
         173 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[78] = localMem[68] + 1;
               updateArrayLength(2, 0, 0);
               ip = 174;
@@ -1510,7 +1858,9 @@ module fpga                                                                     
 
         174 :
       begin                                                                     // shiftUp
-//$display("AAAA %4d %4d shiftUp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftUp", steps, ip);
+end
 //$display("AAAA %4d %4d shiftUp", steps, ip);
               for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[77] + i]; // Copy source array
 //$display("BBBB pos=%d array=%d length=%d", localMem[78], localMem[77], arraySizes[localMem[77]]);
@@ -1527,7 +1877,9 @@ module fpga                                                                     
 
         175 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[31]*10 + 0] = heapMem[localMem[31]*10 + 0] + 1;
               updateArrayLength(1, localMem[31], 0);
               ip = 176;
@@ -1535,25 +1887,33 @@ module fpga                                                                     
 
         176 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 293;
       end
 
         177 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 178;
       end
 
         178 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 179;
       end
 
         179 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[79] = freedArrays[freedArraysTop];
@@ -1569,7 +1929,9 @@ module fpga                                                                     
 
         180 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[79]*10 + 0] = localMem[29];
               updateArrayLength(1, localMem[79], 0);
               ip = 181;
@@ -1577,7 +1939,9 @@ module fpga                                                                     
 
         181 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[79]*10 + 2] = 0;
               updateArrayLength(1, localMem[79], 2);
               ip = 182;
@@ -1585,7 +1949,9 @@ module fpga                                                                     
 
         182 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[80] = freedArrays[freedArraysTop];
@@ -1601,7 +1967,9 @@ module fpga                                                                     
 
         183 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[79]*10 + 4] = localMem[80];
               updateArrayLength(1, localMem[79], 4);
               ip = 184;
@@ -1609,7 +1977,9 @@ module fpga                                                                     
 
         184 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[81] = freedArrays[freedArraysTop];
@@ -1625,7 +1995,9 @@ module fpga                                                                     
 
         185 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[79]*10 + 5] = localMem[81];
               updateArrayLength(1, localMem[79], 5);
               ip = 186;
@@ -1633,7 +2005,9 @@ module fpga                                                                     
 
         186 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[79]*10 + 6] = 0;
               updateArrayLength(1, localMem[79], 6);
               ip = 187;
@@ -1641,7 +2015,9 @@ module fpga                                                                     
 
         187 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[79]*10 + 3] = localMem[27];
               updateArrayLength(1, localMem[79], 3);
               ip = 188;
@@ -1649,7 +2025,9 @@ module fpga                                                                     
 
         188 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[27]*10 + 1] = heapMem[localMem[27]*10 + 1] + 1;
               updateArrayLength(1, localMem[27], 1);
               ip = 189;
@@ -1657,7 +2035,9 @@ module fpga                                                                     
 
         189 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[79]*10 + 1] = heapMem[localMem[27]*10 + 1];
               updateArrayLength(1, localMem[79], 1);
               ip = 190;
@@ -1665,7 +2045,9 @@ module fpga                                                                     
 
         190 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[82] = freedArrays[freedArraysTop];
@@ -1681,7 +2063,9 @@ module fpga                                                                     
 
         191 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[82]*10 + 0] = localMem[29];
               updateArrayLength(1, localMem[82], 0);
               ip = 192;
@@ -1689,7 +2073,9 @@ module fpga                                                                     
 
         192 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[82]*10 + 2] = 0;
               updateArrayLength(1, localMem[82], 2);
               ip = 193;
@@ -1697,7 +2083,9 @@ module fpga                                                                     
 
         193 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[83] = freedArrays[freedArraysTop];
@@ -1713,7 +2101,9 @@ module fpga                                                                     
 
         194 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[82]*10 + 4] = localMem[83];
               updateArrayLength(1, localMem[82], 4);
               ip = 195;
@@ -1721,7 +2111,9 @@ module fpga                                                                     
 
         195 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[84] = freedArrays[freedArraysTop];
@@ -1737,7 +2129,9 @@ module fpga                                                                     
 
         196 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[82]*10 + 5] = localMem[84];
               updateArrayLength(1, localMem[82], 5);
               ip = 197;
@@ -1745,7 +2139,9 @@ module fpga                                                                     
 
         197 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[82]*10 + 6] = 0;
               updateArrayLength(1, localMem[82], 6);
               ip = 198;
@@ -1753,7 +2149,9 @@ module fpga                                                                     
 
         198 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[82]*10 + 3] = localMem[27];
               updateArrayLength(1, localMem[82], 3);
               ip = 199;
@@ -1761,7 +2159,9 @@ module fpga                                                                     
 
         199 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[27]*10 + 1] = heapMem[localMem[27]*10 + 1] + 1;
               updateArrayLength(1, localMem[27], 1);
               ip = 200;
@@ -1769,7 +2169,9 @@ module fpga                                                                     
 
         200 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[82]*10 + 1] = heapMem[localMem[27]*10 + 1];
               updateArrayLength(1, localMem[82], 1);
               ip = 201;
@@ -1777,20 +2179,26 @@ module fpga                                                                     
 
         201 :
       begin                                                                     // not
-//$display("AAAA %4d %4d not", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d not", steps, ip);
+end
               localMem[85] = !heapMem[localMem[24]*10 + 6];
               ip = 202;
       end
 
         202 :
       begin                                                                     // jNe
-//$display("AAAA %4d %4d jNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jNe", steps, ip);
+end
               ip = localMem[85] != 0 ? 254 : 203;
       end
 
         203 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[86] = freedArrays[freedArraysTop];
@@ -1806,7 +2214,9 @@ module fpga                                                                     
 
         204 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[79]*10 + 6] = localMem[86];
               updateArrayLength(1, localMem[79], 6);
               ip = 205;
@@ -1814,7 +2224,9 @@ module fpga                                                                     
 
         205 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[87] = freedArrays[freedArraysTop];
@@ -1830,7 +2242,9 @@ module fpga                                                                     
 
         206 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[82]*10 + 6] = localMem[87];
               updateArrayLength(1, localMem[82], 6);
               ip = 207;
@@ -1838,7 +2252,9 @@ module fpga                                                                     
 
         207 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[88] = heapMem[localMem[24]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 208;
@@ -1846,7 +2262,9 @@ module fpga                                                                     
 
         208 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[89] = heapMem[localMem[79]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 209;
@@ -1854,7 +2272,9 @@ module fpga                                                                     
 
         209 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[29]) begin
                   heapMem[NArea * localMem[89] + 0 + i] = heapMem[NArea * localMem[88] + 0 + i];
@@ -1866,7 +2286,9 @@ module fpga                                                                     
 
         210 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[90] = heapMem[localMem[24]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 211;
@@ -1874,7 +2296,9 @@ module fpga                                                                     
 
         211 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[91] = heapMem[localMem[79]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 212;
@@ -1882,7 +2306,9 @@ module fpga                                                                     
 
         212 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[29]) begin
                   heapMem[NArea * localMem[91] + 0 + i] = heapMem[NArea * localMem[90] + 0 + i];
@@ -1894,7 +2320,9 @@ module fpga                                                                     
 
         213 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[92] = heapMem[localMem[24]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 214;
@@ -1902,7 +2330,9 @@ module fpga                                                                     
 
         214 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[93] = heapMem[localMem[79]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 215;
@@ -1910,7 +2340,9 @@ module fpga                                                                     
 
         215 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[94] = localMem[29] + 1;
               updateArrayLength(2, 0, 0);
               ip = 216;
@@ -1918,7 +2350,9 @@ module fpga                                                                     
 
         216 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[94]) begin
                   heapMem[NArea * localMem[93] + 0 + i] = heapMem[NArea * localMem[92] + 0 + i];
@@ -1930,7 +2364,9 @@ module fpga                                                                     
 
         217 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[95] = heapMem[localMem[24]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 218;
@@ -1938,7 +2374,9 @@ module fpga                                                                     
 
         218 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[96] = heapMem[localMem[82]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 219;
@@ -1946,7 +2384,9 @@ module fpga                                                                     
 
         219 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[29]) begin
                   heapMem[NArea * localMem[96] + 0 + i] = heapMem[NArea * localMem[95] + localMem[30] + i];
@@ -1958,7 +2398,9 @@ module fpga                                                                     
 
         220 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[97] = heapMem[localMem[24]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 221;
@@ -1966,7 +2408,9 @@ module fpga                                                                     
 
         221 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[98] = heapMem[localMem[82]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 222;
@@ -1974,7 +2418,9 @@ module fpga                                                                     
 
         222 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[29]) begin
                   heapMem[NArea * localMem[98] + 0 + i] = heapMem[NArea * localMem[97] + localMem[30] + i];
@@ -1986,7 +2432,9 @@ module fpga                                                                     
 
         223 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[99] = heapMem[localMem[24]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 224;
@@ -1994,7 +2442,9 @@ module fpga                                                                     
 
         224 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[100] = heapMem[localMem[82]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 225;
@@ -2002,7 +2452,9 @@ module fpga                                                                     
 
         225 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[101] = localMem[29] + 1;
               updateArrayLength(2, 0, 0);
               ip = 226;
@@ -2010,7 +2462,9 @@ module fpga                                                                     
 
         226 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[101]) begin
                   heapMem[NArea * localMem[100] + 0 + i] = heapMem[NArea * localMem[99] + localMem[30] + i];
@@ -2022,7 +2476,9 @@ module fpga                                                                     
 
         227 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[102] = heapMem[localMem[79]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 228;
@@ -2030,7 +2486,9 @@ module fpga                                                                     
 
         228 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[103] = localMem[102] + 1;
               updateArrayLength(2, 0, 0);
               ip = 229;
@@ -2038,7 +2496,9 @@ module fpga                                                                     
 
         229 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[104] = heapMem[localMem[79]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 230;
@@ -2046,13 +2506,17 @@ module fpga                                                                     
 
         230 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 231;
       end
 
         231 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[105] = 0;
               updateArrayLength(2, 0, 0);
               ip = 232;
@@ -2060,19 +2524,25 @@ module fpga                                                                     
 
         232 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 233;
       end
 
         233 :
       begin                                                                     // jGe
-//$display("AAAA %4d %4d jGe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jGe", steps, ip);
+end
               ip = localMem[105] >= localMem[103] ? 239 : 234;
       end
 
         234 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[106] = heapMem[localMem[104]*10 + localMem[105]];
               updateArrayLength(2, 0, 0);
               ip = 235;
@@ -2080,7 +2550,9 @@ module fpga                                                                     
 
         235 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[106]*10 + 2] = localMem[79];
               updateArrayLength(1, localMem[106], 2);
               ip = 236;
@@ -2088,13 +2560,17 @@ module fpga                                                                     
 
         236 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 237;
       end
 
         237 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[105] = localMem[105] + 1;
               updateArrayLength(2, 0, 0);
               ip = 238;
@@ -2102,19 +2578,25 @@ module fpga                                                                     
 
         238 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 232;
       end
 
         239 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 240;
       end
 
         240 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[107] = heapMem[localMem[82]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 241;
@@ -2122,7 +2604,9 @@ module fpga                                                                     
 
         241 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[108] = localMem[107] + 1;
               updateArrayLength(2, 0, 0);
               ip = 242;
@@ -2130,7 +2614,9 @@ module fpga                                                                     
 
         242 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[109] = heapMem[localMem[82]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 243;
@@ -2138,13 +2624,17 @@ module fpga                                                                     
 
         243 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 244;
       end
 
         244 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[110] = 0;
               updateArrayLength(2, 0, 0);
               ip = 245;
@@ -2152,19 +2642,25 @@ module fpga                                                                     
 
         245 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 246;
       end
 
         246 :
       begin                                                                     // jGe
-//$display("AAAA %4d %4d jGe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jGe", steps, ip);
+end
               ip = localMem[110] >= localMem[108] ? 252 : 247;
       end
 
         247 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[111] = heapMem[localMem[109]*10 + localMem[110]];
               updateArrayLength(2, 0, 0);
               ip = 248;
@@ -2172,7 +2668,9 @@ module fpga                                                                     
 
         248 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[111]*10 + 2] = localMem[82];
               updateArrayLength(1, localMem[111], 2);
               ip = 249;
@@ -2180,13 +2678,17 @@ module fpga                                                                     
 
         249 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 250;
       end
 
         250 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[110] = localMem[110] + 1;
               updateArrayLength(2, 0, 0);
               ip = 251;
@@ -2194,31 +2696,41 @@ module fpga                                                                     
 
         251 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 245;
       end
 
         252 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 253;
       end
 
         253 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 269;
       end
 
         254 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 255;
       end
 
         255 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[112] = freedArrays[freedArraysTop];
@@ -2234,7 +2746,9 @@ module fpga                                                                     
 
         256 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[24]*10 + 6] = localMem[112];
               updateArrayLength(1, localMem[24], 6);
               ip = 257;
@@ -2242,7 +2756,9 @@ module fpga                                                                     
 
         257 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[113] = heapMem[localMem[24]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 258;
@@ -2250,7 +2766,9 @@ module fpga                                                                     
 
         258 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[114] = heapMem[localMem[79]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 259;
@@ -2258,7 +2776,9 @@ module fpga                                                                     
 
         259 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[29]) begin
                   heapMem[NArea * localMem[114] + 0 + i] = heapMem[NArea * localMem[113] + 0 + i];
@@ -2270,7 +2790,9 @@ module fpga                                                                     
 
         260 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[115] = heapMem[localMem[24]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 261;
@@ -2278,7 +2800,9 @@ module fpga                                                                     
 
         261 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[116] = heapMem[localMem[79]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 262;
@@ -2286,7 +2810,9 @@ module fpga                                                                     
 
         262 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[29]) begin
                   heapMem[NArea * localMem[116] + 0 + i] = heapMem[NArea * localMem[115] + 0 + i];
@@ -2298,7 +2824,9 @@ module fpga                                                                     
 
         263 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[117] = heapMem[localMem[24]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 264;
@@ -2306,7 +2834,9 @@ module fpga                                                                     
 
         264 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[118] = heapMem[localMem[82]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 265;
@@ -2314,7 +2844,9 @@ module fpga                                                                     
 
         265 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[29]) begin
                   heapMem[NArea * localMem[118] + 0 + i] = heapMem[NArea * localMem[117] + localMem[30] + i];
@@ -2326,7 +2858,9 @@ module fpga                                                                     
 
         266 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[119] = heapMem[localMem[24]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 267;
@@ -2334,7 +2868,9 @@ module fpga                                                                     
 
         267 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[120] = heapMem[localMem[82]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 268;
@@ -2342,7 +2878,9 @@ module fpga                                                                     
 
         268 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[29]) begin
                   heapMem[NArea * localMem[120] + 0 + i] = heapMem[NArea * localMem[119] + localMem[30] + i];
@@ -2354,13 +2892,17 @@ module fpga                                                                     
 
         269 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 270;
       end
 
         270 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[79]*10 + 2] = localMem[24];
               updateArrayLength(1, localMem[79], 2);
               ip = 271;
@@ -2368,7 +2910,9 @@ module fpga                                                                     
 
         271 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[82]*10 + 2] = localMem[24];
               updateArrayLength(1, localMem[82], 2);
               ip = 272;
@@ -2376,7 +2920,9 @@ module fpga                                                                     
 
         272 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[121] = heapMem[localMem[24]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 273;
@@ -2384,7 +2930,9 @@ module fpga                                                                     
 
         273 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[122] = heapMem[localMem[121]*10 + localMem[29]];
               updateArrayLength(2, 0, 0);
               ip = 274;
@@ -2392,7 +2940,9 @@ module fpga                                                                     
 
         274 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[123] = heapMem[localMem[24]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 275;
@@ -2400,7 +2950,9 @@ module fpga                                                                     
 
         275 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[124] = heapMem[localMem[123]*10 + localMem[29]];
               updateArrayLength(2, 0, 0);
               ip = 276;
@@ -2408,7 +2960,9 @@ module fpga                                                                     
 
         276 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[125] = heapMem[localMem[24]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 277;
@@ -2416,7 +2970,9 @@ module fpga                                                                     
 
         277 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[125]*10 + 0] = localMem[122];
               updateArrayLength(1, localMem[125], 0);
               ip = 278;
@@ -2424,7 +2980,9 @@ module fpga                                                                     
 
         278 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[126] = heapMem[localMem[24]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 279;
@@ -2432,7 +2990,9 @@ module fpga                                                                     
 
         279 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[126]*10 + 0] = localMem[124];
               updateArrayLength(1, localMem[126], 0);
               ip = 280;
@@ -2440,7 +3000,9 @@ module fpga                                                                     
 
         280 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[127] = heapMem[localMem[24]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 281;
@@ -2448,7 +3010,9 @@ module fpga                                                                     
 
         281 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[127]*10 + 0] = localMem[79];
               updateArrayLength(1, localMem[127], 0);
               ip = 282;
@@ -2456,7 +3020,9 @@ module fpga                                                                     
 
         282 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[128] = heapMem[localMem[24]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 283;
@@ -2464,7 +3030,9 @@ module fpga                                                                     
 
         283 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[128]*10 + 1] = localMem[82];
               updateArrayLength(1, localMem[128], 1);
               ip = 284;
@@ -2472,7 +3040,9 @@ module fpga                                                                     
 
         284 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[24]*10 + 0] = 1;
               updateArrayLength(1, localMem[24], 0);
               ip = 285;
@@ -2480,7 +3050,9 @@ module fpga                                                                     
 
         285 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[129] = heapMem[localMem[24]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 286;
@@ -2488,14 +3060,18 @@ module fpga                                                                     
 
         286 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[129]] = 1;
               ip = 287;
       end
 
         287 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[130] = heapMem[localMem[24]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 288;
@@ -2503,14 +3079,18 @@ module fpga                                                                     
 
         288 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[130]] = 1;
               ip = 289;
       end
 
         289 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[131] = heapMem[localMem[24]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 290;
@@ -2518,32 +3098,42 @@ module fpga                                                                     
 
         290 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[131]] = 2;
               ip = 291;
       end
 
         291 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 293;
       end
 
         292 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 298;
       end
 
         293 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 294;
       end
 
         294 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[25] = 1;
               updateArrayLength(2, 0, 0);
               ip = 295;
@@ -2551,19 +3141,25 @@ module fpga                                                                     
 
         295 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 298;
       end
 
         296 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 297;
       end
 
         297 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[25] = 0;
               updateArrayLength(2, 0, 0);
               ip = 298;
@@ -2571,25 +3167,33 @@ module fpga                                                                     
 
         298 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 299;
       end
 
         299 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 300;
       end
 
         300 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 301;
       end
 
         301 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[132] = 0;
               updateArrayLength(2, 0, 0);
               ip = 302;
@@ -2597,19 +3201,25 @@ module fpga                                                                     
 
         302 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 303;
       end
 
         303 :
       begin                                                                     // jGe
-//$display("AAAA %4d %4d jGe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jGe", steps, ip);
+end
               ip = localMem[132] >= 99 ? 801 : 304;
       end
 
         304 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[133] = heapMem[localMem[24]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 305;
@@ -2617,7 +3227,9 @@ module fpga                                                                     
 
         305 :
       begin                                                                     // subtract
-//$display("AAAA %4d %4d subtract", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d subtract", steps, ip);
+end
               localMem[134] = localMem[133] - 1;
               updateArrayLength(2, 0, 0);
               ip = 306;
@@ -2625,7 +3237,9 @@ module fpga                                                                     
 
         306 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[135] = heapMem[localMem[24]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 307;
@@ -2633,7 +3247,9 @@ module fpga                                                                     
 
         307 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[136] = heapMem[localMem[135]*10 + localMem[134]];
               updateArrayLength(2, 0, 0);
               ip = 308;
@@ -2641,26 +3257,34 @@ module fpga                                                                     
 
         308 :
       begin                                                                     // jLe
-//$display("AAAA %4d %4d jLe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jLe", steps, ip);
+end
               ip = 1 <= localMem[136] ? 549 : 309;
       end
 
         309 :
       begin                                                                     // not
-//$display("AAAA %4d %4d not", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d not", steps, ip);
+end
               localMem[137] = !heapMem[localMem[24]*10 + 6];
               ip = 310;
       end
 
         310 :
       begin                                                                     // jEq
-//$display("AAAA %4d %4d jEq", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jEq", steps, ip);
+end
               ip = localMem[137] == 0 ? 315 : 311;
       end
 
         311 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[1]*10 + 0] = localMem[24];
               updateArrayLength(1, localMem[1], 0);
               ip = 312;
@@ -2668,7 +3292,9 @@ module fpga                                                                     
 
         312 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[1]*10 + 1] = 2;
               updateArrayLength(1, localMem[1], 1);
               ip = 313;
@@ -2676,7 +3302,9 @@ module fpga                                                                     
 
         313 :
       begin                                                                     // subtract
-//$display("AAAA %4d %4d subtract", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d subtract", steps, ip);
+end
               heapMem[localMem[1]*10 + 2] = localMem[133] - 1;
               updateArrayLength(1, localMem[1], 2);
               ip = 314;
@@ -2684,19 +3312,25 @@ module fpga                                                                     
 
         314 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 805;
       end
 
         315 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 316;
       end
 
         316 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[138] = heapMem[localMem[24]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 317;
@@ -2704,7 +3338,9 @@ module fpga                                                                     
 
         317 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[139] = heapMem[localMem[138]*10 + localMem[133]];
               updateArrayLength(2, 0, 0);
               ip = 318;
@@ -2712,13 +3348,17 @@ module fpga                                                                     
 
         318 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 319;
       end
 
         319 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[141] = heapMem[localMem[139]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 320;
@@ -2726,7 +3366,9 @@ module fpga                                                                     
 
         320 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[142] = heapMem[localMem[139]*10 + 3];
               updateArrayLength(2, 0, 0);
               ip = 321;
@@ -2734,7 +3376,9 @@ module fpga                                                                     
 
         321 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[143] = heapMem[localMem[142]*10 + 2];
               updateArrayLength(2, 0, 0);
               ip = 322;
@@ -2742,13 +3386,17 @@ module fpga                                                                     
 
         322 :
       begin                                                                     // jLt
-//$display("AAAA %4d %4d jLt", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jLt", steps, ip);
+end
               ip = localMem[141] <  localMem[143] ? 542 : 323;
       end
 
         323 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[144] = localMem[143];
               updateArrayLength(2, 0, 0);
               ip = 324;
@@ -2756,14 +3404,18 @@ module fpga                                                                     
 
         324 :
       begin                                                                     // shiftRight
-//$display("AAAA %4d %4d shiftRight", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftRight", steps, ip);
+end
               localMem[144] = localMem[144] >> 1;
               ip = 325;
       end
 
         325 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[145] = localMem[144] + 1;
               updateArrayLength(2, 0, 0);
               ip = 326;
@@ -2771,7 +3423,9 @@ module fpga                                                                     
 
         326 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[146] = heapMem[localMem[139]*10 + 2];
               updateArrayLength(2, 0, 0);
               ip = 327;
@@ -2779,13 +3433,17 @@ module fpga                                                                     
 
         327 :
       begin                                                                     // jEq
-//$display("AAAA %4d %4d jEq", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jEq", steps, ip);
+end
               ip = localMem[146] == 0 ? 424 : 328;
       end
 
         328 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[147] = freedArrays[freedArraysTop];
@@ -2801,7 +3459,9 @@ module fpga                                                                     
 
         329 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[147]*10 + 0] = localMem[144];
               updateArrayLength(1, localMem[147], 0);
               ip = 330;
@@ -2809,7 +3469,9 @@ module fpga                                                                     
 
         330 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[147]*10 + 2] = 0;
               updateArrayLength(1, localMem[147], 2);
               ip = 331;
@@ -2817,7 +3479,9 @@ module fpga                                                                     
 
         331 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[148] = freedArrays[freedArraysTop];
@@ -2833,7 +3497,9 @@ module fpga                                                                     
 
         332 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[147]*10 + 4] = localMem[148];
               updateArrayLength(1, localMem[147], 4);
               ip = 333;
@@ -2841,7 +3507,9 @@ module fpga                                                                     
 
         333 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[149] = freedArrays[freedArraysTop];
@@ -2857,7 +3525,9 @@ module fpga                                                                     
 
         334 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[147]*10 + 5] = localMem[149];
               updateArrayLength(1, localMem[147], 5);
               ip = 335;
@@ -2865,7 +3535,9 @@ module fpga                                                                     
 
         335 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[147]*10 + 6] = 0;
               updateArrayLength(1, localMem[147], 6);
               ip = 336;
@@ -2873,7 +3545,9 @@ module fpga                                                                     
 
         336 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[147]*10 + 3] = localMem[142];
               updateArrayLength(1, localMem[147], 3);
               ip = 337;
@@ -2881,7 +3555,9 @@ module fpga                                                                     
 
         337 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[142]*10 + 1] = heapMem[localMem[142]*10 + 1] + 1;
               updateArrayLength(1, localMem[142], 1);
               ip = 338;
@@ -2889,7 +3565,9 @@ module fpga                                                                     
 
         338 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[147]*10 + 1] = heapMem[localMem[142]*10 + 1];
               updateArrayLength(1, localMem[147], 1);
               ip = 339;
@@ -2897,20 +3575,26 @@ module fpga                                                                     
 
         339 :
       begin                                                                     // not
-//$display("AAAA %4d %4d not", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d not", steps, ip);
+end
               localMem[150] = !heapMem[localMem[139]*10 + 6];
               ip = 340;
       end
 
         340 :
       begin                                                                     // jNe
-//$display("AAAA %4d %4d jNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jNe", steps, ip);
+end
               ip = localMem[150] != 0 ? 369 : 341;
       end
 
         341 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[151] = freedArrays[freedArraysTop];
@@ -2926,7 +3610,9 @@ module fpga                                                                     
 
         342 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[147]*10 + 6] = localMem[151];
               updateArrayLength(1, localMem[147], 6);
               ip = 343;
@@ -2934,7 +3620,9 @@ module fpga                                                                     
 
         343 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[152] = heapMem[localMem[139]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 344;
@@ -2942,7 +3630,9 @@ module fpga                                                                     
 
         344 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[153] = heapMem[localMem[147]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 345;
@@ -2950,7 +3640,9 @@ module fpga                                                                     
 
         345 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[144]) begin
                   heapMem[NArea * localMem[153] + 0 + i] = heapMem[NArea * localMem[152] + localMem[145] + i];
@@ -2962,7 +3654,9 @@ module fpga                                                                     
 
         346 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[154] = heapMem[localMem[139]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 347;
@@ -2970,7 +3664,9 @@ module fpga                                                                     
 
         347 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[155] = heapMem[localMem[147]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 348;
@@ -2978,7 +3674,9 @@ module fpga                                                                     
 
         348 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[144]) begin
                   heapMem[NArea * localMem[155] + 0 + i] = heapMem[NArea * localMem[154] + localMem[145] + i];
@@ -2990,7 +3688,9 @@ module fpga                                                                     
 
         349 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[156] = heapMem[localMem[139]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 350;
@@ -2998,7 +3698,9 @@ module fpga                                                                     
 
         350 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[157] = heapMem[localMem[147]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 351;
@@ -3006,7 +3708,9 @@ module fpga                                                                     
 
         351 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[158] = localMem[144] + 1;
               updateArrayLength(2, 0, 0);
               ip = 352;
@@ -3014,7 +3718,9 @@ module fpga                                                                     
 
         352 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[158]) begin
                   heapMem[NArea * localMem[157] + 0 + i] = heapMem[NArea * localMem[156] + localMem[145] + i];
@@ -3026,7 +3732,9 @@ module fpga                                                                     
 
         353 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[159] = heapMem[localMem[147]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 354;
@@ -3034,7 +3742,9 @@ module fpga                                                                     
 
         354 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[160] = localMem[159] + 1;
               updateArrayLength(2, 0, 0);
               ip = 355;
@@ -3042,7 +3752,9 @@ module fpga                                                                     
 
         355 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[161] = heapMem[localMem[147]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 356;
@@ -3050,13 +3762,17 @@ module fpga                                                                     
 
         356 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 357;
       end
 
         357 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[162] = 0;
               updateArrayLength(2, 0, 0);
               ip = 358;
@@ -3064,19 +3780,25 @@ module fpga                                                                     
 
         358 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 359;
       end
 
         359 :
       begin                                                                     // jGe
-//$display("AAAA %4d %4d jGe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jGe", steps, ip);
+end
               ip = localMem[162] >= localMem[160] ? 365 : 360;
       end
 
         360 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[163] = heapMem[localMem[161]*10 + localMem[162]];
               updateArrayLength(2, 0, 0);
               ip = 361;
@@ -3084,7 +3806,9 @@ module fpga                                                                     
 
         361 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[163]*10 + 2] = localMem[147];
               updateArrayLength(1, localMem[163], 2);
               ip = 362;
@@ -3092,13 +3816,17 @@ module fpga                                                                     
 
         362 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 363;
       end
 
         363 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[162] = localMem[162] + 1;
               updateArrayLength(2, 0, 0);
               ip = 364;
@@ -3106,19 +3834,25 @@ module fpga                                                                     
 
         364 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 358;
       end
 
         365 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 366;
       end
 
         366 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[164] = heapMem[localMem[139]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 367;
@@ -3126,26 +3860,34 @@ module fpga                                                                     
 
         367 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[164]] = localMem[145];
               ip = 368;
       end
 
         368 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 376;
       end
 
         369 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 370;
       end
 
         370 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[165] = heapMem[localMem[139]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 371;
@@ -3153,7 +3895,9 @@ module fpga                                                                     
 
         371 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[166] = heapMem[localMem[147]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 372;
@@ -3161,7 +3905,9 @@ module fpga                                                                     
 
         372 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[144]) begin
                   heapMem[NArea * localMem[166] + 0 + i] = heapMem[NArea * localMem[165] + localMem[145] + i];
@@ -3173,7 +3919,9 @@ module fpga                                                                     
 
         373 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[167] = heapMem[localMem[139]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 374;
@@ -3181,7 +3929,9 @@ module fpga                                                                     
 
         374 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[168] = heapMem[localMem[147]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 375;
@@ -3189,7 +3939,9 @@ module fpga                                                                     
 
         375 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[144]) begin
                   heapMem[NArea * localMem[168] + 0 + i] = heapMem[NArea * localMem[167] + localMem[145] + i];
@@ -3201,13 +3953,17 @@ module fpga                                                                     
 
         376 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 377;
       end
 
         377 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[139]*10 + 0] = localMem[144];
               updateArrayLength(1, localMem[139], 0);
               ip = 378;
@@ -3215,7 +3971,9 @@ module fpga                                                                     
 
         378 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[147]*10 + 2] = localMem[146];
               updateArrayLength(1, localMem[147], 2);
               ip = 379;
@@ -3223,7 +3981,9 @@ module fpga                                                                     
 
         379 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[169] = heapMem[localMem[146]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 380;
@@ -3231,7 +3991,9 @@ module fpga                                                                     
 
         380 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[170] = heapMem[localMem[146]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 381;
@@ -3239,7 +4001,9 @@ module fpga                                                                     
 
         381 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[171] = heapMem[localMem[170]*10 + localMem[169]];
               updateArrayLength(2, 0, 0);
               ip = 382;
@@ -3247,13 +4011,17 @@ module fpga                                                                     
 
         382 :
       begin                                                                     // jNe
-//$display("AAAA %4d %4d jNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jNe", steps, ip);
+end
               ip = localMem[171] != localMem[139] ? 401 : 383;
       end
 
         383 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[172] = heapMem[localMem[139]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 384;
@@ -3261,7 +4029,9 @@ module fpga                                                                     
 
         384 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[173] = heapMem[localMem[172]*10 + localMem[144]];
               updateArrayLength(2, 0, 0);
               ip = 385;
@@ -3269,7 +4039,9 @@ module fpga                                                                     
 
         385 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[174] = heapMem[localMem[146]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 386;
@@ -3277,7 +4049,9 @@ module fpga                                                                     
 
         386 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[174]*10 + localMem[169]] = localMem[173];
               updateArrayLength(1, localMem[174], localMem[169]);
               ip = 387;
@@ -3285,7 +4059,9 @@ module fpga                                                                     
 
         387 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[175] = heapMem[localMem[139]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 388;
@@ -3293,7 +4069,9 @@ module fpga                                                                     
 
         388 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[176] = heapMem[localMem[175]*10 + localMem[144]];
               updateArrayLength(2, 0, 0);
               ip = 389;
@@ -3301,7 +4079,9 @@ module fpga                                                                     
 
         389 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[177] = heapMem[localMem[146]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 390;
@@ -3309,7 +4089,9 @@ module fpga                                                                     
 
         390 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[177]*10 + localMem[169]] = localMem[176];
               updateArrayLength(1, localMem[177], localMem[169]);
               ip = 391;
@@ -3317,7 +4099,9 @@ module fpga                                                                     
 
         391 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[178] = heapMem[localMem[139]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 392;
@@ -3325,14 +4109,18 @@ module fpga                                                                     
 
         392 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[178]] = localMem[144];
               ip = 393;
       end
 
         393 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[179] = heapMem[localMem[139]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 394;
@@ -3340,14 +4128,18 @@ module fpga                                                                     
 
         394 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[179]] = localMem[144];
               ip = 395;
       end
 
         395 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[180] = localMem[169] + 1;
               updateArrayLength(2, 0, 0);
               ip = 396;
@@ -3355,7 +4147,9 @@ module fpga                                                                     
 
         396 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[146]*10 + 0] = localMem[180];
               updateArrayLength(1, localMem[146], 0);
               ip = 397;
@@ -3363,7 +4157,9 @@ module fpga                                                                     
 
         397 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[181] = heapMem[localMem[146]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 398;
@@ -3371,7 +4167,9 @@ module fpga                                                                     
 
         398 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[181]*10 + localMem[180]] = localMem[147];
               updateArrayLength(1, localMem[181], localMem[180]);
               ip = 399;
@@ -3379,31 +4177,41 @@ module fpga                                                                     
 
         399 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 539;
       end
 
         400 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 423;
       end
 
         401 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 402;
       end
 
         402 :
       begin                                                                     // assertNe
-//$display("AAAA %4d %4d assertNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d assertNe", steps, ip);
+end
             ip = 403;
       end
 
         403 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[182] = heapMem[localMem[146]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 404;
@@ -3411,7 +4219,9 @@ module fpga                                                                     
 
         404 :
       begin                                                                     // arrayIndex
-//$display("AAAA %4d %4d arrayIndex", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d arrayIndex", steps, ip);
+end
               localMem[183] = 0; k = arraySizes[localMem[182]];
               for(i = 0; i < NArea; i = i + 1) begin
                 if (i < k && heapMem[localMem[182] * NArea + i] == localMem[139]) localMem[183] = i + 1;
@@ -3421,7 +4231,9 @@ module fpga                                                                     
 
         405 :
       begin                                                                     // subtract
-//$display("AAAA %4d %4d subtract", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d subtract", steps, ip);
+end
               localMem[183] = localMem[183] - 1;
               updateArrayLength(2, 0, 0);
               ip = 406;
@@ -3429,7 +4241,9 @@ module fpga                                                                     
 
         406 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[184] = heapMem[localMem[139]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 407;
@@ -3437,7 +4251,9 @@ module fpga                                                                     
 
         407 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[185] = heapMem[localMem[184]*10 + localMem[144]];
               updateArrayLength(2, 0, 0);
               ip = 408;
@@ -3445,7 +4261,9 @@ module fpga                                                                     
 
         408 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[186] = heapMem[localMem[139]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 409;
@@ -3453,7 +4271,9 @@ module fpga                                                                     
 
         409 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[187] = heapMem[localMem[186]*10 + localMem[144]];
               updateArrayLength(2, 0, 0);
               ip = 410;
@@ -3461,7 +4281,9 @@ module fpga                                                                     
 
         410 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[188] = heapMem[localMem[139]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 411;
@@ -3469,14 +4291,18 @@ module fpga                                                                     
 
         411 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[188]] = localMem[144];
               ip = 412;
       end
 
         412 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[189] = heapMem[localMem[139]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 413;
@@ -3484,14 +4310,18 @@ module fpga                                                                     
 
         413 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[189]] = localMem[144];
               ip = 414;
       end
 
         414 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[190] = heapMem[localMem[146]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 415;
@@ -3499,7 +4329,9 @@ module fpga                                                                     
 
         415 :
       begin                                                                     // shiftUp
-//$display("AAAA %4d %4d shiftUp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftUp", steps, ip);
+end
 //$display("AAAA %4d %4d shiftUp", steps, ip);
               for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[190] + i]; // Copy source array
 //$display("BBBB pos=%d array=%d length=%d", localMem[183], localMem[190], arraySizes[localMem[190]]);
@@ -3516,7 +4348,9 @@ module fpga                                                                     
 
         416 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[191] = heapMem[localMem[146]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 417;
@@ -3524,7 +4358,9 @@ module fpga                                                                     
 
         417 :
       begin                                                                     // shiftUp
-//$display("AAAA %4d %4d shiftUp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftUp", steps, ip);
+end
 //$display("AAAA %4d %4d shiftUp", steps, ip);
               for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[191] + i]; // Copy source array
 //$display("BBBB pos=%d array=%d length=%d", localMem[183], localMem[191], arraySizes[localMem[191]]);
@@ -3541,7 +4377,9 @@ module fpga                                                                     
 
         418 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[192] = heapMem[localMem[146]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 419;
@@ -3549,7 +4387,9 @@ module fpga                                                                     
 
         419 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[193] = localMem[183] + 1;
               updateArrayLength(2, 0, 0);
               ip = 420;
@@ -3557,7 +4397,9 @@ module fpga                                                                     
 
         420 :
       begin                                                                     // shiftUp
-//$display("AAAA %4d %4d shiftUp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftUp", steps, ip);
+end
 //$display("AAAA %4d %4d shiftUp", steps, ip);
               for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[192] + i]; // Copy source array
 //$display("BBBB pos=%d array=%d length=%d", localMem[193], localMem[192], arraySizes[localMem[192]]);
@@ -3574,7 +4416,9 @@ module fpga                                                                     
 
         421 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[146]*10 + 0] = heapMem[localMem[146]*10 + 0] + 1;
               updateArrayLength(1, localMem[146], 0);
               ip = 422;
@@ -3582,25 +4426,33 @@ module fpga                                                                     
 
         422 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 539;
       end
 
         423 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 424;
       end
 
         424 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 425;
       end
 
         425 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[194] = freedArrays[freedArraysTop];
@@ -3616,7 +4468,9 @@ module fpga                                                                     
 
         426 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[194]*10 + 0] = localMem[144];
               updateArrayLength(1, localMem[194], 0);
               ip = 427;
@@ -3624,7 +4478,9 @@ module fpga                                                                     
 
         427 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[194]*10 + 2] = 0;
               updateArrayLength(1, localMem[194], 2);
               ip = 428;
@@ -3632,7 +4488,9 @@ module fpga                                                                     
 
         428 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[195] = freedArrays[freedArraysTop];
@@ -3648,7 +4506,9 @@ module fpga                                                                     
 
         429 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[194]*10 + 4] = localMem[195];
               updateArrayLength(1, localMem[194], 4);
               ip = 430;
@@ -3656,7 +4516,9 @@ module fpga                                                                     
 
         430 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[196] = freedArrays[freedArraysTop];
@@ -3672,7 +4534,9 @@ module fpga                                                                     
 
         431 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[194]*10 + 5] = localMem[196];
               updateArrayLength(1, localMem[194], 5);
               ip = 432;
@@ -3680,7 +4544,9 @@ module fpga                                                                     
 
         432 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[194]*10 + 6] = 0;
               updateArrayLength(1, localMem[194], 6);
               ip = 433;
@@ -3688,7 +4554,9 @@ module fpga                                                                     
 
         433 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[194]*10 + 3] = localMem[142];
               updateArrayLength(1, localMem[194], 3);
               ip = 434;
@@ -3696,7 +4564,9 @@ module fpga                                                                     
 
         434 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[142]*10 + 1] = heapMem[localMem[142]*10 + 1] + 1;
               updateArrayLength(1, localMem[142], 1);
               ip = 435;
@@ -3704,7 +4574,9 @@ module fpga                                                                     
 
         435 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[194]*10 + 1] = heapMem[localMem[142]*10 + 1];
               updateArrayLength(1, localMem[194], 1);
               ip = 436;
@@ -3712,7 +4584,9 @@ module fpga                                                                     
 
         436 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[197] = freedArrays[freedArraysTop];
@@ -3728,7 +4602,9 @@ module fpga                                                                     
 
         437 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[197]*10 + 0] = localMem[144];
               updateArrayLength(1, localMem[197], 0);
               ip = 438;
@@ -3736,7 +4612,9 @@ module fpga                                                                     
 
         438 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[197]*10 + 2] = 0;
               updateArrayLength(1, localMem[197], 2);
               ip = 439;
@@ -3744,7 +4622,9 @@ module fpga                                                                     
 
         439 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[198] = freedArrays[freedArraysTop];
@@ -3760,7 +4640,9 @@ module fpga                                                                     
 
         440 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[197]*10 + 4] = localMem[198];
               updateArrayLength(1, localMem[197], 4);
               ip = 441;
@@ -3768,7 +4650,9 @@ module fpga                                                                     
 
         441 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[199] = freedArrays[freedArraysTop];
@@ -3784,7 +4668,9 @@ module fpga                                                                     
 
         442 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[197]*10 + 5] = localMem[199];
               updateArrayLength(1, localMem[197], 5);
               ip = 443;
@@ -3792,7 +4678,9 @@ module fpga                                                                     
 
         443 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[197]*10 + 6] = 0;
               updateArrayLength(1, localMem[197], 6);
               ip = 444;
@@ -3800,7 +4688,9 @@ module fpga                                                                     
 
         444 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[197]*10 + 3] = localMem[142];
               updateArrayLength(1, localMem[197], 3);
               ip = 445;
@@ -3808,7 +4698,9 @@ module fpga                                                                     
 
         445 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[142]*10 + 1] = heapMem[localMem[142]*10 + 1] + 1;
               updateArrayLength(1, localMem[142], 1);
               ip = 446;
@@ -3816,7 +4708,9 @@ module fpga                                                                     
 
         446 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[197]*10 + 1] = heapMem[localMem[142]*10 + 1];
               updateArrayLength(1, localMem[197], 1);
               ip = 447;
@@ -3824,20 +4718,26 @@ module fpga                                                                     
 
         447 :
       begin                                                                     // not
-//$display("AAAA %4d %4d not", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d not", steps, ip);
+end
               localMem[200] = !heapMem[localMem[139]*10 + 6];
               ip = 448;
       end
 
         448 :
       begin                                                                     // jNe
-//$display("AAAA %4d %4d jNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jNe", steps, ip);
+end
               ip = localMem[200] != 0 ? 500 : 449;
       end
 
         449 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[201] = freedArrays[freedArraysTop];
@@ -3853,7 +4753,9 @@ module fpga                                                                     
 
         450 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[194]*10 + 6] = localMem[201];
               updateArrayLength(1, localMem[194], 6);
               ip = 451;
@@ -3861,7 +4763,9 @@ module fpga                                                                     
 
         451 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[202] = freedArrays[freedArraysTop];
@@ -3877,7 +4781,9 @@ module fpga                                                                     
 
         452 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[197]*10 + 6] = localMem[202];
               updateArrayLength(1, localMem[197], 6);
               ip = 453;
@@ -3885,7 +4791,9 @@ module fpga                                                                     
 
         453 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[203] = heapMem[localMem[139]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 454;
@@ -3893,7 +4801,9 @@ module fpga                                                                     
 
         454 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[204] = heapMem[localMem[194]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 455;
@@ -3901,7 +4811,9 @@ module fpga                                                                     
 
         455 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[144]) begin
                   heapMem[NArea * localMem[204] + 0 + i] = heapMem[NArea * localMem[203] + 0 + i];
@@ -3913,7 +4825,9 @@ module fpga                                                                     
 
         456 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[205] = heapMem[localMem[139]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 457;
@@ -3921,7 +4835,9 @@ module fpga                                                                     
 
         457 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[206] = heapMem[localMem[194]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 458;
@@ -3929,7 +4845,9 @@ module fpga                                                                     
 
         458 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[144]) begin
                   heapMem[NArea * localMem[206] + 0 + i] = heapMem[NArea * localMem[205] + 0 + i];
@@ -3941,7 +4859,9 @@ module fpga                                                                     
 
         459 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[207] = heapMem[localMem[139]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 460;
@@ -3949,7 +4869,9 @@ module fpga                                                                     
 
         460 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[208] = heapMem[localMem[194]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 461;
@@ -3957,7 +4879,9 @@ module fpga                                                                     
 
         461 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[209] = localMem[144] + 1;
               updateArrayLength(2, 0, 0);
               ip = 462;
@@ -3965,7 +4889,9 @@ module fpga                                                                     
 
         462 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[209]) begin
                   heapMem[NArea * localMem[208] + 0 + i] = heapMem[NArea * localMem[207] + 0 + i];
@@ -3977,7 +4903,9 @@ module fpga                                                                     
 
         463 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[210] = heapMem[localMem[139]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 464;
@@ -3985,7 +4913,9 @@ module fpga                                                                     
 
         464 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[211] = heapMem[localMem[197]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 465;
@@ -3993,7 +4923,9 @@ module fpga                                                                     
 
         465 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[144]) begin
                   heapMem[NArea * localMem[211] + 0 + i] = heapMem[NArea * localMem[210] + localMem[145] + i];
@@ -4005,7 +4937,9 @@ module fpga                                                                     
 
         466 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[212] = heapMem[localMem[139]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 467;
@@ -4013,7 +4947,9 @@ module fpga                                                                     
 
         467 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[213] = heapMem[localMem[197]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 468;
@@ -4021,7 +4957,9 @@ module fpga                                                                     
 
         468 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[144]) begin
                   heapMem[NArea * localMem[213] + 0 + i] = heapMem[NArea * localMem[212] + localMem[145] + i];
@@ -4033,7 +4971,9 @@ module fpga                                                                     
 
         469 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[214] = heapMem[localMem[139]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 470;
@@ -4041,7 +4981,9 @@ module fpga                                                                     
 
         470 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[215] = heapMem[localMem[197]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 471;
@@ -4049,7 +4991,9 @@ module fpga                                                                     
 
         471 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[216] = localMem[144] + 1;
               updateArrayLength(2, 0, 0);
               ip = 472;
@@ -4057,7 +5001,9 @@ module fpga                                                                     
 
         472 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[216]) begin
                   heapMem[NArea * localMem[215] + 0 + i] = heapMem[NArea * localMem[214] + localMem[145] + i];
@@ -4069,7 +5015,9 @@ module fpga                                                                     
 
         473 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[217] = heapMem[localMem[194]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 474;
@@ -4077,7 +5025,9 @@ module fpga                                                                     
 
         474 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[218] = localMem[217] + 1;
               updateArrayLength(2, 0, 0);
               ip = 475;
@@ -4085,7 +5035,9 @@ module fpga                                                                     
 
         475 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[219] = heapMem[localMem[194]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 476;
@@ -4093,13 +5045,17 @@ module fpga                                                                     
 
         476 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 477;
       end
 
         477 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[220] = 0;
               updateArrayLength(2, 0, 0);
               ip = 478;
@@ -4107,19 +5063,25 @@ module fpga                                                                     
 
         478 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 479;
       end
 
         479 :
       begin                                                                     // jGe
-//$display("AAAA %4d %4d jGe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jGe", steps, ip);
+end
               ip = localMem[220] >= localMem[218] ? 485 : 480;
       end
 
         480 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[221] = heapMem[localMem[219]*10 + localMem[220]];
               updateArrayLength(2, 0, 0);
               ip = 481;
@@ -4127,7 +5089,9 @@ module fpga                                                                     
 
         481 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[221]*10 + 2] = localMem[194];
               updateArrayLength(1, localMem[221], 2);
               ip = 482;
@@ -4135,13 +5099,17 @@ module fpga                                                                     
 
         482 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 483;
       end
 
         483 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[220] = localMem[220] + 1;
               updateArrayLength(2, 0, 0);
               ip = 484;
@@ -4149,19 +5117,25 @@ module fpga                                                                     
 
         484 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 478;
       end
 
         485 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 486;
       end
 
         486 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[222] = heapMem[localMem[197]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 487;
@@ -4169,7 +5143,9 @@ module fpga                                                                     
 
         487 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[223] = localMem[222] + 1;
               updateArrayLength(2, 0, 0);
               ip = 488;
@@ -4177,7 +5153,9 @@ module fpga                                                                     
 
         488 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[224] = heapMem[localMem[197]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 489;
@@ -4185,13 +5163,17 @@ module fpga                                                                     
 
         489 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 490;
       end
 
         490 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[225] = 0;
               updateArrayLength(2, 0, 0);
               ip = 491;
@@ -4199,19 +5181,25 @@ module fpga                                                                     
 
         491 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 492;
       end
 
         492 :
       begin                                                                     // jGe
-//$display("AAAA %4d %4d jGe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jGe", steps, ip);
+end
               ip = localMem[225] >= localMem[223] ? 498 : 493;
       end
 
         493 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[226] = heapMem[localMem[224]*10 + localMem[225]];
               updateArrayLength(2, 0, 0);
               ip = 494;
@@ -4219,7 +5207,9 @@ module fpga                                                                     
 
         494 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[226]*10 + 2] = localMem[197];
               updateArrayLength(1, localMem[226], 2);
               ip = 495;
@@ -4227,13 +5217,17 @@ module fpga                                                                     
 
         495 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 496;
       end
 
         496 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[225] = localMem[225] + 1;
               updateArrayLength(2, 0, 0);
               ip = 497;
@@ -4241,31 +5235,41 @@ module fpga                                                                     
 
         497 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 491;
       end
 
         498 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 499;
       end
 
         499 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 515;
       end
 
         500 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 501;
       end
 
         501 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[227] = freedArrays[freedArraysTop];
@@ -4281,7 +5285,9 @@ module fpga                                                                     
 
         502 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[139]*10 + 6] = localMem[227];
               updateArrayLength(1, localMem[139], 6);
               ip = 503;
@@ -4289,7 +5295,9 @@ module fpga                                                                     
 
         503 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[228] = heapMem[localMem[139]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 504;
@@ -4297,7 +5305,9 @@ module fpga                                                                     
 
         504 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[229] = heapMem[localMem[194]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 505;
@@ -4305,7 +5315,9 @@ module fpga                                                                     
 
         505 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[144]) begin
                   heapMem[NArea * localMem[229] + 0 + i] = heapMem[NArea * localMem[228] + 0 + i];
@@ -4317,7 +5329,9 @@ module fpga                                                                     
 
         506 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[230] = heapMem[localMem[139]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 507;
@@ -4325,7 +5339,9 @@ module fpga                                                                     
 
         507 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[231] = heapMem[localMem[194]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 508;
@@ -4333,7 +5349,9 @@ module fpga                                                                     
 
         508 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[144]) begin
                   heapMem[NArea * localMem[231] + 0 + i] = heapMem[NArea * localMem[230] + 0 + i];
@@ -4345,7 +5363,9 @@ module fpga                                                                     
 
         509 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[232] = heapMem[localMem[139]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 510;
@@ -4353,7 +5373,9 @@ module fpga                                                                     
 
         510 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[233] = heapMem[localMem[197]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 511;
@@ -4361,7 +5383,9 @@ module fpga                                                                     
 
         511 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[144]) begin
                   heapMem[NArea * localMem[233] + 0 + i] = heapMem[NArea * localMem[232] + localMem[145] + i];
@@ -4373,7 +5397,9 @@ module fpga                                                                     
 
         512 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[234] = heapMem[localMem[139]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 513;
@@ -4381,7 +5407,9 @@ module fpga                                                                     
 
         513 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[235] = heapMem[localMem[197]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 514;
@@ -4389,7 +5417,9 @@ module fpga                                                                     
 
         514 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[144]) begin
                   heapMem[NArea * localMem[235] + 0 + i] = heapMem[NArea * localMem[234] + localMem[145] + i];
@@ -4401,13 +5431,17 @@ module fpga                                                                     
 
         515 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 516;
       end
 
         516 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[194]*10 + 2] = localMem[139];
               updateArrayLength(1, localMem[194], 2);
               ip = 517;
@@ -4415,7 +5449,9 @@ module fpga                                                                     
 
         517 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[197]*10 + 2] = localMem[139];
               updateArrayLength(1, localMem[197], 2);
               ip = 518;
@@ -4423,7 +5459,9 @@ module fpga                                                                     
 
         518 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[236] = heapMem[localMem[139]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 519;
@@ -4431,7 +5469,9 @@ module fpga                                                                     
 
         519 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[237] = heapMem[localMem[236]*10 + localMem[144]];
               updateArrayLength(2, 0, 0);
               ip = 520;
@@ -4439,7 +5479,9 @@ module fpga                                                                     
 
         520 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[238] = heapMem[localMem[139]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 521;
@@ -4447,7 +5489,9 @@ module fpga                                                                     
 
         521 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[239] = heapMem[localMem[238]*10 + localMem[144]];
               updateArrayLength(2, 0, 0);
               ip = 522;
@@ -4455,7 +5499,9 @@ module fpga                                                                     
 
         522 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[240] = heapMem[localMem[139]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 523;
@@ -4463,7 +5509,9 @@ module fpga                                                                     
 
         523 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[240]*10 + 0] = localMem[237];
               updateArrayLength(1, localMem[240], 0);
               ip = 524;
@@ -4471,7 +5519,9 @@ module fpga                                                                     
 
         524 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[241] = heapMem[localMem[139]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 525;
@@ -4479,7 +5529,9 @@ module fpga                                                                     
 
         525 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[241]*10 + 0] = localMem[239];
               updateArrayLength(1, localMem[241], 0);
               ip = 526;
@@ -4487,7 +5539,9 @@ module fpga                                                                     
 
         526 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[242] = heapMem[localMem[139]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 527;
@@ -4495,7 +5549,9 @@ module fpga                                                                     
 
         527 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[242]*10 + 0] = localMem[194];
               updateArrayLength(1, localMem[242], 0);
               ip = 528;
@@ -4503,7 +5559,9 @@ module fpga                                                                     
 
         528 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[243] = heapMem[localMem[139]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 529;
@@ -4511,7 +5569,9 @@ module fpga                                                                     
 
         529 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[243]*10 + 1] = localMem[197];
               updateArrayLength(1, localMem[243], 1);
               ip = 530;
@@ -4519,7 +5579,9 @@ module fpga                                                                     
 
         530 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[139]*10 + 0] = 1;
               updateArrayLength(1, localMem[139], 0);
               ip = 531;
@@ -4527,7 +5589,9 @@ module fpga                                                                     
 
         531 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[244] = heapMem[localMem[139]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 532;
@@ -4535,14 +5599,18 @@ module fpga                                                                     
 
         532 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[244]] = 1;
               ip = 533;
       end
 
         533 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[245] = heapMem[localMem[139]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 534;
@@ -4550,14 +5618,18 @@ module fpga                                                                     
 
         534 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[245]] = 1;
               ip = 535;
       end
 
         535 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[246] = heapMem[localMem[139]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 536;
@@ -4565,32 +5637,42 @@ module fpga                                                                     
 
         536 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[246]] = 2;
               ip = 537;
       end
 
         537 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 539;
       end
 
         538 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 544;
       end
 
         539 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 540;
       end
 
         540 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[140] = 1;
               updateArrayLength(2, 0, 0);
               ip = 541;
@@ -4598,19 +5680,25 @@ module fpga                                                                     
 
         541 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 544;
       end
 
         542 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 543;
       end
 
         543 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[140] = 0;
               updateArrayLength(2, 0, 0);
               ip = 544;
@@ -4618,19 +5706,25 @@ module fpga                                                                     
 
         544 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 545;
       end
 
         545 :
       begin                                                                     // jNe
-//$display("AAAA %4d %4d jNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jNe", steps, ip);
+end
               ip = localMem[140] != 0 ? 547 : 546;
       end
 
         546 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[24] = localMem[139];
               updateArrayLength(2, 0, 0);
               ip = 547;
@@ -4638,25 +5732,33 @@ module fpga                                                                     
 
         547 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 548;
       end
 
         548 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 798;
       end
 
         549 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 550;
       end
 
         550 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[247] = heapMem[localMem[24]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 551;
@@ -4664,7 +5766,9 @@ module fpga                                                                     
 
         551 :
       begin                                                                     // arrayIndex
-//$display("AAAA %4d %4d arrayIndex", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d arrayIndex", steps, ip);
+end
               localMem[248] = 0; k = arraySizes[localMem[247]];
               for(i = 0; i < NArea; i = i + 1) begin
                 if (i < k && heapMem[localMem[247] * NArea + i] == 1) localMem[248] = i + 1;
@@ -4674,13 +5778,17 @@ module fpga                                                                     
 
         552 :
       begin                                                                     // jEq
-//$display("AAAA %4d %4d jEq", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jEq", steps, ip);
+end
               ip = localMem[248] == 0 ? 557 : 553;
       end
 
         553 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[1]*10 + 0] = localMem[24];
               updateArrayLength(1, localMem[1], 0);
               ip = 554;
@@ -4688,7 +5796,9 @@ module fpga                                                                     
 
         554 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[1]*10 + 1] = 1;
               updateArrayLength(1, localMem[1], 1);
               ip = 555;
@@ -4696,7 +5806,9 @@ module fpga                                                                     
 
         555 :
       begin                                                                     // subtract
-//$display("AAAA %4d %4d subtract", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d subtract", steps, ip);
+end
               heapMem[localMem[1]*10 + 2] = localMem[248] - 1;
               updateArrayLength(1, localMem[1], 2);
               ip = 556;
@@ -4704,19 +5816,25 @@ module fpga                                                                     
 
         556 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 805;
       end
 
         557 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 558;
       end
 
         558 :
       begin                                                                     // arrayCountLess
-//$display("AAAA %4d %4d arrayCountLess", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d arrayCountLess", steps, ip);
+end
               j = 0; k = arraySizes[localMem[247]];
               for(i = 0; i < NArea; i = i + 1) begin
                 if (i < k && heapMem[localMem[247] * NArea + i] < 1) j = j + 1;
@@ -4727,20 +5845,26 @@ module fpga                                                                     
 
         559 :
       begin                                                                     // not
-//$display("AAAA %4d %4d not", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d not", steps, ip);
+end
               localMem[250] = !heapMem[localMem[24]*10 + 6];
               ip = 560;
       end
 
         560 :
       begin                                                                     // jEq
-//$display("AAAA %4d %4d jEq", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jEq", steps, ip);
+end
               ip = localMem[250] == 0 ? 565 : 561;
       end
 
         561 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[1]*10 + 0] = localMem[24];
               updateArrayLength(1, localMem[1], 0);
               ip = 562;
@@ -4748,7 +5872,9 @@ module fpga                                                                     
 
         562 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[1]*10 + 1] = 0;
               updateArrayLength(1, localMem[1], 1);
               ip = 563;
@@ -4756,7 +5882,9 @@ module fpga                                                                     
 
         563 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[1]*10 + 2] = localMem[249];
               updateArrayLength(1, localMem[1], 2);
               ip = 564;
@@ -4764,19 +5892,25 @@ module fpga                                                                     
 
         564 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 805;
       end
 
         565 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 566;
       end
 
         566 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[251] = heapMem[localMem[24]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 567;
@@ -4784,7 +5918,9 @@ module fpga                                                                     
 
         567 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[252] = heapMem[localMem[251]*10 + localMem[249]];
               updateArrayLength(2, 0, 0);
               ip = 568;
@@ -4792,13 +5928,17 @@ module fpga                                                                     
 
         568 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 569;
       end
 
         569 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[254] = heapMem[localMem[252]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 570;
@@ -4806,7 +5946,9 @@ module fpga                                                                     
 
         570 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[255] = heapMem[localMem[252]*10 + 3];
               updateArrayLength(2, 0, 0);
               ip = 571;
@@ -4814,7 +5956,9 @@ module fpga                                                                     
 
         571 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[256] = heapMem[localMem[255]*10 + 2];
               updateArrayLength(2, 0, 0);
               ip = 572;
@@ -4822,13 +5966,17 @@ module fpga                                                                     
 
         572 :
       begin                                                                     // jLt
-//$display("AAAA %4d %4d jLt", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jLt", steps, ip);
+end
               ip = localMem[254] <  localMem[256] ? 792 : 573;
       end
 
         573 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[257] = localMem[256];
               updateArrayLength(2, 0, 0);
               ip = 574;
@@ -4836,14 +5984,18 @@ module fpga                                                                     
 
         574 :
       begin                                                                     // shiftRight
-//$display("AAAA %4d %4d shiftRight", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftRight", steps, ip);
+end
               localMem[257] = localMem[257] >> 1;
               ip = 575;
       end
 
         575 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[258] = localMem[257] + 1;
               updateArrayLength(2, 0, 0);
               ip = 576;
@@ -4851,7 +6003,9 @@ module fpga                                                                     
 
         576 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[259] = heapMem[localMem[252]*10 + 2];
               updateArrayLength(2, 0, 0);
               ip = 577;
@@ -4859,13 +6013,17 @@ module fpga                                                                     
 
         577 :
       begin                                                                     // jEq
-//$display("AAAA %4d %4d jEq", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jEq", steps, ip);
+end
               ip = localMem[259] == 0 ? 674 : 578;
       end
 
         578 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[260] = freedArrays[freedArraysTop];
@@ -4881,7 +6039,9 @@ module fpga                                                                     
 
         579 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[260]*10 + 0] = localMem[257];
               updateArrayLength(1, localMem[260], 0);
               ip = 580;
@@ -4889,7 +6049,9 @@ module fpga                                                                     
 
         580 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[260]*10 + 2] = 0;
               updateArrayLength(1, localMem[260], 2);
               ip = 581;
@@ -4897,7 +6059,9 @@ module fpga                                                                     
 
         581 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[261] = freedArrays[freedArraysTop];
@@ -4913,7 +6077,9 @@ module fpga                                                                     
 
         582 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[260]*10 + 4] = localMem[261];
               updateArrayLength(1, localMem[260], 4);
               ip = 583;
@@ -4921,7 +6087,9 @@ module fpga                                                                     
 
         583 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[262] = freedArrays[freedArraysTop];
@@ -4937,7 +6105,9 @@ module fpga                                                                     
 
         584 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[260]*10 + 5] = localMem[262];
               updateArrayLength(1, localMem[260], 5);
               ip = 585;
@@ -4945,7 +6115,9 @@ module fpga                                                                     
 
         585 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[260]*10 + 6] = 0;
               updateArrayLength(1, localMem[260], 6);
               ip = 586;
@@ -4953,7 +6125,9 @@ module fpga                                                                     
 
         586 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[260]*10 + 3] = localMem[255];
               updateArrayLength(1, localMem[260], 3);
               ip = 587;
@@ -4961,7 +6135,9 @@ module fpga                                                                     
 
         587 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[255]*10 + 1] = heapMem[localMem[255]*10 + 1] + 1;
               updateArrayLength(1, localMem[255], 1);
               ip = 588;
@@ -4969,7 +6145,9 @@ module fpga                                                                     
 
         588 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[260]*10 + 1] = heapMem[localMem[255]*10 + 1];
               updateArrayLength(1, localMem[260], 1);
               ip = 589;
@@ -4977,20 +6155,26 @@ module fpga                                                                     
 
         589 :
       begin                                                                     // not
-//$display("AAAA %4d %4d not", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d not", steps, ip);
+end
               localMem[263] = !heapMem[localMem[252]*10 + 6];
               ip = 590;
       end
 
         590 :
       begin                                                                     // jNe
-//$display("AAAA %4d %4d jNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jNe", steps, ip);
+end
               ip = localMem[263] != 0 ? 619 : 591;
       end
 
         591 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[264] = freedArrays[freedArraysTop];
@@ -5006,7 +6190,9 @@ module fpga                                                                     
 
         592 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[260]*10 + 6] = localMem[264];
               updateArrayLength(1, localMem[260], 6);
               ip = 593;
@@ -5014,7 +6200,9 @@ module fpga                                                                     
 
         593 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[265] = heapMem[localMem[252]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 594;
@@ -5022,7 +6210,9 @@ module fpga                                                                     
 
         594 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[266] = heapMem[localMem[260]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 595;
@@ -5030,7 +6220,9 @@ module fpga                                                                     
 
         595 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[257]) begin
                   heapMem[NArea * localMem[266] + 0 + i] = heapMem[NArea * localMem[265] + localMem[258] + i];
@@ -5042,7 +6234,9 @@ module fpga                                                                     
 
         596 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[267] = heapMem[localMem[252]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 597;
@@ -5050,7 +6244,9 @@ module fpga                                                                     
 
         597 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[268] = heapMem[localMem[260]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 598;
@@ -5058,7 +6254,9 @@ module fpga                                                                     
 
         598 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[257]) begin
                   heapMem[NArea * localMem[268] + 0 + i] = heapMem[NArea * localMem[267] + localMem[258] + i];
@@ -5070,7 +6268,9 @@ module fpga                                                                     
 
         599 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[269] = heapMem[localMem[252]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 600;
@@ -5078,7 +6278,9 @@ module fpga                                                                     
 
         600 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[270] = heapMem[localMem[260]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 601;
@@ -5086,7 +6288,9 @@ module fpga                                                                     
 
         601 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[271] = localMem[257] + 1;
               updateArrayLength(2, 0, 0);
               ip = 602;
@@ -5094,7 +6298,9 @@ module fpga                                                                     
 
         602 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[271]) begin
                   heapMem[NArea * localMem[270] + 0 + i] = heapMem[NArea * localMem[269] + localMem[258] + i];
@@ -5106,7 +6312,9 @@ module fpga                                                                     
 
         603 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[272] = heapMem[localMem[260]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 604;
@@ -5114,7 +6322,9 @@ module fpga                                                                     
 
         604 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[273] = localMem[272] + 1;
               updateArrayLength(2, 0, 0);
               ip = 605;
@@ -5122,7 +6332,9 @@ module fpga                                                                     
 
         605 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[274] = heapMem[localMem[260]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 606;
@@ -5130,13 +6342,17 @@ module fpga                                                                     
 
         606 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 607;
       end
 
         607 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[275] = 0;
               updateArrayLength(2, 0, 0);
               ip = 608;
@@ -5144,19 +6360,25 @@ module fpga                                                                     
 
         608 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 609;
       end
 
         609 :
       begin                                                                     // jGe
-//$display("AAAA %4d %4d jGe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jGe", steps, ip);
+end
               ip = localMem[275] >= localMem[273] ? 615 : 610;
       end
 
         610 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[276] = heapMem[localMem[274]*10 + localMem[275]];
               updateArrayLength(2, 0, 0);
               ip = 611;
@@ -5164,7 +6386,9 @@ module fpga                                                                     
 
         611 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[276]*10 + 2] = localMem[260];
               updateArrayLength(1, localMem[276], 2);
               ip = 612;
@@ -5172,13 +6396,17 @@ module fpga                                                                     
 
         612 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 613;
       end
 
         613 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[275] = localMem[275] + 1;
               updateArrayLength(2, 0, 0);
               ip = 614;
@@ -5186,19 +6414,25 @@ module fpga                                                                     
 
         614 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 608;
       end
 
         615 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 616;
       end
 
         616 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[277] = heapMem[localMem[252]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 617;
@@ -5206,26 +6440,34 @@ module fpga                                                                     
 
         617 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[277]] = localMem[258];
               ip = 618;
       end
 
         618 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 626;
       end
 
         619 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 620;
       end
 
         620 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[278] = heapMem[localMem[252]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 621;
@@ -5233,7 +6475,9 @@ module fpga                                                                     
 
         621 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[279] = heapMem[localMem[260]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 622;
@@ -5241,7 +6485,9 @@ module fpga                                                                     
 
         622 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[257]) begin
                   heapMem[NArea * localMem[279] + 0 + i] = heapMem[NArea * localMem[278] + localMem[258] + i];
@@ -5253,7 +6499,9 @@ module fpga                                                                     
 
         623 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[280] = heapMem[localMem[252]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 624;
@@ -5261,7 +6509,9 @@ module fpga                                                                     
 
         624 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[281] = heapMem[localMem[260]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 625;
@@ -5269,7 +6519,9 @@ module fpga                                                                     
 
         625 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[257]) begin
                   heapMem[NArea * localMem[281] + 0 + i] = heapMem[NArea * localMem[280] + localMem[258] + i];
@@ -5281,13 +6533,17 @@ module fpga                                                                     
 
         626 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 627;
       end
 
         627 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[252]*10 + 0] = localMem[257];
               updateArrayLength(1, localMem[252], 0);
               ip = 628;
@@ -5295,7 +6551,9 @@ module fpga                                                                     
 
         628 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[260]*10 + 2] = localMem[259];
               updateArrayLength(1, localMem[260], 2);
               ip = 629;
@@ -5303,7 +6561,9 @@ module fpga                                                                     
 
         629 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[282] = heapMem[localMem[259]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 630;
@@ -5311,7 +6571,9 @@ module fpga                                                                     
 
         630 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[283] = heapMem[localMem[259]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 631;
@@ -5319,7 +6581,9 @@ module fpga                                                                     
 
         631 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[284] = heapMem[localMem[283]*10 + localMem[282]];
               updateArrayLength(2, 0, 0);
               ip = 632;
@@ -5327,13 +6591,17 @@ module fpga                                                                     
 
         632 :
       begin                                                                     // jNe
-//$display("AAAA %4d %4d jNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jNe", steps, ip);
+end
               ip = localMem[284] != localMem[252] ? 651 : 633;
       end
 
         633 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[285] = heapMem[localMem[252]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 634;
@@ -5341,7 +6609,9 @@ module fpga                                                                     
 
         634 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[286] = heapMem[localMem[285]*10 + localMem[257]];
               updateArrayLength(2, 0, 0);
               ip = 635;
@@ -5349,7 +6619,9 @@ module fpga                                                                     
 
         635 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[287] = heapMem[localMem[259]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 636;
@@ -5357,7 +6629,9 @@ module fpga                                                                     
 
         636 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[287]*10 + localMem[282]] = localMem[286];
               updateArrayLength(1, localMem[287], localMem[282]);
               ip = 637;
@@ -5365,7 +6639,9 @@ module fpga                                                                     
 
         637 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[288] = heapMem[localMem[252]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 638;
@@ -5373,7 +6649,9 @@ module fpga                                                                     
 
         638 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[289] = heapMem[localMem[288]*10 + localMem[257]];
               updateArrayLength(2, 0, 0);
               ip = 639;
@@ -5381,7 +6659,9 @@ module fpga                                                                     
 
         639 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[290] = heapMem[localMem[259]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 640;
@@ -5389,7 +6669,9 @@ module fpga                                                                     
 
         640 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[290]*10 + localMem[282]] = localMem[289];
               updateArrayLength(1, localMem[290], localMem[282]);
               ip = 641;
@@ -5397,7 +6679,9 @@ module fpga                                                                     
 
         641 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[291] = heapMem[localMem[252]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 642;
@@ -5405,14 +6689,18 @@ module fpga                                                                     
 
         642 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[291]] = localMem[257];
               ip = 643;
       end
 
         643 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[292] = heapMem[localMem[252]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 644;
@@ -5420,14 +6708,18 @@ module fpga                                                                     
 
         644 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[292]] = localMem[257];
               ip = 645;
       end
 
         645 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[293] = localMem[282] + 1;
               updateArrayLength(2, 0, 0);
               ip = 646;
@@ -5435,7 +6727,9 @@ module fpga                                                                     
 
         646 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[259]*10 + 0] = localMem[293];
               updateArrayLength(1, localMem[259], 0);
               ip = 647;
@@ -5443,7 +6737,9 @@ module fpga                                                                     
 
         647 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[294] = heapMem[localMem[259]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 648;
@@ -5451,7 +6747,9 @@ module fpga                                                                     
 
         648 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[294]*10 + localMem[293]] = localMem[260];
               updateArrayLength(1, localMem[294], localMem[293]);
               ip = 649;
@@ -5459,31 +6757,41 @@ module fpga                                                                     
 
         649 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 789;
       end
 
         650 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 673;
       end
 
         651 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 652;
       end
 
         652 :
       begin                                                                     // assertNe
-//$display("AAAA %4d %4d assertNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d assertNe", steps, ip);
+end
             ip = 653;
       end
 
         653 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[295] = heapMem[localMem[259]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 654;
@@ -5491,7 +6799,9 @@ module fpga                                                                     
 
         654 :
       begin                                                                     // arrayIndex
-//$display("AAAA %4d %4d arrayIndex", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d arrayIndex", steps, ip);
+end
               localMem[296] = 0; k = arraySizes[localMem[295]];
               for(i = 0; i < NArea; i = i + 1) begin
                 if (i < k && heapMem[localMem[295] * NArea + i] == localMem[252]) localMem[296] = i + 1;
@@ -5501,7 +6811,9 @@ module fpga                                                                     
 
         655 :
       begin                                                                     // subtract
-//$display("AAAA %4d %4d subtract", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d subtract", steps, ip);
+end
               localMem[296] = localMem[296] - 1;
               updateArrayLength(2, 0, 0);
               ip = 656;
@@ -5509,7 +6821,9 @@ module fpga                                                                     
 
         656 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[297] = heapMem[localMem[252]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 657;
@@ -5517,7 +6831,9 @@ module fpga                                                                     
 
         657 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[298] = heapMem[localMem[297]*10 + localMem[257]];
               updateArrayLength(2, 0, 0);
               ip = 658;
@@ -5525,7 +6841,9 @@ module fpga                                                                     
 
         658 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[299] = heapMem[localMem[252]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 659;
@@ -5533,7 +6851,9 @@ module fpga                                                                     
 
         659 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[300] = heapMem[localMem[299]*10 + localMem[257]];
               updateArrayLength(2, 0, 0);
               ip = 660;
@@ -5541,7 +6861,9 @@ module fpga                                                                     
 
         660 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[301] = heapMem[localMem[252]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 661;
@@ -5549,14 +6871,18 @@ module fpga                                                                     
 
         661 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[301]] = localMem[257];
               ip = 662;
       end
 
         662 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[302] = heapMem[localMem[252]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 663;
@@ -5564,14 +6890,18 @@ module fpga                                                                     
 
         663 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[302]] = localMem[257];
               ip = 664;
       end
 
         664 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[303] = heapMem[localMem[259]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 665;
@@ -5579,7 +6909,9 @@ module fpga                                                                     
 
         665 :
       begin                                                                     // shiftUp
-//$display("AAAA %4d %4d shiftUp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftUp", steps, ip);
+end
 //$display("AAAA %4d %4d shiftUp", steps, ip);
               for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[303] + i]; // Copy source array
 //$display("BBBB pos=%d array=%d length=%d", localMem[296], localMem[303], arraySizes[localMem[303]]);
@@ -5596,7 +6928,9 @@ module fpga                                                                     
 
         666 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[304] = heapMem[localMem[259]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 667;
@@ -5604,7 +6938,9 @@ module fpga                                                                     
 
         667 :
       begin                                                                     // shiftUp
-//$display("AAAA %4d %4d shiftUp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftUp", steps, ip);
+end
 //$display("AAAA %4d %4d shiftUp", steps, ip);
               for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[304] + i]; // Copy source array
 //$display("BBBB pos=%d array=%d length=%d", localMem[296], localMem[304], arraySizes[localMem[304]]);
@@ -5621,7 +6957,9 @@ module fpga                                                                     
 
         668 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[305] = heapMem[localMem[259]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 669;
@@ -5629,7 +6967,9 @@ module fpga                                                                     
 
         669 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[306] = localMem[296] + 1;
               updateArrayLength(2, 0, 0);
               ip = 670;
@@ -5637,7 +6977,9 @@ module fpga                                                                     
 
         670 :
       begin                                                                     // shiftUp
-//$display("AAAA %4d %4d shiftUp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftUp", steps, ip);
+end
 //$display("AAAA %4d %4d shiftUp", steps, ip);
               for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[305] + i]; // Copy source array
 //$display("BBBB pos=%d array=%d length=%d", localMem[306], localMem[305], arraySizes[localMem[305]]);
@@ -5654,7 +6996,9 @@ module fpga                                                                     
 
         671 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[259]*10 + 0] = heapMem[localMem[259]*10 + 0] + 1;
               updateArrayLength(1, localMem[259], 0);
               ip = 672;
@@ -5662,25 +7006,33 @@ module fpga                                                                     
 
         672 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 789;
       end
 
         673 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 674;
       end
 
         674 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 675;
       end
 
         675 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[307] = freedArrays[freedArraysTop];
@@ -5696,7 +7048,9 @@ module fpga                                                                     
 
         676 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[307]*10 + 0] = localMem[257];
               updateArrayLength(1, localMem[307], 0);
               ip = 677;
@@ -5704,7 +7058,9 @@ module fpga                                                                     
 
         677 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[307]*10 + 2] = 0;
               updateArrayLength(1, localMem[307], 2);
               ip = 678;
@@ -5712,7 +7068,9 @@ module fpga                                                                     
 
         678 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[308] = freedArrays[freedArraysTop];
@@ -5728,7 +7086,9 @@ module fpga                                                                     
 
         679 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[307]*10 + 4] = localMem[308];
               updateArrayLength(1, localMem[307], 4);
               ip = 680;
@@ -5736,7 +7096,9 @@ module fpga                                                                     
 
         680 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[309] = freedArrays[freedArraysTop];
@@ -5752,7 +7114,9 @@ module fpga                                                                     
 
         681 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[307]*10 + 5] = localMem[309];
               updateArrayLength(1, localMem[307], 5);
               ip = 682;
@@ -5760,7 +7124,9 @@ module fpga                                                                     
 
         682 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[307]*10 + 6] = 0;
               updateArrayLength(1, localMem[307], 6);
               ip = 683;
@@ -5768,7 +7134,9 @@ module fpga                                                                     
 
         683 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[307]*10 + 3] = localMem[255];
               updateArrayLength(1, localMem[307], 3);
               ip = 684;
@@ -5776,7 +7144,9 @@ module fpga                                                                     
 
         684 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[255]*10 + 1] = heapMem[localMem[255]*10 + 1] + 1;
               updateArrayLength(1, localMem[255], 1);
               ip = 685;
@@ -5784,7 +7154,9 @@ module fpga                                                                     
 
         685 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[307]*10 + 1] = heapMem[localMem[255]*10 + 1];
               updateArrayLength(1, localMem[307], 1);
               ip = 686;
@@ -5792,7 +7164,9 @@ module fpga                                                                     
 
         686 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[310] = freedArrays[freedArraysTop];
@@ -5808,7 +7182,9 @@ module fpga                                                                     
 
         687 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[310]*10 + 0] = localMem[257];
               updateArrayLength(1, localMem[310], 0);
               ip = 688;
@@ -5816,7 +7192,9 @@ module fpga                                                                     
 
         688 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[310]*10 + 2] = 0;
               updateArrayLength(1, localMem[310], 2);
               ip = 689;
@@ -5824,7 +7202,9 @@ module fpga                                                                     
 
         689 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[311] = freedArrays[freedArraysTop];
@@ -5840,7 +7220,9 @@ module fpga                                                                     
 
         690 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[310]*10 + 4] = localMem[311];
               updateArrayLength(1, localMem[310], 4);
               ip = 691;
@@ -5848,7 +7230,9 @@ module fpga                                                                     
 
         691 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[312] = freedArrays[freedArraysTop];
@@ -5864,7 +7248,9 @@ module fpga                                                                     
 
         692 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[310]*10 + 5] = localMem[312];
               updateArrayLength(1, localMem[310], 5);
               ip = 693;
@@ -5872,7 +7258,9 @@ module fpga                                                                     
 
         693 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[310]*10 + 6] = 0;
               updateArrayLength(1, localMem[310], 6);
               ip = 694;
@@ -5880,7 +7268,9 @@ module fpga                                                                     
 
         694 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[310]*10 + 3] = localMem[255];
               updateArrayLength(1, localMem[310], 3);
               ip = 695;
@@ -5888,7 +7278,9 @@ module fpga                                                                     
 
         695 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[255]*10 + 1] = heapMem[localMem[255]*10 + 1] + 1;
               updateArrayLength(1, localMem[255], 1);
               ip = 696;
@@ -5896,7 +7288,9 @@ module fpga                                                                     
 
         696 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[310]*10 + 1] = heapMem[localMem[255]*10 + 1];
               updateArrayLength(1, localMem[310], 1);
               ip = 697;
@@ -5904,20 +7298,26 @@ module fpga                                                                     
 
         697 :
       begin                                                                     // not
-//$display("AAAA %4d %4d not", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d not", steps, ip);
+end
               localMem[313] = !heapMem[localMem[252]*10 + 6];
               ip = 698;
       end
 
         698 :
       begin                                                                     // jNe
-//$display("AAAA %4d %4d jNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jNe", steps, ip);
+end
               ip = localMem[313] != 0 ? 750 : 699;
       end
 
         699 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[314] = freedArrays[freedArraysTop];
@@ -5933,7 +7333,9 @@ module fpga                                                                     
 
         700 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[307]*10 + 6] = localMem[314];
               updateArrayLength(1, localMem[307], 6);
               ip = 701;
@@ -5941,7 +7343,9 @@ module fpga                                                                     
 
         701 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[315] = freedArrays[freedArraysTop];
@@ -5957,7 +7361,9 @@ module fpga                                                                     
 
         702 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[310]*10 + 6] = localMem[315];
               updateArrayLength(1, localMem[310], 6);
               ip = 703;
@@ -5965,7 +7371,9 @@ module fpga                                                                     
 
         703 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[316] = heapMem[localMem[252]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 704;
@@ -5973,7 +7381,9 @@ module fpga                                                                     
 
         704 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[317] = heapMem[localMem[307]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 705;
@@ -5981,7 +7391,9 @@ module fpga                                                                     
 
         705 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[257]) begin
                   heapMem[NArea * localMem[317] + 0 + i] = heapMem[NArea * localMem[316] + 0 + i];
@@ -5993,7 +7405,9 @@ module fpga                                                                     
 
         706 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[318] = heapMem[localMem[252]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 707;
@@ -6001,7 +7415,9 @@ module fpga                                                                     
 
         707 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[319] = heapMem[localMem[307]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 708;
@@ -6009,7 +7425,9 @@ module fpga                                                                     
 
         708 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[257]) begin
                   heapMem[NArea * localMem[319] + 0 + i] = heapMem[NArea * localMem[318] + 0 + i];
@@ -6021,7 +7439,9 @@ module fpga                                                                     
 
         709 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[320] = heapMem[localMem[252]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 710;
@@ -6029,7 +7449,9 @@ module fpga                                                                     
 
         710 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[321] = heapMem[localMem[307]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 711;
@@ -6037,7 +7459,9 @@ module fpga                                                                     
 
         711 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[322] = localMem[257] + 1;
               updateArrayLength(2, 0, 0);
               ip = 712;
@@ -6045,7 +7469,9 @@ module fpga                                                                     
 
         712 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[322]) begin
                   heapMem[NArea * localMem[321] + 0 + i] = heapMem[NArea * localMem[320] + 0 + i];
@@ -6057,7 +7483,9 @@ module fpga                                                                     
 
         713 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[323] = heapMem[localMem[252]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 714;
@@ -6065,7 +7493,9 @@ module fpga                                                                     
 
         714 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[324] = heapMem[localMem[310]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 715;
@@ -6073,7 +7503,9 @@ module fpga                                                                     
 
         715 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[257]) begin
                   heapMem[NArea * localMem[324] + 0 + i] = heapMem[NArea * localMem[323] + localMem[258] + i];
@@ -6085,7 +7517,9 @@ module fpga                                                                     
 
         716 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[325] = heapMem[localMem[252]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 717;
@@ -6093,7 +7527,9 @@ module fpga                                                                     
 
         717 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[326] = heapMem[localMem[310]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 718;
@@ -6101,7 +7537,9 @@ module fpga                                                                     
 
         718 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[257]) begin
                   heapMem[NArea * localMem[326] + 0 + i] = heapMem[NArea * localMem[325] + localMem[258] + i];
@@ -6113,7 +7551,9 @@ module fpga                                                                     
 
         719 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[327] = heapMem[localMem[252]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 720;
@@ -6121,7 +7561,9 @@ module fpga                                                                     
 
         720 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[328] = heapMem[localMem[310]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 721;
@@ -6129,7 +7571,9 @@ module fpga                                                                     
 
         721 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[329] = localMem[257] + 1;
               updateArrayLength(2, 0, 0);
               ip = 722;
@@ -6137,7 +7581,9 @@ module fpga                                                                     
 
         722 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[329]) begin
                   heapMem[NArea * localMem[328] + 0 + i] = heapMem[NArea * localMem[327] + localMem[258] + i];
@@ -6149,7 +7595,9 @@ module fpga                                                                     
 
         723 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[330] = heapMem[localMem[307]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 724;
@@ -6157,7 +7605,9 @@ module fpga                                                                     
 
         724 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[331] = localMem[330] + 1;
               updateArrayLength(2, 0, 0);
               ip = 725;
@@ -6165,7 +7615,9 @@ module fpga                                                                     
 
         725 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[332] = heapMem[localMem[307]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 726;
@@ -6173,13 +7625,17 @@ module fpga                                                                     
 
         726 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 727;
       end
 
         727 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[333] = 0;
               updateArrayLength(2, 0, 0);
               ip = 728;
@@ -6187,19 +7643,25 @@ module fpga                                                                     
 
         728 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 729;
       end
 
         729 :
       begin                                                                     // jGe
-//$display("AAAA %4d %4d jGe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jGe", steps, ip);
+end
               ip = localMem[333] >= localMem[331] ? 735 : 730;
       end
 
         730 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[334] = heapMem[localMem[332]*10 + localMem[333]];
               updateArrayLength(2, 0, 0);
               ip = 731;
@@ -6207,7 +7669,9 @@ module fpga                                                                     
 
         731 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[334]*10 + 2] = localMem[307];
               updateArrayLength(1, localMem[334], 2);
               ip = 732;
@@ -6215,13 +7679,17 @@ module fpga                                                                     
 
         732 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 733;
       end
 
         733 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[333] = localMem[333] + 1;
               updateArrayLength(2, 0, 0);
               ip = 734;
@@ -6229,19 +7697,25 @@ module fpga                                                                     
 
         734 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 728;
       end
 
         735 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 736;
       end
 
         736 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[335] = heapMem[localMem[310]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 737;
@@ -6249,7 +7723,9 @@ module fpga                                                                     
 
         737 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[336] = localMem[335] + 1;
               updateArrayLength(2, 0, 0);
               ip = 738;
@@ -6257,7 +7733,9 @@ module fpga                                                                     
 
         738 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[337] = heapMem[localMem[310]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 739;
@@ -6265,13 +7743,17 @@ module fpga                                                                     
 
         739 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 740;
       end
 
         740 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[338] = 0;
               updateArrayLength(2, 0, 0);
               ip = 741;
@@ -6279,19 +7761,25 @@ module fpga                                                                     
 
         741 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 742;
       end
 
         742 :
       begin                                                                     // jGe
-//$display("AAAA %4d %4d jGe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jGe", steps, ip);
+end
               ip = localMem[338] >= localMem[336] ? 748 : 743;
       end
 
         743 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[339] = heapMem[localMem[337]*10 + localMem[338]];
               updateArrayLength(2, 0, 0);
               ip = 744;
@@ -6299,7 +7787,9 @@ module fpga                                                                     
 
         744 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[339]*10 + 2] = localMem[310];
               updateArrayLength(1, localMem[339], 2);
               ip = 745;
@@ -6307,13 +7797,17 @@ module fpga                                                                     
 
         745 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 746;
       end
 
         746 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[338] = localMem[338] + 1;
               updateArrayLength(2, 0, 0);
               ip = 747;
@@ -6321,31 +7815,41 @@ module fpga                                                                     
 
         747 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 741;
       end
 
         748 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 749;
       end
 
         749 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 765;
       end
 
         750 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 751;
       end
 
         751 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[340] = freedArrays[freedArraysTop];
@@ -6361,7 +7865,9 @@ module fpga                                                                     
 
         752 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[252]*10 + 6] = localMem[340];
               updateArrayLength(1, localMem[252], 6);
               ip = 753;
@@ -6369,7 +7875,9 @@ module fpga                                                                     
 
         753 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[341] = heapMem[localMem[252]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 754;
@@ -6377,7 +7885,9 @@ module fpga                                                                     
 
         754 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[342] = heapMem[localMem[307]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 755;
@@ -6385,7 +7895,9 @@ module fpga                                                                     
 
         755 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[257]) begin
                   heapMem[NArea * localMem[342] + 0 + i] = heapMem[NArea * localMem[341] + 0 + i];
@@ -6397,7 +7909,9 @@ module fpga                                                                     
 
         756 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[343] = heapMem[localMem[252]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 757;
@@ -6405,7 +7919,9 @@ module fpga                                                                     
 
         757 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[344] = heapMem[localMem[307]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 758;
@@ -6413,7 +7929,9 @@ module fpga                                                                     
 
         758 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[257]) begin
                   heapMem[NArea * localMem[344] + 0 + i] = heapMem[NArea * localMem[343] + 0 + i];
@@ -6425,7 +7943,9 @@ module fpga                                                                     
 
         759 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[345] = heapMem[localMem[252]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 760;
@@ -6433,7 +7953,9 @@ module fpga                                                                     
 
         760 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[346] = heapMem[localMem[310]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 761;
@@ -6441,7 +7963,9 @@ module fpga                                                                     
 
         761 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[257]) begin
                   heapMem[NArea * localMem[346] + 0 + i] = heapMem[NArea * localMem[345] + localMem[258] + i];
@@ -6453,7 +7977,9 @@ module fpga                                                                     
 
         762 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[347] = heapMem[localMem[252]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 763;
@@ -6461,7 +7987,9 @@ module fpga                                                                     
 
         763 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[348] = heapMem[localMem[310]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 764;
@@ -6469,7 +7997,9 @@ module fpga                                                                     
 
         764 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[257]) begin
                   heapMem[NArea * localMem[348] + 0 + i] = heapMem[NArea * localMem[347] + localMem[258] + i];
@@ -6481,13 +8011,17 @@ module fpga                                                                     
 
         765 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 766;
       end
 
         766 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[307]*10 + 2] = localMem[252];
               updateArrayLength(1, localMem[307], 2);
               ip = 767;
@@ -6495,7 +8029,9 @@ module fpga                                                                     
 
         767 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[310]*10 + 2] = localMem[252];
               updateArrayLength(1, localMem[310], 2);
               ip = 768;
@@ -6503,7 +8039,9 @@ module fpga                                                                     
 
         768 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[349] = heapMem[localMem[252]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 769;
@@ -6511,7 +8049,9 @@ module fpga                                                                     
 
         769 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[350] = heapMem[localMem[349]*10 + localMem[257]];
               updateArrayLength(2, 0, 0);
               ip = 770;
@@ -6519,7 +8059,9 @@ module fpga                                                                     
 
         770 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[351] = heapMem[localMem[252]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 771;
@@ -6527,7 +8069,9 @@ module fpga                                                                     
 
         771 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[352] = heapMem[localMem[351]*10 + localMem[257]];
               updateArrayLength(2, 0, 0);
               ip = 772;
@@ -6535,7 +8079,9 @@ module fpga                                                                     
 
         772 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[353] = heapMem[localMem[252]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 773;
@@ -6543,7 +8089,9 @@ module fpga                                                                     
 
         773 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[353]*10 + 0] = localMem[350];
               updateArrayLength(1, localMem[353], 0);
               ip = 774;
@@ -6551,7 +8099,9 @@ module fpga                                                                     
 
         774 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[354] = heapMem[localMem[252]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 775;
@@ -6559,7 +8109,9 @@ module fpga                                                                     
 
         775 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[354]*10 + 0] = localMem[352];
               updateArrayLength(1, localMem[354], 0);
               ip = 776;
@@ -6567,7 +8119,9 @@ module fpga                                                                     
 
         776 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[355] = heapMem[localMem[252]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 777;
@@ -6575,7 +8129,9 @@ module fpga                                                                     
 
         777 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[355]*10 + 0] = localMem[307];
               updateArrayLength(1, localMem[355], 0);
               ip = 778;
@@ -6583,7 +8139,9 @@ module fpga                                                                     
 
         778 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[356] = heapMem[localMem[252]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 779;
@@ -6591,7 +8149,9 @@ module fpga                                                                     
 
         779 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[356]*10 + 1] = localMem[310];
               updateArrayLength(1, localMem[356], 1);
               ip = 780;
@@ -6599,7 +8159,9 @@ module fpga                                                                     
 
         780 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[252]*10 + 0] = 1;
               updateArrayLength(1, localMem[252], 0);
               ip = 781;
@@ -6607,7 +8169,9 @@ module fpga                                                                     
 
         781 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[357] = heapMem[localMem[252]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 782;
@@ -6615,14 +8179,18 @@ module fpga                                                                     
 
         782 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[357]] = 1;
               ip = 783;
       end
 
         783 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[358] = heapMem[localMem[252]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 784;
@@ -6630,14 +8198,18 @@ module fpga                                                                     
 
         784 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[358]] = 1;
               ip = 785;
       end
 
         785 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[359] = heapMem[localMem[252]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 786;
@@ -6645,32 +8217,42 @@ module fpga                                                                     
 
         786 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[359]] = 2;
               ip = 787;
       end
 
         787 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 789;
       end
 
         788 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 794;
       end
 
         789 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 790;
       end
 
         790 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[253] = 1;
               updateArrayLength(2, 0, 0);
               ip = 791;
@@ -6678,19 +8260,25 @@ module fpga                                                                     
 
         791 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 794;
       end
 
         792 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 793;
       end
 
         793 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[253] = 0;
               updateArrayLength(2, 0, 0);
               ip = 794;
@@ -6698,19 +8286,25 @@ module fpga                                                                     
 
         794 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 795;
       end
 
         795 :
       begin                                                                     // jNe
-//$display("AAAA %4d %4d jNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jNe", steps, ip);
+end
               ip = localMem[253] != 0 ? 797 : 796;
       end
 
         796 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[24] = localMem[252];
               updateArrayLength(2, 0, 0);
               ip = 797;
@@ -6718,19 +8312,25 @@ module fpga                                                                     
 
         797 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 798;
       end
 
         798 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 799;
       end
 
         799 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[132] = localMem[132] + 1;
               updateArrayLength(2, 0, 0);
               ip = 800;
@@ -6738,43 +8338,57 @@ module fpga                                                                     
 
         800 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 302;
       end
 
         801 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 802;
       end
 
         802 :
       begin                                                                     // assert
-//$display("AAAA %4d %4d assert", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d assert", steps, ip);
+end
             ip = 803;
       end
 
         803 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 804;
       end
 
         804 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 805;
       end
 
         805 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 806;
       end
 
         806 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[360] = heapMem[localMem[1]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 807;
@@ -6782,7 +8396,9 @@ module fpga                                                                     
 
         807 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[361] = heapMem[localMem[1]*10 + 1];
               updateArrayLength(2, 0, 0);
               ip = 808;
@@ -6790,7 +8406,9 @@ module fpga                                                                     
 
         808 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[362] = heapMem[localMem[1]*10 + 2];
               updateArrayLength(2, 0, 0);
               ip = 809;
@@ -6798,13 +8416,17 @@ module fpga                                                                     
 
         809 :
       begin                                                                     // jNe
-//$display("AAAA %4d %4d jNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jNe", steps, ip);
+end
               ip = localMem[361] != 1 ? 813 : 810;
       end
 
         810 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[363] = heapMem[localMem[360]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 811;
@@ -6812,7 +8434,9 @@ module fpga                                                                     
 
         811 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[363]*10 + localMem[362]] = 11;
               updateArrayLength(1, localMem[363], localMem[362]);
               ip = 812;
@@ -6820,25 +8444,33 @@ module fpga                                                                     
 
         812 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 1059;
       end
 
         813 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 814;
       end
 
         814 :
       begin                                                                     // jNe
-//$display("AAAA %4d %4d jNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jNe", steps, ip);
+end
               ip = localMem[361] != 2 ? 822 : 815;
       end
 
         815 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[364] = localMem[362] + 1;
               updateArrayLength(2, 0, 0);
               ip = 816;
@@ -6846,7 +8478,9 @@ module fpga                                                                     
 
         816 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[365] = heapMem[localMem[360]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 817;
@@ -6854,7 +8488,9 @@ module fpga                                                                     
 
         817 :
       begin                                                                     // shiftUp
-//$display("AAAA %4d %4d shiftUp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftUp", steps, ip);
+end
 //$display("AAAA %4d %4d shiftUp", steps, ip);
               for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[365] + i]; // Copy source array
 //$display("BBBB pos=%d array=%d length=%d", localMem[364], localMem[365], arraySizes[localMem[365]]);
@@ -6871,7 +8507,9 @@ module fpga                                                                     
 
         818 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[366] = heapMem[localMem[360]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 819;
@@ -6879,7 +8517,9 @@ module fpga                                                                     
 
         819 :
       begin                                                                     // shiftUp
-//$display("AAAA %4d %4d shiftUp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftUp", steps, ip);
+end
 //$display("AAAA %4d %4d shiftUp", steps, ip);
               for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[366] + i]; // Copy source array
 //$display("BBBB pos=%d array=%d length=%d", localMem[364], localMem[366], arraySizes[localMem[366]]);
@@ -6896,7 +8536,9 @@ module fpga                                                                     
 
         820 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[360]*10 + 0] = heapMem[localMem[360]*10 + 0] + 1;
               updateArrayLength(1, localMem[360], 0);
               ip = 821;
@@ -6904,19 +8546,25 @@ module fpga                                                                     
 
         821 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 828;
       end
 
         822 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 823;
       end
 
         823 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[367] = heapMem[localMem[360]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 824;
@@ -6924,7 +8572,9 @@ module fpga                                                                     
 
         824 :
       begin                                                                     // shiftUp
-//$display("AAAA %4d %4d shiftUp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftUp", steps, ip);
+end
 //$display("AAAA %4d %4d shiftUp", steps, ip);
               for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[367] + i]; // Copy source array
 //$display("BBBB pos=%d array=%d length=%d", localMem[362], localMem[367], arraySizes[localMem[367]]);
@@ -6941,7 +8591,9 @@ module fpga                                                                     
 
         825 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[368] = heapMem[localMem[360]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 826;
@@ -6949,7 +8601,9 @@ module fpga                                                                     
 
         826 :
       begin                                                                     // shiftUp
-//$display("AAAA %4d %4d shiftUp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftUp", steps, ip);
+end
 //$display("AAAA %4d %4d shiftUp", steps, ip);
               for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[368] + i]; // Copy source array
 //$display("BBBB pos=%d array=%d length=%d", localMem[362], localMem[368], arraySizes[localMem[368]]);
@@ -6966,7 +8620,9 @@ module fpga                                                                     
 
         827 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[360]*10 + 0] = heapMem[localMem[360]*10 + 0] + 1;
               updateArrayLength(1, localMem[360], 0);
               ip = 828;
@@ -6974,13 +8630,17 @@ module fpga                                                                     
 
         828 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 829;
       end
 
         829 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[0]*10 + 0] = heapMem[localMem[0]*10 + 0] + 1;
               updateArrayLength(1, localMem[0], 0);
               ip = 830;
@@ -6988,13 +8648,17 @@ module fpga                                                                     
 
         830 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 831;
       end
 
         831 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[370] = heapMem[localMem[360]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 832;
@@ -7002,7 +8666,9 @@ module fpga                                                                     
 
         832 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[371] = heapMem[localMem[360]*10 + 3];
               updateArrayLength(2, 0, 0);
               ip = 833;
@@ -7010,7 +8676,9 @@ module fpga                                                                     
 
         833 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[372] = heapMem[localMem[371]*10 + 2];
               updateArrayLength(2, 0, 0);
               ip = 834;
@@ -7018,13 +8686,17 @@ module fpga                                                                     
 
         834 :
       begin                                                                     // jLt
-//$display("AAAA %4d %4d jLt", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jLt", steps, ip);
+end
               ip = localMem[370] <  localMem[372] ? 1054 : 835;
       end
 
         835 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[373] = localMem[372];
               updateArrayLength(2, 0, 0);
               ip = 836;
@@ -7032,14 +8704,18 @@ module fpga                                                                     
 
         836 :
       begin                                                                     // shiftRight
-//$display("AAAA %4d %4d shiftRight", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftRight", steps, ip);
+end
               localMem[373] = localMem[373] >> 1;
               ip = 837;
       end
 
         837 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[374] = localMem[373] + 1;
               updateArrayLength(2, 0, 0);
               ip = 838;
@@ -7047,7 +8723,9 @@ module fpga                                                                     
 
         838 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[375] = heapMem[localMem[360]*10 + 2];
               updateArrayLength(2, 0, 0);
               ip = 839;
@@ -7055,13 +8733,17 @@ module fpga                                                                     
 
         839 :
       begin                                                                     // jEq
-//$display("AAAA %4d %4d jEq", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jEq", steps, ip);
+end
               ip = localMem[375] == 0 ? 936 : 840;
       end
 
         840 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[376] = freedArrays[freedArraysTop];
@@ -7077,7 +8759,9 @@ module fpga                                                                     
 
         841 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[376]*10 + 0] = localMem[373];
               updateArrayLength(1, localMem[376], 0);
               ip = 842;
@@ -7085,7 +8769,9 @@ module fpga                                                                     
 
         842 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[376]*10 + 2] = 0;
               updateArrayLength(1, localMem[376], 2);
               ip = 843;
@@ -7093,7 +8779,9 @@ module fpga                                                                     
 
         843 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[377] = freedArrays[freedArraysTop];
@@ -7109,7 +8797,9 @@ module fpga                                                                     
 
         844 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[376]*10 + 4] = localMem[377];
               updateArrayLength(1, localMem[376], 4);
               ip = 845;
@@ -7117,7 +8807,9 @@ module fpga                                                                     
 
         845 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[378] = freedArrays[freedArraysTop];
@@ -7133,7 +8825,9 @@ module fpga                                                                     
 
         846 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[376]*10 + 5] = localMem[378];
               updateArrayLength(1, localMem[376], 5);
               ip = 847;
@@ -7141,7 +8835,9 @@ module fpga                                                                     
 
         847 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[376]*10 + 6] = 0;
               updateArrayLength(1, localMem[376], 6);
               ip = 848;
@@ -7149,7 +8845,9 @@ module fpga                                                                     
 
         848 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[376]*10 + 3] = localMem[371];
               updateArrayLength(1, localMem[376], 3);
               ip = 849;
@@ -7157,7 +8855,9 @@ module fpga                                                                     
 
         849 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[371]*10 + 1] = heapMem[localMem[371]*10 + 1] + 1;
               updateArrayLength(1, localMem[371], 1);
               ip = 850;
@@ -7165,7 +8865,9 @@ module fpga                                                                     
 
         850 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[376]*10 + 1] = heapMem[localMem[371]*10 + 1];
               updateArrayLength(1, localMem[376], 1);
               ip = 851;
@@ -7173,20 +8875,26 @@ module fpga                                                                     
 
         851 :
       begin                                                                     // not
-//$display("AAAA %4d %4d not", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d not", steps, ip);
+end
               localMem[379] = !heapMem[localMem[360]*10 + 6];
               ip = 852;
       end
 
         852 :
       begin                                                                     // jNe
-//$display("AAAA %4d %4d jNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jNe", steps, ip);
+end
               ip = localMem[379] != 0 ? 881 : 853;
       end
 
         853 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[380] = freedArrays[freedArraysTop];
@@ -7202,7 +8910,9 @@ module fpga                                                                     
 
         854 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[376]*10 + 6] = localMem[380];
               updateArrayLength(1, localMem[376], 6);
               ip = 855;
@@ -7210,7 +8920,9 @@ module fpga                                                                     
 
         855 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[381] = heapMem[localMem[360]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 856;
@@ -7218,7 +8930,9 @@ module fpga                                                                     
 
         856 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[382] = heapMem[localMem[376]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 857;
@@ -7226,7 +8940,9 @@ module fpga                                                                     
 
         857 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[373]) begin
                   heapMem[NArea * localMem[382] + 0 + i] = heapMem[NArea * localMem[381] + localMem[374] + i];
@@ -7238,7 +8954,9 @@ module fpga                                                                     
 
         858 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[383] = heapMem[localMem[360]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 859;
@@ -7246,7 +8964,9 @@ module fpga                                                                     
 
         859 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[384] = heapMem[localMem[376]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 860;
@@ -7254,7 +8974,9 @@ module fpga                                                                     
 
         860 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[373]) begin
                   heapMem[NArea * localMem[384] + 0 + i] = heapMem[NArea * localMem[383] + localMem[374] + i];
@@ -7266,7 +8988,9 @@ module fpga                                                                     
 
         861 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[385] = heapMem[localMem[360]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 862;
@@ -7274,7 +8998,9 @@ module fpga                                                                     
 
         862 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[386] = heapMem[localMem[376]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 863;
@@ -7282,7 +9008,9 @@ module fpga                                                                     
 
         863 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[387] = localMem[373] + 1;
               updateArrayLength(2, 0, 0);
               ip = 864;
@@ -7290,7 +9018,9 @@ module fpga                                                                     
 
         864 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[387]) begin
                   heapMem[NArea * localMem[386] + 0 + i] = heapMem[NArea * localMem[385] + localMem[374] + i];
@@ -7302,7 +9032,9 @@ module fpga                                                                     
 
         865 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[388] = heapMem[localMem[376]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 866;
@@ -7310,7 +9042,9 @@ module fpga                                                                     
 
         866 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[389] = localMem[388] + 1;
               updateArrayLength(2, 0, 0);
               ip = 867;
@@ -7318,7 +9052,9 @@ module fpga                                                                     
 
         867 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[390] = heapMem[localMem[376]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 868;
@@ -7326,13 +9062,17 @@ module fpga                                                                     
 
         868 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 869;
       end
 
         869 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[391] = 0;
               updateArrayLength(2, 0, 0);
               ip = 870;
@@ -7340,19 +9080,25 @@ module fpga                                                                     
 
         870 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 871;
       end
 
         871 :
       begin                                                                     // jGe
-//$display("AAAA %4d %4d jGe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jGe", steps, ip);
+end
               ip = localMem[391] >= localMem[389] ? 877 : 872;
       end
 
         872 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[392] = heapMem[localMem[390]*10 + localMem[391]];
               updateArrayLength(2, 0, 0);
               ip = 873;
@@ -7360,7 +9106,9 @@ module fpga                                                                     
 
         873 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[392]*10 + 2] = localMem[376];
               updateArrayLength(1, localMem[392], 2);
               ip = 874;
@@ -7368,13 +9116,17 @@ module fpga                                                                     
 
         874 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 875;
       end
 
         875 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[391] = localMem[391] + 1;
               updateArrayLength(2, 0, 0);
               ip = 876;
@@ -7382,19 +9134,25 @@ module fpga                                                                     
 
         876 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 870;
       end
 
         877 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 878;
       end
 
         878 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[393] = heapMem[localMem[360]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 879;
@@ -7402,26 +9160,34 @@ module fpga                                                                     
 
         879 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[393]] = localMem[374];
               ip = 880;
       end
 
         880 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 888;
       end
 
         881 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 882;
       end
 
         882 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[394] = heapMem[localMem[360]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 883;
@@ -7429,7 +9195,9 @@ module fpga                                                                     
 
         883 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[395] = heapMem[localMem[376]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 884;
@@ -7437,7 +9205,9 @@ module fpga                                                                     
 
         884 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[373]) begin
                   heapMem[NArea * localMem[395] + 0 + i] = heapMem[NArea * localMem[394] + localMem[374] + i];
@@ -7449,7 +9219,9 @@ module fpga                                                                     
 
         885 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[396] = heapMem[localMem[360]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 886;
@@ -7457,7 +9229,9 @@ module fpga                                                                     
 
         886 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[397] = heapMem[localMem[376]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 887;
@@ -7465,7 +9239,9 @@ module fpga                                                                     
 
         887 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[373]) begin
                   heapMem[NArea * localMem[397] + 0 + i] = heapMem[NArea * localMem[396] + localMem[374] + i];
@@ -7477,13 +9253,17 @@ module fpga                                                                     
 
         888 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 889;
       end
 
         889 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[360]*10 + 0] = localMem[373];
               updateArrayLength(1, localMem[360], 0);
               ip = 890;
@@ -7491,7 +9271,9 @@ module fpga                                                                     
 
         890 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[376]*10 + 2] = localMem[375];
               updateArrayLength(1, localMem[376], 2);
               ip = 891;
@@ -7499,7 +9281,9 @@ module fpga                                                                     
 
         891 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[398] = heapMem[localMem[375]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 892;
@@ -7507,7 +9291,9 @@ module fpga                                                                     
 
         892 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[399] = heapMem[localMem[375]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 893;
@@ -7515,7 +9301,9 @@ module fpga                                                                     
 
         893 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[400] = heapMem[localMem[399]*10 + localMem[398]];
               updateArrayLength(2, 0, 0);
               ip = 894;
@@ -7523,13 +9311,17 @@ module fpga                                                                     
 
         894 :
       begin                                                                     // jNe
-//$display("AAAA %4d %4d jNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jNe", steps, ip);
+end
               ip = localMem[400] != localMem[360] ? 913 : 895;
       end
 
         895 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[401] = heapMem[localMem[360]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 896;
@@ -7537,7 +9329,9 @@ module fpga                                                                     
 
         896 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[402] = heapMem[localMem[401]*10 + localMem[373]];
               updateArrayLength(2, 0, 0);
               ip = 897;
@@ -7545,7 +9339,9 @@ module fpga                                                                     
 
         897 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[403] = heapMem[localMem[375]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 898;
@@ -7553,7 +9349,9 @@ module fpga                                                                     
 
         898 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[403]*10 + localMem[398]] = localMem[402];
               updateArrayLength(1, localMem[403], localMem[398]);
               ip = 899;
@@ -7561,7 +9359,9 @@ module fpga                                                                     
 
         899 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[404] = heapMem[localMem[360]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 900;
@@ -7569,7 +9369,9 @@ module fpga                                                                     
 
         900 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[405] = heapMem[localMem[404]*10 + localMem[373]];
               updateArrayLength(2, 0, 0);
               ip = 901;
@@ -7577,7 +9379,9 @@ module fpga                                                                     
 
         901 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[406] = heapMem[localMem[375]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 902;
@@ -7585,7 +9389,9 @@ module fpga                                                                     
 
         902 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[406]*10 + localMem[398]] = localMem[405];
               updateArrayLength(1, localMem[406], localMem[398]);
               ip = 903;
@@ -7593,7 +9399,9 @@ module fpga                                                                     
 
         903 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[407] = heapMem[localMem[360]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 904;
@@ -7601,14 +9409,18 @@ module fpga                                                                     
 
         904 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[407]] = localMem[373];
               ip = 905;
       end
 
         905 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[408] = heapMem[localMem[360]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 906;
@@ -7616,14 +9428,18 @@ module fpga                                                                     
 
         906 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[408]] = localMem[373];
               ip = 907;
       end
 
         907 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[409] = localMem[398] + 1;
               updateArrayLength(2, 0, 0);
               ip = 908;
@@ -7631,7 +9447,9 @@ module fpga                                                                     
 
         908 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[375]*10 + 0] = localMem[409];
               updateArrayLength(1, localMem[375], 0);
               ip = 909;
@@ -7639,7 +9457,9 @@ module fpga                                                                     
 
         909 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[410] = heapMem[localMem[375]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 910;
@@ -7647,7 +9467,9 @@ module fpga                                                                     
 
         910 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[410]*10 + localMem[409]] = localMem[376];
               updateArrayLength(1, localMem[410], localMem[409]);
               ip = 911;
@@ -7655,31 +9477,41 @@ module fpga                                                                     
 
         911 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 1051;
       end
 
         912 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 935;
       end
 
         913 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 914;
       end
 
         914 :
       begin                                                                     // assertNe
-//$display("AAAA %4d %4d assertNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d assertNe", steps, ip);
+end
             ip = 915;
       end
 
         915 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[411] = heapMem[localMem[375]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 916;
@@ -7687,7 +9519,9 @@ module fpga                                                                     
 
         916 :
       begin                                                                     // arrayIndex
-//$display("AAAA %4d %4d arrayIndex", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d arrayIndex", steps, ip);
+end
               localMem[412] = 0; k = arraySizes[localMem[411]];
               for(i = 0; i < NArea; i = i + 1) begin
                 if (i < k && heapMem[localMem[411] * NArea + i] == localMem[360]) localMem[412] = i + 1;
@@ -7697,7 +9531,9 @@ module fpga                                                                     
 
         917 :
       begin                                                                     // subtract
-//$display("AAAA %4d %4d subtract", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d subtract", steps, ip);
+end
               localMem[412] = localMem[412] - 1;
               updateArrayLength(2, 0, 0);
               ip = 918;
@@ -7705,7 +9541,9 @@ module fpga                                                                     
 
         918 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[413] = heapMem[localMem[360]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 919;
@@ -7713,7 +9551,9 @@ module fpga                                                                     
 
         919 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[414] = heapMem[localMem[413]*10 + localMem[373]];
               updateArrayLength(2, 0, 0);
               ip = 920;
@@ -7721,7 +9561,9 @@ module fpga                                                                     
 
         920 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[415] = heapMem[localMem[360]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 921;
@@ -7729,7 +9571,9 @@ module fpga                                                                     
 
         921 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[416] = heapMem[localMem[415]*10 + localMem[373]];
               updateArrayLength(2, 0, 0);
               ip = 922;
@@ -7737,7 +9581,9 @@ module fpga                                                                     
 
         922 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[417] = heapMem[localMem[360]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 923;
@@ -7745,14 +9591,18 @@ module fpga                                                                     
 
         923 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[417]] = localMem[373];
               ip = 924;
       end
 
         924 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[418] = heapMem[localMem[360]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 925;
@@ -7760,14 +9610,18 @@ module fpga                                                                     
 
         925 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[418]] = localMem[373];
               ip = 926;
       end
 
         926 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[419] = heapMem[localMem[375]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 927;
@@ -7775,7 +9629,9 @@ module fpga                                                                     
 
         927 :
       begin                                                                     // shiftUp
-//$display("AAAA %4d %4d shiftUp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftUp", steps, ip);
+end
 //$display("AAAA %4d %4d shiftUp", steps, ip);
               for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[419] + i]; // Copy source array
 //$display("BBBB pos=%d array=%d length=%d", localMem[412], localMem[419], arraySizes[localMem[419]]);
@@ -7792,7 +9648,9 @@ module fpga                                                                     
 
         928 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[420] = heapMem[localMem[375]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 929;
@@ -7800,7 +9658,9 @@ module fpga                                                                     
 
         929 :
       begin                                                                     // shiftUp
-//$display("AAAA %4d %4d shiftUp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftUp", steps, ip);
+end
 //$display("AAAA %4d %4d shiftUp", steps, ip);
               for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[420] + i]; // Copy source array
 //$display("BBBB pos=%d array=%d length=%d", localMem[412], localMem[420], arraySizes[localMem[420]]);
@@ -7817,7 +9677,9 @@ module fpga                                                                     
 
         930 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[421] = heapMem[localMem[375]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 931;
@@ -7825,7 +9687,9 @@ module fpga                                                                     
 
         931 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[422] = localMem[412] + 1;
               updateArrayLength(2, 0, 0);
               ip = 932;
@@ -7833,7 +9697,9 @@ module fpga                                                                     
 
         932 :
       begin                                                                     // shiftUp
-//$display("AAAA %4d %4d shiftUp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d shiftUp", steps, ip);
+end
 //$display("AAAA %4d %4d shiftUp", steps, ip);
               for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[421] + i]; // Copy source array
 //$display("BBBB pos=%d array=%d length=%d", localMem[422], localMem[421], arraySizes[localMem[421]]);
@@ -7850,7 +9716,9 @@ module fpga                                                                     
 
         933 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[375]*10 + 0] = heapMem[localMem[375]*10 + 0] + 1;
               updateArrayLength(1, localMem[375], 0);
               ip = 934;
@@ -7858,25 +9726,33 @@ module fpga                                                                     
 
         934 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 1051;
       end
 
         935 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 936;
       end
 
         936 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 937;
       end
 
         937 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[423] = freedArrays[freedArraysTop];
@@ -7892,7 +9768,9 @@ module fpga                                                                     
 
         938 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[423]*10 + 0] = localMem[373];
               updateArrayLength(1, localMem[423], 0);
               ip = 939;
@@ -7900,7 +9778,9 @@ module fpga                                                                     
 
         939 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[423]*10 + 2] = 0;
               updateArrayLength(1, localMem[423], 2);
               ip = 940;
@@ -7908,7 +9788,9 @@ module fpga                                                                     
 
         940 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[424] = freedArrays[freedArraysTop];
@@ -7924,7 +9806,9 @@ module fpga                                                                     
 
         941 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[423]*10 + 4] = localMem[424];
               updateArrayLength(1, localMem[423], 4);
               ip = 942;
@@ -7932,7 +9816,9 @@ module fpga                                                                     
 
         942 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[425] = freedArrays[freedArraysTop];
@@ -7948,7 +9834,9 @@ module fpga                                                                     
 
         943 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[423]*10 + 5] = localMem[425];
               updateArrayLength(1, localMem[423], 5);
               ip = 944;
@@ -7956,7 +9844,9 @@ module fpga                                                                     
 
         944 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[423]*10 + 6] = 0;
               updateArrayLength(1, localMem[423], 6);
               ip = 945;
@@ -7964,7 +9854,9 @@ module fpga                                                                     
 
         945 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[423]*10 + 3] = localMem[371];
               updateArrayLength(1, localMem[423], 3);
               ip = 946;
@@ -7972,7 +9864,9 @@ module fpga                                                                     
 
         946 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[371]*10 + 1] = heapMem[localMem[371]*10 + 1] + 1;
               updateArrayLength(1, localMem[371], 1);
               ip = 947;
@@ -7980,7 +9874,9 @@ module fpga                                                                     
 
         947 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[423]*10 + 1] = heapMem[localMem[371]*10 + 1];
               updateArrayLength(1, localMem[423], 1);
               ip = 948;
@@ -7988,7 +9884,9 @@ module fpga                                                                     
 
         948 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[426] = freedArrays[freedArraysTop];
@@ -8004,7 +9902,9 @@ module fpga                                                                     
 
         949 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[426]*10 + 0] = localMem[373];
               updateArrayLength(1, localMem[426], 0);
               ip = 950;
@@ -8012,7 +9912,9 @@ module fpga                                                                     
 
         950 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[426]*10 + 2] = 0;
               updateArrayLength(1, localMem[426], 2);
               ip = 951;
@@ -8020,7 +9922,9 @@ module fpga                                                                     
 
         951 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[427] = freedArrays[freedArraysTop];
@@ -8036,7 +9940,9 @@ module fpga                                                                     
 
         952 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[426]*10 + 4] = localMem[427];
               updateArrayLength(1, localMem[426], 4);
               ip = 953;
@@ -8044,7 +9950,9 @@ module fpga                                                                     
 
         953 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[428] = freedArrays[freedArraysTop];
@@ -8060,7 +9968,9 @@ module fpga                                                                     
 
         954 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[426]*10 + 5] = localMem[428];
               updateArrayLength(1, localMem[426], 5);
               ip = 955;
@@ -8068,7 +9978,9 @@ module fpga                                                                     
 
         955 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[426]*10 + 6] = 0;
               updateArrayLength(1, localMem[426], 6);
               ip = 956;
@@ -8076,7 +9988,9 @@ module fpga                                                                     
 
         956 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[426]*10 + 3] = localMem[371];
               updateArrayLength(1, localMem[426], 3);
               ip = 957;
@@ -8084,7 +9998,9 @@ module fpga                                                                     
 
         957 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               heapMem[localMem[371]*10 + 1] = heapMem[localMem[371]*10 + 1] + 1;
               updateArrayLength(1, localMem[371], 1);
               ip = 958;
@@ -8092,7 +10008,9 @@ module fpga                                                                     
 
         958 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[426]*10 + 1] = heapMem[localMem[371]*10 + 1];
               updateArrayLength(1, localMem[426], 1);
               ip = 959;
@@ -8100,20 +10018,26 @@ module fpga                                                                     
 
         959 :
       begin                                                                     // not
-//$display("AAAA %4d %4d not", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d not", steps, ip);
+end
               localMem[429] = !heapMem[localMem[360]*10 + 6];
               ip = 960;
       end
 
         960 :
       begin                                                                     // jNe
-//$display("AAAA %4d %4d jNe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jNe", steps, ip);
+end
               ip = localMem[429] != 0 ? 1012 : 961;
       end
 
         961 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[430] = freedArrays[freedArraysTop];
@@ -8129,7 +10053,9 @@ module fpga                                                                     
 
         962 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[423]*10 + 6] = localMem[430];
               updateArrayLength(1, localMem[423], 6);
               ip = 963;
@@ -8137,7 +10063,9 @@ module fpga                                                                     
 
         963 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[431] = freedArrays[freedArraysTop];
@@ -8153,7 +10081,9 @@ module fpga                                                                     
 
         964 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[426]*10 + 6] = localMem[431];
               updateArrayLength(1, localMem[426], 6);
               ip = 965;
@@ -8161,7 +10091,9 @@ module fpga                                                                     
 
         965 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[432] = heapMem[localMem[360]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 966;
@@ -8169,7 +10101,9 @@ module fpga                                                                     
 
         966 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[433] = heapMem[localMem[423]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 967;
@@ -8177,7 +10111,9 @@ module fpga                                                                     
 
         967 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[373]) begin
                   heapMem[NArea * localMem[433] + 0 + i] = heapMem[NArea * localMem[432] + 0 + i];
@@ -8189,7 +10125,9 @@ module fpga                                                                     
 
         968 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[434] = heapMem[localMem[360]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 969;
@@ -8197,7 +10135,9 @@ module fpga                                                                     
 
         969 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[435] = heapMem[localMem[423]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 970;
@@ -8205,7 +10145,9 @@ module fpga                                                                     
 
         970 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[373]) begin
                   heapMem[NArea * localMem[435] + 0 + i] = heapMem[NArea * localMem[434] + 0 + i];
@@ -8217,7 +10159,9 @@ module fpga                                                                     
 
         971 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[436] = heapMem[localMem[360]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 972;
@@ -8225,7 +10169,9 @@ module fpga                                                                     
 
         972 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[437] = heapMem[localMem[423]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 973;
@@ -8233,7 +10179,9 @@ module fpga                                                                     
 
         973 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[438] = localMem[373] + 1;
               updateArrayLength(2, 0, 0);
               ip = 974;
@@ -8241,7 +10189,9 @@ module fpga                                                                     
 
         974 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[438]) begin
                   heapMem[NArea * localMem[437] + 0 + i] = heapMem[NArea * localMem[436] + 0 + i];
@@ -8253,7 +10203,9 @@ module fpga                                                                     
 
         975 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[439] = heapMem[localMem[360]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 976;
@@ -8261,7 +10213,9 @@ module fpga                                                                     
 
         976 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[440] = heapMem[localMem[426]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 977;
@@ -8269,7 +10223,9 @@ module fpga                                                                     
 
         977 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[373]) begin
                   heapMem[NArea * localMem[440] + 0 + i] = heapMem[NArea * localMem[439] + localMem[374] + i];
@@ -8281,7 +10237,9 @@ module fpga                                                                     
 
         978 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[441] = heapMem[localMem[360]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 979;
@@ -8289,7 +10247,9 @@ module fpga                                                                     
 
         979 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[442] = heapMem[localMem[426]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 980;
@@ -8297,7 +10257,9 @@ module fpga                                                                     
 
         980 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[373]) begin
                   heapMem[NArea * localMem[442] + 0 + i] = heapMem[NArea * localMem[441] + localMem[374] + i];
@@ -8309,7 +10271,9 @@ module fpga                                                                     
 
         981 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[443] = heapMem[localMem[360]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 982;
@@ -8317,7 +10281,9 @@ module fpga                                                                     
 
         982 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[444] = heapMem[localMem[426]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 983;
@@ -8325,7 +10291,9 @@ module fpga                                                                     
 
         983 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[445] = localMem[373] + 1;
               updateArrayLength(2, 0, 0);
               ip = 984;
@@ -8333,7 +10301,9 @@ module fpga                                                                     
 
         984 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[445]) begin
                   heapMem[NArea * localMem[444] + 0 + i] = heapMem[NArea * localMem[443] + localMem[374] + i];
@@ -8345,7 +10315,9 @@ module fpga                                                                     
 
         985 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[446] = heapMem[localMem[423]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 986;
@@ -8353,7 +10325,9 @@ module fpga                                                                     
 
         986 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[447] = localMem[446] + 1;
               updateArrayLength(2, 0, 0);
               ip = 987;
@@ -8361,7 +10335,9 @@ module fpga                                                                     
 
         987 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[448] = heapMem[localMem[423]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 988;
@@ -8369,13 +10345,17 @@ module fpga                                                                     
 
         988 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 989;
       end
 
         989 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[449] = 0;
               updateArrayLength(2, 0, 0);
               ip = 990;
@@ -8383,19 +10363,25 @@ module fpga                                                                     
 
         990 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 991;
       end
 
         991 :
       begin                                                                     // jGe
-//$display("AAAA %4d %4d jGe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jGe", steps, ip);
+end
               ip = localMem[449] >= localMem[447] ? 997 : 992;
       end
 
         992 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[450] = heapMem[localMem[448]*10 + localMem[449]];
               updateArrayLength(2, 0, 0);
               ip = 993;
@@ -8403,7 +10389,9 @@ module fpga                                                                     
 
         993 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[450]*10 + 2] = localMem[423];
               updateArrayLength(1, localMem[450], 2);
               ip = 994;
@@ -8411,13 +10399,17 @@ module fpga                                                                     
 
         994 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 995;
       end
 
         995 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[449] = localMem[449] + 1;
               updateArrayLength(2, 0, 0);
               ip = 996;
@@ -8425,19 +10417,25 @@ module fpga                                                                     
 
         996 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 990;
       end
 
         997 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 998;
       end
 
         998 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[451] = heapMem[localMem[426]*10 + 0];
               updateArrayLength(2, 0, 0);
               ip = 999;
@@ -8445,7 +10443,9 @@ module fpga                                                                     
 
         999 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[452] = localMem[451] + 1;
               updateArrayLength(2, 0, 0);
               ip = 1000;
@@ -8453,7 +10453,9 @@ module fpga                                                                     
 
        1000 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[453] = heapMem[localMem[426]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 1001;
@@ -8461,13 +10463,17 @@ module fpga                                                                     
 
        1001 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 1002;
       end
 
        1002 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[454] = 0;
               updateArrayLength(2, 0, 0);
               ip = 1003;
@@ -8475,19 +10481,25 @@ module fpga                                                                     
 
        1003 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 1004;
       end
 
        1004 :
       begin                                                                     // jGe
-//$display("AAAA %4d %4d jGe", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jGe", steps, ip);
+end
               ip = localMem[454] >= localMem[452] ? 1010 : 1005;
       end
 
        1005 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[455] = heapMem[localMem[453]*10 + localMem[454]];
               updateArrayLength(2, 0, 0);
               ip = 1006;
@@ -8495,7 +10507,9 @@ module fpga                                                                     
 
        1006 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[455]*10 + 2] = localMem[426];
               updateArrayLength(1, localMem[455], 2);
               ip = 1007;
@@ -8503,13 +10517,17 @@ module fpga                                                                     
 
        1007 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 1008;
       end
 
        1008 :
       begin                                                                     // add
-//$display("AAAA %4d %4d add", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d add", steps, ip);
+end
               localMem[454] = localMem[454] + 1;
               updateArrayLength(2, 0, 0);
               ip = 1009;
@@ -8517,31 +10535,41 @@ module fpga                                                                     
 
        1009 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 1003;
       end
 
        1010 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 1011;
       end
 
        1011 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 1027;
       end
 
        1012 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 1013;
       end
 
        1013 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[456] = freedArrays[freedArraysTop];
@@ -8557,7 +10585,9 @@ module fpga                                                                     
 
        1014 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[360]*10 + 6] = localMem[456];
               updateArrayLength(1, localMem[360], 6);
               ip = 1015;
@@ -8565,7 +10595,9 @@ module fpga                                                                     
 
        1015 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[457] = heapMem[localMem[360]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 1016;
@@ -8573,7 +10605,9 @@ module fpga                                                                     
 
        1016 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[458] = heapMem[localMem[423]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 1017;
@@ -8581,7 +10615,9 @@ module fpga                                                                     
 
        1017 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[373]) begin
                   heapMem[NArea * localMem[458] + 0 + i] = heapMem[NArea * localMem[457] + 0 + i];
@@ -8593,7 +10629,9 @@ module fpga                                                                     
 
        1018 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[459] = heapMem[localMem[360]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 1019;
@@ -8601,7 +10639,9 @@ module fpga                                                                     
 
        1019 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[460] = heapMem[localMem[423]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 1020;
@@ -8609,7 +10649,9 @@ module fpga                                                                     
 
        1020 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[373]) begin
                   heapMem[NArea * localMem[460] + 0 + i] = heapMem[NArea * localMem[459] + 0 + i];
@@ -8621,7 +10663,9 @@ module fpga                                                                     
 
        1021 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[461] = heapMem[localMem[360]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 1022;
@@ -8629,7 +10673,9 @@ module fpga                                                                     
 
        1022 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[462] = heapMem[localMem[426]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 1023;
@@ -8637,7 +10683,9 @@ module fpga                                                                     
 
        1023 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[373]) begin
                   heapMem[NArea * localMem[462] + 0 + i] = heapMem[NArea * localMem[461] + localMem[374] + i];
@@ -8649,7 +10697,9 @@ module fpga                                                                     
 
        1024 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[463] = heapMem[localMem[360]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 1025;
@@ -8657,7 +10707,9 @@ module fpga                                                                     
 
        1025 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[464] = heapMem[localMem[426]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 1026;
@@ -8665,7 +10717,9 @@ module fpga                                                                     
 
        1026 :
       begin                                                                     // moveLong
-//$display("AAAA %4d %4d moveLong", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d moveLong", steps, ip);
+end
               for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
                 if (i < localMem[373]) begin
                   heapMem[NArea * localMem[464] + 0 + i] = heapMem[NArea * localMem[463] + localMem[374] + i];
@@ -8677,13 +10731,17 @@ module fpga                                                                     
 
        1027 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 1028;
       end
 
        1028 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[423]*10 + 2] = localMem[360];
               updateArrayLength(1, localMem[423], 2);
               ip = 1029;
@@ -8691,7 +10749,9 @@ module fpga                                                                     
 
        1029 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[426]*10 + 2] = localMem[360];
               updateArrayLength(1, localMem[426], 2);
               ip = 1030;
@@ -8699,7 +10759,9 @@ module fpga                                                                     
 
        1030 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[465] = heapMem[localMem[360]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 1031;
@@ -8707,7 +10769,9 @@ module fpga                                                                     
 
        1031 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[466] = heapMem[localMem[465]*10 + localMem[373]];
               updateArrayLength(2, 0, 0);
               ip = 1032;
@@ -8715,7 +10779,9 @@ module fpga                                                                     
 
        1032 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[467] = heapMem[localMem[360]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 1033;
@@ -8723,7 +10789,9 @@ module fpga                                                                     
 
        1033 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[468] = heapMem[localMem[467]*10 + localMem[373]];
               updateArrayLength(2, 0, 0);
               ip = 1034;
@@ -8731,7 +10799,9 @@ module fpga                                                                     
 
        1034 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[469] = heapMem[localMem[360]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 1035;
@@ -8739,7 +10809,9 @@ module fpga                                                                     
 
        1035 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[469]*10 + 0] = localMem[466];
               updateArrayLength(1, localMem[469], 0);
               ip = 1036;
@@ -8747,7 +10819,9 @@ module fpga                                                                     
 
        1036 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[470] = heapMem[localMem[360]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 1037;
@@ -8755,7 +10829,9 @@ module fpga                                                                     
 
        1037 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[470]*10 + 0] = localMem[468];
               updateArrayLength(1, localMem[470], 0);
               ip = 1038;
@@ -8763,7 +10839,9 @@ module fpga                                                                     
 
        1038 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[471] = heapMem[localMem[360]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 1039;
@@ -8771,7 +10849,9 @@ module fpga                                                                     
 
        1039 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[471]*10 + 0] = localMem[423];
               updateArrayLength(1, localMem[471], 0);
               ip = 1040;
@@ -8779,7 +10859,9 @@ module fpga                                                                     
 
        1040 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[472] = heapMem[localMem[360]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 1041;
@@ -8787,7 +10869,9 @@ module fpga                                                                     
 
        1041 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[472]*10 + 1] = localMem[426];
               updateArrayLength(1, localMem[472], 1);
               ip = 1042;
@@ -8795,7 +10879,9 @@ module fpga                                                                     
 
        1042 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[360]*10 + 0] = 1;
               updateArrayLength(1, localMem[360], 0);
               ip = 1043;
@@ -8803,7 +10889,9 @@ module fpga                                                                     
 
        1043 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[473] = heapMem[localMem[360]*10 + 4];
               updateArrayLength(2, 0, 0);
               ip = 1044;
@@ -8811,14 +10899,18 @@ module fpga                                                                     
 
        1044 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[473]] = 1;
               ip = 1045;
       end
 
        1045 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[474] = heapMem[localMem[360]*10 + 5];
               updateArrayLength(2, 0, 0);
               ip = 1046;
@@ -8826,14 +10918,18 @@ module fpga                                                                     
 
        1046 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[474]] = 1;
               ip = 1047;
       end
 
        1047 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[475] = heapMem[localMem[360]*10 + 6];
               updateArrayLength(2, 0, 0);
               ip = 1048;
@@ -8841,32 +10937,42 @@ module fpga                                                                     
 
        1048 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[475]] = 2;
               ip = 1049;
       end
 
        1049 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 1051;
       end
 
        1050 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 1056;
       end
 
        1051 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 1052;
       end
 
        1052 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[369] = 1;
               updateArrayLength(2, 0, 0);
               ip = 1053;
@@ -8874,19 +10980,25 @@ module fpga                                                                     
 
        1053 :
       begin                                                                     // jmp
-//$display("AAAA %4d %4d jmp", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d jmp", steps, ip);
+end
               ip = 1056;
       end
 
        1054 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 1055;
       end
 
        1055 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               localMem[369] = 0;
               updateArrayLength(2, 0, 0);
               ip = 1056;
@@ -8894,31 +11006,41 @@ module fpga                                                                     
 
        1056 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 1057;
       end
 
        1057 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 1058;
       end
 
        1058 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 1059;
       end
 
        1059 :
       begin                                                                     // label
-//$display("AAAA %4d %4d label", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d label", steps, ip);
+end
               ip = 1060;
       end
 
        1060 :
       begin                                                                     // free
-//$display("AAAA %4d %4d free", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d free", steps, ip);
+end
                                  arraySizes[localMem[1]] = 0;
               freedArrays[freedArraysTop] = localMem[1];
               freedArraysTop = freedArraysTop + 1;
@@ -8930,8 +11052,10 @@ module fpga                                                                     
       end
     endcase
     if (steps <=     34) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
-//for(i = 0; i < 200; ++i) $write("%2d",   localMem[i]); $display("");
-//for(i = 0; i < 200; ++i) $write("%2d",    heapMem[i]); $display("");
-//for(i = 0; i < 200; ++i) $write("%2d", arraySizes[i]); $display("");
+    if (0) begin
+      for(i = 0; i < 200; ++i) $write("%2d",   localMem[i]); $display("");
+      for(i = 0; i < 200; ++i) $write("%2d",    heapMem[i]); $display("");
+      for(i = 0; i < 200; ++i) $write("%2d", arraySizes[i]); $display("");
+    end
   end
 endmodule
