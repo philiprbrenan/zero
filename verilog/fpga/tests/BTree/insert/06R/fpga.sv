@@ -12209,8 +12209,8 @@ end
         finished = 1;
       end
     endcase
-    if (steps <=   1803) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
-    if (1) begin
+    if (steps <=    803) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
+    if (1 || 1) begin
       for(i = 0; i < 200; ++i) $write("%2d",   localMem[i]); $display("");
       for(i = 0; i < 200; ++i) $write("%2d",    heapMem[i]); $display("");
       for(i = 0; i < 200; ++i) $write("%2d", arraySizes[i]); $display("");
