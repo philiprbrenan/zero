@@ -20,6 +20,9 @@ my $repo     = q(zero);                                                         
 my $wf       = q(.github/workflows/main.yml);                                   # Work flow on Ubuntu
 my $repoUrl  = q(https://github.com/philiprbrenan/zero);                        # Repo
 my $timeFile = q(zzzFileTimes.data);                                            # Last upload time
+my $emulator = fpf $home, q(lib/Zero/Emulator.pm);                              # Emulator
+my $btree    = fpf $home, q(lib/Zero/BTree.pm);                                 # Btree
+
 my $testsDir = fpd $home, qw(verilog fpga tests);                               # Tests folder
 my $perlXmp  = 1;                                                               # Perl examples if true
 my $macos    = 0;                                                               # Macos if true
@@ -27,6 +30,8 @@ my $windows  = 0;                                                               
 my $openBsd  = 0;                                                               # OpenBsd if true
 my $freeBsd  = 0;                                                               # FreeBsd if true - fails
 my $fpga1    = 1;                                                               # Fpga 1
+
+my $T = -e $timeFile ? eval readFile($timeFile) : undef;                        # Last upload time
 
 sub pod($$$)                                                                    # Write pod file
  {my ($in, $out, $intro) = @_;                                                  # Input, output file, introduction
@@ -47,9 +52,9 @@ sub pod($$$)                                                                    
   confess "Cannot extract documentation for file: $in";
  }
 
-if (0)                                                                          # Documentation - specific components
- {pod fpf($home, q(lib/Zero/Emulator.pm)), fpf($home, q(Emulator.md)), &introEmulator;
-  pod fpf($home, q(lib/Zero/BTree.pm)),    fpf($home, q(BTree.md)),    &introBTree;
+if (!defined($T) or $T < fileModTime($emulator) or $T < fileModTime($btree))                                                                          # Documentation - specific components
+ {pod $emulator, fpf($home, q(Emulator.md)), &introEmulator;
+  pod $btree,    fpf($home, q(BTree.md)),    &introBTree;
 
   expandWellKnownWordsInMarkDownFile                                            # Documentation - general
     fpe($home, qw(README md2)), fpe $home, qw(README md);
