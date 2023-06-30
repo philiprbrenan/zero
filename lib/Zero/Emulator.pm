@@ -24,6 +24,7 @@ eval "use Test::More tests=>402" unless caller;
 makeDieConfess;
 our $memoryTechnique;                                                           # Undef or the address of a sub that loads the memory handlers into an execution environment.
 my  $memoryPrintWidth = 200;
+my $traceExecution    = 0;
 
 my sub maximumInstructionsToExecute {1e6}                                       # Maximum number of subroutines to execute
 
@@ -1891,16 +1892,21 @@ sub Zero::Emulator::Assembly::execute($%)                                       
       $instruction->step = $step;                                               # Execution step number facilitates debugging
       $exec->timeDelta = undef;                                                 # Record elapsed time for instruction
 
-#say STDERR sprintf "AAAA %4d %4d %s", $step, $exec->instructionPointer-1, $a;
+if ($traceExecution)
+ {say STDERR sprintf "AAAA %4d %4d %s", $step, $exec->instructionPointer-1, $a;
+ }
       $exec->latestLeftTarget  = left  $exec, $instruction->target;             # Precompute this useful value if possible
       $exec->latestRightSource = right $exec, $instruction->source;             # Precompute this useful value if possible
 
 #EEEE Execute
       $implementation->($instruction);                                          # Execute instruction
 
-#stringPrintLocalSimple($exec);
-#stringPrintHeapSimple($exec);
-#stringPrintHeapSizesSimple($exec);
+if ($traceExecution)
+ {stringPrintLocalSimple($exec);
+  stringPrintHeapSimple($exec);
+  stringPrintHeapSizesSimple($exec);
+ }
+
       $exec->tallyInstructionCounts($instruction);                              # Instruction counts
       $exec->traceMemory($instruction);                                         # Trace changes to memory
 #say STDERR $exec->PrintMemory->($exec);
@@ -3583,7 +3589,8 @@ END
       my $t   = $compile->deref($i->target)->Value;
       my $n   = $i->number + 1;
       push @c, <<END;
-              outMem[$t * NArea + arraySizes[$t]] = $s;
+\$display("XXXX array=%d size=%d  s=%d  v=%d", $t, arraySizes[$t], $s, $t * NArea + arraySizes[$t]);
+              heapMem[$t * NArea + arraySizes[$t]] = $s;
               arraySizes[$t]    = arraySizes[$t] + 1;
               ip = $n;
 END
@@ -3749,7 +3756,9 @@ END
 
       $n :
       begin                                                                     // $action
-//\$display("AAAA %4d %4d $action", steps, ip);
+if ($traceExecution) begin
+  \$display("AAAA %4d %4d $action", steps, ip);
+end
 END
 
     if (my $a = $$gen{$action})                                                 # Action for this instruction
@@ -3785,9 +3794,11 @@ END
       end
     endcase
     if (steps <= $steps) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
-//for(i = 0; i < $memoryPrintWidth; ++i) \$write("%2d",   localMem[i]); \$display("");
-//for(i = 0; i < $memoryPrintWidth; ++i) \$write("%2d",    heapMem[i]); \$display("");
-//for(i = 0; i < $memoryPrintWidth; ++i) \$write("%2d", arraySizes[i]); \$display("");
+    if ($traceExecution) begin
+      for(i = 0; i < $memoryPrintWidth; ++i) \$write("%2d",   localMem[i]); \$display("");
+      for(i = 0; i < $memoryPrintWidth; ++i) \$write("%2d",    heapMem[i]); \$display("");
+      for(i = 0; i < $memoryPrintWidth; ++i) \$write("%2d", arraySizes[i]); \$display("");
+    end
   end
 endmodule
 END
@@ -5431,7 +5442,7 @@ if (1)                                                                          
     Out $a;
    } $a, "aaa";
 
-  my $e = Execute(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1, stringMemory=>1);
   is_deeply $e->Heap->($e, 0), [1..2];
   is_deeply $e->outLines,      [1..2];
   $e->generateVerilogMachineCode("Push") if $debug;
