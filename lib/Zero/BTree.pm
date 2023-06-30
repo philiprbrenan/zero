@@ -1420,7 +1420,7 @@ if (1)                                                                          
 
 #latest:;
 if (1)                                                                          ##Iterate ##Keys ##FindResult_key ##FindResult_data ##Find ##printTreeKeys ##printTreeData
- {my $W = 3; my @r = randomArray 22; #107;
+ {my $W = 3; my @r = randomArray 41; #107;
 
   Start 1;
   my $t = New($W);                                                              # Create tree at expected location in memory
