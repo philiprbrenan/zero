@@ -740,13 +740,21 @@ sub stringPrintLocal($)                                                         
   join "\n", @p, '';
  }
 
+sub printBlocksOfNumbers(@)                                                     #P Print blocks of numbers dumped from memory
+ {my (@n) = @_;                                                              # Execution environment
+  push @n, 0 while @n <= $memoryPrintWidth;
+  pop  @n    while @n >  $memoryPrintWidth;
+  my $s = join '', map {sprintf("%2d", ($_//0))} @n;
+  say STDERR $s;
+ }
+
 sub stringPrintLocalSimple($)                                                   #P Print string local memory assimply as possible
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
+  my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
+  return unless $w;                                                             # Detect whether we are in string memory mode or not
   my $s = $exec->memory->[arenaLocal]->[0];
-  my @p = join '', map {sprintf "%4d", ($$s[$_]//0)} 0..$memoryPrintWidth-1;
-
-  say STDERR join "\n", @p, '';
+  printBlocksOfNumbers @$s;
  }
 
 sub stringPrintHeap($)                                                          #P Print string heap memory
@@ -776,30 +784,29 @@ sub stringPrintHeapSimple($)                                                    
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
+  return unless $w;                                                             # Detect whether we are in string memory mode or not
   my $s = $exec->memoryString;
   my $l = length($s);
   my @v;
   for my $i(0..$l/4)
-   {push @v, sprintf "%4d", vec($s, $i, $w);
+   {push @v, vec($s, $i, $w);
    }
-  push @v, sprintf "%4d", 0 while @v <= $memoryPrintWidth;
-  pop  @v                   while @v >  $memoryPrintWidth;
-  say STDERR join '', @v;
+  printBlocksOfNumbers @v;
  }
 
 sub stringPrintHeapSizesSimple($)                                               #P Print the sizes of the arrays on the heap as simply as possible
  {my ($exec) = @_;                                                              # Execution environment
   @_ == 1 or confess "One parameter";
   my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
+  return unless $w;                                                             # Detect whether we are in string memory mode or not
   my $s = $exec->memoryStringLengths;
   my $l = length($s);
   my @v;
   for my $i(0..$l/4)
-   {push @v, sprintf "%4d", vec($s, $i, $w);
+   {push @v, vec($s, $i, $w);
    }
-  push @v, sprintf "%4d", 0 while @v <= $memoryPrintWidth;
-  pop  @v                   while @v >  $memoryPrintWidth;
-  say STDERR join '', @v;
+
+  printBlocksOfNumbers @v;
  }
 
 sub setStringMemoryTechnique($)                                                 #P Set the handlers for the string memory allocation technique.
@@ -937,7 +944,7 @@ my sub freeArea($$$$)                                                           
   $exec->FreeMemoryArea->($exec, $arena, $area);
 
   push $exec->freedArrays->[$arena]->@*, $area;                                 # Save array for reuse
-  $exec->memoryType->[$arena][$area] = undef;                                      # Mark the array as not in use
+  $exec->memoryType->[$arena][$area] = undef;                                   # Mark the array as not in use
  }
 
 my sub pushArea($$$$)                                                           #P Push a value onto the specified heap array.
@@ -3096,7 +3103,7 @@ END
     push @s, <<END;                                                             # Implementations
   task $n();
     begin                                                                       // $N
-//     \$display("$N");
+     \$display("$N");
     end
   endtask
 END
@@ -3193,7 +3200,7 @@ sub Zero::CompileToVerilog::deref($$)                                           
       $DArea    == 1 && $DAddress == 1 ? heapMem($Delta, localMem(0, $Area), $Address)              :
       $DArea    == 1 && $DAddress == 2 ? heapMem($Delta, localMem(0, $Area), localMem(0, $Address)) : 0) :
     $Arena      == 2 ?
-     ($DAddress == 1 ?  "localMem[$Delta + $Address]"   :
+     ($DAddress == 1 ?  localMem($Delta, $Address) :                            # Was stringular
       $DAddress == 2 ?  localMem($Delta, $Address) : 0) : 0;
 
   my $targetIndex  =                                                            # Target index within array
@@ -3251,12 +3258,32 @@ END
   my $gen =                                                                     # Code generation for each instruction
    {add=> sub                                                                   # Add
      {my ($i) = @_;                                                             # Instruction
-      my $a  = $compile->deref($i->source )->Value;
-      my $b  = $compile->deref($i->source2)->Value;
-      my $t  = $compile->deref($i->target)->targetLocation;
-      my $n  = $i->number + 1;
+      my $A = $compile->deref($i->target)->Arena;
+      my $z = $compile->deref($i->target)->targetLocationArea;
+      my $a = $compile->deref($i->source )->Value;
+      my $b = $compile->deref($i->source2)->Value;
+      my $t = $compile->deref($i->target)->targetLocation;
+      my $I = $compile->deref($i->target)->targetIndex;
+      my $n = $i->number + 1;
       push @c, <<END;
               $t = $a + $b;
+              updateArrayLength($A, $z, $I);
+              ip = $n;
+END
+     },
+
+    subtract=> sub                                                              # Subtract
+     {my ($i) = @_;                                                             # Instruction
+      my $A = $compile->deref($i->target)->Arena;
+      my $z = $compile->deref($i->target)->targetLocationArea;
+      my $a = $compile->deref($i->source )->Value;
+      my $b = $compile->deref($i->source2)->Value;
+      my $t = $compile->deref($i->target)->targetLocation;
+      my $I = $compile->deref($i->target)->targetIndex;
+      my $n = $i->number + 1;
+      push @c, <<END;
+              $t = $a - $b;
+              updateArrayLength($A, $z, $I);
               ip = $n;
 END
      },
@@ -3346,9 +3373,10 @@ END
 
     free=> sub                                                                  # Free array
      {my ($i) = @_;                                                             # Instruction
-      my $t   = $compile->deref($i->target)->Value;
+      my $t   = $compile->deref($i->target)->Value;                             # Number of the array
       my $n   = $i->number + 1;
       push @c, <<END;
+                                 arraySizes[$t] = 0;
               freedArrays[freedArraysTop] = $t;
               freedArraysTop = freedArraysTop + 1;
               ip = $n;
@@ -3617,18 +3645,6 @@ END
               ip = $n;
 END
      },
-
-    subtract=> sub                                                              # Subtract
-     {my ($i) = @_;                                                             # Instruction
-      my $s1  = $compile->deref($i->source )->Value;
-      my $s2  = $compile->deref($i->source2)->Value;
-      my $t   = $compile->deref($i->target)->targetLocation;
-      my $n   = $i->number + 1;
-      push @c, <<END;
-              $t = $s1 - $s2;
-              ip = $n;
-END
-     },
     tally=> \&skip,                                                             # Tally
    };
 
@@ -3645,15 +3661,15 @@ module fpga                                                                     
   parameter integer MemoryElementWidth =  12;                                   // Memory element width
 
   parameter integer NArea          = $NArea;                                    // Size of each area on the heap
-  parameter integer NArrays        =  200;                                      // Maximum number of arrays
-  parameter integer NHeap          = 1000;                                      // Amount of heap memory
-  parameter integer NLocal         = 1000;                                      // Size of local memory
-  parameter integer NOut           =  200;                                      // Size of output area
+  parameter integer NArrays        =  2000;                                      // Maximum number of arrays
+  parameter integer NHeap          = 10000;                                      // Amount of heap memory
+  parameter integer NLocal         = 10000;                                      // Size of local memory
+  parameter integer NOut           =  2000;                                      // Size of output area
 END
 
   if (my $n = sprintf "%4d", scalar $exec->inOriginally->@*)                    # Input queue length
    {push @c, <<END;
-  parameter integer NIn            =  $n;                                     // Size of input area
+  parameter integer NIn            =  $n;                                       // Size of input area
 END
    }
 
@@ -3678,7 +3694,7 @@ END
   integer steps;                                                                // Number of steps executed so far
   integer i, j, k;                                                              // A useful counter
 
-  task updateArrayLength(integer arena, integer array, integer index);          // Update array length if we are updating an array
+  task updateArrayLength(input integer arena, input integer array, input integer index); // Update array length if we are updating an array
     begin
       if (arena == $arenaHeap && arraySizes[array] < index + 1) arraySizes[array] = index + 1;
     end
@@ -3694,9 +3710,9 @@ END
     outMemPos      = 0;
     allocs         = 0;
     freedArraysTop = 0;
-//  for(i = 0; i < NHeap;   ++i)    heapMem[i] = 0;
-//  for(i = 0; i < NLocal;  ++i)   localMem[i] = 0;
-//  for(i = 0; i < NArrays; ++i) arraySizes[i] = 0;
+    for(i = 0; i < NHeap;   ++i)    heapMem[i] = 0;
+    for(i = 0; i < NLocal;  ++i)   localMem[i] = 0;
+    for(i = 0; i < NArrays; ++i) arraySizes[i] = 0;
 END
 
   if (1)                                                                        # Create input queue
@@ -3769,9 +3785,9 @@ END
       end
     endcase
     if (steps <= $steps) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
-//for(i = 0; i < $memoryPrintWidth; ++i) \$write("%4d",   localMem[i]); \$display("");
-//for(i = 0; i < $memoryPrintWidth; ++i) \$write("%4d",    heapMem[i]); \$display("");
-//for(i = 0; i < $memoryPrintWidth; ++i) \$write("%4d", arraySizes[i]); \$display("");
+//for(i = 0; i < $memoryPrintWidth; ++i) \$write("%2d",   localMem[i]); \$display("");
+//for(i = 0; i < $memoryPrintWidth; ++i) \$write("%2d",    heapMem[i]); \$display("");
+//for(i = 0; i < $memoryPrintWidth; ++i) \$write("%2d", arraySizes[i]); \$display("");
   end
 endmodule
 END
