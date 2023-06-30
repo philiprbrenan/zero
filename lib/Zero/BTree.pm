@@ -1318,7 +1318,10 @@ if (1)                                                                          
     Out FindResult_key($find);
    } $t;
 
-  my $e = Execute(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1, stringMemory=>1);
+  #$e->generateVerilogMachineCode("BTree/insert/06R");                          # Requires signed arithmetic which we are proposing to avoid on the fpga
+  is_deeply $e->outLines, [0..5];
+
   is_deeply $e->count, 609;
 
   is_deeply $e->heap(0 ), bless([6, 4, 3, 2], "Tree");
@@ -1335,8 +1338,6 @@ if (1)                                                                          
   is_deeply $e->heap(12), bless([1, 4, 2, 0, 13, 14, 0], "Node");
   is_deeply $e->heap(13), bless([3], "Keys");
   is_deeply $e->heap(14), bless([3], "Data");
-  is_deeply $e->outLines, [0..5];
-  $e->generateVerilogMachineCode("BTree/insert/06R");
  }
 
 #latest:;
