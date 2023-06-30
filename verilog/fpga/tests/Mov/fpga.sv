@@ -10,11 +10,11 @@ module fpga                                                                     
   parameter integer MemoryElementWidth =  12;                                   // Memory element width
 
   parameter integer NArea          = 10;                                    // Size of each area on the heap
-  parameter integer NArrays        =  200;                                      // Maximum number of arrays
-  parameter integer NHeap          = 1000;                                      // Amount of heap memory
-  parameter integer NLocal         = 1000;                                      // Size of local memory
-  parameter integer NOut           =  200;                                      // Size of output area
-  parameter integer NIn            =     0;                                     // Size of input area
+  parameter integer NArrays        =  2000;                                      // Maximum number of arrays
+  parameter integer NHeap          = 10000;                                      // Amount of heap memory
+  parameter integer NLocal         = 10000;                                      // Size of local memory
+  parameter integer NOut           =  2000;                                      // Size of output area
+  parameter integer NIn            =     0;                                       // Size of input area
   reg [MemoryElementWidth-1:0]   arraySizes[NArrays-1:0];                       // Size of each array
   reg [MemoryElementWidth-1:0]      heapMem[NHeap-1  :0];                       // Heap memory
   reg [MemoryElementWidth-1:0]     localMem[NLocal-1 :0];                       // Local memory
@@ -31,7 +31,13 @@ module fpga                                                                     
   integer ip;                                                                   // Instruction pointer
   reg     clock;                                                                // Clock - has to be one bit wide for yosys
   integer steps;                                                                // Number of steps executed so far
-  integer i, j;                                                                 // A useful counter
+  integer i, j, k;                                                              // A useful counter
+
+  task updateArrayLength(input integer arena, input integer array, input integer index); // Update array length if we are updating an array
+    begin
+      if (arena == 1 && arraySizes[array] < index + 1) arraySizes[array] = index + 1;
+    end
+  endtask
 
   always @(posedge run) begin                                                   // Initialize
     ip             = 0;
@@ -43,51 +49,59 @@ module fpga                                                                     
     outMemPos      = 0;
     allocs         = 0;
     freedArraysTop = 0;
+    for(i = 0; i < NHeap;   ++i)    heapMem[i] = 0;
+    for(i = 0; i < NLocal;  ++i)   localMem[i] = 0;
+    for(i = 0; i < NArrays; ++i) arraySizes[i] = 0;
   end
 
   always @(clock) begin                                                         // Each instruction
     steps = steps + 1;
-$display("AAAA %4d %4d", steps, ip);
     case(ip)
 
           0 :
       begin                                                                     // mov
-              localMem[0 + 0] = 1;
-$display("move %10d", 1);
+//$display("AAAA %4d %4d mov", steps, ip);
+              localMem[0] = 1;
+              updateArrayLength(2, 0, 0);
               ip = 1;
       end
 
           1 :
       begin                                                                     // mov
-              localMem[0 + 1] = 2;
-$display("move %10d", 2);
+//$display("AAAA %4d %4d mov", steps, ip);
+              localMem[1] = 2;
+              updateArrayLength(2, 0, 0);
               ip = 2;
       end
 
           2 :
       begin                                                                     // mov
-              localMem[0 + 2] = 3;
-$display("move %10d", 3);
+//$display("AAAA %4d %4d mov", steps, ip);
+              localMem[2] = 3;
+              updateArrayLength(2, 0, 0);
               ip = 3;
       end
 
           3 :
       begin                                                                     // out
-              outMem[outMemPos] = localMem[0+0];
+//$display("AAAA %4d %4d out", steps, ip);
+              outMem[outMemPos] = localMem[0];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 4;
       end
 
           4 :
       begin                                                                     // out
-              outMem[outMemPos] = localMem[0+1];
+//$display("AAAA %4d %4d out", steps, ip);
+              outMem[outMemPos] = localMem[1];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 5;
       end
 
           5 :
       begin                                                                     // out
-              outMem[outMemPos] = localMem[0+2];
+//$display("AAAA %4d %4d out", steps, ip);
+              outMem[outMemPos] = localMem[2];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 6;
       end
@@ -100,5 +114,8 @@ $display("move %10d", 3);
       end
     endcase
     if (steps <=      7) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
+//for(i = 0; i < 200; ++i) $write("%2d",   localMem[i]); $display("");
+//for(i = 0; i < 200; ++i) $write("%2d",    heapMem[i]); $display("");
+//for(i = 0; i < 200; ++i) $write("%2d", arraySizes[i]); $display("");
   end
 endmodule
