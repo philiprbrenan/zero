@@ -60,7 +60,9 @@ module fpga                                                                     
 
           0 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[0] = freedArrays[freedArraysTop];
@@ -76,7 +78,9 @@ module fpga                                                                     
 
           1 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[0]*10 + 0] = 10;
               updateArrayLength(1, localMem[0], 0);
               ip = 2;
@@ -84,7 +88,9 @@ module fpga                                                                     
 
           2 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[0]*10 + 1] = 20;
               updateArrayLength(1, localMem[0], 1);
               ip = 3;
@@ -92,7 +98,9 @@ module fpga                                                                     
 
           3 :
       begin                                                                     // mov
-//$display("AAAA %4d %4d mov", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d mov", steps, ip);
+end
               heapMem[localMem[0]*10 + 2] = 30;
               updateArrayLength(1, localMem[0], 2);
               ip = 4;
@@ -100,14 +108,18 @@ module fpga                                                                     
 
           4 :
       begin                                                                     // resize
-//$display("AAAA %4d %4d resize", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d resize", steps, ip);
+end
               arraySizes[localMem[0]] = 3;
               ip = 5;
       end
 
           5 :
       begin                                                                     // arrayIndex
-//$display("AAAA %4d %4d arrayIndex", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d arrayIndex", steps, ip);
+end
               localMem[1] = 0; k = arraySizes[localMem[0]];
               for(i = 0; i < NArea; i = i + 1) begin
                 if (i < k && heapMem[localMem[0] * NArea + i] == 30) localMem[1] = i + 1;
@@ -117,7 +129,9 @@ module fpga                                                                     
 
           6 :
       begin                                                                     // out
-//$display("AAAA %4d %4d out", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d out", steps, ip);
+end
               outMem[outMemPos] = localMem[1];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 7;
@@ -125,7 +139,9 @@ module fpga                                                                     
 
           7 :
       begin                                                                     // arrayIndex
-//$display("AAAA %4d %4d arrayIndex", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d arrayIndex", steps, ip);
+end
               localMem[2] = 0; k = arraySizes[localMem[0]];
               for(i = 0; i < NArea; i = i + 1) begin
                 if (i < k && heapMem[localMem[0] * NArea + i] == 20) localMem[2] = i + 1;
@@ -135,7 +151,9 @@ module fpga                                                                     
 
           8 :
       begin                                                                     // out
-//$display("AAAA %4d %4d out", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d out", steps, ip);
+end
               outMem[outMemPos] = localMem[2];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 9;
@@ -143,7 +161,9 @@ module fpga                                                                     
 
           9 :
       begin                                                                     // arrayIndex
-//$display("AAAA %4d %4d arrayIndex", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d arrayIndex", steps, ip);
+end
               localMem[3] = 0; k = arraySizes[localMem[0]];
               for(i = 0; i < NArea; i = i + 1) begin
                 if (i < k && heapMem[localMem[0] * NArea + i] == 10) localMem[3] = i + 1;
@@ -153,7 +173,9 @@ module fpga                                                                     
 
          10 :
       begin                                                                     // out
-//$display("AAAA %4d %4d out", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d out", steps, ip);
+end
               outMem[outMemPos] = localMem[3];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 11;
@@ -161,7 +183,9 @@ module fpga                                                                     
 
          11 :
       begin                                                                     // arrayIndex
-//$display("AAAA %4d %4d arrayIndex", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d arrayIndex", steps, ip);
+end
               localMem[4] = 0; k = arraySizes[localMem[0]];
               for(i = 0; i < NArea; i = i + 1) begin
                 if (i < k && heapMem[localMem[0] * NArea + i] == 15) localMem[4] = i + 1;
@@ -171,7 +195,9 @@ module fpga                                                                     
 
          12 :
       begin                                                                     // out
-//$display("AAAA %4d %4d out", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d out", steps, ip);
+end
               outMem[outMemPos] = localMem[4];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 13;
@@ -179,7 +205,9 @@ module fpga                                                                     
 
          13 :
       begin                                                                     // arrayCountLess
-//$display("AAAA %4d %4d arrayCountLess", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d arrayCountLess", steps, ip);
+end
               j = 0; k = arraySizes[localMem[0]];
               for(i = 0; i < NArea; i = i + 1) begin
                 if (i < k && heapMem[localMem[0] * NArea + i] < 35) j = j + 1;
@@ -190,7 +218,9 @@ module fpga                                                                     
 
          14 :
       begin                                                                     // out
-//$display("AAAA %4d %4d out", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d out", steps, ip);
+end
               outMem[outMemPos] = localMem[5];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 15;
@@ -198,7 +228,9 @@ module fpga                                                                     
 
          15 :
       begin                                                                     // arrayCountLess
-//$display("AAAA %4d %4d arrayCountLess", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d arrayCountLess", steps, ip);
+end
               j = 0; k = arraySizes[localMem[0]];
               for(i = 0; i < NArea; i = i + 1) begin
                 if (i < k && heapMem[localMem[0] * NArea + i] < 25) j = j + 1;
@@ -209,7 +241,9 @@ module fpga                                                                     
 
          16 :
       begin                                                                     // out
-//$display("AAAA %4d %4d out", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d out", steps, ip);
+end
               outMem[outMemPos] = localMem[6];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 17;
@@ -217,7 +251,9 @@ module fpga                                                                     
 
          17 :
       begin                                                                     // arrayCountLess
-//$display("AAAA %4d %4d arrayCountLess", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d arrayCountLess", steps, ip);
+end
               j = 0; k = arraySizes[localMem[0]];
               for(i = 0; i < NArea; i = i + 1) begin
                 if (i < k && heapMem[localMem[0] * NArea + i] < 15) j = j + 1;
@@ -228,7 +264,9 @@ module fpga                                                                     
 
          18 :
       begin                                                                     // out
-//$display("AAAA %4d %4d out", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d out", steps, ip);
+end
               outMem[outMemPos] = localMem[7];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 19;
@@ -236,7 +274,9 @@ module fpga                                                                     
 
          19 :
       begin                                                                     // arrayCountLess
-//$display("AAAA %4d %4d arrayCountLess", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d arrayCountLess", steps, ip);
+end
               j = 0; k = arraySizes[localMem[0]];
               for(i = 0; i < NArea; i = i + 1) begin
                 if (i < k && heapMem[localMem[0] * NArea + i] < 5) j = j + 1;
@@ -247,7 +287,9 @@ module fpga                                                                     
 
          20 :
       begin                                                                     // out
-//$display("AAAA %4d %4d out", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d out", steps, ip);
+end
               outMem[outMemPos] = localMem[8];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 21;
@@ -255,7 +297,9 @@ module fpga                                                                     
 
          21 :
       begin                                                                     // arrayCountGreater
-//$display("AAAA %4d %4d arrayCountGreater", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d arrayCountGreater", steps, ip);
+end
               j = 0; k = arraySizes[localMem[0]];
 //$display("AAAAA k=%d  source2=%d", k, 35);
               for(i = 0; i < NArea; i = i + 1) begin
@@ -268,7 +312,9 @@ module fpga                                                                     
 
          22 :
       begin                                                                     // out
-//$display("AAAA %4d %4d out", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d out", steps, ip);
+end
               outMem[outMemPos] = localMem[9];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 23;
@@ -276,7 +322,9 @@ module fpga                                                                     
 
          23 :
       begin                                                                     // arrayCountGreater
-//$display("AAAA %4d %4d arrayCountGreater", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d arrayCountGreater", steps, ip);
+end
               j = 0; k = arraySizes[localMem[0]];
 //$display("AAAAA k=%d  source2=%d", k, 25);
               for(i = 0; i < NArea; i = i + 1) begin
@@ -289,7 +337,9 @@ module fpga                                                                     
 
          24 :
       begin                                                                     // out
-//$display("AAAA %4d %4d out", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d out", steps, ip);
+end
               outMem[outMemPos] = localMem[10];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 25;
@@ -297,7 +347,9 @@ module fpga                                                                     
 
          25 :
       begin                                                                     // arrayCountGreater
-//$display("AAAA %4d %4d arrayCountGreater", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d arrayCountGreater", steps, ip);
+end
               j = 0; k = arraySizes[localMem[0]];
 //$display("AAAAA k=%d  source2=%d", k, 15);
               for(i = 0; i < NArea; i = i + 1) begin
@@ -310,7 +362,9 @@ module fpga                                                                     
 
          26 :
       begin                                                                     // out
-//$display("AAAA %4d %4d out", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d out", steps, ip);
+end
               outMem[outMemPos] = localMem[11];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 27;
@@ -318,7 +372,9 @@ module fpga                                                                     
 
          27 :
       begin                                                                     // arrayCountGreater
-//$display("AAAA %4d %4d arrayCountGreater", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d arrayCountGreater", steps, ip);
+end
               j = 0; k = arraySizes[localMem[0]];
 //$display("AAAAA k=%d  source2=%d", k, 5);
               for(i = 0; i < NArea; i = i + 1) begin
@@ -331,7 +387,9 @@ module fpga                                                                     
 
          28 :
       begin                                                                     // out
-//$display("AAAA %4d %4d out", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d out", steps, ip);
+end
               outMem[outMemPos] = localMem[12];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 29;
@@ -354,8 +412,10 @@ module fpga                                                                     
       end
     endcase
     if (steps <=     30) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
-//for(i = 0; i < 200; ++i) $write("%2d",   localMem[i]); $display("");
-//for(i = 0; i < 200; ++i) $write("%2d",    heapMem[i]); $display("");
-//for(i = 0; i < 200; ++i) $write("%2d", arraySizes[i]); $display("");
+    if (0) begin
+      for(i = 0; i < 200; ++i) $write("%2d",   localMem[i]); $display("");
+      for(i = 0; i < 200; ++i) $write("%2d",    heapMem[i]); $display("");
+      for(i = 0; i < 200; ++i) $write("%2d", arraySizes[i]); $display("");
+    end
   end
 endmodule
