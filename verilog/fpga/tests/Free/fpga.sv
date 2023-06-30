@@ -60,7 +60,9 @@ module fpga                                                                     
 
           0 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[0] = freedArrays[freedArraysTop];
@@ -76,7 +78,9 @@ module fpga                                                                     
 
           1 :
       begin                                                                     // out
-//$display("AAAA %4d %4d out", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d out", steps, ip);
+end
               outMem[outMemPos] = localMem[0];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 2;
@@ -84,7 +88,9 @@ module fpga                                                                     
 
           2 :
       begin                                                                     // free
-//$display("AAAA %4d %4d free", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d free", steps, ip);
+end
                                  arraySizes[localMem[0]] = 0;
               freedArrays[freedArraysTop] = localMem[0];
               freedArraysTop = freedArraysTop + 1;
@@ -93,7 +99,9 @@ module fpga                                                                     
 
           3 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[1] = freedArrays[freedArraysTop];
@@ -109,7 +117,9 @@ module fpga                                                                     
 
           4 :
       begin                                                                     // out
-//$display("AAAA %4d %4d out", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d out", steps, ip);
+end
               outMem[outMemPos] = localMem[1];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 5;
@@ -117,7 +127,9 @@ module fpga                                                                     
 
           5 :
       begin                                                                     // free
-//$display("AAAA %4d %4d free", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d free", steps, ip);
+end
                                  arraySizes[localMem[1]] = 0;
               freedArrays[freedArraysTop] = localMem[1];
               freedArraysTop = freedArraysTop + 1;
@@ -126,7 +138,9 @@ module fpga                                                                     
 
           6 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[2] = freedArrays[freedArraysTop];
@@ -142,7 +156,9 @@ module fpga                                                                     
 
           7 :
       begin                                                                     // out
-//$display("AAAA %4d %4d out", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d out", steps, ip);
+end
               outMem[outMemPos] = localMem[2];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 8;
@@ -150,7 +166,9 @@ module fpga                                                                     
 
           8 :
       begin                                                                     // free
-//$display("AAAA %4d %4d free", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d free", steps, ip);
+end
                                  arraySizes[localMem[2]] = 0;
               freedArrays[freedArraysTop] = localMem[2];
               freedArraysTop = freedArraysTop + 1;
@@ -165,8 +183,10 @@ module fpga                                                                     
       end
     endcase
     if (steps <=     10) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
-//for(i = 0; i < 200; ++i) $write("%2d",   localMem[i]); $display("");
-//for(i = 0; i < 200; ++i) $write("%2d",    heapMem[i]); $display("");
-//for(i = 0; i < 200; ++i) $write("%2d", arraySizes[i]); $display("");
+    if (0) begin
+      for(i = 0; i < 200; ++i) $write("%2d",   localMem[i]); $display("");
+      for(i = 0; i < 200; ++i) $write("%2d",    heapMem[i]); $display("");
+      for(i = 0; i < 200; ++i) $write("%2d", arraySizes[i]); $display("");
+    end
   end
 endmodule
