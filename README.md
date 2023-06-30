@@ -326,7 +326,7 @@ instruction.
 
 ### N-Way-Tree
 
-An implementation of N-Way-Trees in the [Zero assembler programming language](https://github.com/philiprbrenan/zero)  .
+An implementation of N-Way-Trees in the [Zero assembler programming language](https://github.com/philiprbrenan/zero) .
 
 [Documentation](https://metacpan.org/dist/Zero-Emulator/view/NWayTree.pod)
 [Code](https://github.com/philiprbrenan/zero/blob/main/lib/Zero/NWayTree.pm)
