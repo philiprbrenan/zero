@@ -43,9 +43,11 @@ Associative lookups are the [sine qua non](https://en.wikipedia.org/wiki/Sine_qu
 This arrangement should produce very fast associative lookups - much faster
 than can be performed by any generic system reliant on external software. Usage
 of power and [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) surface area should be reduced by having a minimal CPU to
-perform the lookups. Being able to deliver such lookups faster than can be
-done with conventional software solutions might prove profitable in much the
-same way as graphics chips and other chips used at scale.
+perform the lookups. Being able to deliver such lookups faster than can be done
+with conventional software solutions might prove profitable in much the same
+way as graphics chips, crypto mining chips and other such chips have proven to
+be because while we cannot sell good software at any price these days, we can
+still sell hardware.
 
 Memory is addressed via named areas which act as flexible [arrays](https://en.wikipedia.org/wiki/Dynamic_array) with the usual
 indexing, push, pop, index, iteration, resizing and scan operations.  Each
