@@ -102,7 +102,7 @@ if (0) begin
   $display("AAAA %4d %4d pop", steps, ip);
 end
               arraySizes[localMem[0]] = arraySizes[localMem[0]] - 1;
-              localMem[1] = outMem[localMem[0] * NArea + arraySizes[localMem[0]]];
+              localMem[1] = heapMem[localMem[0] * NArea + arraySizes[localMem[0]]];
               ip = 4;
       end
 
@@ -112,7 +112,7 @@ if (0) begin
   $display("AAAA %4d %4d pop", steps, ip);
 end
               arraySizes[localMem[0]] = arraySizes[localMem[0]] - 1;
-              localMem[2] = outMem[localMem[0] * NArea + arraySizes[localMem[0]]];
+              localMem[2] = heapMem[localMem[0] * NArea + arraySizes[localMem[0]]];
               ip = 5;
       end
 
