@@ -22,6 +22,7 @@ my $repoUrl  = q(https://github.com/philiprbrenan/zero);                        
 my $timeFile = q(zzzFileTimes.data);                                            # Last upload time
 my $emulator = fpf $home, q(lib/Zero/Emulator.pm);                              # Emulator
 my $btree    = fpf $home, q(lib/Zero/BTree.pm);                                 # Btree
+my $readMe   = fpe $home, qw(README md2);                                       # Read me
 
 my $testsDir = fpd $home, qw(verilog fpga tests);                               # Tests folder
 my $perlXmp  = 1;                                                               # Perl examples if true
@@ -52,12 +53,13 @@ sub pod($$$)                                                                    
   confess "Cannot extract documentation for file: $in";
  }
 
-if (!defined($T) or $T < fileModTime($emulator) or $T < fileModTime($btree))                                                                          # Documentation - specific components
+if (!defined($T) or $T < fileModTime($emulator) or $T < fileModTime($btree))    # Pod for modules                                                                      # Documentation - specific components
  {pod $emulator, fpf($home, q(Emulator.md)), &introEmulator;
   pod $btree,    fpf($home, q(BTree.md)),    &introBTree;
+ }
 
-  expandWellKnownWordsInMarkDownFile                                            # Documentation - general
-    fpe($home, qw(README md2)), fpe $home, qw(README md);
+if (!defined($T) or $T < fileModTime($readMe))                                  # Read me
+ {expandWellKnownWordsInMarkDownFile $readMe, fpe $home, qw(README md);
  }
 
 &run();                                                                         # Upload run configuration
