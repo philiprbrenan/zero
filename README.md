@@ -26,7 +26,7 @@ for instruction decode logic furthering reducing the amount [Silicon](https://en
 per CPU while speeding up the processing of each instruction.
 
 The use of many small, fast CPUs will allow many database queries to be
-processed simultaneously in parallel to ibatin much higher performance than can
+processed simultaneously in parallel to obtain much higher performance than can
 be achieved with conventional processors driven by decoded software.
 
 Only one [tree](https://en.wikipedia.org/wiki/Tree_(data_structure)) will be used: typically mapping 64 [bit](https://en.wikipedia.org/wiki/Bit) keys into 64 [bit](https://en.wikipedia.org/wiki/Bit) data. It
