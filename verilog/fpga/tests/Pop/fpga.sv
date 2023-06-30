@@ -60,7 +60,9 @@ module fpga                                                                     
 
           0 :
       begin                                                                     // array
-//$display("AAAA %4d %4d array", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d array", steps, ip);
+end
               if (freedArraysTop > 0) begin
                 freedArraysTop = freedArraysTop - 1;
                 localMem[0] = freedArrays[freedArraysTop];
@@ -76,23 +78,31 @@ module fpga                                                                     
 
           1 :
       begin                                                                     // push
-//$display("AAAA %4d %4d push", steps, ip);
-              outMem[localMem[0] * NArea + arraySizes[localMem[0]]] = 1;
+if (0) begin
+  $display("AAAA %4d %4d push", steps, ip);
+end
+$display("XXXX array=%d size=%d  s=%d  v=%d", localMem[0], arraySizes[localMem[0]], 1, localMem[0] * NArea + arraySizes[localMem[0]]);
+              heapMem[localMem[0] * NArea + arraySizes[localMem[0]]] = 1;
               arraySizes[localMem[0]]    = arraySizes[localMem[0]] + 1;
               ip = 2;
       end
 
           2 :
       begin                                                                     // push
-//$display("AAAA %4d %4d push", steps, ip);
-              outMem[localMem[0] * NArea + arraySizes[localMem[0]]] = 2;
+if (0) begin
+  $display("AAAA %4d %4d push", steps, ip);
+end
+$display("XXXX array=%d size=%d  s=%d  v=%d", localMem[0], arraySizes[localMem[0]], 2, localMem[0] * NArea + arraySizes[localMem[0]]);
+              heapMem[localMem[0] * NArea + arraySizes[localMem[0]]] = 2;
               arraySizes[localMem[0]]    = arraySizes[localMem[0]] + 1;
               ip = 3;
       end
 
           3 :
       begin                                                                     // pop
-//$display("AAAA %4d %4d pop", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d pop", steps, ip);
+end
               arraySizes[localMem[0]] = arraySizes[localMem[0]] - 1;
               localMem[1] = outMem[localMem[0] * NArea + arraySizes[localMem[0]]];
               ip = 4;
@@ -100,7 +110,9 @@ module fpga                                                                     
 
           4 :
       begin                                                                     // pop
-//$display("AAAA %4d %4d pop", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d pop", steps, ip);
+end
               arraySizes[localMem[0]] = arraySizes[localMem[0]] - 1;
               localMem[2] = outMem[localMem[0] * NArea + arraySizes[localMem[0]]];
               ip = 5;
@@ -108,7 +120,9 @@ module fpga                                                                     
 
           5 :
       begin                                                                     // out
-//$display("AAAA %4d %4d out", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d out", steps, ip);
+end
               outMem[outMemPos] = localMem[1];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 6;
@@ -116,7 +130,9 @@ module fpga                                                                     
 
           6 :
       begin                                                                     // out
-//$display("AAAA %4d %4d out", steps, ip);
+if (0) begin
+  $display("AAAA %4d %4d out", steps, ip);
+end
               outMem[outMemPos] = localMem[2];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 7;
@@ -129,8 +145,10 @@ module fpga                                                                     
       end
     endcase
     if (steps <=      8) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
-//for(i = 0; i < 200; ++i) $write("%2d",   localMem[i]); $display("");
-//for(i = 0; i < 200; ++i) $write("%2d",    heapMem[i]); $display("");
-//for(i = 0; i < 200; ++i) $write("%2d", arraySizes[i]); $display("");
+    if (0) begin
+      for(i = 0; i < 200; ++i) $write("%2d",   localMem[i]); $display("");
+      for(i = 0; i < 200; ++i) $write("%2d",    heapMem[i]); $display("");
+      for(i = 0; i < 200; ++i) $write("%2d", arraySizes[i]); $display("");
+    end
   end
 endmodule
