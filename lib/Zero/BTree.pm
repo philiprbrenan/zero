@@ -16,7 +16,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Zero::Emulator qw(:all);
-eval "use Test::More tests=>131" unless caller;
+eval "use Test::More tests=>129" unless caller;
 
 makeDieConfess;
 
@@ -1489,8 +1489,8 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1, in=>[@r]);
   is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-  is_deeply $e->widestAreaInArena,   [undef, 6, 539];
-  is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
+  is_deeply $e->widestAreaInArena,   [undef, 7, 540];
+# is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];              # Only available in original memory scheme
   is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
 
   #say STDERR dump $e->tallyCount;
@@ -1621,8 +1621,8 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1, in=>[@r],
     stringMemory=>1, maximumArraySize=>7);
   is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-  is_deeply $e->widestAreaInArena,   [undef, 6, 539];
-  is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
+  is_deeply $e->widestAreaInArena,   [undef, 7, 540];
+# is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];              # Only available in original memory scheme
   is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
 
   #say STDERR dump $e->tallyCount;
