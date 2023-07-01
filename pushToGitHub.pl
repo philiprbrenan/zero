@@ -25,7 +25,7 @@ my $btree    = fpf $home, q(lib/Zero/BTree.pm);                                 
 my $readMe   = fpe $home, qw(README md2);                                       # Read me
 
 my $testsDir = fpd $home, qw(verilog fpga tests);                               # Tests folder
-my $lowLevel = 0;                                                               # Run the low level tests that prepare for an actual fpga - these take time
+my $lowLevel = 1;                                                               # Run the low level tests that prepare for an actual fpga - these take time
 my $macos    = 0;                                                               # Macos if true
 my $windows  = 0;                                                               # Windows if true
 my $openBsd  = 0;                                                               # OpenBsd if true
@@ -61,8 +61,6 @@ if (!defined($T) or $T < fileModTime($readMe))                                  
  {expandWellKnownWordsInMarkDownFile $readMe, fpe $home, qw(README md);
  }
 
-&run();                                                                         # Upload run configuration
-
 push my @files,
   grep {!/backups/}
   grep {!/_build/}
@@ -91,6 +89,8 @@ for my $s(@uploadFiles)                                                         
  }
 
 owf($timeFile, time);                                                           # Save current time
+
+&run();                                                                         # Upload run configuration
 
 sub job                                                                         # Create a job that runs on Ubuntu
  {my ($job) = @_;                                                               # Job name
@@ -149,19 +149,7 @@ sub yosys {<<END}                                                               
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
 END
 
-sub highLevel{<<END}                                                            # High level perl tests
-        run: |
-          perl lib/Zero/Emulator.pm
-          perl lib/Zero/BTree.pm
-          perl examples/testEmulator.pl
-          perl examples/testBTree.pl
-          perl examples/bubbleSort.pl
-          perl examples/insertionSort.pl
-          perl examples/quickSort.pl
-          perl examples/selectionSort.pl
-END
-
-sub run
+sub run                                                                         # Work flow on github
  {my $d = dateTimeStamp;
 
   my $y = <<"END".job("test");
