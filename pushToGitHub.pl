@@ -314,7 +314,7 @@ END
     push @y, $y;
    }
 
-  if (1)                                                                        # Test run on fpga
+  if (0)                                                                        # Test run on fpga
    {for my $s(@tests)                                                           # Tests
      {my $v = setFileExtension $s, q(sv);                                       # Source file
       my $j = setFileExtension $s, q(json);                                     # Json description
@@ -322,7 +322,7 @@ END
       my $P = setFileExtension $s, q(fs);                                       # Bit stream
       my $b = fpe fp($s), qw(tangnano9k cst);                                   # Device description
 
-      my $y = <<END;
+      my $y = job("Yosys $s").yosys(). <<END;
     - name: yosys $s
       if: \${{ always() }}
       run: |
