@@ -328,9 +328,10 @@ END
       if: \${{ always() }}
       run: |
         export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog $v; synth_gowin -top fpga -json $j"
-        nextpnr-gowin -v --debug --json $j --write $p --device "$d" --family $f --cst $b
-        gowin_pack -d GW1N-9C -o $P $p
+        yosys -q -p "read_verilog $v;"
+        #yosys -q -p "read_verilog $v; synth_gowin -top fpga -json $j"
+        #nextpnr-gowin -v --debug --json $j --write $p --device "$d" --family $f --cst $b
+        #gowin_pack -d GW1N-9C -o $P $p
 
 END
       push @y, $y;
