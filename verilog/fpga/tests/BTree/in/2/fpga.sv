@@ -50,9 +50,9 @@ module fpga                                                                     
     allocs         = 0;
     freedArraysTop = 0;
     if (0) begin                                                  // Clear memory
-      for(i = 0; i < NHeap;   ++i) begin    heapMem[i] = 0; end
-      for(i = 0; i < NLocal;  ++i) begin   localMem[i] = 0; end
-      for(i = 0; i < NArrays; ++i) begin arraySizes[i] = 0; end
+      for(i = 0; i < NHeap;   i = i + 1)    heapMem[i] = 0;
+      for(i = 0; i < NLocal;  i = i + 1)   localMem[i] = 0;
+      for(i = 0; i < NArrays; i = i + 1) arraySizes[i] = 0;
     end
     inMem[0] = 40;
     inMem[1] = 19;
@@ -10931,9 +10931,9 @@ end
     endcase
     if (steps <=   9369) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
     if (0) begin
-      for(i = 0; i < 200; ++i) $write("%2d",   localMem[i]); $display("");
-      for(i = 0; i < 200; ++i) $write("%2d",    heapMem[i]); $display("");
-      for(i = 0; i < 200; ++i) $write("%2d", arraySizes[i]); $display("");
+      for(i = 0; i < 200; i = i + 1) $write("%2d",   localMem[i]); $display("");
+      for(i = 0; i < 200; i = i + 1) $write("%2d",    heapMem[i]); $display("");
+      for(i = 0; i < 200; i = i + 1) $write("%2d", arraySizes[i]); $display("");
     end
   end
 endmodule
