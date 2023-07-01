@@ -25,12 +25,11 @@ my $btree    = fpf $home, q(lib/Zero/BTree.pm);                                 
 my $readMe   = fpe $home, qw(README md2);                                       # Read me
 
 my $testsDir = fpd $home, qw(verilog fpga tests);                               # Tests folder
-my $lowLevel = 1;                                                               # Run the low level tests that prepare for an actual fpga - these take time
+my $lowLevel = 0;                                                               # Run the low level tests that prepare for an actual fpga - these take time
 my $macos    = 0;                                                               # Macos if true
 my $windows  = 0;                                                               # Windows if true
 my $openBsd  = 0;                                                               # OpenBsd if true
 my $freeBsd  = 0;                                                               # FreeBsd if true - fails
-my $fpga1    = 1;                                                               # Fpga 1
 
 my $T = -e $timeFile ? eval readFile($timeFile) : undef;                        # Last upload time
 
@@ -109,7 +108,7 @@ sub job                                                                         
       run: |
         free -h
         df   -h
-        find / -type f -exec du -h {} + | sort -rh | head -n 100
+        sudo find / -type f -exec du -h {} + | sort -rh | head -n 100
 
     - name: Memory fallocate
       run: |
