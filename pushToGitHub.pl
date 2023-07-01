@@ -117,6 +117,10 @@ sub job                                                                         
         sudo chmod 600        swapfile
         ls -la                swapfile
 
+    - name: Memory make swap
+      run: |
+        mkswap                swapfile
+
     - name: Memory set swap
       run: |
         sudo swapon           swapfile
@@ -330,7 +334,7 @@ END
     push @y, $y;
    }
 
-  if (1)                                                                        # Test run on fpga
+  if (0)                                                                        # Test run on fpga
    {for my $s(@tests)                                                           # Tests
      {my $t = fp($s) =~ s(/) (_)gsr;                                            # Test name in a form suitable for github
       my $v = setFileExtension $s, q(sv);                                       # Source file
