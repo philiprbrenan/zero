@@ -9,12 +9,12 @@ module fpga                                                                     
 
   parameter integer MemoryElementWidth =  12;                                   // Memory element width
 
-  parameter integer NArea   = 2;                                           // Size of each area on the heap
-  parameter integer NArrays = 2;                                         // Maximum number of arrays
-  parameter integer NHeap   = 2*2;                                  // Amount of heap memory
-  parameter integer NLocal  = 3;                                          // Size of local memory
-  parameter integer NOut    =  2000;                                            // Size of output area
-  parameter integer NIn            =     0;                                       // Size of input area
+  parameter integer NArea   =        2;                                         // Size of each area on the heap
+  parameter integer NArrays =        2;                                         // Maximum number of arrays
+  parameter integer NHeap   =        4;                                         // Amount of heap memory
+  parameter integer NLocal  =        3;                                         // Size of local memory
+  parameter integer NOut    =        3;                                         // Size of output area
+  parameter integer NIn     =         0;                                        // Size of input area
   reg [MemoryElementWidth-1:0]   arraySizes[NArrays-1:0];                       // Size of each array
   reg [MemoryElementWidth-1:0]      heapMem[NHeap-1  :0];                       // Heap memory
   reg [MemoryElementWidth-1:0]     localMem[NLocal-1 :0];                       // Local memory
