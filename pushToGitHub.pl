@@ -119,7 +119,7 @@ sub job                                                                         
 
     - name: Memory make swap
       run: |
-        mkswap                swapfile
+        sudo mkswap           swapfile
 
     - name: Memory set swap
       run: |
