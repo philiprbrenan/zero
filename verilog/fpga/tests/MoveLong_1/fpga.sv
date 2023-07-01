@@ -9,10 +9,10 @@ module fpga                                                                     
 
   parameter integer MemoryElementWidth =  12;                                   // Memory element width
 
-  parameter integer NArea   = 9;                                           // Size of each area on the heap
+  parameter integer NArea   = 10;                                           // Size of each area on the heap
   parameter integer NArrays = 2;                                         // Maximum number of arrays
-  parameter integer NHeap   = 9*2;                                  // Amount of heap memory
-  parameter integer NLocal  = 3;                                          // Size of local memory
+  parameter integer NHeap   = 10*2;                                  // Amount of heap memory
+  parameter integer NLocal  = 4;                                          // Size of local memory
   parameter integer NOut    =  2000;                                            // Size of output area
   parameter integer NIn            =     0;                                       // Size of input area
   reg [MemoryElementWidth-1:0]   arraySizes[NArrays-1:0];                       // Size of each array
@@ -133,7 +133,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[0]*9 + localMem[2]] = localMem[2];
+              heapMem[localMem[0]*10 + localMem[2]] = localMem[2];
               updateArrayLength(1, localMem[0], localMem[2]);
               ip = 7;
       end
@@ -153,7 +153,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[1]*9 + localMem[2]] = localMem[3];
+              heapMem[localMem[1]*10 + localMem[2]] = localMem[3];
               updateArrayLength(1, localMem[1], localMem[2]);
               ip = 9;
       end
