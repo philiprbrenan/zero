@@ -25,7 +25,7 @@ my $btree    = fpf $home, q(lib/Zero/BTree.pm);                                 
 my $readMe   = fpe $home, qw(README md2);                                       # Read me
 
 my $testsDir = fpd $home, qw(verilog fpga tests);                               # Tests folder
-my $perlXmp  = 1;                                                               # Perl examples if true
+my $lowLevel = 0;                                                               # Run the low level tests that prepare for an actual fpga - these take time
 my $macos    = 0;                                                               # Macos if true
 my $windows  = 0;                                                               # Windows if true
 my $openBsd  = 0;                                                               # OpenBsd if true
@@ -69,7 +69,6 @@ push my @files,
   grep {!/_build/}
   grep {!/Build.PL/}
   grep {!/blib/}
-# grep {$perlXmp or !/\.pl\Z/}                                                  # No changes expected
   searchDirectoryTreesForMatchingFiles($home,                                   # Files to upload
     qw(.pm .pl .md .sv .tb .cst));
 
@@ -334,7 +333,7 @@ END
     push @y, $y;
    }
 
-  if (0)                                                                        # Test run on fpga
+  if ($lowLevel)                                                                # Test run on fpga
    {for my $s(@tests)                                                           # Tests
      {my $t = fp($s) =~ s(/) (_)gsr;                                            # Test name in a form suitable for github
       my $v = setFileExtension $s, q(sv);                                       # Source file
