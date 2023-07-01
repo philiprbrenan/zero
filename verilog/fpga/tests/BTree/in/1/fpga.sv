@@ -15,13 +15,13 @@ module fpga                                                                     
   parameter integer NLocal  =      508;                                         // Size of local memory
   parameter integer NOut    =       10;                                         // Size of output area
   parameter integer NIn     =       10;                                         // Size of input area
-  reg [MemoryElementWidth-1:0]   arraySizes[NArrays-1:0];                       // Size of each array
-  reg [MemoryElementWidth-1:0]      heapMem[NHeap-1  :0];                       // Heap memory
-  reg [MemoryElementWidth-1:0]     localMem[NLocal-1 :0];                       // Local memory
-  reg [MemoryElementWidth-1:0]       outMem[NOut-1   :0];                       // Out channel
-  reg [MemoryElementWidth-1:0]        inMem[NIn-1    :0];                       // In channel
-  reg [MemoryElementWidth-1:0]  freedArrays[NArrays-1:0];                       // Freed arrays list implemented as a stack
-  reg [MemoryElementWidth-1:0]   arrayShift[NArea-1  :0];                       // Array shift area
+  reg [MemoryElementWidth-1:0]   arraySizes[NArrays-1:0](* keep *);             // Size of each array
+  reg [MemoryElementWidth-1:0]      heapMem[NHeap-1  :0](* keep *);             // Heap memory
+  reg [MemoryElementWidth-1:0]     localMem[NLocal-1 :0](* keep *);             // Local memory
+  reg [MemoryElementWidth-1:0]       outMem[NOut-1   :0](* keep *);             // Out channel
+  reg [MemoryElementWidth-1:0]        inMem[NIn-1    :0](* keep *);             // In channel
+  reg [MemoryElementWidth-1:0]  freedArrays[NArrays-1:0](* keep *);             // Freed arrays list implemented as a stack
+  reg [MemoryElementWidth-1:0]   arrayShift[NArea-1  :0](* keep *);             // Array shift area
 
   integer inMemPos;                                                             // Current position in input channel
   integer outMemPos;                                                            // Position in output channel
@@ -49,7 +49,7 @@ module fpga                                                                     
     outMemPos      = 0;
     allocs         = 0;
     freedArraysTop = 0;
-    if (0) begin                                                                // Clear memory
+    if (0) begin                                                  // Clear memory
       for(i = 0; i < NHeap;   i = i + 1)    heapMem[i] = 0;
       for(i = 0; i < NLocal;  i = i + 1)   localMem[i] = 0;
       for(i = 0; i < NArrays; i = i + 1) arraySizes[i] = 0;
@@ -66,7 +66,7 @@ module fpga                                                                     
     inMem[9] = 0;
   end
 
-  always @(*) begin                                                             // Each instruction
+  always @(clock) begin                                                         // Each instruction
     steps = steps + 1;
     case(ip)
 
