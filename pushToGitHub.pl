@@ -109,6 +109,7 @@ sub job                                                                         
       run: |
         free -h
         df   -h
+        find / -type f -exec du -h {} + | sort -rh | head -n 100
 
     - name: Memory fallocate
       run: |
@@ -117,12 +118,6 @@ sub job                                                                         
         sudo ls -la           swapfile
         sudo mkswap           swapfile
         sudo swapon           swapfile
-        free -h
-        sudo fallocate -l  8G /mnt/swapfile
-        sudo chmod 600        /mnt/swapfile
-        sudo ls -la           /mnt/swapfile
-        sudo mkswap           /mnt/swapfile
-        sudo swapon           /mnt/swapfile
         free -h
 
     - uses: actions/checkout\@v3
