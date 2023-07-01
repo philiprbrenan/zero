@@ -12,7 +12,7 @@ module fpga                                                                     
   parameter integer NArea   = 0;                                           // Size of each area on the heap
   parameter integer NArrays = 1;                                         // Maximum number of arrays
   parameter integer NHeap   = 0*1;                                  // Amount of heap memory
-  parameter integer NLocal  = 2;                                          // Size of local memory
+  parameter integer NLocal  = 3;                                          // Size of local memory
   parameter integer NOut    =  2000;                                            // Size of output area
   parameter integer NIn            =     0;                                       // Size of input area
   reg [MemoryElementWidth-1:0]   arraySizes[NArrays-1:0];                       // Size of each array
