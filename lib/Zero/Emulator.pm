@@ -5538,6 +5538,20 @@ if (1)                                                                          
  }
 
 #latest:;
+if (1)                                                                          ##ArrayOut
+ {Start 1;
+  my $a = Array "aaa";
+  ForIn
+   {my ($i, $v, $Check, $Next, $End) = @_;
+    Push $a, $v, "aaa";
+   };
+  ArrayOut $a;
+  my $e = Execute(suppressOutput=>1, in => [9,88,777]);
+  is_deeply $e->out, "9 88 777";
+# $e->generateVerilogMachineCode("ArrayOut") if $debug;
+ }
+
+#latest:;
 if (1)                                                                          ##compileToVerilog
  {Start 1;
   Out 1;
