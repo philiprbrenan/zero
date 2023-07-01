@@ -14,7 +14,7 @@ module fpga                                                                     
   parameter integer NHeap   =        4;                                         // Amount of heap memory
   parameter integer NLocal  =        3;                                         // Size of local memory
   parameter integer NOut    =        3;                                         // Size of output area
-  parameter integer NIn     =         0;                                        // Size of input area
+  parameter integer NIn     =        0;                                         // Size of input area
   reg [MemoryElementWidth-1:0]   arraySizes[NArrays-1:0];                       // Size of each array
   reg [MemoryElementWidth-1:0]      heapMem[NHeap-1  :0];                       // Heap memory
   reg [MemoryElementWidth-1:0]     localMem[NLocal-1 :0];                       // Local memory
