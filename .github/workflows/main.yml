@@ -1,4 +1,4 @@
-# Test 2023-07-01 at 17:19:20
+# Test 2023-07-01 at 17:20:07
 
 name: Test
 
@@ -375,7 +375,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_Add_fpga.sv
+    - name: verilog_fpga_tests_Add_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -408,7 +408,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_Array_fpga.sv
+    - name: verilog_fpga_tests_Array_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -441,7 +441,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_ArrayCountGreaterIndex_fpga.sv
+    - name: verilog_fpga_tests_ArrayCountGreaterIndex_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -474,7 +474,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_ArrayCountLess_fpga.sv
+    - name: verilog_fpga_tests_ArrayCountLess_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -507,7 +507,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_ArrayIndex_fpga.sv
+    - name: verilog_fpga_tests_ArrayIndex_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -540,7 +540,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_Array_scans_fpga.sv
+    - name: verilog_fpga_tests_Array_scans_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -573,7 +573,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_BTree_basic_1_fpga.sv
+    - name: verilog_fpga_tests_BTree_basic_1_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -606,7 +606,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_BTree_basic_2_fpga.sv
+    - name: verilog_fpga_tests_BTree_basic_2_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -639,7 +639,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_BTree_basic_3_fpga.sv
+    - name: verilog_fpga_tests_BTree_basic_3_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -672,7 +672,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_BTree_basic_4_fpga.sv
+    - name: verilog_fpga_tests_BTree_basic_4_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -705,7 +705,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_BTree_basic_5_fpga.sv
+    - name: verilog_fpga_tests_BTree_basic_5_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -738,7 +738,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_BTree_basic_6_fpga.sv
+    - name: verilog_fpga_tests_BTree_basic_6_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -771,7 +771,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_BTree_basic_7_fpga.sv
+    - name: verilog_fpga_tests_BTree_basic_7_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -804,7 +804,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_BTree_in_1_fpga.sv
+    - name: verilog_fpga_tests_BTree_in_1_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -837,7 +837,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_BTree_in_2_fpga.sv
+    - name: verilog_fpga_tests_BTree_in_2_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -870,7 +870,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_BTree_in_3_fpga.sv
+    - name: verilog_fpga_tests_BTree_in_3_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -903,7 +903,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_BTree_in_4_fpga.sv
+    - name: verilog_fpga_tests_BTree_in_4_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -936,7 +936,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_BTree_insert_01_fpga.sv
+    - name: verilog_fpga_tests_BTree_insert_01_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -969,7 +969,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_BTree_insert_02_fpga.sv
+    - name: verilog_fpga_tests_BTree_insert_02_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1002,7 +1002,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_BTree_insert_03_fpga.sv
+    - name: verilog_fpga_tests_BTree_insert_03_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1035,7 +1035,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_BTree_insert_04_fpga.sv
+    - name: verilog_fpga_tests_BTree_insert_04_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1068,7 +1068,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_BTree_insert_05_fpga.sv
+    - name: verilog_fpga_tests_BTree_insert_05_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1101,7 +1101,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_BTree_insert_06_fpga.sv
+    - name: verilog_fpga_tests_BTree_insert_06_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1134,7 +1134,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_BTree_insert_66_fpga.sv
+    - name: verilog_fpga_tests_BTree_insert_66_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1167,7 +1167,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_ForIn_fpga.sv
+    - name: verilog_fpga_tests_ForIn_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1200,7 +1200,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_Free_fpga.sv
+    - name: verilog_fpga_tests_Free_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1233,7 +1233,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_In_fpga.sv
+    - name: verilog_fpga_tests_In_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1266,7 +1266,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_InSize_fpga.sv
+    - name: verilog_fpga_tests_InSize_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1299,7 +1299,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_JFalse_fpga.sv
+    - name: verilog_fpga_tests_JFalse_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1332,7 +1332,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_Jeq_fpga.sv
+    - name: verilog_fpga_tests_Jeq_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1365,7 +1365,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_Jmp_fpga.sv
+    - name: verilog_fpga_tests_Jmp_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1398,7 +1398,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_Mov_fpga.sv
+    - name: verilog_fpga_tests_Mov_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1431,7 +1431,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_Mov2_fpga.sv
+    - name: verilog_fpga_tests_Mov2_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1464,7 +1464,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_MoveLong_1_fpga.sv
+    - name: verilog_fpga_tests_MoveLong_1_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1497,7 +1497,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_MoveLong_2_fpga.sv
+    - name: verilog_fpga_tests_MoveLong_2_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1530,7 +1530,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_Not_fpga.sv
+    - name: verilog_fpga_tests_Not_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1563,7 +1563,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_Pop_fpga.sv
+    - name: verilog_fpga_tests_Pop_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1596,7 +1596,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_Push_fpga.sv
+    - name: verilog_fpga_tests_Push_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1629,7 +1629,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_ShiftLeft_fpga.sv
+    - name: verilog_fpga_tests_ShiftLeft_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1662,7 +1662,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_ShiftRight_fpga.sv
+    - name: verilog_fpga_tests_ShiftRight_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1695,7 +1695,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_Shift_up_fpga.sv
+    - name: verilog_fpga_tests_Shift_up_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1728,7 +1728,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_Shift_up_2_fpga.sv
+    - name: verilog_fpga_tests_Shift_up_2_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
@@ -1761,7 +1761,7 @@ jobs:
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
-    - name: yosys verilog_fpga_tests_Subtract_fpga.sv
+    - name: verilog_fpga_tests_Subtract_fpga.sv
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
