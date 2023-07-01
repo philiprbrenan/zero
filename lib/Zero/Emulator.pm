@@ -19,7 +19,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Time::HiRes qw(time);
-eval "use Test::More tests=>402" unless caller;
+eval "use Test::More tests=>403" unless caller;
 
 makeDieConfess;
 
@@ -3047,7 +3047,7 @@ sub generateVerilogMachineCode($$)                                              
   if ($exec->compileToVerilogTests->{$name}++)
    {confess "Duplicate compile to verilog test nanme: $name";
    }
-  return $exec->compileToVerilog($name);                                        # How to do all the generate machine code stuff to develop and test dereferencing - but it is now no longer needed as long as teh compiled verilog an be palced on a fpga.
+  return $exec->compileToVerilog($name);                                        # Had to do all the generate machine code stuff to develop and test dereferencing - but it is now no longer needed as long as the compiled verilog can be placed on a fpga.  This code illustrates how one might encode the instructions but is in no way definitive.
 
   my $string = GenerateMachineCode;                                             # Generate machine code as one long string
   my $N = 32;
@@ -3130,7 +3130,7 @@ END
 
 #D1 Compile to verilog                                                          # Compile each sub sequence of instructions into equivalent verilog.  A sub sequence starts at an instruction marked as an entry point
 
-sub CompileToVerilog(%)                                                         # Execution environment for a block of code.
+sub CompileToVerilog(%)                                                         #P Execution environment for a block of code.
  {my (%options) = @_;                                                           # Execution options
 
   genHash(q(Zero::CompileToVerilog),                                            # Compile to verilog
@@ -3143,7 +3143,7 @@ sub CompileToVerilog(%)                                                         
    );
  }
 
-sub Zero::CompileToVerilog::deref($$)                                           # Compile a reference in assembler format to a corresponding verilog expression
+sub Zero::CompileToVerilog::deref($$)                                           #P Compile a reference in assembler format to a corresponding verilog expression
  {my ($compile, $ref) = @_;                                                     # Compile, reference
   @_ == 2 or confess "Two parameters";
 
