@@ -112,7 +112,7 @@ sub job                                                                         
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 20G swapfile
+        sudo fallocate -l 23G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
