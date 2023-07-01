@@ -111,6 +111,10 @@ sub job                                                                         
       run: |
         free -h
         df   -h
+        sudo fallocate -l 16G swapfile
+        sudo chmod 600        swapfile
+        sudo swapon           swapfile
+        free -h
 
     - uses: actions/checkout\@v3
       with:
@@ -320,7 +324,7 @@ END
     push @y, $y;
    }
 
-  if (0)                                                                        # Test run on fpga
+  if (1)                                                                        # Test run on fpga
    {for my $s(@tests)                                                           # Tests
      {my $t = fp($s) =~ s(/) (_)gsr;                                            # Test name in a form suitable for github
       my $v = setFileExtension $s, q(sv);                                       # Source file
