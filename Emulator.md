@@ -4161,6 +4161,14 @@ Compile to verilog
 
 The size of an array in the heap area
 
+#### NArrays
+
+The number of heap arrays need
+
+#### WLocal
+
+Size of local area
+
 #### code
 
 Generated code
@@ -4317,7 +4325,7 @@ Width in bytes of a memory area element
 
 #### memoryStringElements
 
-Maximum number of elements in the user area of a heap arena if such is required by the memory allocation technique in play
+Maximum number of elements in an array on the heap
 
 #### memoryStringLengths
 
@@ -4842,9 +4850,9 @@ Disassemble and remove context information from disassembly to make testing easi
 
 23 [Call](#call) - Call the subroutine at the target address.
 
-24 [compileToVerilog](#compiletoverilog) - Compile each sub sequence of instructions into equivalent verilog.
+24 [CompileToVerilog](#compiletoverilog) - Execution environment for a block of code.
 
-25 [CompileToVerilog](#compiletoverilog) - Execution environment for a block of code.
+25 [compileToVerilog](#compiletoverilog) - Compile each sub sequence of instructions into equivalent verilog.
 
 26 [Confess](#confess) - Confess with a stack trace showing the location both in the emulated code and in the code that produced the emulated code.
 
