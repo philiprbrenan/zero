@@ -14,7 +14,7 @@ module fpga                                                                     
   parameter integer NHeap   =       35;                                         // Amount of heap memory
   parameter integer NLocal  =      496;                                         // Size of local memory
   parameter integer NOut    =        0;                                         // Size of output area
-  parameter integer NIn     =         0;                                        // Size of input area
+  parameter integer NIn     =        0;                                         // Size of input area
   reg [MemoryElementWidth-1:0]   arraySizes[NArrays-1:0];                       // Size of each array
   reg [MemoryElementWidth-1:0]      heapMem[NHeap-1  :0];                       // Heap memory
   reg [MemoryElementWidth-1:0]     localMem[NLocal-1 :0];                       // Local memory
@@ -405,7 +405,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 32;
+         $display("Should not be executed    31");
       end
 
          32 :
@@ -413,9 +413,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[10] = heapMem[localMem[2]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 33;
+         $display("Should not be executed    32");
       end
 
          33 :
@@ -423,9 +421,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[11] = heapMem[localMem[0]*7 + 2];
-              updateArrayLength(2, 0, 0);
-              ip = 34;
+         $display("Should not be executed    33");
       end
 
          34 :
@@ -433,7 +429,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[10] >= localMem[11] ? 70 : 35;
+         $display("Should not be executed    34");
       end
 
          35 :
@@ -441,9 +437,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[12] = heapMem[localMem[2]*7 + 2];
-              updateArrayLength(2, 0, 0);
-              ip = 36;
+         $display("Should not be executed    35");
       end
 
          36 :
@@ -451,7 +445,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[12] != 0 ? 69 : 37;
+         $display("Should not be executed    36");
       end
 
          37 :
@@ -459,8 +453,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d not", steps, ip);
 end
-              localMem[13] = !heapMem[localMem[2]*7 + 6];
-              ip = 38;
+         $display("Should not be executed    37");
       end
 
          38 :
@@ -468,7 +461,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jEq", steps, ip);
 end
-              ip = localMem[13] == 0 ? 68 : 39;
+         $display("Should not be executed    38");
       end
 
          39 :
@@ -476,9 +469,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[14] = heapMem[localMem[2]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 40;
+         $display("Should not be executed    39");
       end
 
          40 :
@@ -486,11 +477,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d arrayIndex", steps, ip);
 end
-              localMem[15] = 0; k = arraySizes[localMem[14]];
-              for(i = 0; i < NArea; i = i + 1) begin
-                if (i < k && heapMem[localMem[14] * NArea + i] == 1) localMem[15] = i + 1;
-              end
-              ip = 41;
+         $display("Should not be executed    40");
       end
 
          41 :
@@ -498,7 +485,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jEq", steps, ip);
 end
-              ip = localMem[15] == 0 ? 46 : 42;
+         $display("Should not be executed    41");
       end
 
          42 :
@@ -506,9 +493,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d subtract", steps, ip);
 end
-              localMem[15] = localMem[15] - 1;
-              updateArrayLength(2, 0, 0);
-              ip = 43;
+         $display("Should not be executed    42");
       end
 
          43 :
@@ -516,9 +501,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[16] = heapMem[localMem[2]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 44;
+         $display("Should not be executed    43");
       end
 
          44 :
@@ -526,9 +509,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[16]*7 + localMem[15]] = 11;
-              updateArrayLength(1, localMem[16], localMem[15]);
-              ip = 45;
+         $display("Should not be executed    44");
       end
 
          45 :
@@ -536,7 +517,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1059;
+         $display("Should not be executed    45");
       end
 
          46 :
@@ -544,7 +525,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 47;
+         $display("Should not be executed    46");
       end
 
          47 :
@@ -552,8 +533,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[14]] = localMem[10];
-              ip = 48;
+         $display("Should not be executed    47");
       end
 
          48 :
@@ -561,9 +541,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[17] = heapMem[localMem[2]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 49;
+         $display("Should not be executed    48");
       end
 
          49 :
@@ -571,8 +549,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[17]] = localMem[10];
-              ip = 50;
+         $display("Should not be executed    49");
       end
 
          50 :
@@ -580,14 +557,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d arrayCountGreater", steps, ip);
 end
-              j = 0; k = arraySizes[localMem[14]];
-//$display("AAAAA k=%d  source2=%d", k, 1);
-              for(i = 0; i < NArea; i = i + 1) begin
-//$display("AAAAA i=%d  value=%d", i, heapMem[localMem[14] * NArea + i]);
-                if (i < k && heapMem[localMem[14] * NArea + i] > 1) j = j + 1;
-              end
-              localMem[18] = j;
-              ip = 51;
+         $display("Should not be executed    50");
       end
 
          51 :
@@ -595,7 +565,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[18] != 0 ? 59 : 52;
+         $display("Should not be executed    51");
       end
 
          52 :
@@ -603,9 +573,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[19] = heapMem[localMem[2]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 53;
+         $display("Should not be executed    52");
       end
 
          53 :
@@ -613,9 +581,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[19]*7 + localMem[10]] = 1;
-              updateArrayLength(1, localMem[19], localMem[10]);
-              ip = 54;
+         $display("Should not be executed    53");
       end
 
          54 :
@@ -623,9 +589,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[20] = heapMem[localMem[2]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 55;
+         $display("Should not be executed    54");
       end
 
          55 :
@@ -633,9 +597,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[20]*7 + localMem[10]] = 11;
-              updateArrayLength(1, localMem[20], localMem[10]);
-              ip = 56;
+         $display("Should not be executed    55");
       end
 
          56 :
@@ -643,9 +605,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[2]*7 + 0] = localMem[10] + 1;
-              updateArrayLength(1, localMem[2], 0);
-              ip = 57;
+         $display("Should not be executed    56");
       end
 
          57 :
@@ -653,9 +613,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[0]*7 + 0] = heapMem[localMem[0]*7 + 0] + 1;
-              updateArrayLength(1, localMem[0], 0);
-              ip = 58;
+         $display("Should not be executed    57");
       end
 
          58 :
@@ -663,7 +621,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1059;
+         $display("Should not be executed    58");
       end
 
          59 :
@@ -671,7 +629,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 60;
+         $display("Should not be executed    59");
       end
 
          60 :
@@ -679,12 +637,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d arrayCountLess", steps, ip);
 end
-              j = 0; k = arraySizes[localMem[14]];
-              for(i = 0; i < NArea; i = i + 1) begin
-                if (i < k && heapMem[localMem[14] * NArea + i] < 1) j = j + 1;
-              end
-              localMem[21] = j;
-              ip = 61;
+         $display("Should not be executed    60");
       end
 
          61 :
@@ -692,9 +645,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[22] = heapMem[localMem[2]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 62;
+         $display("Should not be executed    61");
       end
 
          62 :
@@ -702,18 +653,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[22] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[21], localMem[22], arraySizes[localMem[22]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[21] && i <= arraySizes[localMem[22]]) begin
-                  heapMem[NArea * localMem[22] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[22] + localMem[21]] = 1;                                    // Insert new value
-              arraySizes[localMem[22]] = arraySizes[localMem[22]] + 1;                              // Increase array size
-              ip = 63;
+         $display("Should not be executed    62");
       end
 
          63 :
@@ -721,9 +661,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[23] = heapMem[localMem[2]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 64;
+         $display("Should not be executed    63");
       end
 
          64 :
@@ -731,18 +669,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[23] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[21], localMem[23], arraySizes[localMem[23]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[21] && i <= arraySizes[localMem[23]]) begin
-                  heapMem[NArea * localMem[23] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[23] + localMem[21]] = 11;                                    // Insert new value
-              arraySizes[localMem[23]] = arraySizes[localMem[23]] + 1;                              // Increase array size
-              ip = 65;
+         $display("Should not be executed    64");
       end
 
          65 :
@@ -750,9 +677,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[2]*7 + 0] = heapMem[localMem[2]*7 + 0] + 1;
-              updateArrayLength(1, localMem[2], 0);
-              ip = 66;
+         $display("Should not be executed    65");
       end
 
          66 :
@@ -760,9 +685,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[0]*7 + 0] = heapMem[localMem[0]*7 + 0] + 1;
-              updateArrayLength(1, localMem[0], 0);
-              ip = 67;
+         $display("Should not be executed    66");
       end
 
          67 :
@@ -770,7 +693,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1059;
+         $display("Should not be executed    67");
       end
 
          68 :
@@ -778,7 +701,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 69;
+         $display("Should not be executed    68");
       end
 
          69 :
@@ -786,7 +709,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 70;
+         $display("Should not be executed    69");
       end
 
          70 :
@@ -794,7 +717,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 71;
+         $display("Should not be executed    70");
       end
 
          71 :
@@ -802,9 +725,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[24] = heapMem[localMem[0]*7 + 3];
-              updateArrayLength(2, 0, 0);
-              ip = 72;
+         $display("Should not be executed    71");
       end
 
          72 :
@@ -812,7 +733,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 73;
+         $display("Should not be executed    72");
       end
 
          73 :
@@ -820,9 +741,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[26] = heapMem[localMem[24]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 74;
+         $display("Should not be executed    73");
       end
 
          74 :
@@ -830,9 +749,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[27] = heapMem[localMem[24]*7 + 3];
-              updateArrayLength(2, 0, 0);
-              ip = 75;
+         $display("Should not be executed    74");
       end
 
          75 :
@@ -840,9 +757,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[28] = heapMem[localMem[27]*7 + 2];
-              updateArrayLength(2, 0, 0);
-              ip = 76;
+         $display("Should not be executed    75");
       end
 
          76 :
@@ -850,7 +765,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jLt", steps, ip);
 end
-              ip = localMem[26] <  localMem[28] ? 296 : 77;
+         $display("Should not be executed    76");
       end
 
          77 :
@@ -858,9 +773,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[29] = localMem[28];
-              updateArrayLength(2, 0, 0);
-              ip = 78;
+         $display("Should not be executed    77");
       end
 
          78 :
@@ -868,8 +781,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftRight", steps, ip);
 end
-              localMem[29] = localMem[29] >> 1;
-              ip = 79;
+         $display("Should not be executed    78");
       end
 
          79 :
@@ -877,9 +789,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[30] = localMem[29] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 80;
+         $display("Should not be executed    79");
       end
 
          80 :
@@ -887,9 +797,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[31] = heapMem[localMem[24]*7 + 2];
-              updateArrayLength(2, 0, 0);
-              ip = 81;
+         $display("Should not be executed    80");
       end
 
          81 :
@@ -897,7 +805,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jEq", steps, ip);
 end
-              ip = localMem[31] == 0 ? 178 : 82;
+         $display("Should not be executed    81");
       end
 
          82 :
@@ -905,17 +813,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[32] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[32] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[32]] = 0;
-              ip = 83;
+         $display("Should not be executed    82");
       end
 
          83 :
@@ -923,9 +821,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[32]*7 + 0] = localMem[29];
-              updateArrayLength(1, localMem[32], 0);
-              ip = 84;
+         $display("Should not be executed    83");
       end
 
          84 :
@@ -933,9 +829,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[32]*7 + 2] = 0;
-              updateArrayLength(1, localMem[32], 2);
-              ip = 85;
+         $display("Should not be executed    84");
       end
 
          85 :
@@ -943,17 +837,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[33] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[33] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[33]] = 0;
-              ip = 86;
+         $display("Should not be executed    85");
       end
 
          86 :
@@ -961,9 +845,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[32]*7 + 4] = localMem[33];
-              updateArrayLength(1, localMem[32], 4);
-              ip = 87;
+         $display("Should not be executed    86");
       end
 
          87 :
@@ -971,17 +853,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[34] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[34] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[34]] = 0;
-              ip = 88;
+         $display("Should not be executed    87");
       end
 
          88 :
@@ -989,9 +861,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[32]*7 + 5] = localMem[34];
-              updateArrayLength(1, localMem[32], 5);
-              ip = 89;
+         $display("Should not be executed    88");
       end
 
          89 :
@@ -999,9 +869,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[32]*7 + 6] = 0;
-              updateArrayLength(1, localMem[32], 6);
-              ip = 90;
+         $display("Should not be executed    89");
       end
 
          90 :
@@ -1009,9 +877,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[32]*7 + 3] = localMem[27];
-              updateArrayLength(1, localMem[32], 3);
-              ip = 91;
+         $display("Should not be executed    90");
       end
 
          91 :
@@ -1019,9 +885,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[27]*7 + 1] = heapMem[localMem[27]*7 + 1] + 1;
-              updateArrayLength(1, localMem[27], 1);
-              ip = 92;
+         $display("Should not be executed    91");
       end
 
          92 :
@@ -1029,9 +893,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[32]*7 + 1] = heapMem[localMem[27]*7 + 1];
-              updateArrayLength(1, localMem[32], 1);
-              ip = 93;
+         $display("Should not be executed    92");
       end
 
          93 :
@@ -1039,8 +901,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d not", steps, ip);
 end
-              localMem[35] = !heapMem[localMem[24]*7 + 6];
-              ip = 94;
+         $display("Should not be executed    93");
       end
 
          94 :
@@ -1048,7 +909,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[35] != 0 ? 123 : 95;
+         $display("Should not be executed    94");
       end
 
          95 :
@@ -1056,17 +917,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[36] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[36] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[36]] = 0;
-              ip = 96;
+         $display("Should not be executed    95");
       end
 
          96 :
@@ -1074,9 +925,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[32]*7 + 6] = localMem[36];
-              updateArrayLength(1, localMem[32], 6);
-              ip = 97;
+         $display("Should not be executed    96");
       end
 
          97 :
@@ -1084,9 +933,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[37] = heapMem[localMem[24]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 98;
+         $display("Should not be executed    97");
       end
 
          98 :
@@ -1094,9 +941,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[38] = heapMem[localMem[32]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 99;
+         $display("Should not be executed    98");
       end
 
          99 :
@@ -1104,13 +949,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[29]) begin
-                  heapMem[NArea * localMem[38] + 0 + i] = heapMem[NArea * localMem[37] + localMem[30] + i];
-                  updateArrayLength(1, localMem[38], 0 + i);
-                end
-              end
-              ip = 100;
+         $display("Should not be executed    99");
       end
 
         100 :
@@ -1118,9 +957,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[39] = heapMem[localMem[24]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 101;
+         $display("Should not be executed   100");
       end
 
         101 :
@@ -1128,9 +965,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[40] = heapMem[localMem[32]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 102;
+         $display("Should not be executed   101");
       end
 
         102 :
@@ -1138,13 +973,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[29]) begin
-                  heapMem[NArea * localMem[40] + 0 + i] = heapMem[NArea * localMem[39] + localMem[30] + i];
-                  updateArrayLength(1, localMem[40], 0 + i);
-                end
-              end
-              ip = 103;
+         $display("Should not be executed   102");
       end
 
         103 :
@@ -1152,9 +981,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[41] = heapMem[localMem[24]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 104;
+         $display("Should not be executed   103");
       end
 
         104 :
@@ -1162,9 +989,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[42] = heapMem[localMem[32]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 105;
+         $display("Should not be executed   104");
       end
 
         105 :
@@ -1172,9 +997,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[43] = localMem[29] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 106;
+         $display("Should not be executed   105");
       end
 
         106 :
@@ -1182,13 +1005,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[43]) begin
-                  heapMem[NArea * localMem[42] + 0 + i] = heapMem[NArea * localMem[41] + localMem[30] + i];
-                  updateArrayLength(1, localMem[42], 0 + i);
-                end
-              end
-              ip = 107;
+         $display("Should not be executed   106");
       end
 
         107 :
@@ -1196,9 +1013,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[44] = heapMem[localMem[32]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 108;
+         $display("Should not be executed   107");
       end
 
         108 :
@@ -1206,9 +1021,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[45] = localMem[44] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 109;
+         $display("Should not be executed   108");
       end
 
         109 :
@@ -1216,9 +1029,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[46] = heapMem[localMem[32]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 110;
+         $display("Should not be executed   109");
       end
 
         110 :
@@ -1226,7 +1037,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 111;
+         $display("Should not be executed   110");
       end
 
         111 :
@@ -1234,9 +1045,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[47] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 112;
+         $display("Should not be executed   111");
       end
 
         112 :
@@ -1244,7 +1053,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 113;
+         $display("Should not be executed   112");
       end
 
         113 :
@@ -1252,7 +1061,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[47] >= localMem[45] ? 119 : 114;
+         $display("Should not be executed   113");
       end
 
         114 :
@@ -1260,9 +1069,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[48] = heapMem[localMem[46]*7 + localMem[47]];
-              updateArrayLength(2, 0, 0);
-              ip = 115;
+         $display("Should not be executed   114");
       end
 
         115 :
@@ -1270,9 +1077,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[48]*7 + 2] = localMem[32];
-              updateArrayLength(1, localMem[48], 2);
-              ip = 116;
+         $display("Should not be executed   115");
       end
 
         116 :
@@ -1280,7 +1085,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 117;
+         $display("Should not be executed   116");
       end
 
         117 :
@@ -1288,9 +1093,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[47] = localMem[47] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 118;
+         $display("Should not be executed   117");
       end
 
         118 :
@@ -1298,7 +1101,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 112;
+         $display("Should not be executed   118");
       end
 
         119 :
@@ -1306,7 +1109,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 120;
+         $display("Should not be executed   119");
       end
 
         120 :
@@ -1314,9 +1117,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[49] = heapMem[localMem[24]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 121;
+         $display("Should not be executed   120");
       end
 
         121 :
@@ -1324,8 +1125,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[49]] = localMem[30];
-              ip = 122;
+         $display("Should not be executed   121");
       end
 
         122 :
@@ -1333,7 +1133,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 130;
+         $display("Should not be executed   122");
       end
 
         123 :
@@ -1341,7 +1141,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 124;
+         $display("Should not be executed   123");
       end
 
         124 :
@@ -1349,9 +1149,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[50] = heapMem[localMem[24]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 125;
+         $display("Should not be executed   124");
       end
 
         125 :
@@ -1359,9 +1157,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[51] = heapMem[localMem[32]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 126;
+         $display("Should not be executed   125");
       end
 
         126 :
@@ -1369,13 +1165,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[29]) begin
-                  heapMem[NArea * localMem[51] + 0 + i] = heapMem[NArea * localMem[50] + localMem[30] + i];
-                  updateArrayLength(1, localMem[51], 0 + i);
-                end
-              end
-              ip = 127;
+         $display("Should not be executed   126");
       end
 
         127 :
@@ -1383,9 +1173,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[52] = heapMem[localMem[24]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 128;
+         $display("Should not be executed   127");
       end
 
         128 :
@@ -1393,9 +1181,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[53] = heapMem[localMem[32]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 129;
+         $display("Should not be executed   128");
       end
 
         129 :
@@ -1403,13 +1189,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[29]) begin
-                  heapMem[NArea * localMem[53] + 0 + i] = heapMem[NArea * localMem[52] + localMem[30] + i];
-                  updateArrayLength(1, localMem[53], 0 + i);
-                end
-              end
-              ip = 130;
+         $display("Should not be executed   129");
       end
 
         130 :
@@ -1417,7 +1197,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 131;
+         $display("Should not be executed   130");
       end
 
         131 :
@@ -1425,9 +1205,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[24]*7 + 0] = localMem[29];
-              updateArrayLength(1, localMem[24], 0);
-              ip = 132;
+         $display("Should not be executed   131");
       end
 
         132 :
@@ -1435,9 +1213,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[32]*7 + 2] = localMem[31];
-              updateArrayLength(1, localMem[32], 2);
-              ip = 133;
+         $display("Should not be executed   132");
       end
 
         133 :
@@ -1445,9 +1221,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[54] = heapMem[localMem[31]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 134;
+         $display("Should not be executed   133");
       end
 
         134 :
@@ -1455,9 +1229,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[55] = heapMem[localMem[31]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 135;
+         $display("Should not be executed   134");
       end
 
         135 :
@@ -1465,9 +1237,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[56] = heapMem[localMem[55]*7 + localMem[54]];
-              updateArrayLength(2, 0, 0);
-              ip = 136;
+         $display("Should not be executed   135");
       end
 
         136 :
@@ -1475,7 +1245,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[56] != localMem[24] ? 155 : 137;
+         $display("Should not be executed   136");
       end
 
         137 :
@@ -1483,9 +1253,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[57] = heapMem[localMem[24]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 138;
+         $display("Should not be executed   137");
       end
 
         138 :
@@ -1493,9 +1261,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[58] = heapMem[localMem[57]*7 + localMem[29]];
-              updateArrayLength(2, 0, 0);
-              ip = 139;
+         $display("Should not be executed   138");
       end
 
         139 :
@@ -1503,9 +1269,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[59] = heapMem[localMem[31]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 140;
+         $display("Should not be executed   139");
       end
 
         140 :
@@ -1513,9 +1277,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[59]*7 + localMem[54]] = localMem[58];
-              updateArrayLength(1, localMem[59], localMem[54]);
-              ip = 141;
+         $display("Should not be executed   140");
       end
 
         141 :
@@ -1523,9 +1285,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[60] = heapMem[localMem[24]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 142;
+         $display("Should not be executed   141");
       end
 
         142 :
@@ -1533,9 +1293,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[61] = heapMem[localMem[60]*7 + localMem[29]];
-              updateArrayLength(2, 0, 0);
-              ip = 143;
+         $display("Should not be executed   142");
       end
 
         143 :
@@ -1543,9 +1301,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[62] = heapMem[localMem[31]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 144;
+         $display("Should not be executed   143");
       end
 
         144 :
@@ -1553,9 +1309,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[62]*7 + localMem[54]] = localMem[61];
-              updateArrayLength(1, localMem[62], localMem[54]);
-              ip = 145;
+         $display("Should not be executed   144");
       end
 
         145 :
@@ -1563,9 +1317,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[63] = heapMem[localMem[24]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 146;
+         $display("Should not be executed   145");
       end
 
         146 :
@@ -1573,8 +1325,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[63]] = localMem[29];
-              ip = 147;
+         $display("Should not be executed   146");
       end
 
         147 :
@@ -1582,9 +1333,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[64] = heapMem[localMem[24]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 148;
+         $display("Should not be executed   147");
       end
 
         148 :
@@ -1592,8 +1341,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[64]] = localMem[29];
-              ip = 149;
+         $display("Should not be executed   148");
       end
 
         149 :
@@ -1601,9 +1349,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[65] = localMem[54] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 150;
+         $display("Should not be executed   149");
       end
 
         150 :
@@ -1611,9 +1357,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[31]*7 + 0] = localMem[65];
-              updateArrayLength(1, localMem[31], 0);
-              ip = 151;
+         $display("Should not be executed   150");
       end
 
         151 :
@@ -1621,9 +1365,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[66] = heapMem[localMem[31]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 152;
+         $display("Should not be executed   151");
       end
 
         152 :
@@ -1631,9 +1373,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[66]*7 + localMem[65]] = localMem[32];
-              updateArrayLength(1, localMem[66], localMem[65]);
-              ip = 153;
+         $display("Should not be executed   152");
       end
 
         153 :
@@ -1641,7 +1381,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 293;
+         $display("Should not be executed   153");
       end
 
         154 :
@@ -1649,7 +1389,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 177;
+         $display("Should not be executed   154");
       end
 
         155 :
@@ -1657,7 +1397,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 156;
+         $display("Should not be executed   155");
       end
 
         156 :
@@ -1665,7 +1405,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d assertNe", steps, ip);
 end
-            ip = 157;
+         $display("Should not be executed   156");
       end
 
         157 :
@@ -1673,9 +1413,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[67] = heapMem[localMem[31]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 158;
+         $display("Should not be executed   157");
       end
 
         158 :
@@ -1683,11 +1421,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d arrayIndex", steps, ip);
 end
-              localMem[68] = 0; k = arraySizes[localMem[67]];
-              for(i = 0; i < NArea; i = i + 1) begin
-                if (i < k && heapMem[localMem[67] * NArea + i] == localMem[24]) localMem[68] = i + 1;
-              end
-              ip = 159;
+         $display("Should not be executed   158");
       end
 
         159 :
@@ -1695,9 +1429,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d subtract", steps, ip);
 end
-              localMem[68] = localMem[68] - 1;
-              updateArrayLength(2, 0, 0);
-              ip = 160;
+         $display("Should not be executed   159");
       end
 
         160 :
@@ -1705,9 +1437,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[69] = heapMem[localMem[24]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 161;
+         $display("Should not be executed   160");
       end
 
         161 :
@@ -1715,9 +1445,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[70] = heapMem[localMem[69]*7 + localMem[29]];
-              updateArrayLength(2, 0, 0);
-              ip = 162;
+         $display("Should not be executed   161");
       end
 
         162 :
@@ -1725,9 +1453,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[71] = heapMem[localMem[24]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 163;
+         $display("Should not be executed   162");
       end
 
         163 :
@@ -1735,9 +1461,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[72] = heapMem[localMem[71]*7 + localMem[29]];
-              updateArrayLength(2, 0, 0);
-              ip = 164;
+         $display("Should not be executed   163");
       end
 
         164 :
@@ -1745,9 +1469,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[73] = heapMem[localMem[24]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 165;
+         $display("Should not be executed   164");
       end
 
         165 :
@@ -1755,8 +1477,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[73]] = localMem[29];
-              ip = 166;
+         $display("Should not be executed   165");
       end
 
         166 :
@@ -1764,9 +1485,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[74] = heapMem[localMem[24]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 167;
+         $display("Should not be executed   166");
       end
 
         167 :
@@ -1774,8 +1493,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[74]] = localMem[29];
-              ip = 168;
+         $display("Should not be executed   167");
       end
 
         168 :
@@ -1783,9 +1501,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[75] = heapMem[localMem[31]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 169;
+         $display("Should not be executed   168");
       end
 
         169 :
@@ -1793,18 +1509,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[75] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[68], localMem[75], arraySizes[localMem[75]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[68] && i <= arraySizes[localMem[75]]) begin
-                  heapMem[NArea * localMem[75] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[75] + localMem[68]] = localMem[70];                                    // Insert new value
-              arraySizes[localMem[75]] = arraySizes[localMem[75]] + 1;                              // Increase array size
-              ip = 170;
+         $display("Should not be executed   169");
       end
 
         170 :
@@ -1812,9 +1517,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[76] = heapMem[localMem[31]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 171;
+         $display("Should not be executed   170");
       end
 
         171 :
@@ -1822,18 +1525,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[76] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[68], localMem[76], arraySizes[localMem[76]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[68] && i <= arraySizes[localMem[76]]) begin
-                  heapMem[NArea * localMem[76] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[76] + localMem[68]] = localMem[72];                                    // Insert new value
-              arraySizes[localMem[76]] = arraySizes[localMem[76]] + 1;                              // Increase array size
-              ip = 172;
+         $display("Should not be executed   171");
       end
 
         172 :
@@ -1841,9 +1533,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[77] = heapMem[localMem[31]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 173;
+         $display("Should not be executed   172");
       end
 
         173 :
@@ -1851,9 +1541,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[78] = localMem[68] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 174;
+         $display("Should not be executed   173");
       end
 
         174 :
@@ -1861,18 +1549,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[77] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[78], localMem[77], arraySizes[localMem[77]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[78] && i <= arraySizes[localMem[77]]) begin
-                  heapMem[NArea * localMem[77] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[77] + localMem[78]] = localMem[32];                                    // Insert new value
-              arraySizes[localMem[77]] = arraySizes[localMem[77]] + 1;                              // Increase array size
-              ip = 175;
+         $display("Should not be executed   174");
       end
 
         175 :
@@ -1880,9 +1557,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[31]*7 + 0] = heapMem[localMem[31]*7 + 0] + 1;
-              updateArrayLength(1, localMem[31], 0);
-              ip = 176;
+         $display("Should not be executed   175");
       end
 
         176 :
@@ -1890,7 +1565,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 293;
+         $display("Should not be executed   176");
       end
 
         177 :
@@ -1898,7 +1573,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 178;
+         $display("Should not be executed   177");
       end
 
         178 :
@@ -1906,7 +1581,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 179;
+         $display("Should not be executed   178");
       end
 
         179 :
@@ -1914,17 +1589,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[79] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[79] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[79]] = 0;
-              ip = 180;
+         $display("Should not be executed   179");
       end
 
         180 :
@@ -1932,9 +1597,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[79]*7 + 0] = localMem[29];
-              updateArrayLength(1, localMem[79], 0);
-              ip = 181;
+         $display("Should not be executed   180");
       end
 
         181 :
@@ -1942,9 +1605,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[79]*7 + 2] = 0;
-              updateArrayLength(1, localMem[79], 2);
-              ip = 182;
+         $display("Should not be executed   181");
       end
 
         182 :
@@ -1952,17 +1613,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[80] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[80] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[80]] = 0;
-              ip = 183;
+         $display("Should not be executed   182");
       end
 
         183 :
@@ -1970,9 +1621,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[79]*7 + 4] = localMem[80];
-              updateArrayLength(1, localMem[79], 4);
-              ip = 184;
+         $display("Should not be executed   183");
       end
 
         184 :
@@ -1980,17 +1629,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[81] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[81] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[81]] = 0;
-              ip = 185;
+         $display("Should not be executed   184");
       end
 
         185 :
@@ -1998,9 +1637,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[79]*7 + 5] = localMem[81];
-              updateArrayLength(1, localMem[79], 5);
-              ip = 186;
+         $display("Should not be executed   185");
       end
 
         186 :
@@ -2008,9 +1645,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[79]*7 + 6] = 0;
-              updateArrayLength(1, localMem[79], 6);
-              ip = 187;
+         $display("Should not be executed   186");
       end
 
         187 :
@@ -2018,9 +1653,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[79]*7 + 3] = localMem[27];
-              updateArrayLength(1, localMem[79], 3);
-              ip = 188;
+         $display("Should not be executed   187");
       end
 
         188 :
@@ -2028,9 +1661,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[27]*7 + 1] = heapMem[localMem[27]*7 + 1] + 1;
-              updateArrayLength(1, localMem[27], 1);
-              ip = 189;
+         $display("Should not be executed   188");
       end
 
         189 :
@@ -2038,9 +1669,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[79]*7 + 1] = heapMem[localMem[27]*7 + 1];
-              updateArrayLength(1, localMem[79], 1);
-              ip = 190;
+         $display("Should not be executed   189");
       end
 
         190 :
@@ -2048,17 +1677,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[82] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[82] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[82]] = 0;
-              ip = 191;
+         $display("Should not be executed   190");
       end
 
         191 :
@@ -2066,9 +1685,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[82]*7 + 0] = localMem[29];
-              updateArrayLength(1, localMem[82], 0);
-              ip = 192;
+         $display("Should not be executed   191");
       end
 
         192 :
@@ -2076,9 +1693,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[82]*7 + 2] = 0;
-              updateArrayLength(1, localMem[82], 2);
-              ip = 193;
+         $display("Should not be executed   192");
       end
 
         193 :
@@ -2086,17 +1701,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[83] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[83] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[83]] = 0;
-              ip = 194;
+         $display("Should not be executed   193");
       end
 
         194 :
@@ -2104,9 +1709,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[82]*7 + 4] = localMem[83];
-              updateArrayLength(1, localMem[82], 4);
-              ip = 195;
+         $display("Should not be executed   194");
       end
 
         195 :
@@ -2114,17 +1717,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[84] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[84] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[84]] = 0;
-              ip = 196;
+         $display("Should not be executed   195");
       end
 
         196 :
@@ -2132,9 +1725,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[82]*7 + 5] = localMem[84];
-              updateArrayLength(1, localMem[82], 5);
-              ip = 197;
+         $display("Should not be executed   196");
       end
 
         197 :
@@ -2142,9 +1733,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[82]*7 + 6] = 0;
-              updateArrayLength(1, localMem[82], 6);
-              ip = 198;
+         $display("Should not be executed   197");
       end
 
         198 :
@@ -2152,9 +1741,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[82]*7 + 3] = localMem[27];
-              updateArrayLength(1, localMem[82], 3);
-              ip = 199;
+         $display("Should not be executed   198");
       end
 
         199 :
@@ -2162,9 +1749,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[27]*7 + 1] = heapMem[localMem[27]*7 + 1] + 1;
-              updateArrayLength(1, localMem[27], 1);
-              ip = 200;
+         $display("Should not be executed   199");
       end
 
         200 :
@@ -2172,9 +1757,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[82]*7 + 1] = heapMem[localMem[27]*7 + 1];
-              updateArrayLength(1, localMem[82], 1);
-              ip = 201;
+         $display("Should not be executed   200");
       end
 
         201 :
@@ -2182,8 +1765,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d not", steps, ip);
 end
-              localMem[85] = !heapMem[localMem[24]*7 + 6];
-              ip = 202;
+         $display("Should not be executed   201");
       end
 
         202 :
@@ -2191,7 +1773,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[85] != 0 ? 254 : 203;
+         $display("Should not be executed   202");
       end
 
         203 :
@@ -2199,17 +1781,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[86] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[86] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[86]] = 0;
-              ip = 204;
+         $display("Should not be executed   203");
       end
 
         204 :
@@ -2217,9 +1789,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[79]*7 + 6] = localMem[86];
-              updateArrayLength(1, localMem[79], 6);
-              ip = 205;
+         $display("Should not be executed   204");
       end
 
         205 :
@@ -2227,17 +1797,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[87] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[87] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[87]] = 0;
-              ip = 206;
+         $display("Should not be executed   205");
       end
 
         206 :
@@ -2245,9 +1805,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[82]*7 + 6] = localMem[87];
-              updateArrayLength(1, localMem[82], 6);
-              ip = 207;
+         $display("Should not be executed   206");
       end
 
         207 :
@@ -2255,9 +1813,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[88] = heapMem[localMem[24]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 208;
+         $display("Should not be executed   207");
       end
 
         208 :
@@ -2265,9 +1821,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[89] = heapMem[localMem[79]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 209;
+         $display("Should not be executed   208");
       end
 
         209 :
@@ -2275,13 +1829,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[29]) begin
-                  heapMem[NArea * localMem[89] + 0 + i] = heapMem[NArea * localMem[88] + 0 + i];
-                  updateArrayLength(1, localMem[89], 0 + i);
-                end
-              end
-              ip = 210;
+         $display("Should not be executed   209");
       end
 
         210 :
@@ -2289,9 +1837,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[90] = heapMem[localMem[24]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 211;
+         $display("Should not be executed   210");
       end
 
         211 :
@@ -2299,9 +1845,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[91] = heapMem[localMem[79]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 212;
+         $display("Should not be executed   211");
       end
 
         212 :
@@ -2309,13 +1853,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[29]) begin
-                  heapMem[NArea * localMem[91] + 0 + i] = heapMem[NArea * localMem[90] + 0 + i];
-                  updateArrayLength(1, localMem[91], 0 + i);
-                end
-              end
-              ip = 213;
+         $display("Should not be executed   212");
       end
 
         213 :
@@ -2323,9 +1861,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[92] = heapMem[localMem[24]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 214;
+         $display("Should not be executed   213");
       end
 
         214 :
@@ -2333,9 +1869,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[93] = heapMem[localMem[79]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 215;
+         $display("Should not be executed   214");
       end
 
         215 :
@@ -2343,9 +1877,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[94] = localMem[29] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 216;
+         $display("Should not be executed   215");
       end
 
         216 :
@@ -2353,13 +1885,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[94]) begin
-                  heapMem[NArea * localMem[93] + 0 + i] = heapMem[NArea * localMem[92] + 0 + i];
-                  updateArrayLength(1, localMem[93], 0 + i);
-                end
-              end
-              ip = 217;
+         $display("Should not be executed   216");
       end
 
         217 :
@@ -2367,9 +1893,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[95] = heapMem[localMem[24]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 218;
+         $display("Should not be executed   217");
       end
 
         218 :
@@ -2377,9 +1901,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[96] = heapMem[localMem[82]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 219;
+         $display("Should not be executed   218");
       end
 
         219 :
@@ -2387,13 +1909,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[29]) begin
-                  heapMem[NArea * localMem[96] + 0 + i] = heapMem[NArea * localMem[95] + localMem[30] + i];
-                  updateArrayLength(1, localMem[96], 0 + i);
-                end
-              end
-              ip = 220;
+         $display("Should not be executed   219");
       end
 
         220 :
@@ -2401,9 +1917,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[97] = heapMem[localMem[24]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 221;
+         $display("Should not be executed   220");
       end
 
         221 :
@@ -2411,9 +1925,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[98] = heapMem[localMem[82]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 222;
+         $display("Should not be executed   221");
       end
 
         222 :
@@ -2421,13 +1933,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[29]) begin
-                  heapMem[NArea * localMem[98] + 0 + i] = heapMem[NArea * localMem[97] + localMem[30] + i];
-                  updateArrayLength(1, localMem[98], 0 + i);
-                end
-              end
-              ip = 223;
+         $display("Should not be executed   222");
       end
 
         223 :
@@ -2435,9 +1941,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[99] = heapMem[localMem[24]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 224;
+         $display("Should not be executed   223");
       end
 
         224 :
@@ -2445,9 +1949,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[100] = heapMem[localMem[82]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 225;
+         $display("Should not be executed   224");
       end
 
         225 :
@@ -2455,9 +1957,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[101] = localMem[29] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 226;
+         $display("Should not be executed   225");
       end
 
         226 :
@@ -2465,13 +1965,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[101]) begin
-                  heapMem[NArea * localMem[100] + 0 + i] = heapMem[NArea * localMem[99] + localMem[30] + i];
-                  updateArrayLength(1, localMem[100], 0 + i);
-                end
-              end
-              ip = 227;
+         $display("Should not be executed   226");
       end
 
         227 :
@@ -2479,9 +1973,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[102] = heapMem[localMem[79]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 228;
+         $display("Should not be executed   227");
       end
 
         228 :
@@ -2489,9 +1981,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[103] = localMem[102] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 229;
+         $display("Should not be executed   228");
       end
 
         229 :
@@ -2499,9 +1989,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[104] = heapMem[localMem[79]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 230;
+         $display("Should not be executed   229");
       end
 
         230 :
@@ -2509,7 +1997,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 231;
+         $display("Should not be executed   230");
       end
 
         231 :
@@ -2517,9 +2005,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[105] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 232;
+         $display("Should not be executed   231");
       end
 
         232 :
@@ -2527,7 +2013,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 233;
+         $display("Should not be executed   232");
       end
 
         233 :
@@ -2535,7 +2021,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[105] >= localMem[103] ? 239 : 234;
+         $display("Should not be executed   233");
       end
 
         234 :
@@ -2543,9 +2029,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[106] = heapMem[localMem[104]*7 + localMem[105]];
-              updateArrayLength(2, 0, 0);
-              ip = 235;
+         $display("Should not be executed   234");
       end
 
         235 :
@@ -2553,9 +2037,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[106]*7 + 2] = localMem[79];
-              updateArrayLength(1, localMem[106], 2);
-              ip = 236;
+         $display("Should not be executed   235");
       end
 
         236 :
@@ -2563,7 +2045,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 237;
+         $display("Should not be executed   236");
       end
 
         237 :
@@ -2571,9 +2053,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[105] = localMem[105] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 238;
+         $display("Should not be executed   237");
       end
 
         238 :
@@ -2581,7 +2061,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 232;
+         $display("Should not be executed   238");
       end
 
         239 :
@@ -2589,7 +2069,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 240;
+         $display("Should not be executed   239");
       end
 
         240 :
@@ -2597,9 +2077,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[107] = heapMem[localMem[82]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 241;
+         $display("Should not be executed   240");
       end
 
         241 :
@@ -2607,9 +2085,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[108] = localMem[107] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 242;
+         $display("Should not be executed   241");
       end
 
         242 :
@@ -2617,9 +2093,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[109] = heapMem[localMem[82]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 243;
+         $display("Should not be executed   242");
       end
 
         243 :
@@ -2627,7 +2101,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 244;
+         $display("Should not be executed   243");
       end
 
         244 :
@@ -2635,9 +2109,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[110] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 245;
+         $display("Should not be executed   244");
       end
 
         245 :
@@ -2645,7 +2117,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 246;
+         $display("Should not be executed   245");
       end
 
         246 :
@@ -2653,7 +2125,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[110] >= localMem[108] ? 252 : 247;
+         $display("Should not be executed   246");
       end
 
         247 :
@@ -2661,9 +2133,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[111] = heapMem[localMem[109]*7 + localMem[110]];
-              updateArrayLength(2, 0, 0);
-              ip = 248;
+         $display("Should not be executed   247");
       end
 
         248 :
@@ -2671,9 +2141,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[111]*7 + 2] = localMem[82];
-              updateArrayLength(1, localMem[111], 2);
-              ip = 249;
+         $display("Should not be executed   248");
       end
 
         249 :
@@ -2681,7 +2149,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 250;
+         $display("Should not be executed   249");
       end
 
         250 :
@@ -2689,9 +2157,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[110] = localMem[110] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 251;
+         $display("Should not be executed   250");
       end
 
         251 :
@@ -2699,7 +2165,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 245;
+         $display("Should not be executed   251");
       end
 
         252 :
@@ -2707,7 +2173,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 253;
+         $display("Should not be executed   252");
       end
 
         253 :
@@ -2715,7 +2181,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 269;
+         $display("Should not be executed   253");
       end
 
         254 :
@@ -2723,7 +2189,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 255;
+         $display("Should not be executed   254");
       end
 
         255 :
@@ -2731,17 +2197,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[112] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[112] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[112]] = 0;
-              ip = 256;
+         $display("Should not be executed   255");
       end
 
         256 :
@@ -2749,9 +2205,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[24]*7 + 6] = localMem[112];
-              updateArrayLength(1, localMem[24], 6);
-              ip = 257;
+         $display("Should not be executed   256");
       end
 
         257 :
@@ -2759,9 +2213,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[113] = heapMem[localMem[24]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 258;
+         $display("Should not be executed   257");
       end
 
         258 :
@@ -2769,9 +2221,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[114] = heapMem[localMem[79]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 259;
+         $display("Should not be executed   258");
       end
 
         259 :
@@ -2779,13 +2229,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[29]) begin
-                  heapMem[NArea * localMem[114] + 0 + i] = heapMem[NArea * localMem[113] + 0 + i];
-                  updateArrayLength(1, localMem[114], 0 + i);
-                end
-              end
-              ip = 260;
+         $display("Should not be executed   259");
       end
 
         260 :
@@ -2793,9 +2237,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[115] = heapMem[localMem[24]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 261;
+         $display("Should not be executed   260");
       end
 
         261 :
@@ -2803,9 +2245,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[116] = heapMem[localMem[79]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 262;
+         $display("Should not be executed   261");
       end
 
         262 :
@@ -2813,13 +2253,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[29]) begin
-                  heapMem[NArea * localMem[116] + 0 + i] = heapMem[NArea * localMem[115] + 0 + i];
-                  updateArrayLength(1, localMem[116], 0 + i);
-                end
-              end
-              ip = 263;
+         $display("Should not be executed   262");
       end
 
         263 :
@@ -2827,9 +2261,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[117] = heapMem[localMem[24]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 264;
+         $display("Should not be executed   263");
       end
 
         264 :
@@ -2837,9 +2269,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[118] = heapMem[localMem[82]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 265;
+         $display("Should not be executed   264");
       end
 
         265 :
@@ -2847,13 +2277,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[29]) begin
-                  heapMem[NArea * localMem[118] + 0 + i] = heapMem[NArea * localMem[117] + localMem[30] + i];
-                  updateArrayLength(1, localMem[118], 0 + i);
-                end
-              end
-              ip = 266;
+         $display("Should not be executed   265");
       end
 
         266 :
@@ -2861,9 +2285,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[119] = heapMem[localMem[24]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 267;
+         $display("Should not be executed   266");
       end
 
         267 :
@@ -2871,9 +2293,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[120] = heapMem[localMem[82]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 268;
+         $display("Should not be executed   267");
       end
 
         268 :
@@ -2881,13 +2301,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[29]) begin
-                  heapMem[NArea * localMem[120] + 0 + i] = heapMem[NArea * localMem[119] + localMem[30] + i];
-                  updateArrayLength(1, localMem[120], 0 + i);
-                end
-              end
-              ip = 269;
+         $display("Should not be executed   268");
       end
 
         269 :
@@ -2895,7 +2309,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 270;
+         $display("Should not be executed   269");
       end
 
         270 :
@@ -2903,9 +2317,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[79]*7 + 2] = localMem[24];
-              updateArrayLength(1, localMem[79], 2);
-              ip = 271;
+         $display("Should not be executed   270");
       end
 
         271 :
@@ -2913,9 +2325,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[82]*7 + 2] = localMem[24];
-              updateArrayLength(1, localMem[82], 2);
-              ip = 272;
+         $display("Should not be executed   271");
       end
 
         272 :
@@ -2923,9 +2333,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[121] = heapMem[localMem[24]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 273;
+         $display("Should not be executed   272");
       end
 
         273 :
@@ -2933,9 +2341,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[122] = heapMem[localMem[121]*7 + localMem[29]];
-              updateArrayLength(2, 0, 0);
-              ip = 274;
+         $display("Should not be executed   273");
       end
 
         274 :
@@ -2943,9 +2349,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[123] = heapMem[localMem[24]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 275;
+         $display("Should not be executed   274");
       end
 
         275 :
@@ -2953,9 +2357,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[124] = heapMem[localMem[123]*7 + localMem[29]];
-              updateArrayLength(2, 0, 0);
-              ip = 276;
+         $display("Should not be executed   275");
       end
 
         276 :
@@ -2963,9 +2365,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[125] = heapMem[localMem[24]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 277;
+         $display("Should not be executed   276");
       end
 
         277 :
@@ -2973,9 +2373,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[125]*7 + 0] = localMem[122];
-              updateArrayLength(1, localMem[125], 0);
-              ip = 278;
+         $display("Should not be executed   277");
       end
 
         278 :
@@ -2983,9 +2381,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[126] = heapMem[localMem[24]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 279;
+         $display("Should not be executed   278");
       end
 
         279 :
@@ -2993,9 +2389,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[126]*7 + 0] = localMem[124];
-              updateArrayLength(1, localMem[126], 0);
-              ip = 280;
+         $display("Should not be executed   279");
       end
 
         280 :
@@ -3003,9 +2397,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[127] = heapMem[localMem[24]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 281;
+         $display("Should not be executed   280");
       end
 
         281 :
@@ -3013,9 +2405,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[127]*7 + 0] = localMem[79];
-              updateArrayLength(1, localMem[127], 0);
-              ip = 282;
+         $display("Should not be executed   281");
       end
 
         282 :
@@ -3023,9 +2413,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[128] = heapMem[localMem[24]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 283;
+         $display("Should not be executed   282");
       end
 
         283 :
@@ -3033,9 +2421,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[128]*7 + 1] = localMem[82];
-              updateArrayLength(1, localMem[128], 1);
-              ip = 284;
+         $display("Should not be executed   283");
       end
 
         284 :
@@ -3043,9 +2429,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[24]*7 + 0] = 1;
-              updateArrayLength(1, localMem[24], 0);
-              ip = 285;
+         $display("Should not be executed   284");
       end
 
         285 :
@@ -3053,9 +2437,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[129] = heapMem[localMem[24]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 286;
+         $display("Should not be executed   285");
       end
 
         286 :
@@ -3063,8 +2445,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[129]] = 1;
-              ip = 287;
+         $display("Should not be executed   286");
       end
 
         287 :
@@ -3072,9 +2453,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[130] = heapMem[localMem[24]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 288;
+         $display("Should not be executed   287");
       end
 
         288 :
@@ -3082,8 +2461,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[130]] = 1;
-              ip = 289;
+         $display("Should not be executed   288");
       end
 
         289 :
@@ -3091,9 +2469,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[131] = heapMem[localMem[24]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 290;
+         $display("Should not be executed   289");
       end
 
         290 :
@@ -3101,8 +2477,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[131]] = 2;
-              ip = 291;
+         $display("Should not be executed   290");
       end
 
         291 :
@@ -3110,7 +2485,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 293;
+         $display("Should not be executed   291");
       end
 
         292 :
@@ -3118,7 +2493,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 298;
+         $display("Should not be executed   292");
       end
 
         293 :
@@ -3126,7 +2501,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 294;
+         $display("Should not be executed   293");
       end
 
         294 :
@@ -3134,9 +2509,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[25] = 1;
-              updateArrayLength(2, 0, 0);
-              ip = 295;
+         $display("Should not be executed   294");
       end
 
         295 :
@@ -3144,7 +2517,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 298;
+         $display("Should not be executed   295");
       end
 
         296 :
@@ -3152,7 +2525,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 297;
+         $display("Should not be executed   296");
       end
 
         297 :
@@ -3160,9 +2533,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[25] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 298;
+         $display("Should not be executed   297");
       end
 
         298 :
@@ -3170,7 +2541,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 299;
+         $display("Should not be executed   298");
       end
 
         299 :
@@ -3178,7 +2549,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 300;
+         $display("Should not be executed   299");
       end
 
         300 :
@@ -3186,7 +2557,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 301;
+         $display("Should not be executed   300");
       end
 
         301 :
@@ -3194,9 +2565,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[132] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 302;
+         $display("Should not be executed   301");
       end
 
         302 :
@@ -3204,7 +2573,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 303;
+         $display("Should not be executed   302");
       end
 
         303 :
@@ -3212,7 +2581,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[132] >= 99 ? 801 : 304;
+         $display("Should not be executed   303");
       end
 
         304 :
@@ -3220,9 +2589,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[133] = heapMem[localMem[24]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 305;
+         $display("Should not be executed   304");
       end
 
         305 :
@@ -3230,9 +2597,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d subtract", steps, ip);
 end
-              localMem[134] = localMem[133] - 1;
-              updateArrayLength(2, 0, 0);
-              ip = 306;
+         $display("Should not be executed   305");
       end
 
         306 :
@@ -3240,9 +2605,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[135] = heapMem[localMem[24]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 307;
+         $display("Should not be executed   306");
       end
 
         307 :
@@ -3250,9 +2613,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[136] = heapMem[localMem[135]*7 + localMem[134]];
-              updateArrayLength(2, 0, 0);
-              ip = 308;
+         $display("Should not be executed   307");
       end
 
         308 :
@@ -3260,7 +2621,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jLe", steps, ip);
 end
-              ip = 1 <= localMem[136] ? 549 : 309;
+         $display("Should not be executed   308");
       end
 
         309 :
@@ -3268,8 +2629,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d not", steps, ip);
 end
-              localMem[137] = !heapMem[localMem[24]*7 + 6];
-              ip = 310;
+         $display("Should not be executed   309");
       end
 
         310 :
@@ -3277,7 +2637,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jEq", steps, ip);
 end
-              ip = localMem[137] == 0 ? 315 : 311;
+         $display("Should not be executed   310");
       end
 
         311 :
@@ -3285,9 +2645,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[1]*7 + 0] = localMem[24];
-              updateArrayLength(1, localMem[1], 0);
-              ip = 312;
+         $display("Should not be executed   311");
       end
 
         312 :
@@ -3295,9 +2653,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[1]*7 + 1] = 2;
-              updateArrayLength(1, localMem[1], 1);
-              ip = 313;
+         $display("Should not be executed   312");
       end
 
         313 :
@@ -3305,9 +2661,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d subtract", steps, ip);
 end
-              heapMem[localMem[1]*7 + 2] = localMem[133] - 1;
-              updateArrayLength(1, localMem[1], 2);
-              ip = 314;
+         $display("Should not be executed   313");
       end
 
         314 :
@@ -3315,7 +2669,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 805;
+         $display("Should not be executed   314");
       end
 
         315 :
@@ -3323,7 +2677,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 316;
+         $display("Should not be executed   315");
       end
 
         316 :
@@ -3331,9 +2685,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[138] = heapMem[localMem[24]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 317;
+         $display("Should not be executed   316");
       end
 
         317 :
@@ -3341,9 +2693,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[139] = heapMem[localMem[138]*7 + localMem[133]];
-              updateArrayLength(2, 0, 0);
-              ip = 318;
+         $display("Should not be executed   317");
       end
 
         318 :
@@ -3351,7 +2701,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 319;
+         $display("Should not be executed   318");
       end
 
         319 :
@@ -3359,9 +2709,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[141] = heapMem[localMem[139]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 320;
+         $display("Should not be executed   319");
       end
 
         320 :
@@ -3369,9 +2717,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[142] = heapMem[localMem[139]*7 + 3];
-              updateArrayLength(2, 0, 0);
-              ip = 321;
+         $display("Should not be executed   320");
       end
 
         321 :
@@ -3379,9 +2725,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[143] = heapMem[localMem[142]*7 + 2];
-              updateArrayLength(2, 0, 0);
-              ip = 322;
+         $display("Should not be executed   321");
       end
 
         322 :
@@ -3389,7 +2733,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jLt", steps, ip);
 end
-              ip = localMem[141] <  localMem[143] ? 542 : 323;
+         $display("Should not be executed   322");
       end
 
         323 :
@@ -3397,9 +2741,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[144] = localMem[143];
-              updateArrayLength(2, 0, 0);
-              ip = 324;
+         $display("Should not be executed   323");
       end
 
         324 :
@@ -3407,8 +2749,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftRight", steps, ip);
 end
-              localMem[144] = localMem[144] >> 1;
-              ip = 325;
+         $display("Should not be executed   324");
       end
 
         325 :
@@ -3416,9 +2757,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[145] = localMem[144] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 326;
+         $display("Should not be executed   325");
       end
 
         326 :
@@ -3426,9 +2765,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[146] = heapMem[localMem[139]*7 + 2];
-              updateArrayLength(2, 0, 0);
-              ip = 327;
+         $display("Should not be executed   326");
       end
 
         327 :
@@ -3436,7 +2773,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jEq", steps, ip);
 end
-              ip = localMem[146] == 0 ? 424 : 328;
+         $display("Should not be executed   327");
       end
 
         328 :
@@ -3444,17 +2781,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[147] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[147] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[147]] = 0;
-              ip = 329;
+         $display("Should not be executed   328");
       end
 
         329 :
@@ -3462,9 +2789,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[147]*7 + 0] = localMem[144];
-              updateArrayLength(1, localMem[147], 0);
-              ip = 330;
+         $display("Should not be executed   329");
       end
 
         330 :
@@ -3472,9 +2797,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[147]*7 + 2] = 0;
-              updateArrayLength(1, localMem[147], 2);
-              ip = 331;
+         $display("Should not be executed   330");
       end
 
         331 :
@@ -3482,17 +2805,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[148] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[148] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[148]] = 0;
-              ip = 332;
+         $display("Should not be executed   331");
       end
 
         332 :
@@ -3500,9 +2813,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[147]*7 + 4] = localMem[148];
-              updateArrayLength(1, localMem[147], 4);
-              ip = 333;
+         $display("Should not be executed   332");
       end
 
         333 :
@@ -3510,17 +2821,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[149] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[149] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[149]] = 0;
-              ip = 334;
+         $display("Should not be executed   333");
       end
 
         334 :
@@ -3528,9 +2829,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[147]*7 + 5] = localMem[149];
-              updateArrayLength(1, localMem[147], 5);
-              ip = 335;
+         $display("Should not be executed   334");
       end
 
         335 :
@@ -3538,9 +2837,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[147]*7 + 6] = 0;
-              updateArrayLength(1, localMem[147], 6);
-              ip = 336;
+         $display("Should not be executed   335");
       end
 
         336 :
@@ -3548,9 +2845,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[147]*7 + 3] = localMem[142];
-              updateArrayLength(1, localMem[147], 3);
-              ip = 337;
+         $display("Should not be executed   336");
       end
 
         337 :
@@ -3558,9 +2853,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[142]*7 + 1] = heapMem[localMem[142]*7 + 1] + 1;
-              updateArrayLength(1, localMem[142], 1);
-              ip = 338;
+         $display("Should not be executed   337");
       end
 
         338 :
@@ -3568,9 +2861,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[147]*7 + 1] = heapMem[localMem[142]*7 + 1];
-              updateArrayLength(1, localMem[147], 1);
-              ip = 339;
+         $display("Should not be executed   338");
       end
 
         339 :
@@ -3578,8 +2869,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d not", steps, ip);
 end
-              localMem[150] = !heapMem[localMem[139]*7 + 6];
-              ip = 340;
+         $display("Should not be executed   339");
       end
 
         340 :
@@ -3587,7 +2877,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[150] != 0 ? 369 : 341;
+         $display("Should not be executed   340");
       end
 
         341 :
@@ -3595,17 +2885,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[151] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[151] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[151]] = 0;
-              ip = 342;
+         $display("Should not be executed   341");
       end
 
         342 :
@@ -3613,9 +2893,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[147]*7 + 6] = localMem[151];
-              updateArrayLength(1, localMem[147], 6);
-              ip = 343;
+         $display("Should not be executed   342");
       end
 
         343 :
@@ -3623,9 +2901,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[152] = heapMem[localMem[139]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 344;
+         $display("Should not be executed   343");
       end
 
         344 :
@@ -3633,9 +2909,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[153] = heapMem[localMem[147]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 345;
+         $display("Should not be executed   344");
       end
 
         345 :
@@ -3643,13 +2917,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[144]) begin
-                  heapMem[NArea * localMem[153] + 0 + i] = heapMem[NArea * localMem[152] + localMem[145] + i];
-                  updateArrayLength(1, localMem[153], 0 + i);
-                end
-              end
-              ip = 346;
+         $display("Should not be executed   345");
       end
 
         346 :
@@ -3657,9 +2925,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[154] = heapMem[localMem[139]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 347;
+         $display("Should not be executed   346");
       end
 
         347 :
@@ -3667,9 +2933,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[155] = heapMem[localMem[147]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 348;
+         $display("Should not be executed   347");
       end
 
         348 :
@@ -3677,13 +2941,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[144]) begin
-                  heapMem[NArea * localMem[155] + 0 + i] = heapMem[NArea * localMem[154] + localMem[145] + i];
-                  updateArrayLength(1, localMem[155], 0 + i);
-                end
-              end
-              ip = 349;
+         $display("Should not be executed   348");
       end
 
         349 :
@@ -3691,9 +2949,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[156] = heapMem[localMem[139]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 350;
+         $display("Should not be executed   349");
       end
 
         350 :
@@ -3701,9 +2957,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[157] = heapMem[localMem[147]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 351;
+         $display("Should not be executed   350");
       end
 
         351 :
@@ -3711,9 +2965,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[158] = localMem[144] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 352;
+         $display("Should not be executed   351");
       end
 
         352 :
@@ -3721,13 +2973,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[158]) begin
-                  heapMem[NArea * localMem[157] + 0 + i] = heapMem[NArea * localMem[156] + localMem[145] + i];
-                  updateArrayLength(1, localMem[157], 0 + i);
-                end
-              end
-              ip = 353;
+         $display("Should not be executed   352");
       end
 
         353 :
@@ -3735,9 +2981,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[159] = heapMem[localMem[147]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 354;
+         $display("Should not be executed   353");
       end
 
         354 :
@@ -3745,9 +2989,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[160] = localMem[159] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 355;
+         $display("Should not be executed   354");
       end
 
         355 :
@@ -3755,9 +2997,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[161] = heapMem[localMem[147]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 356;
+         $display("Should not be executed   355");
       end
 
         356 :
@@ -3765,7 +3005,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 357;
+         $display("Should not be executed   356");
       end
 
         357 :
@@ -3773,9 +3013,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[162] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 358;
+         $display("Should not be executed   357");
       end
 
         358 :
@@ -3783,7 +3021,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 359;
+         $display("Should not be executed   358");
       end
 
         359 :
@@ -3791,7 +3029,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[162] >= localMem[160] ? 365 : 360;
+         $display("Should not be executed   359");
       end
 
         360 :
@@ -3799,9 +3037,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[163] = heapMem[localMem[161]*7 + localMem[162]];
-              updateArrayLength(2, 0, 0);
-              ip = 361;
+         $display("Should not be executed   360");
       end
 
         361 :
@@ -3809,9 +3045,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[163]*7 + 2] = localMem[147];
-              updateArrayLength(1, localMem[163], 2);
-              ip = 362;
+         $display("Should not be executed   361");
       end
 
         362 :
@@ -3819,7 +3053,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 363;
+         $display("Should not be executed   362");
       end
 
         363 :
@@ -3827,9 +3061,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[162] = localMem[162] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 364;
+         $display("Should not be executed   363");
       end
 
         364 :
@@ -3837,7 +3069,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 358;
+         $display("Should not be executed   364");
       end
 
         365 :
@@ -3845,7 +3077,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 366;
+         $display("Should not be executed   365");
       end
 
         366 :
@@ -3853,9 +3085,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[164] = heapMem[localMem[139]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 367;
+         $display("Should not be executed   366");
       end
 
         367 :
@@ -3863,8 +3093,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[164]] = localMem[145];
-              ip = 368;
+         $display("Should not be executed   367");
       end
 
         368 :
@@ -3872,7 +3101,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 376;
+         $display("Should not be executed   368");
       end
 
         369 :
@@ -3880,7 +3109,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 370;
+         $display("Should not be executed   369");
       end
 
         370 :
@@ -3888,9 +3117,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[165] = heapMem[localMem[139]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 371;
+         $display("Should not be executed   370");
       end
 
         371 :
@@ -3898,9 +3125,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[166] = heapMem[localMem[147]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 372;
+         $display("Should not be executed   371");
       end
 
         372 :
@@ -3908,13 +3133,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[144]) begin
-                  heapMem[NArea * localMem[166] + 0 + i] = heapMem[NArea * localMem[165] + localMem[145] + i];
-                  updateArrayLength(1, localMem[166], 0 + i);
-                end
-              end
-              ip = 373;
+         $display("Should not be executed   372");
       end
 
         373 :
@@ -3922,9 +3141,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[167] = heapMem[localMem[139]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 374;
+         $display("Should not be executed   373");
       end
 
         374 :
@@ -3932,9 +3149,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[168] = heapMem[localMem[147]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 375;
+         $display("Should not be executed   374");
       end
 
         375 :
@@ -3942,13 +3157,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[144]) begin
-                  heapMem[NArea * localMem[168] + 0 + i] = heapMem[NArea * localMem[167] + localMem[145] + i];
-                  updateArrayLength(1, localMem[168], 0 + i);
-                end
-              end
-              ip = 376;
+         $display("Should not be executed   375");
       end
 
         376 :
@@ -3956,7 +3165,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 377;
+         $display("Should not be executed   376");
       end
 
         377 :
@@ -3964,9 +3173,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[139]*7 + 0] = localMem[144];
-              updateArrayLength(1, localMem[139], 0);
-              ip = 378;
+         $display("Should not be executed   377");
       end
 
         378 :
@@ -3974,9 +3181,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[147]*7 + 2] = localMem[146];
-              updateArrayLength(1, localMem[147], 2);
-              ip = 379;
+         $display("Should not be executed   378");
       end
 
         379 :
@@ -3984,9 +3189,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[169] = heapMem[localMem[146]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 380;
+         $display("Should not be executed   379");
       end
 
         380 :
@@ -3994,9 +3197,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[170] = heapMem[localMem[146]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 381;
+         $display("Should not be executed   380");
       end
 
         381 :
@@ -4004,9 +3205,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[171] = heapMem[localMem[170]*7 + localMem[169]];
-              updateArrayLength(2, 0, 0);
-              ip = 382;
+         $display("Should not be executed   381");
       end
 
         382 :
@@ -4014,7 +3213,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[171] != localMem[139] ? 401 : 383;
+         $display("Should not be executed   382");
       end
 
         383 :
@@ -4022,9 +3221,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[172] = heapMem[localMem[139]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 384;
+         $display("Should not be executed   383");
       end
 
         384 :
@@ -4032,9 +3229,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[173] = heapMem[localMem[172]*7 + localMem[144]];
-              updateArrayLength(2, 0, 0);
-              ip = 385;
+         $display("Should not be executed   384");
       end
 
         385 :
@@ -4042,9 +3237,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[174] = heapMem[localMem[146]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 386;
+         $display("Should not be executed   385");
       end
 
         386 :
@@ -4052,9 +3245,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[174]*7 + localMem[169]] = localMem[173];
-              updateArrayLength(1, localMem[174], localMem[169]);
-              ip = 387;
+         $display("Should not be executed   386");
       end
 
         387 :
@@ -4062,9 +3253,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[175] = heapMem[localMem[139]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 388;
+         $display("Should not be executed   387");
       end
 
         388 :
@@ -4072,9 +3261,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[176] = heapMem[localMem[175]*7 + localMem[144]];
-              updateArrayLength(2, 0, 0);
-              ip = 389;
+         $display("Should not be executed   388");
       end
 
         389 :
@@ -4082,9 +3269,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[177] = heapMem[localMem[146]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 390;
+         $display("Should not be executed   389");
       end
 
         390 :
@@ -4092,9 +3277,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[177]*7 + localMem[169]] = localMem[176];
-              updateArrayLength(1, localMem[177], localMem[169]);
-              ip = 391;
+         $display("Should not be executed   390");
       end
 
         391 :
@@ -4102,9 +3285,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[178] = heapMem[localMem[139]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 392;
+         $display("Should not be executed   391");
       end
 
         392 :
@@ -4112,8 +3293,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[178]] = localMem[144];
-              ip = 393;
+         $display("Should not be executed   392");
       end
 
         393 :
@@ -4121,9 +3301,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[179] = heapMem[localMem[139]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 394;
+         $display("Should not be executed   393");
       end
 
         394 :
@@ -4131,8 +3309,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[179]] = localMem[144];
-              ip = 395;
+         $display("Should not be executed   394");
       end
 
         395 :
@@ -4140,9 +3317,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[180] = localMem[169] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 396;
+         $display("Should not be executed   395");
       end
 
         396 :
@@ -4150,9 +3325,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[146]*7 + 0] = localMem[180];
-              updateArrayLength(1, localMem[146], 0);
-              ip = 397;
+         $display("Should not be executed   396");
       end
 
         397 :
@@ -4160,9 +3333,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[181] = heapMem[localMem[146]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 398;
+         $display("Should not be executed   397");
       end
 
         398 :
@@ -4170,9 +3341,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[181]*7 + localMem[180]] = localMem[147];
-              updateArrayLength(1, localMem[181], localMem[180]);
-              ip = 399;
+         $display("Should not be executed   398");
       end
 
         399 :
@@ -4180,7 +3349,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 539;
+         $display("Should not be executed   399");
       end
 
         400 :
@@ -4188,7 +3357,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 423;
+         $display("Should not be executed   400");
       end
 
         401 :
@@ -4196,7 +3365,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 402;
+         $display("Should not be executed   401");
       end
 
         402 :
@@ -4204,7 +3373,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d assertNe", steps, ip);
 end
-            ip = 403;
+         $display("Should not be executed   402");
       end
 
         403 :
@@ -4212,9 +3381,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[182] = heapMem[localMem[146]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 404;
+         $display("Should not be executed   403");
       end
 
         404 :
@@ -4222,11 +3389,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d arrayIndex", steps, ip);
 end
-              localMem[183] = 0; k = arraySizes[localMem[182]];
-              for(i = 0; i < NArea; i = i + 1) begin
-                if (i < k && heapMem[localMem[182] * NArea + i] == localMem[139]) localMem[183] = i + 1;
-              end
-              ip = 405;
+         $display("Should not be executed   404");
       end
 
         405 :
@@ -4234,9 +3397,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d subtract", steps, ip);
 end
-              localMem[183] = localMem[183] - 1;
-              updateArrayLength(2, 0, 0);
-              ip = 406;
+         $display("Should not be executed   405");
       end
 
         406 :
@@ -4244,9 +3405,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[184] = heapMem[localMem[139]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 407;
+         $display("Should not be executed   406");
       end
 
         407 :
@@ -4254,9 +3413,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[185] = heapMem[localMem[184]*7 + localMem[144]];
-              updateArrayLength(2, 0, 0);
-              ip = 408;
+         $display("Should not be executed   407");
       end
 
         408 :
@@ -4264,9 +3421,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[186] = heapMem[localMem[139]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 409;
+         $display("Should not be executed   408");
       end
 
         409 :
@@ -4274,9 +3429,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[187] = heapMem[localMem[186]*7 + localMem[144]];
-              updateArrayLength(2, 0, 0);
-              ip = 410;
+         $display("Should not be executed   409");
       end
 
         410 :
@@ -4284,9 +3437,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[188] = heapMem[localMem[139]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 411;
+         $display("Should not be executed   410");
       end
 
         411 :
@@ -4294,8 +3445,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[188]] = localMem[144];
-              ip = 412;
+         $display("Should not be executed   411");
       end
 
         412 :
@@ -4303,9 +3453,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[189] = heapMem[localMem[139]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 413;
+         $display("Should not be executed   412");
       end
 
         413 :
@@ -4313,8 +3461,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[189]] = localMem[144];
-              ip = 414;
+         $display("Should not be executed   413");
       end
 
         414 :
@@ -4322,9 +3469,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[190] = heapMem[localMem[146]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 415;
+         $display("Should not be executed   414");
       end
 
         415 :
@@ -4332,18 +3477,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[190] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[183], localMem[190], arraySizes[localMem[190]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[183] && i <= arraySizes[localMem[190]]) begin
-                  heapMem[NArea * localMem[190] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[190] + localMem[183]] = localMem[185];                                    // Insert new value
-              arraySizes[localMem[190]] = arraySizes[localMem[190]] + 1;                              // Increase array size
-              ip = 416;
+         $display("Should not be executed   415");
       end
 
         416 :
@@ -4351,9 +3485,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[191] = heapMem[localMem[146]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 417;
+         $display("Should not be executed   416");
       end
 
         417 :
@@ -4361,18 +3493,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[191] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[183], localMem[191], arraySizes[localMem[191]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[183] && i <= arraySizes[localMem[191]]) begin
-                  heapMem[NArea * localMem[191] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[191] + localMem[183]] = localMem[187];                                    // Insert new value
-              arraySizes[localMem[191]] = arraySizes[localMem[191]] + 1;                              // Increase array size
-              ip = 418;
+         $display("Should not be executed   417");
       end
 
         418 :
@@ -4380,9 +3501,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[192] = heapMem[localMem[146]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 419;
+         $display("Should not be executed   418");
       end
 
         419 :
@@ -4390,9 +3509,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[193] = localMem[183] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 420;
+         $display("Should not be executed   419");
       end
 
         420 :
@@ -4400,18 +3517,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[192] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[193], localMem[192], arraySizes[localMem[192]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[193] && i <= arraySizes[localMem[192]]) begin
-                  heapMem[NArea * localMem[192] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[192] + localMem[193]] = localMem[147];                                    // Insert new value
-              arraySizes[localMem[192]] = arraySizes[localMem[192]] + 1;                              // Increase array size
-              ip = 421;
+         $display("Should not be executed   420");
       end
 
         421 :
@@ -4419,9 +3525,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[146]*7 + 0] = heapMem[localMem[146]*7 + 0] + 1;
-              updateArrayLength(1, localMem[146], 0);
-              ip = 422;
+         $display("Should not be executed   421");
       end
 
         422 :
@@ -4429,7 +3533,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 539;
+         $display("Should not be executed   422");
       end
 
         423 :
@@ -4437,7 +3541,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 424;
+         $display("Should not be executed   423");
       end
 
         424 :
@@ -4445,7 +3549,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 425;
+         $display("Should not be executed   424");
       end
 
         425 :
@@ -4453,17 +3557,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[194] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[194] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[194]] = 0;
-              ip = 426;
+         $display("Should not be executed   425");
       end
 
         426 :
@@ -4471,9 +3565,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[194]*7 + 0] = localMem[144];
-              updateArrayLength(1, localMem[194], 0);
-              ip = 427;
+         $display("Should not be executed   426");
       end
 
         427 :
@@ -4481,9 +3573,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[194]*7 + 2] = 0;
-              updateArrayLength(1, localMem[194], 2);
-              ip = 428;
+         $display("Should not be executed   427");
       end
 
         428 :
@@ -4491,17 +3581,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[195] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[195] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[195]] = 0;
-              ip = 429;
+         $display("Should not be executed   428");
       end
 
         429 :
@@ -4509,9 +3589,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[194]*7 + 4] = localMem[195];
-              updateArrayLength(1, localMem[194], 4);
-              ip = 430;
+         $display("Should not be executed   429");
       end
 
         430 :
@@ -4519,17 +3597,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[196] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[196] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[196]] = 0;
-              ip = 431;
+         $display("Should not be executed   430");
       end
 
         431 :
@@ -4537,9 +3605,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[194]*7 + 5] = localMem[196];
-              updateArrayLength(1, localMem[194], 5);
-              ip = 432;
+         $display("Should not be executed   431");
       end
 
         432 :
@@ -4547,9 +3613,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[194]*7 + 6] = 0;
-              updateArrayLength(1, localMem[194], 6);
-              ip = 433;
+         $display("Should not be executed   432");
       end
 
         433 :
@@ -4557,9 +3621,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[194]*7 + 3] = localMem[142];
-              updateArrayLength(1, localMem[194], 3);
-              ip = 434;
+         $display("Should not be executed   433");
       end
 
         434 :
@@ -4567,9 +3629,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[142]*7 + 1] = heapMem[localMem[142]*7 + 1] + 1;
-              updateArrayLength(1, localMem[142], 1);
-              ip = 435;
+         $display("Should not be executed   434");
       end
 
         435 :
@@ -4577,9 +3637,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[194]*7 + 1] = heapMem[localMem[142]*7 + 1];
-              updateArrayLength(1, localMem[194], 1);
-              ip = 436;
+         $display("Should not be executed   435");
       end
 
         436 :
@@ -4587,17 +3645,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[197] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[197] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[197]] = 0;
-              ip = 437;
+         $display("Should not be executed   436");
       end
 
         437 :
@@ -4605,9 +3653,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[197]*7 + 0] = localMem[144];
-              updateArrayLength(1, localMem[197], 0);
-              ip = 438;
+         $display("Should not be executed   437");
       end
 
         438 :
@@ -4615,9 +3661,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[197]*7 + 2] = 0;
-              updateArrayLength(1, localMem[197], 2);
-              ip = 439;
+         $display("Should not be executed   438");
       end
 
         439 :
@@ -4625,17 +3669,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[198] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[198] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[198]] = 0;
-              ip = 440;
+         $display("Should not be executed   439");
       end
 
         440 :
@@ -4643,9 +3677,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[197]*7 + 4] = localMem[198];
-              updateArrayLength(1, localMem[197], 4);
-              ip = 441;
+         $display("Should not be executed   440");
       end
 
         441 :
@@ -4653,17 +3685,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[199] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[199] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[199]] = 0;
-              ip = 442;
+         $display("Should not be executed   441");
       end
 
         442 :
@@ -4671,9 +3693,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[197]*7 + 5] = localMem[199];
-              updateArrayLength(1, localMem[197], 5);
-              ip = 443;
+         $display("Should not be executed   442");
       end
 
         443 :
@@ -4681,9 +3701,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[197]*7 + 6] = 0;
-              updateArrayLength(1, localMem[197], 6);
-              ip = 444;
+         $display("Should not be executed   443");
       end
 
         444 :
@@ -4691,9 +3709,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[197]*7 + 3] = localMem[142];
-              updateArrayLength(1, localMem[197], 3);
-              ip = 445;
+         $display("Should not be executed   444");
       end
 
         445 :
@@ -4701,9 +3717,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[142]*7 + 1] = heapMem[localMem[142]*7 + 1] + 1;
-              updateArrayLength(1, localMem[142], 1);
-              ip = 446;
+         $display("Should not be executed   445");
       end
 
         446 :
@@ -4711,9 +3725,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[197]*7 + 1] = heapMem[localMem[142]*7 + 1];
-              updateArrayLength(1, localMem[197], 1);
-              ip = 447;
+         $display("Should not be executed   446");
       end
 
         447 :
@@ -4721,8 +3733,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d not", steps, ip);
 end
-              localMem[200] = !heapMem[localMem[139]*7 + 6];
-              ip = 448;
+         $display("Should not be executed   447");
       end
 
         448 :
@@ -4730,7 +3741,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[200] != 0 ? 500 : 449;
+         $display("Should not be executed   448");
       end
 
         449 :
@@ -4738,17 +3749,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[201] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[201] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[201]] = 0;
-              ip = 450;
+         $display("Should not be executed   449");
       end
 
         450 :
@@ -4756,9 +3757,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[194]*7 + 6] = localMem[201];
-              updateArrayLength(1, localMem[194], 6);
-              ip = 451;
+         $display("Should not be executed   450");
       end
 
         451 :
@@ -4766,17 +3765,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[202] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[202] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[202]] = 0;
-              ip = 452;
+         $display("Should not be executed   451");
       end
 
         452 :
@@ -4784,9 +3773,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[197]*7 + 6] = localMem[202];
-              updateArrayLength(1, localMem[197], 6);
-              ip = 453;
+         $display("Should not be executed   452");
       end
 
         453 :
@@ -4794,9 +3781,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[203] = heapMem[localMem[139]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 454;
+         $display("Should not be executed   453");
       end
 
         454 :
@@ -4804,9 +3789,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[204] = heapMem[localMem[194]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 455;
+         $display("Should not be executed   454");
       end
 
         455 :
@@ -4814,13 +3797,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[144]) begin
-                  heapMem[NArea * localMem[204] + 0 + i] = heapMem[NArea * localMem[203] + 0 + i];
-                  updateArrayLength(1, localMem[204], 0 + i);
-                end
-              end
-              ip = 456;
+         $display("Should not be executed   455");
       end
 
         456 :
@@ -4828,9 +3805,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[205] = heapMem[localMem[139]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 457;
+         $display("Should not be executed   456");
       end
 
         457 :
@@ -4838,9 +3813,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[206] = heapMem[localMem[194]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 458;
+         $display("Should not be executed   457");
       end
 
         458 :
@@ -4848,13 +3821,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[144]) begin
-                  heapMem[NArea * localMem[206] + 0 + i] = heapMem[NArea * localMem[205] + 0 + i];
-                  updateArrayLength(1, localMem[206], 0 + i);
-                end
-              end
-              ip = 459;
+         $display("Should not be executed   458");
       end
 
         459 :
@@ -4862,9 +3829,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[207] = heapMem[localMem[139]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 460;
+         $display("Should not be executed   459");
       end
 
         460 :
@@ -4872,9 +3837,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[208] = heapMem[localMem[194]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 461;
+         $display("Should not be executed   460");
       end
 
         461 :
@@ -4882,9 +3845,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[209] = localMem[144] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 462;
+         $display("Should not be executed   461");
       end
 
         462 :
@@ -4892,13 +3853,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[209]) begin
-                  heapMem[NArea * localMem[208] + 0 + i] = heapMem[NArea * localMem[207] + 0 + i];
-                  updateArrayLength(1, localMem[208], 0 + i);
-                end
-              end
-              ip = 463;
+         $display("Should not be executed   462");
       end
 
         463 :
@@ -4906,9 +3861,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[210] = heapMem[localMem[139]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 464;
+         $display("Should not be executed   463");
       end
 
         464 :
@@ -4916,9 +3869,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[211] = heapMem[localMem[197]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 465;
+         $display("Should not be executed   464");
       end
 
         465 :
@@ -4926,13 +3877,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[144]) begin
-                  heapMem[NArea * localMem[211] + 0 + i] = heapMem[NArea * localMem[210] + localMem[145] + i];
-                  updateArrayLength(1, localMem[211], 0 + i);
-                end
-              end
-              ip = 466;
+         $display("Should not be executed   465");
       end
 
         466 :
@@ -4940,9 +3885,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[212] = heapMem[localMem[139]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 467;
+         $display("Should not be executed   466");
       end
 
         467 :
@@ -4950,9 +3893,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[213] = heapMem[localMem[197]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 468;
+         $display("Should not be executed   467");
       end
 
         468 :
@@ -4960,13 +3901,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[144]) begin
-                  heapMem[NArea * localMem[213] + 0 + i] = heapMem[NArea * localMem[212] + localMem[145] + i];
-                  updateArrayLength(1, localMem[213], 0 + i);
-                end
-              end
-              ip = 469;
+         $display("Should not be executed   468");
       end
 
         469 :
@@ -4974,9 +3909,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[214] = heapMem[localMem[139]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 470;
+         $display("Should not be executed   469");
       end
 
         470 :
@@ -4984,9 +3917,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[215] = heapMem[localMem[197]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 471;
+         $display("Should not be executed   470");
       end
 
         471 :
@@ -4994,9 +3925,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[216] = localMem[144] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 472;
+         $display("Should not be executed   471");
       end
 
         472 :
@@ -5004,13 +3933,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[216]) begin
-                  heapMem[NArea * localMem[215] + 0 + i] = heapMem[NArea * localMem[214] + localMem[145] + i];
-                  updateArrayLength(1, localMem[215], 0 + i);
-                end
-              end
-              ip = 473;
+         $display("Should not be executed   472");
       end
 
         473 :
@@ -5018,9 +3941,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[217] = heapMem[localMem[194]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 474;
+         $display("Should not be executed   473");
       end
 
         474 :
@@ -5028,9 +3949,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[218] = localMem[217] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 475;
+         $display("Should not be executed   474");
       end
 
         475 :
@@ -5038,9 +3957,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[219] = heapMem[localMem[194]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 476;
+         $display("Should not be executed   475");
       end
 
         476 :
@@ -5048,7 +3965,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 477;
+         $display("Should not be executed   476");
       end
 
         477 :
@@ -5056,9 +3973,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[220] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 478;
+         $display("Should not be executed   477");
       end
 
         478 :
@@ -5066,7 +3981,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 479;
+         $display("Should not be executed   478");
       end
 
         479 :
@@ -5074,7 +3989,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[220] >= localMem[218] ? 485 : 480;
+         $display("Should not be executed   479");
       end
 
         480 :
@@ -5082,9 +3997,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[221] = heapMem[localMem[219]*7 + localMem[220]];
-              updateArrayLength(2, 0, 0);
-              ip = 481;
+         $display("Should not be executed   480");
       end
 
         481 :
@@ -5092,9 +4005,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[221]*7 + 2] = localMem[194];
-              updateArrayLength(1, localMem[221], 2);
-              ip = 482;
+         $display("Should not be executed   481");
       end
 
         482 :
@@ -5102,7 +4013,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 483;
+         $display("Should not be executed   482");
       end
 
         483 :
@@ -5110,9 +4021,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[220] = localMem[220] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 484;
+         $display("Should not be executed   483");
       end
 
         484 :
@@ -5120,7 +4029,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 478;
+         $display("Should not be executed   484");
       end
 
         485 :
@@ -5128,7 +4037,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 486;
+         $display("Should not be executed   485");
       end
 
         486 :
@@ -5136,9 +4045,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[222] = heapMem[localMem[197]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 487;
+         $display("Should not be executed   486");
       end
 
         487 :
@@ -5146,9 +4053,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[223] = localMem[222] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 488;
+         $display("Should not be executed   487");
       end
 
         488 :
@@ -5156,9 +4061,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[224] = heapMem[localMem[197]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 489;
+         $display("Should not be executed   488");
       end
 
         489 :
@@ -5166,7 +4069,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 490;
+         $display("Should not be executed   489");
       end
 
         490 :
@@ -5174,9 +4077,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[225] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 491;
+         $display("Should not be executed   490");
       end
 
         491 :
@@ -5184,7 +4085,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 492;
+         $display("Should not be executed   491");
       end
 
         492 :
@@ -5192,7 +4093,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[225] >= localMem[223] ? 498 : 493;
+         $display("Should not be executed   492");
       end
 
         493 :
@@ -5200,9 +4101,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[226] = heapMem[localMem[224]*7 + localMem[225]];
-              updateArrayLength(2, 0, 0);
-              ip = 494;
+         $display("Should not be executed   493");
       end
 
         494 :
@@ -5210,9 +4109,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[226]*7 + 2] = localMem[197];
-              updateArrayLength(1, localMem[226], 2);
-              ip = 495;
+         $display("Should not be executed   494");
       end
 
         495 :
@@ -5220,7 +4117,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 496;
+         $display("Should not be executed   495");
       end
 
         496 :
@@ -5228,9 +4125,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[225] = localMem[225] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 497;
+         $display("Should not be executed   496");
       end
 
         497 :
@@ -5238,7 +4133,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 491;
+         $display("Should not be executed   497");
       end
 
         498 :
@@ -5246,7 +4141,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 499;
+         $display("Should not be executed   498");
       end
 
         499 :
@@ -5254,7 +4149,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 515;
+         $display("Should not be executed   499");
       end
 
         500 :
@@ -5262,7 +4157,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 501;
+         $display("Should not be executed   500");
       end
 
         501 :
@@ -5270,17 +4165,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[227] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[227] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[227]] = 0;
-              ip = 502;
+         $display("Should not be executed   501");
       end
 
         502 :
@@ -5288,9 +4173,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[139]*7 + 6] = localMem[227];
-              updateArrayLength(1, localMem[139], 6);
-              ip = 503;
+         $display("Should not be executed   502");
       end
 
         503 :
@@ -5298,9 +4181,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[228] = heapMem[localMem[139]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 504;
+         $display("Should not be executed   503");
       end
 
         504 :
@@ -5308,9 +4189,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[229] = heapMem[localMem[194]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 505;
+         $display("Should not be executed   504");
       end
 
         505 :
@@ -5318,13 +4197,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[144]) begin
-                  heapMem[NArea * localMem[229] + 0 + i] = heapMem[NArea * localMem[228] + 0 + i];
-                  updateArrayLength(1, localMem[229], 0 + i);
-                end
-              end
-              ip = 506;
+         $display("Should not be executed   505");
       end
 
         506 :
@@ -5332,9 +4205,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[230] = heapMem[localMem[139]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 507;
+         $display("Should not be executed   506");
       end
 
         507 :
@@ -5342,9 +4213,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[231] = heapMem[localMem[194]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 508;
+         $display("Should not be executed   507");
       end
 
         508 :
@@ -5352,13 +4221,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[144]) begin
-                  heapMem[NArea * localMem[231] + 0 + i] = heapMem[NArea * localMem[230] + 0 + i];
-                  updateArrayLength(1, localMem[231], 0 + i);
-                end
-              end
-              ip = 509;
+         $display("Should not be executed   508");
       end
 
         509 :
@@ -5366,9 +4229,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[232] = heapMem[localMem[139]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 510;
+         $display("Should not be executed   509");
       end
 
         510 :
@@ -5376,9 +4237,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[233] = heapMem[localMem[197]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 511;
+         $display("Should not be executed   510");
       end
 
         511 :
@@ -5386,13 +4245,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[144]) begin
-                  heapMem[NArea * localMem[233] + 0 + i] = heapMem[NArea * localMem[232] + localMem[145] + i];
-                  updateArrayLength(1, localMem[233], 0 + i);
-                end
-              end
-              ip = 512;
+         $display("Should not be executed   511");
       end
 
         512 :
@@ -5400,9 +4253,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[234] = heapMem[localMem[139]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 513;
+         $display("Should not be executed   512");
       end
 
         513 :
@@ -5410,9 +4261,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[235] = heapMem[localMem[197]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 514;
+         $display("Should not be executed   513");
       end
 
         514 :
@@ -5420,13 +4269,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[144]) begin
-                  heapMem[NArea * localMem[235] + 0 + i] = heapMem[NArea * localMem[234] + localMem[145] + i];
-                  updateArrayLength(1, localMem[235], 0 + i);
-                end
-              end
-              ip = 515;
+         $display("Should not be executed   514");
       end
 
         515 :
@@ -5434,7 +4277,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 516;
+         $display("Should not be executed   515");
       end
 
         516 :
@@ -5442,9 +4285,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[194]*7 + 2] = localMem[139];
-              updateArrayLength(1, localMem[194], 2);
-              ip = 517;
+         $display("Should not be executed   516");
       end
 
         517 :
@@ -5452,9 +4293,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[197]*7 + 2] = localMem[139];
-              updateArrayLength(1, localMem[197], 2);
-              ip = 518;
+         $display("Should not be executed   517");
       end
 
         518 :
@@ -5462,9 +4301,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[236] = heapMem[localMem[139]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 519;
+         $display("Should not be executed   518");
       end
 
         519 :
@@ -5472,9 +4309,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[237] = heapMem[localMem[236]*7 + localMem[144]];
-              updateArrayLength(2, 0, 0);
-              ip = 520;
+         $display("Should not be executed   519");
       end
 
         520 :
@@ -5482,9 +4317,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[238] = heapMem[localMem[139]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 521;
+         $display("Should not be executed   520");
       end
 
         521 :
@@ -5492,9 +4325,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[239] = heapMem[localMem[238]*7 + localMem[144]];
-              updateArrayLength(2, 0, 0);
-              ip = 522;
+         $display("Should not be executed   521");
       end
 
         522 :
@@ -5502,9 +4333,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[240] = heapMem[localMem[139]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 523;
+         $display("Should not be executed   522");
       end
 
         523 :
@@ -5512,9 +4341,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[240]*7 + 0] = localMem[237];
-              updateArrayLength(1, localMem[240], 0);
-              ip = 524;
+         $display("Should not be executed   523");
       end
 
         524 :
@@ -5522,9 +4349,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[241] = heapMem[localMem[139]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 525;
+         $display("Should not be executed   524");
       end
 
         525 :
@@ -5532,9 +4357,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[241]*7 + 0] = localMem[239];
-              updateArrayLength(1, localMem[241], 0);
-              ip = 526;
+         $display("Should not be executed   525");
       end
 
         526 :
@@ -5542,9 +4365,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[242] = heapMem[localMem[139]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 527;
+         $display("Should not be executed   526");
       end
 
         527 :
@@ -5552,9 +4373,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[242]*7 + 0] = localMem[194];
-              updateArrayLength(1, localMem[242], 0);
-              ip = 528;
+         $display("Should not be executed   527");
       end
 
         528 :
@@ -5562,9 +4381,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[243] = heapMem[localMem[139]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 529;
+         $display("Should not be executed   528");
       end
 
         529 :
@@ -5572,9 +4389,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[243]*7 + 1] = localMem[197];
-              updateArrayLength(1, localMem[243], 1);
-              ip = 530;
+         $display("Should not be executed   529");
       end
 
         530 :
@@ -5582,9 +4397,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[139]*7 + 0] = 1;
-              updateArrayLength(1, localMem[139], 0);
-              ip = 531;
+         $display("Should not be executed   530");
       end
 
         531 :
@@ -5592,9 +4405,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[244] = heapMem[localMem[139]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 532;
+         $display("Should not be executed   531");
       end
 
         532 :
@@ -5602,8 +4413,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[244]] = 1;
-              ip = 533;
+         $display("Should not be executed   532");
       end
 
         533 :
@@ -5611,9 +4421,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[245] = heapMem[localMem[139]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 534;
+         $display("Should not be executed   533");
       end
 
         534 :
@@ -5621,8 +4429,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[245]] = 1;
-              ip = 535;
+         $display("Should not be executed   534");
       end
 
         535 :
@@ -5630,9 +4437,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[246] = heapMem[localMem[139]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 536;
+         $display("Should not be executed   535");
       end
 
         536 :
@@ -5640,8 +4445,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[246]] = 2;
-              ip = 537;
+         $display("Should not be executed   536");
       end
 
         537 :
@@ -5649,7 +4453,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 539;
+         $display("Should not be executed   537");
       end
 
         538 :
@@ -5657,7 +4461,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 544;
+         $display("Should not be executed   538");
       end
 
         539 :
@@ -5665,7 +4469,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 540;
+         $display("Should not be executed   539");
       end
 
         540 :
@@ -5673,9 +4477,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[140] = 1;
-              updateArrayLength(2, 0, 0);
-              ip = 541;
+         $display("Should not be executed   540");
       end
 
         541 :
@@ -5683,7 +4485,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 544;
+         $display("Should not be executed   541");
       end
 
         542 :
@@ -5691,7 +4493,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 543;
+         $display("Should not be executed   542");
       end
 
         543 :
@@ -5699,9 +4501,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[140] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 544;
+         $display("Should not be executed   543");
       end
 
         544 :
@@ -5709,7 +4509,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 545;
+         $display("Should not be executed   544");
       end
 
         545 :
@@ -5717,7 +4517,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[140] != 0 ? 547 : 546;
+         $display("Should not be executed   545");
       end
 
         546 :
@@ -5725,9 +4525,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[24] = localMem[139];
-              updateArrayLength(2, 0, 0);
-              ip = 547;
+         $display("Should not be executed   546");
       end
 
         547 :
@@ -5735,7 +4533,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 548;
+         $display("Should not be executed   547");
       end
 
         548 :
@@ -5743,7 +4541,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 798;
+         $display("Should not be executed   548");
       end
 
         549 :
@@ -5751,7 +4549,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 550;
+         $display("Should not be executed   549");
       end
 
         550 :
@@ -5759,9 +4557,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[247] = heapMem[localMem[24]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 551;
+         $display("Should not be executed   550");
       end
 
         551 :
@@ -5769,11 +4565,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d arrayIndex", steps, ip);
 end
-              localMem[248] = 0; k = arraySizes[localMem[247]];
-              for(i = 0; i < NArea; i = i + 1) begin
-                if (i < k && heapMem[localMem[247] * NArea + i] == 1) localMem[248] = i + 1;
-              end
-              ip = 552;
+         $display("Should not be executed   551");
       end
 
         552 :
@@ -5781,7 +4573,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jEq", steps, ip);
 end
-              ip = localMem[248] == 0 ? 557 : 553;
+         $display("Should not be executed   552");
       end
 
         553 :
@@ -5789,9 +4581,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[1]*7 + 0] = localMem[24];
-              updateArrayLength(1, localMem[1], 0);
-              ip = 554;
+         $display("Should not be executed   553");
       end
 
         554 :
@@ -5799,9 +4589,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[1]*7 + 1] = 1;
-              updateArrayLength(1, localMem[1], 1);
-              ip = 555;
+         $display("Should not be executed   554");
       end
 
         555 :
@@ -5809,9 +4597,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d subtract", steps, ip);
 end
-              heapMem[localMem[1]*7 + 2] = localMem[248] - 1;
-              updateArrayLength(1, localMem[1], 2);
-              ip = 556;
+         $display("Should not be executed   555");
       end
 
         556 :
@@ -5819,7 +4605,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 805;
+         $display("Should not be executed   556");
       end
 
         557 :
@@ -5827,7 +4613,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 558;
+         $display("Should not be executed   557");
       end
 
         558 :
@@ -5835,12 +4621,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d arrayCountLess", steps, ip);
 end
-              j = 0; k = arraySizes[localMem[247]];
-              for(i = 0; i < NArea; i = i + 1) begin
-                if (i < k && heapMem[localMem[247] * NArea + i] < 1) j = j + 1;
-              end
-              localMem[249] = j;
-              ip = 559;
+         $display("Should not be executed   558");
       end
 
         559 :
@@ -5848,8 +4629,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d not", steps, ip);
 end
-              localMem[250] = !heapMem[localMem[24]*7 + 6];
-              ip = 560;
+         $display("Should not be executed   559");
       end
 
         560 :
@@ -5857,7 +4637,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jEq", steps, ip);
 end
-              ip = localMem[250] == 0 ? 565 : 561;
+         $display("Should not be executed   560");
       end
 
         561 :
@@ -5865,9 +4645,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[1]*7 + 0] = localMem[24];
-              updateArrayLength(1, localMem[1], 0);
-              ip = 562;
+         $display("Should not be executed   561");
       end
 
         562 :
@@ -5875,9 +4653,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[1]*7 + 1] = 0;
-              updateArrayLength(1, localMem[1], 1);
-              ip = 563;
+         $display("Should not be executed   562");
       end
 
         563 :
@@ -5885,9 +4661,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[1]*7 + 2] = localMem[249];
-              updateArrayLength(1, localMem[1], 2);
-              ip = 564;
+         $display("Should not be executed   563");
       end
 
         564 :
@@ -5895,7 +4669,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 805;
+         $display("Should not be executed   564");
       end
 
         565 :
@@ -5903,7 +4677,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 566;
+         $display("Should not be executed   565");
       end
 
         566 :
@@ -5911,9 +4685,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[251] = heapMem[localMem[24]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 567;
+         $display("Should not be executed   566");
       end
 
         567 :
@@ -5921,9 +4693,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[252] = heapMem[localMem[251]*7 + localMem[249]];
-              updateArrayLength(2, 0, 0);
-              ip = 568;
+         $display("Should not be executed   567");
       end
 
         568 :
@@ -5931,7 +4701,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 569;
+         $display("Should not be executed   568");
       end
 
         569 :
@@ -5939,9 +4709,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[254] = heapMem[localMem[252]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 570;
+         $display("Should not be executed   569");
       end
 
         570 :
@@ -5949,9 +4717,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[255] = heapMem[localMem[252]*7 + 3];
-              updateArrayLength(2, 0, 0);
-              ip = 571;
+         $display("Should not be executed   570");
       end
 
         571 :
@@ -5959,9 +4725,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[256] = heapMem[localMem[255]*7 + 2];
-              updateArrayLength(2, 0, 0);
-              ip = 572;
+         $display("Should not be executed   571");
       end
 
         572 :
@@ -5969,7 +4733,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jLt", steps, ip);
 end
-              ip = localMem[254] <  localMem[256] ? 792 : 573;
+         $display("Should not be executed   572");
       end
 
         573 :
@@ -5977,9 +4741,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[257] = localMem[256];
-              updateArrayLength(2, 0, 0);
-              ip = 574;
+         $display("Should not be executed   573");
       end
 
         574 :
@@ -5987,8 +4749,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftRight", steps, ip);
 end
-              localMem[257] = localMem[257] >> 1;
-              ip = 575;
+         $display("Should not be executed   574");
       end
 
         575 :
@@ -5996,9 +4757,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[258] = localMem[257] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 576;
+         $display("Should not be executed   575");
       end
 
         576 :
@@ -6006,9 +4765,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[259] = heapMem[localMem[252]*7 + 2];
-              updateArrayLength(2, 0, 0);
-              ip = 577;
+         $display("Should not be executed   576");
       end
 
         577 :
@@ -6016,7 +4773,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jEq", steps, ip);
 end
-              ip = localMem[259] == 0 ? 674 : 578;
+         $display("Should not be executed   577");
       end
 
         578 :
@@ -6024,17 +4781,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[260] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[260] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[260]] = 0;
-              ip = 579;
+         $display("Should not be executed   578");
       end
 
         579 :
@@ -6042,9 +4789,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[260]*7 + 0] = localMem[257];
-              updateArrayLength(1, localMem[260], 0);
-              ip = 580;
+         $display("Should not be executed   579");
       end
 
         580 :
@@ -6052,9 +4797,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[260]*7 + 2] = 0;
-              updateArrayLength(1, localMem[260], 2);
-              ip = 581;
+         $display("Should not be executed   580");
       end
 
         581 :
@@ -6062,17 +4805,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[261] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[261] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[261]] = 0;
-              ip = 582;
+         $display("Should not be executed   581");
       end
 
         582 :
@@ -6080,9 +4813,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[260]*7 + 4] = localMem[261];
-              updateArrayLength(1, localMem[260], 4);
-              ip = 583;
+         $display("Should not be executed   582");
       end
 
         583 :
@@ -6090,17 +4821,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[262] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[262] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[262]] = 0;
-              ip = 584;
+         $display("Should not be executed   583");
       end
 
         584 :
@@ -6108,9 +4829,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[260]*7 + 5] = localMem[262];
-              updateArrayLength(1, localMem[260], 5);
-              ip = 585;
+         $display("Should not be executed   584");
       end
 
         585 :
@@ -6118,9 +4837,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[260]*7 + 6] = 0;
-              updateArrayLength(1, localMem[260], 6);
-              ip = 586;
+         $display("Should not be executed   585");
       end
 
         586 :
@@ -6128,9 +4845,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[260]*7 + 3] = localMem[255];
-              updateArrayLength(1, localMem[260], 3);
-              ip = 587;
+         $display("Should not be executed   586");
       end
 
         587 :
@@ -6138,9 +4853,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[255]*7 + 1] = heapMem[localMem[255]*7 + 1] + 1;
-              updateArrayLength(1, localMem[255], 1);
-              ip = 588;
+         $display("Should not be executed   587");
       end
 
         588 :
@@ -6148,9 +4861,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[260]*7 + 1] = heapMem[localMem[255]*7 + 1];
-              updateArrayLength(1, localMem[260], 1);
-              ip = 589;
+         $display("Should not be executed   588");
       end
 
         589 :
@@ -6158,8 +4869,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d not", steps, ip);
 end
-              localMem[263] = !heapMem[localMem[252]*7 + 6];
-              ip = 590;
+         $display("Should not be executed   589");
       end
 
         590 :
@@ -6167,7 +4877,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[263] != 0 ? 619 : 591;
+         $display("Should not be executed   590");
       end
 
         591 :
@@ -6175,17 +4885,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[264] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[264] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[264]] = 0;
-              ip = 592;
+         $display("Should not be executed   591");
       end
 
         592 :
@@ -6193,9 +4893,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[260]*7 + 6] = localMem[264];
-              updateArrayLength(1, localMem[260], 6);
-              ip = 593;
+         $display("Should not be executed   592");
       end
 
         593 :
@@ -6203,9 +4901,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[265] = heapMem[localMem[252]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 594;
+         $display("Should not be executed   593");
       end
 
         594 :
@@ -6213,9 +4909,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[266] = heapMem[localMem[260]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 595;
+         $display("Should not be executed   594");
       end
 
         595 :
@@ -6223,13 +4917,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[257]) begin
-                  heapMem[NArea * localMem[266] + 0 + i] = heapMem[NArea * localMem[265] + localMem[258] + i];
-                  updateArrayLength(1, localMem[266], 0 + i);
-                end
-              end
-              ip = 596;
+         $display("Should not be executed   595");
       end
 
         596 :
@@ -6237,9 +4925,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[267] = heapMem[localMem[252]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 597;
+         $display("Should not be executed   596");
       end
 
         597 :
@@ -6247,9 +4933,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[268] = heapMem[localMem[260]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 598;
+         $display("Should not be executed   597");
       end
 
         598 :
@@ -6257,13 +4941,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[257]) begin
-                  heapMem[NArea * localMem[268] + 0 + i] = heapMem[NArea * localMem[267] + localMem[258] + i];
-                  updateArrayLength(1, localMem[268], 0 + i);
-                end
-              end
-              ip = 599;
+         $display("Should not be executed   598");
       end
 
         599 :
@@ -6271,9 +4949,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[269] = heapMem[localMem[252]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 600;
+         $display("Should not be executed   599");
       end
 
         600 :
@@ -6281,9 +4957,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[270] = heapMem[localMem[260]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 601;
+         $display("Should not be executed   600");
       end
 
         601 :
@@ -6291,9 +4965,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[271] = localMem[257] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 602;
+         $display("Should not be executed   601");
       end
 
         602 :
@@ -6301,13 +4973,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[271]) begin
-                  heapMem[NArea * localMem[270] + 0 + i] = heapMem[NArea * localMem[269] + localMem[258] + i];
-                  updateArrayLength(1, localMem[270], 0 + i);
-                end
-              end
-              ip = 603;
+         $display("Should not be executed   602");
       end
 
         603 :
@@ -6315,9 +4981,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[272] = heapMem[localMem[260]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 604;
+         $display("Should not be executed   603");
       end
 
         604 :
@@ -6325,9 +4989,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[273] = localMem[272] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 605;
+         $display("Should not be executed   604");
       end
 
         605 :
@@ -6335,9 +4997,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[274] = heapMem[localMem[260]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 606;
+         $display("Should not be executed   605");
       end
 
         606 :
@@ -6345,7 +5005,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 607;
+         $display("Should not be executed   606");
       end
 
         607 :
@@ -6353,9 +5013,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[275] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 608;
+         $display("Should not be executed   607");
       end
 
         608 :
@@ -6363,7 +5021,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 609;
+         $display("Should not be executed   608");
       end
 
         609 :
@@ -6371,7 +5029,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[275] >= localMem[273] ? 615 : 610;
+         $display("Should not be executed   609");
       end
 
         610 :
@@ -6379,9 +5037,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[276] = heapMem[localMem[274]*7 + localMem[275]];
-              updateArrayLength(2, 0, 0);
-              ip = 611;
+         $display("Should not be executed   610");
       end
 
         611 :
@@ -6389,9 +5045,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[276]*7 + 2] = localMem[260];
-              updateArrayLength(1, localMem[276], 2);
-              ip = 612;
+         $display("Should not be executed   611");
       end
 
         612 :
@@ -6399,7 +5053,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 613;
+         $display("Should not be executed   612");
       end
 
         613 :
@@ -6407,9 +5061,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[275] = localMem[275] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 614;
+         $display("Should not be executed   613");
       end
 
         614 :
@@ -6417,7 +5069,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 608;
+         $display("Should not be executed   614");
       end
 
         615 :
@@ -6425,7 +5077,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 616;
+         $display("Should not be executed   615");
       end
 
         616 :
@@ -6433,9 +5085,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[277] = heapMem[localMem[252]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 617;
+         $display("Should not be executed   616");
       end
 
         617 :
@@ -6443,8 +5093,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[277]] = localMem[258];
-              ip = 618;
+         $display("Should not be executed   617");
       end
 
         618 :
@@ -6452,7 +5101,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 626;
+         $display("Should not be executed   618");
       end
 
         619 :
@@ -6460,7 +5109,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 620;
+         $display("Should not be executed   619");
       end
 
         620 :
@@ -6468,9 +5117,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[278] = heapMem[localMem[252]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 621;
+         $display("Should not be executed   620");
       end
 
         621 :
@@ -6478,9 +5125,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[279] = heapMem[localMem[260]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 622;
+         $display("Should not be executed   621");
       end
 
         622 :
@@ -6488,13 +5133,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[257]) begin
-                  heapMem[NArea * localMem[279] + 0 + i] = heapMem[NArea * localMem[278] + localMem[258] + i];
-                  updateArrayLength(1, localMem[279], 0 + i);
-                end
-              end
-              ip = 623;
+         $display("Should not be executed   622");
       end
 
         623 :
@@ -6502,9 +5141,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[280] = heapMem[localMem[252]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 624;
+         $display("Should not be executed   623");
       end
 
         624 :
@@ -6512,9 +5149,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[281] = heapMem[localMem[260]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 625;
+         $display("Should not be executed   624");
       end
 
         625 :
@@ -6522,13 +5157,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[257]) begin
-                  heapMem[NArea * localMem[281] + 0 + i] = heapMem[NArea * localMem[280] + localMem[258] + i];
-                  updateArrayLength(1, localMem[281], 0 + i);
-                end
-              end
-              ip = 626;
+         $display("Should not be executed   625");
       end
 
         626 :
@@ -6536,7 +5165,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 627;
+         $display("Should not be executed   626");
       end
 
         627 :
@@ -6544,9 +5173,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[252]*7 + 0] = localMem[257];
-              updateArrayLength(1, localMem[252], 0);
-              ip = 628;
+         $display("Should not be executed   627");
       end
 
         628 :
@@ -6554,9 +5181,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[260]*7 + 2] = localMem[259];
-              updateArrayLength(1, localMem[260], 2);
-              ip = 629;
+         $display("Should not be executed   628");
       end
 
         629 :
@@ -6564,9 +5189,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[282] = heapMem[localMem[259]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 630;
+         $display("Should not be executed   629");
       end
 
         630 :
@@ -6574,9 +5197,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[283] = heapMem[localMem[259]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 631;
+         $display("Should not be executed   630");
       end
 
         631 :
@@ -6584,9 +5205,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[284] = heapMem[localMem[283]*7 + localMem[282]];
-              updateArrayLength(2, 0, 0);
-              ip = 632;
+         $display("Should not be executed   631");
       end
 
         632 :
@@ -6594,7 +5213,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[284] != localMem[252] ? 651 : 633;
+         $display("Should not be executed   632");
       end
 
         633 :
@@ -6602,9 +5221,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[285] = heapMem[localMem[252]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 634;
+         $display("Should not be executed   633");
       end
 
         634 :
@@ -6612,9 +5229,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[286] = heapMem[localMem[285]*7 + localMem[257]];
-              updateArrayLength(2, 0, 0);
-              ip = 635;
+         $display("Should not be executed   634");
       end
 
         635 :
@@ -6622,9 +5237,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[287] = heapMem[localMem[259]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 636;
+         $display("Should not be executed   635");
       end
 
         636 :
@@ -6632,9 +5245,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[287]*7 + localMem[282]] = localMem[286];
-              updateArrayLength(1, localMem[287], localMem[282]);
-              ip = 637;
+         $display("Should not be executed   636");
       end
 
         637 :
@@ -6642,9 +5253,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[288] = heapMem[localMem[252]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 638;
+         $display("Should not be executed   637");
       end
 
         638 :
@@ -6652,9 +5261,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[289] = heapMem[localMem[288]*7 + localMem[257]];
-              updateArrayLength(2, 0, 0);
-              ip = 639;
+         $display("Should not be executed   638");
       end
 
         639 :
@@ -6662,9 +5269,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[290] = heapMem[localMem[259]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 640;
+         $display("Should not be executed   639");
       end
 
         640 :
@@ -6672,9 +5277,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[290]*7 + localMem[282]] = localMem[289];
-              updateArrayLength(1, localMem[290], localMem[282]);
-              ip = 641;
+         $display("Should not be executed   640");
       end
 
         641 :
@@ -6682,9 +5285,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[291] = heapMem[localMem[252]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 642;
+         $display("Should not be executed   641");
       end
 
         642 :
@@ -6692,8 +5293,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[291]] = localMem[257];
-              ip = 643;
+         $display("Should not be executed   642");
       end
 
         643 :
@@ -6701,9 +5301,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[292] = heapMem[localMem[252]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 644;
+         $display("Should not be executed   643");
       end
 
         644 :
@@ -6711,8 +5309,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[292]] = localMem[257];
-              ip = 645;
+         $display("Should not be executed   644");
       end
 
         645 :
@@ -6720,9 +5317,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[293] = localMem[282] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 646;
+         $display("Should not be executed   645");
       end
 
         646 :
@@ -6730,9 +5325,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[259]*7 + 0] = localMem[293];
-              updateArrayLength(1, localMem[259], 0);
-              ip = 647;
+         $display("Should not be executed   646");
       end
 
         647 :
@@ -6740,9 +5333,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[294] = heapMem[localMem[259]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 648;
+         $display("Should not be executed   647");
       end
 
         648 :
@@ -6750,9 +5341,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[294]*7 + localMem[293]] = localMem[260];
-              updateArrayLength(1, localMem[294], localMem[293]);
-              ip = 649;
+         $display("Should not be executed   648");
       end
 
         649 :
@@ -6760,7 +5349,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 789;
+         $display("Should not be executed   649");
       end
 
         650 :
@@ -6768,7 +5357,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 673;
+         $display("Should not be executed   650");
       end
 
         651 :
@@ -6776,7 +5365,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 652;
+         $display("Should not be executed   651");
       end
 
         652 :
@@ -6784,7 +5373,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d assertNe", steps, ip);
 end
-            ip = 653;
+         $display("Should not be executed   652");
       end
 
         653 :
@@ -6792,9 +5381,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[295] = heapMem[localMem[259]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 654;
+         $display("Should not be executed   653");
       end
 
         654 :
@@ -6802,11 +5389,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d arrayIndex", steps, ip);
 end
-              localMem[296] = 0; k = arraySizes[localMem[295]];
-              for(i = 0; i < NArea; i = i + 1) begin
-                if (i < k && heapMem[localMem[295] * NArea + i] == localMem[252]) localMem[296] = i + 1;
-              end
-              ip = 655;
+         $display("Should not be executed   654");
       end
 
         655 :
@@ -6814,9 +5397,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d subtract", steps, ip);
 end
-              localMem[296] = localMem[296] - 1;
-              updateArrayLength(2, 0, 0);
-              ip = 656;
+         $display("Should not be executed   655");
       end
 
         656 :
@@ -6824,9 +5405,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[297] = heapMem[localMem[252]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 657;
+         $display("Should not be executed   656");
       end
 
         657 :
@@ -6834,9 +5413,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[298] = heapMem[localMem[297]*7 + localMem[257]];
-              updateArrayLength(2, 0, 0);
-              ip = 658;
+         $display("Should not be executed   657");
       end
 
         658 :
@@ -6844,9 +5421,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[299] = heapMem[localMem[252]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 659;
+         $display("Should not be executed   658");
       end
 
         659 :
@@ -6854,9 +5429,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[300] = heapMem[localMem[299]*7 + localMem[257]];
-              updateArrayLength(2, 0, 0);
-              ip = 660;
+         $display("Should not be executed   659");
       end
 
         660 :
@@ -6864,9 +5437,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[301] = heapMem[localMem[252]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 661;
+         $display("Should not be executed   660");
       end
 
         661 :
@@ -6874,8 +5445,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[301]] = localMem[257];
-              ip = 662;
+         $display("Should not be executed   661");
       end
 
         662 :
@@ -6883,9 +5453,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[302] = heapMem[localMem[252]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 663;
+         $display("Should not be executed   662");
       end
 
         663 :
@@ -6893,8 +5461,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[302]] = localMem[257];
-              ip = 664;
+         $display("Should not be executed   663");
       end
 
         664 :
@@ -6902,9 +5469,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[303] = heapMem[localMem[259]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 665;
+         $display("Should not be executed   664");
       end
 
         665 :
@@ -6912,18 +5477,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[303] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[296], localMem[303], arraySizes[localMem[303]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[296] && i <= arraySizes[localMem[303]]) begin
-                  heapMem[NArea * localMem[303] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[303] + localMem[296]] = localMem[298];                                    // Insert new value
-              arraySizes[localMem[303]] = arraySizes[localMem[303]] + 1;                              // Increase array size
-              ip = 666;
+         $display("Should not be executed   665");
       end
 
         666 :
@@ -6931,9 +5485,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[304] = heapMem[localMem[259]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 667;
+         $display("Should not be executed   666");
       end
 
         667 :
@@ -6941,18 +5493,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[304] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[296], localMem[304], arraySizes[localMem[304]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[296] && i <= arraySizes[localMem[304]]) begin
-                  heapMem[NArea * localMem[304] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[304] + localMem[296]] = localMem[300];                                    // Insert new value
-              arraySizes[localMem[304]] = arraySizes[localMem[304]] + 1;                              // Increase array size
-              ip = 668;
+         $display("Should not be executed   667");
       end
 
         668 :
@@ -6960,9 +5501,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[305] = heapMem[localMem[259]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 669;
+         $display("Should not be executed   668");
       end
 
         669 :
@@ -6970,9 +5509,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[306] = localMem[296] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 670;
+         $display("Should not be executed   669");
       end
 
         670 :
@@ -6980,18 +5517,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[305] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[306], localMem[305], arraySizes[localMem[305]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[306] && i <= arraySizes[localMem[305]]) begin
-                  heapMem[NArea * localMem[305] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[305] + localMem[306]] = localMem[260];                                    // Insert new value
-              arraySizes[localMem[305]] = arraySizes[localMem[305]] + 1;                              // Increase array size
-              ip = 671;
+         $display("Should not be executed   670");
       end
 
         671 :
@@ -6999,9 +5525,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[259]*7 + 0] = heapMem[localMem[259]*7 + 0] + 1;
-              updateArrayLength(1, localMem[259], 0);
-              ip = 672;
+         $display("Should not be executed   671");
       end
 
         672 :
@@ -7009,7 +5533,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 789;
+         $display("Should not be executed   672");
       end
 
         673 :
@@ -7017,7 +5541,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 674;
+         $display("Should not be executed   673");
       end
 
         674 :
@@ -7025,7 +5549,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 675;
+         $display("Should not be executed   674");
       end
 
         675 :
@@ -7033,17 +5557,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[307] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[307] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[307]] = 0;
-              ip = 676;
+         $display("Should not be executed   675");
       end
 
         676 :
@@ -7051,9 +5565,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[307]*7 + 0] = localMem[257];
-              updateArrayLength(1, localMem[307], 0);
-              ip = 677;
+         $display("Should not be executed   676");
       end
 
         677 :
@@ -7061,9 +5573,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[307]*7 + 2] = 0;
-              updateArrayLength(1, localMem[307], 2);
-              ip = 678;
+         $display("Should not be executed   677");
       end
 
         678 :
@@ -7071,17 +5581,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[308] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[308] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[308]] = 0;
-              ip = 679;
+         $display("Should not be executed   678");
       end
 
         679 :
@@ -7089,9 +5589,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[307]*7 + 4] = localMem[308];
-              updateArrayLength(1, localMem[307], 4);
-              ip = 680;
+         $display("Should not be executed   679");
       end
 
         680 :
@@ -7099,17 +5597,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[309] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[309] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[309]] = 0;
-              ip = 681;
+         $display("Should not be executed   680");
       end
 
         681 :
@@ -7117,9 +5605,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[307]*7 + 5] = localMem[309];
-              updateArrayLength(1, localMem[307], 5);
-              ip = 682;
+         $display("Should not be executed   681");
       end
 
         682 :
@@ -7127,9 +5613,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[307]*7 + 6] = 0;
-              updateArrayLength(1, localMem[307], 6);
-              ip = 683;
+         $display("Should not be executed   682");
       end
 
         683 :
@@ -7137,9 +5621,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[307]*7 + 3] = localMem[255];
-              updateArrayLength(1, localMem[307], 3);
-              ip = 684;
+         $display("Should not be executed   683");
       end
 
         684 :
@@ -7147,9 +5629,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[255]*7 + 1] = heapMem[localMem[255]*7 + 1] + 1;
-              updateArrayLength(1, localMem[255], 1);
-              ip = 685;
+         $display("Should not be executed   684");
       end
 
         685 :
@@ -7157,9 +5637,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[307]*7 + 1] = heapMem[localMem[255]*7 + 1];
-              updateArrayLength(1, localMem[307], 1);
-              ip = 686;
+         $display("Should not be executed   685");
       end
 
         686 :
@@ -7167,17 +5645,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[310] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[310] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[310]] = 0;
-              ip = 687;
+         $display("Should not be executed   686");
       end
 
         687 :
@@ -7185,9 +5653,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[310]*7 + 0] = localMem[257];
-              updateArrayLength(1, localMem[310], 0);
-              ip = 688;
+         $display("Should not be executed   687");
       end
 
         688 :
@@ -7195,9 +5661,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[310]*7 + 2] = 0;
-              updateArrayLength(1, localMem[310], 2);
-              ip = 689;
+         $display("Should not be executed   688");
       end
 
         689 :
@@ -7205,17 +5669,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[311] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[311] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[311]] = 0;
-              ip = 690;
+         $display("Should not be executed   689");
       end
 
         690 :
@@ -7223,9 +5677,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[310]*7 + 4] = localMem[311];
-              updateArrayLength(1, localMem[310], 4);
-              ip = 691;
+         $display("Should not be executed   690");
       end
 
         691 :
@@ -7233,17 +5685,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[312] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[312] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[312]] = 0;
-              ip = 692;
+         $display("Should not be executed   691");
       end
 
         692 :
@@ -7251,9 +5693,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[310]*7 + 5] = localMem[312];
-              updateArrayLength(1, localMem[310], 5);
-              ip = 693;
+         $display("Should not be executed   692");
       end
 
         693 :
@@ -7261,9 +5701,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[310]*7 + 6] = 0;
-              updateArrayLength(1, localMem[310], 6);
-              ip = 694;
+         $display("Should not be executed   693");
       end
 
         694 :
@@ -7271,9 +5709,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[310]*7 + 3] = localMem[255];
-              updateArrayLength(1, localMem[310], 3);
-              ip = 695;
+         $display("Should not be executed   694");
       end
 
         695 :
@@ -7281,9 +5717,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[255]*7 + 1] = heapMem[localMem[255]*7 + 1] + 1;
-              updateArrayLength(1, localMem[255], 1);
-              ip = 696;
+         $display("Should not be executed   695");
       end
 
         696 :
@@ -7291,9 +5725,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[310]*7 + 1] = heapMem[localMem[255]*7 + 1];
-              updateArrayLength(1, localMem[310], 1);
-              ip = 697;
+         $display("Should not be executed   696");
       end
 
         697 :
@@ -7301,8 +5733,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d not", steps, ip);
 end
-              localMem[313] = !heapMem[localMem[252]*7 + 6];
-              ip = 698;
+         $display("Should not be executed   697");
       end
 
         698 :
@@ -7310,7 +5741,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[313] != 0 ? 750 : 699;
+         $display("Should not be executed   698");
       end
 
         699 :
@@ -7318,17 +5749,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[314] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[314] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[314]] = 0;
-              ip = 700;
+         $display("Should not be executed   699");
       end
 
         700 :
@@ -7336,9 +5757,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[307]*7 + 6] = localMem[314];
-              updateArrayLength(1, localMem[307], 6);
-              ip = 701;
+         $display("Should not be executed   700");
       end
 
         701 :
@@ -7346,17 +5765,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[315] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[315] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[315]] = 0;
-              ip = 702;
+         $display("Should not be executed   701");
       end
 
         702 :
@@ -7364,9 +5773,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[310]*7 + 6] = localMem[315];
-              updateArrayLength(1, localMem[310], 6);
-              ip = 703;
+         $display("Should not be executed   702");
       end
 
         703 :
@@ -7374,9 +5781,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[316] = heapMem[localMem[252]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 704;
+         $display("Should not be executed   703");
       end
 
         704 :
@@ -7384,9 +5789,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[317] = heapMem[localMem[307]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 705;
+         $display("Should not be executed   704");
       end
 
         705 :
@@ -7394,13 +5797,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[257]) begin
-                  heapMem[NArea * localMem[317] + 0 + i] = heapMem[NArea * localMem[316] + 0 + i];
-                  updateArrayLength(1, localMem[317], 0 + i);
-                end
-              end
-              ip = 706;
+         $display("Should not be executed   705");
       end
 
         706 :
@@ -7408,9 +5805,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[318] = heapMem[localMem[252]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 707;
+         $display("Should not be executed   706");
       end
 
         707 :
@@ -7418,9 +5813,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[319] = heapMem[localMem[307]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 708;
+         $display("Should not be executed   707");
       end
 
         708 :
@@ -7428,13 +5821,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[257]) begin
-                  heapMem[NArea * localMem[319] + 0 + i] = heapMem[NArea * localMem[318] + 0 + i];
-                  updateArrayLength(1, localMem[319], 0 + i);
-                end
-              end
-              ip = 709;
+         $display("Should not be executed   708");
       end
 
         709 :
@@ -7442,9 +5829,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[320] = heapMem[localMem[252]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 710;
+         $display("Should not be executed   709");
       end
 
         710 :
@@ -7452,9 +5837,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[321] = heapMem[localMem[307]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 711;
+         $display("Should not be executed   710");
       end
 
         711 :
@@ -7462,9 +5845,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[322] = localMem[257] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 712;
+         $display("Should not be executed   711");
       end
 
         712 :
@@ -7472,13 +5853,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[322]) begin
-                  heapMem[NArea * localMem[321] + 0 + i] = heapMem[NArea * localMem[320] + 0 + i];
-                  updateArrayLength(1, localMem[321], 0 + i);
-                end
-              end
-              ip = 713;
+         $display("Should not be executed   712");
       end
 
         713 :
@@ -7486,9 +5861,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[323] = heapMem[localMem[252]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 714;
+         $display("Should not be executed   713");
       end
 
         714 :
@@ -7496,9 +5869,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[324] = heapMem[localMem[310]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 715;
+         $display("Should not be executed   714");
       end
 
         715 :
@@ -7506,13 +5877,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[257]) begin
-                  heapMem[NArea * localMem[324] + 0 + i] = heapMem[NArea * localMem[323] + localMem[258] + i];
-                  updateArrayLength(1, localMem[324], 0 + i);
-                end
-              end
-              ip = 716;
+         $display("Should not be executed   715");
       end
 
         716 :
@@ -7520,9 +5885,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[325] = heapMem[localMem[252]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 717;
+         $display("Should not be executed   716");
       end
 
         717 :
@@ -7530,9 +5893,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[326] = heapMem[localMem[310]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 718;
+         $display("Should not be executed   717");
       end
 
         718 :
@@ -7540,13 +5901,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[257]) begin
-                  heapMem[NArea * localMem[326] + 0 + i] = heapMem[NArea * localMem[325] + localMem[258] + i];
-                  updateArrayLength(1, localMem[326], 0 + i);
-                end
-              end
-              ip = 719;
+         $display("Should not be executed   718");
       end
 
         719 :
@@ -7554,9 +5909,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[327] = heapMem[localMem[252]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 720;
+         $display("Should not be executed   719");
       end
 
         720 :
@@ -7564,9 +5917,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[328] = heapMem[localMem[310]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 721;
+         $display("Should not be executed   720");
       end
 
         721 :
@@ -7574,9 +5925,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[329] = localMem[257] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 722;
+         $display("Should not be executed   721");
       end
 
         722 :
@@ -7584,13 +5933,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[329]) begin
-                  heapMem[NArea * localMem[328] + 0 + i] = heapMem[NArea * localMem[327] + localMem[258] + i];
-                  updateArrayLength(1, localMem[328], 0 + i);
-                end
-              end
-              ip = 723;
+         $display("Should not be executed   722");
       end
 
         723 :
@@ -7598,9 +5941,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[330] = heapMem[localMem[307]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 724;
+         $display("Should not be executed   723");
       end
 
         724 :
@@ -7608,9 +5949,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[331] = localMem[330] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 725;
+         $display("Should not be executed   724");
       end
 
         725 :
@@ -7618,9 +5957,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[332] = heapMem[localMem[307]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 726;
+         $display("Should not be executed   725");
       end
 
         726 :
@@ -7628,7 +5965,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 727;
+         $display("Should not be executed   726");
       end
 
         727 :
@@ -7636,9 +5973,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[333] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 728;
+         $display("Should not be executed   727");
       end
 
         728 :
@@ -7646,7 +5981,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 729;
+         $display("Should not be executed   728");
       end
 
         729 :
@@ -7654,7 +5989,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[333] >= localMem[331] ? 735 : 730;
+         $display("Should not be executed   729");
       end
 
         730 :
@@ -7662,9 +5997,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[334] = heapMem[localMem[332]*7 + localMem[333]];
-              updateArrayLength(2, 0, 0);
-              ip = 731;
+         $display("Should not be executed   730");
       end
 
         731 :
@@ -7672,9 +6005,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[334]*7 + 2] = localMem[307];
-              updateArrayLength(1, localMem[334], 2);
-              ip = 732;
+         $display("Should not be executed   731");
       end
 
         732 :
@@ -7682,7 +6013,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 733;
+         $display("Should not be executed   732");
       end
 
         733 :
@@ -7690,9 +6021,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[333] = localMem[333] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 734;
+         $display("Should not be executed   733");
       end
 
         734 :
@@ -7700,7 +6029,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 728;
+         $display("Should not be executed   734");
       end
 
         735 :
@@ -7708,7 +6037,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 736;
+         $display("Should not be executed   735");
       end
 
         736 :
@@ -7716,9 +6045,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[335] = heapMem[localMem[310]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 737;
+         $display("Should not be executed   736");
       end
 
         737 :
@@ -7726,9 +6053,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[336] = localMem[335] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 738;
+         $display("Should not be executed   737");
       end
 
         738 :
@@ -7736,9 +6061,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[337] = heapMem[localMem[310]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 739;
+         $display("Should not be executed   738");
       end
 
         739 :
@@ -7746,7 +6069,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 740;
+         $display("Should not be executed   739");
       end
 
         740 :
@@ -7754,9 +6077,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[338] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 741;
+         $display("Should not be executed   740");
       end
 
         741 :
@@ -7764,7 +6085,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 742;
+         $display("Should not be executed   741");
       end
 
         742 :
@@ -7772,7 +6093,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[338] >= localMem[336] ? 748 : 743;
+         $display("Should not be executed   742");
       end
 
         743 :
@@ -7780,9 +6101,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[339] = heapMem[localMem[337]*7 + localMem[338]];
-              updateArrayLength(2, 0, 0);
-              ip = 744;
+         $display("Should not be executed   743");
       end
 
         744 :
@@ -7790,9 +6109,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[339]*7 + 2] = localMem[310];
-              updateArrayLength(1, localMem[339], 2);
-              ip = 745;
+         $display("Should not be executed   744");
       end
 
         745 :
@@ -7800,7 +6117,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 746;
+         $display("Should not be executed   745");
       end
 
         746 :
@@ -7808,9 +6125,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[338] = localMem[338] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 747;
+         $display("Should not be executed   746");
       end
 
         747 :
@@ -7818,7 +6133,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 741;
+         $display("Should not be executed   747");
       end
 
         748 :
@@ -7826,7 +6141,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 749;
+         $display("Should not be executed   748");
       end
 
         749 :
@@ -7834,7 +6149,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 765;
+         $display("Should not be executed   749");
       end
 
         750 :
@@ -7842,7 +6157,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 751;
+         $display("Should not be executed   750");
       end
 
         751 :
@@ -7850,17 +6165,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[340] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[340] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[340]] = 0;
-              ip = 752;
+         $display("Should not be executed   751");
       end
 
         752 :
@@ -7868,9 +6173,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[252]*7 + 6] = localMem[340];
-              updateArrayLength(1, localMem[252], 6);
-              ip = 753;
+         $display("Should not be executed   752");
       end
 
         753 :
@@ -7878,9 +6181,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[341] = heapMem[localMem[252]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 754;
+         $display("Should not be executed   753");
       end
 
         754 :
@@ -7888,9 +6189,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[342] = heapMem[localMem[307]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 755;
+         $display("Should not be executed   754");
       end
 
         755 :
@@ -7898,13 +6197,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[257]) begin
-                  heapMem[NArea * localMem[342] + 0 + i] = heapMem[NArea * localMem[341] + 0 + i];
-                  updateArrayLength(1, localMem[342], 0 + i);
-                end
-              end
-              ip = 756;
+         $display("Should not be executed   755");
       end
 
         756 :
@@ -7912,9 +6205,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[343] = heapMem[localMem[252]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 757;
+         $display("Should not be executed   756");
       end
 
         757 :
@@ -7922,9 +6213,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[344] = heapMem[localMem[307]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 758;
+         $display("Should not be executed   757");
       end
 
         758 :
@@ -7932,13 +6221,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[257]) begin
-                  heapMem[NArea * localMem[344] + 0 + i] = heapMem[NArea * localMem[343] + 0 + i];
-                  updateArrayLength(1, localMem[344], 0 + i);
-                end
-              end
-              ip = 759;
+         $display("Should not be executed   758");
       end
 
         759 :
@@ -7946,9 +6229,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[345] = heapMem[localMem[252]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 760;
+         $display("Should not be executed   759");
       end
 
         760 :
@@ -7956,9 +6237,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[346] = heapMem[localMem[310]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 761;
+         $display("Should not be executed   760");
       end
 
         761 :
@@ -7966,13 +6245,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[257]) begin
-                  heapMem[NArea * localMem[346] + 0 + i] = heapMem[NArea * localMem[345] + localMem[258] + i];
-                  updateArrayLength(1, localMem[346], 0 + i);
-                end
-              end
-              ip = 762;
+         $display("Should not be executed   761");
       end
 
         762 :
@@ -7980,9 +6253,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[347] = heapMem[localMem[252]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 763;
+         $display("Should not be executed   762");
       end
 
         763 :
@@ -7990,9 +6261,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[348] = heapMem[localMem[310]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 764;
+         $display("Should not be executed   763");
       end
 
         764 :
@@ -8000,13 +6269,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[257]) begin
-                  heapMem[NArea * localMem[348] + 0 + i] = heapMem[NArea * localMem[347] + localMem[258] + i];
-                  updateArrayLength(1, localMem[348], 0 + i);
-                end
-              end
-              ip = 765;
+         $display("Should not be executed   764");
       end
 
         765 :
@@ -8014,7 +6277,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 766;
+         $display("Should not be executed   765");
       end
 
         766 :
@@ -8022,9 +6285,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[307]*7 + 2] = localMem[252];
-              updateArrayLength(1, localMem[307], 2);
-              ip = 767;
+         $display("Should not be executed   766");
       end
 
         767 :
@@ -8032,9 +6293,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[310]*7 + 2] = localMem[252];
-              updateArrayLength(1, localMem[310], 2);
-              ip = 768;
+         $display("Should not be executed   767");
       end
 
         768 :
@@ -8042,9 +6301,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[349] = heapMem[localMem[252]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 769;
+         $display("Should not be executed   768");
       end
 
         769 :
@@ -8052,9 +6309,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[350] = heapMem[localMem[349]*7 + localMem[257]];
-              updateArrayLength(2, 0, 0);
-              ip = 770;
+         $display("Should not be executed   769");
       end
 
         770 :
@@ -8062,9 +6317,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[351] = heapMem[localMem[252]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 771;
+         $display("Should not be executed   770");
       end
 
         771 :
@@ -8072,9 +6325,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[352] = heapMem[localMem[351]*7 + localMem[257]];
-              updateArrayLength(2, 0, 0);
-              ip = 772;
+         $display("Should not be executed   771");
       end
 
         772 :
@@ -8082,9 +6333,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[353] = heapMem[localMem[252]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 773;
+         $display("Should not be executed   772");
       end
 
         773 :
@@ -8092,9 +6341,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[353]*7 + 0] = localMem[350];
-              updateArrayLength(1, localMem[353], 0);
-              ip = 774;
+         $display("Should not be executed   773");
       end
 
         774 :
@@ -8102,9 +6349,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[354] = heapMem[localMem[252]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 775;
+         $display("Should not be executed   774");
       end
 
         775 :
@@ -8112,9 +6357,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[354]*7 + 0] = localMem[352];
-              updateArrayLength(1, localMem[354], 0);
-              ip = 776;
+         $display("Should not be executed   775");
       end
 
         776 :
@@ -8122,9 +6365,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[355] = heapMem[localMem[252]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 777;
+         $display("Should not be executed   776");
       end
 
         777 :
@@ -8132,9 +6373,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[355]*7 + 0] = localMem[307];
-              updateArrayLength(1, localMem[355], 0);
-              ip = 778;
+         $display("Should not be executed   777");
       end
 
         778 :
@@ -8142,9 +6381,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[356] = heapMem[localMem[252]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 779;
+         $display("Should not be executed   778");
       end
 
         779 :
@@ -8152,9 +6389,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[356]*7 + 1] = localMem[310];
-              updateArrayLength(1, localMem[356], 1);
-              ip = 780;
+         $display("Should not be executed   779");
       end
 
         780 :
@@ -8162,9 +6397,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[252]*7 + 0] = 1;
-              updateArrayLength(1, localMem[252], 0);
-              ip = 781;
+         $display("Should not be executed   780");
       end
 
         781 :
@@ -8172,9 +6405,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[357] = heapMem[localMem[252]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 782;
+         $display("Should not be executed   781");
       end
 
         782 :
@@ -8182,8 +6413,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[357]] = 1;
-              ip = 783;
+         $display("Should not be executed   782");
       end
 
         783 :
@@ -8191,9 +6421,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[358] = heapMem[localMem[252]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 784;
+         $display("Should not be executed   783");
       end
 
         784 :
@@ -8201,8 +6429,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[358]] = 1;
-              ip = 785;
+         $display("Should not be executed   784");
       end
 
         785 :
@@ -8210,9 +6437,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[359] = heapMem[localMem[252]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 786;
+         $display("Should not be executed   785");
       end
 
         786 :
@@ -8220,8 +6445,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[359]] = 2;
-              ip = 787;
+         $display("Should not be executed   786");
       end
 
         787 :
@@ -8229,7 +6453,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 789;
+         $display("Should not be executed   787");
       end
 
         788 :
@@ -8237,7 +6461,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 794;
+         $display("Should not be executed   788");
       end
 
         789 :
@@ -8245,7 +6469,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 790;
+         $display("Should not be executed   789");
       end
 
         790 :
@@ -8253,9 +6477,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[253] = 1;
-              updateArrayLength(2, 0, 0);
-              ip = 791;
+         $display("Should not be executed   790");
       end
 
         791 :
@@ -8263,7 +6485,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 794;
+         $display("Should not be executed   791");
       end
 
         792 :
@@ -8271,7 +6493,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 793;
+         $display("Should not be executed   792");
       end
 
         793 :
@@ -8279,9 +6501,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[253] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 794;
+         $display("Should not be executed   793");
       end
 
         794 :
@@ -8289,7 +6509,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 795;
+         $display("Should not be executed   794");
       end
 
         795 :
@@ -8297,7 +6517,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[253] != 0 ? 797 : 796;
+         $display("Should not be executed   795");
       end
 
         796 :
@@ -8305,9 +6525,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[24] = localMem[252];
-              updateArrayLength(2, 0, 0);
-              ip = 797;
+         $display("Should not be executed   796");
       end
 
         797 :
@@ -8315,7 +6533,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 798;
+         $display("Should not be executed   797");
       end
 
         798 :
@@ -8323,7 +6541,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 799;
+         $display("Should not be executed   798");
       end
 
         799 :
@@ -8331,9 +6549,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[132] = localMem[132] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 800;
+         $display("Should not be executed   799");
       end
 
         800 :
@@ -8341,7 +6557,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 302;
+         $display("Should not be executed   800");
       end
 
         801 :
@@ -8349,7 +6565,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 802;
+         $display("Should not be executed   801");
       end
 
         802 :
@@ -8357,7 +6573,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d assert", steps, ip);
 end
-            ip = 803;
+         $display("Should not be executed   802");
       end
 
         803 :
@@ -8365,7 +6581,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 804;
+         $display("Should not be executed   803");
       end
 
         804 :
@@ -8373,7 +6589,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 805;
+         $display("Should not be executed   804");
       end
 
         805 :
@@ -8381,7 +6597,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 806;
+         $display("Should not be executed   805");
       end
 
         806 :
@@ -8389,9 +6605,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[360] = heapMem[localMem[1]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 807;
+         $display("Should not be executed   806");
       end
 
         807 :
@@ -8399,9 +6613,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[361] = heapMem[localMem[1]*7 + 1];
-              updateArrayLength(2, 0, 0);
-              ip = 808;
+         $display("Should not be executed   807");
       end
 
         808 :
@@ -8409,9 +6621,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[362] = heapMem[localMem[1]*7 + 2];
-              updateArrayLength(2, 0, 0);
-              ip = 809;
+         $display("Should not be executed   808");
       end
 
         809 :
@@ -8419,7 +6629,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[361] != 1 ? 813 : 810;
+         $display("Should not be executed   809");
       end
 
         810 :
@@ -8427,9 +6637,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[363] = heapMem[localMem[360]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 811;
+         $display("Should not be executed   810");
       end
 
         811 :
@@ -8437,9 +6645,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[363]*7 + localMem[362]] = 11;
-              updateArrayLength(1, localMem[363], localMem[362]);
-              ip = 812;
+         $display("Should not be executed   811");
       end
 
         812 :
@@ -8447,7 +6653,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1059;
+         $display("Should not be executed   812");
       end
 
         813 :
@@ -8455,7 +6661,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 814;
+         $display("Should not be executed   813");
       end
 
         814 :
@@ -8463,7 +6669,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[361] != 2 ? 822 : 815;
+         $display("Should not be executed   814");
       end
 
         815 :
@@ -8471,9 +6677,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[364] = localMem[362] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 816;
+         $display("Should not be executed   815");
       end
 
         816 :
@@ -8481,9 +6685,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[365] = heapMem[localMem[360]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 817;
+         $display("Should not be executed   816");
       end
 
         817 :
@@ -8491,18 +6693,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[365] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[364], localMem[365], arraySizes[localMem[365]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[364] && i <= arraySizes[localMem[365]]) begin
-                  heapMem[NArea * localMem[365] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[365] + localMem[364]] = 1;                                    // Insert new value
-              arraySizes[localMem[365]] = arraySizes[localMem[365]] + 1;                              // Increase array size
-              ip = 818;
+         $display("Should not be executed   817");
       end
 
         818 :
@@ -8510,9 +6701,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[366] = heapMem[localMem[360]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 819;
+         $display("Should not be executed   818");
       end
 
         819 :
@@ -8520,18 +6709,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[366] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[364], localMem[366], arraySizes[localMem[366]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[364] && i <= arraySizes[localMem[366]]) begin
-                  heapMem[NArea * localMem[366] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[366] + localMem[364]] = 11;                                    // Insert new value
-              arraySizes[localMem[366]] = arraySizes[localMem[366]] + 1;                              // Increase array size
-              ip = 820;
+         $display("Should not be executed   819");
       end
 
         820 :
@@ -8539,9 +6717,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[360]*7 + 0] = heapMem[localMem[360]*7 + 0] + 1;
-              updateArrayLength(1, localMem[360], 0);
-              ip = 821;
+         $display("Should not be executed   820");
       end
 
         821 :
@@ -8549,7 +6725,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 828;
+         $display("Should not be executed   821");
       end
 
         822 :
@@ -8557,7 +6733,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 823;
+         $display("Should not be executed   822");
       end
 
         823 :
@@ -8565,9 +6741,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[367] = heapMem[localMem[360]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 824;
+         $display("Should not be executed   823");
       end
 
         824 :
@@ -8575,18 +6749,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[367] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[362], localMem[367], arraySizes[localMem[367]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[362] && i <= arraySizes[localMem[367]]) begin
-                  heapMem[NArea * localMem[367] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[367] + localMem[362]] = 1;                                    // Insert new value
-              arraySizes[localMem[367]] = arraySizes[localMem[367]] + 1;                              // Increase array size
-              ip = 825;
+         $display("Should not be executed   824");
       end
 
         825 :
@@ -8594,9 +6757,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[368] = heapMem[localMem[360]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 826;
+         $display("Should not be executed   825");
       end
 
         826 :
@@ -8604,18 +6765,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[368] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[362], localMem[368], arraySizes[localMem[368]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[362] && i <= arraySizes[localMem[368]]) begin
-                  heapMem[NArea * localMem[368] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[368] + localMem[362]] = 11;                                    // Insert new value
-              arraySizes[localMem[368]] = arraySizes[localMem[368]] + 1;                              // Increase array size
-              ip = 827;
+         $display("Should not be executed   826");
       end
 
         827 :
@@ -8623,9 +6773,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[360]*7 + 0] = heapMem[localMem[360]*7 + 0] + 1;
-              updateArrayLength(1, localMem[360], 0);
-              ip = 828;
+         $display("Should not be executed   827");
       end
 
         828 :
@@ -8633,7 +6781,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 829;
+         $display("Should not be executed   828");
       end
 
         829 :
@@ -8641,9 +6789,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[0]*7 + 0] = heapMem[localMem[0]*7 + 0] + 1;
-              updateArrayLength(1, localMem[0], 0);
-              ip = 830;
+         $display("Should not be executed   829");
       end
 
         830 :
@@ -8651,7 +6797,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 831;
+         $display("Should not be executed   830");
       end
 
         831 :
@@ -8659,9 +6805,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[370] = heapMem[localMem[360]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 832;
+         $display("Should not be executed   831");
       end
 
         832 :
@@ -8669,9 +6813,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[371] = heapMem[localMem[360]*7 + 3];
-              updateArrayLength(2, 0, 0);
-              ip = 833;
+         $display("Should not be executed   832");
       end
 
         833 :
@@ -8679,9 +6821,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[372] = heapMem[localMem[371]*7 + 2];
-              updateArrayLength(2, 0, 0);
-              ip = 834;
+         $display("Should not be executed   833");
       end
 
         834 :
@@ -8689,7 +6829,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jLt", steps, ip);
 end
-              ip = localMem[370] <  localMem[372] ? 1054 : 835;
+         $display("Should not be executed   834");
       end
 
         835 :
@@ -8697,9 +6837,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[373] = localMem[372];
-              updateArrayLength(2, 0, 0);
-              ip = 836;
+         $display("Should not be executed   835");
       end
 
         836 :
@@ -8707,8 +6845,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftRight", steps, ip);
 end
-              localMem[373] = localMem[373] >> 1;
-              ip = 837;
+         $display("Should not be executed   836");
       end
 
         837 :
@@ -8716,9 +6853,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[374] = localMem[373] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 838;
+         $display("Should not be executed   837");
       end
 
         838 :
@@ -8726,9 +6861,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[375] = heapMem[localMem[360]*7 + 2];
-              updateArrayLength(2, 0, 0);
-              ip = 839;
+         $display("Should not be executed   838");
       end
 
         839 :
@@ -8736,7 +6869,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jEq", steps, ip);
 end
-              ip = localMem[375] == 0 ? 936 : 840;
+         $display("Should not be executed   839");
       end
 
         840 :
@@ -8744,17 +6877,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[376] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[376] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[376]] = 0;
-              ip = 841;
+         $display("Should not be executed   840");
       end
 
         841 :
@@ -8762,9 +6885,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[376]*7 + 0] = localMem[373];
-              updateArrayLength(1, localMem[376], 0);
-              ip = 842;
+         $display("Should not be executed   841");
       end
 
         842 :
@@ -8772,9 +6893,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[376]*7 + 2] = 0;
-              updateArrayLength(1, localMem[376], 2);
-              ip = 843;
+         $display("Should not be executed   842");
       end
 
         843 :
@@ -8782,17 +6901,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[377] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[377] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[377]] = 0;
-              ip = 844;
+         $display("Should not be executed   843");
       end
 
         844 :
@@ -8800,9 +6909,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[376]*7 + 4] = localMem[377];
-              updateArrayLength(1, localMem[376], 4);
-              ip = 845;
+         $display("Should not be executed   844");
       end
 
         845 :
@@ -8810,17 +6917,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[378] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[378] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[378]] = 0;
-              ip = 846;
+         $display("Should not be executed   845");
       end
 
         846 :
@@ -8828,9 +6925,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[376]*7 + 5] = localMem[378];
-              updateArrayLength(1, localMem[376], 5);
-              ip = 847;
+         $display("Should not be executed   846");
       end
 
         847 :
@@ -8838,9 +6933,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[376]*7 + 6] = 0;
-              updateArrayLength(1, localMem[376], 6);
-              ip = 848;
+         $display("Should not be executed   847");
       end
 
         848 :
@@ -8848,9 +6941,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[376]*7 + 3] = localMem[371];
-              updateArrayLength(1, localMem[376], 3);
-              ip = 849;
+         $display("Should not be executed   848");
       end
 
         849 :
@@ -8858,9 +6949,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[371]*7 + 1] = heapMem[localMem[371]*7 + 1] + 1;
-              updateArrayLength(1, localMem[371], 1);
-              ip = 850;
+         $display("Should not be executed   849");
       end
 
         850 :
@@ -8868,9 +6957,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[376]*7 + 1] = heapMem[localMem[371]*7 + 1];
-              updateArrayLength(1, localMem[376], 1);
-              ip = 851;
+         $display("Should not be executed   850");
       end
 
         851 :
@@ -8878,8 +6965,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d not", steps, ip);
 end
-              localMem[379] = !heapMem[localMem[360]*7 + 6];
-              ip = 852;
+         $display("Should not be executed   851");
       end
 
         852 :
@@ -8887,7 +6973,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[379] != 0 ? 881 : 853;
+         $display("Should not be executed   852");
       end
 
         853 :
@@ -8895,17 +6981,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[380] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[380] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[380]] = 0;
-              ip = 854;
+         $display("Should not be executed   853");
       end
 
         854 :
@@ -8913,9 +6989,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[376]*7 + 6] = localMem[380];
-              updateArrayLength(1, localMem[376], 6);
-              ip = 855;
+         $display("Should not be executed   854");
       end
 
         855 :
@@ -8923,9 +6997,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[381] = heapMem[localMem[360]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 856;
+         $display("Should not be executed   855");
       end
 
         856 :
@@ -8933,9 +7005,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[382] = heapMem[localMem[376]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 857;
+         $display("Should not be executed   856");
       end
 
         857 :
@@ -8943,13 +7013,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[373]) begin
-                  heapMem[NArea * localMem[382] + 0 + i] = heapMem[NArea * localMem[381] + localMem[374] + i];
-                  updateArrayLength(1, localMem[382], 0 + i);
-                end
-              end
-              ip = 858;
+         $display("Should not be executed   857");
       end
 
         858 :
@@ -8957,9 +7021,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[383] = heapMem[localMem[360]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 859;
+         $display("Should not be executed   858");
       end
 
         859 :
@@ -8967,9 +7029,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[384] = heapMem[localMem[376]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 860;
+         $display("Should not be executed   859");
       end
 
         860 :
@@ -8977,13 +7037,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[373]) begin
-                  heapMem[NArea * localMem[384] + 0 + i] = heapMem[NArea * localMem[383] + localMem[374] + i];
-                  updateArrayLength(1, localMem[384], 0 + i);
-                end
-              end
-              ip = 861;
+         $display("Should not be executed   860");
       end
 
         861 :
@@ -8991,9 +7045,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[385] = heapMem[localMem[360]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 862;
+         $display("Should not be executed   861");
       end
 
         862 :
@@ -9001,9 +7053,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[386] = heapMem[localMem[376]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 863;
+         $display("Should not be executed   862");
       end
 
         863 :
@@ -9011,9 +7061,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[387] = localMem[373] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 864;
+         $display("Should not be executed   863");
       end
 
         864 :
@@ -9021,13 +7069,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[387]) begin
-                  heapMem[NArea * localMem[386] + 0 + i] = heapMem[NArea * localMem[385] + localMem[374] + i];
-                  updateArrayLength(1, localMem[386], 0 + i);
-                end
-              end
-              ip = 865;
+         $display("Should not be executed   864");
       end
 
         865 :
@@ -9035,9 +7077,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[388] = heapMem[localMem[376]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 866;
+         $display("Should not be executed   865");
       end
 
         866 :
@@ -9045,9 +7085,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[389] = localMem[388] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 867;
+         $display("Should not be executed   866");
       end
 
         867 :
@@ -9055,9 +7093,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[390] = heapMem[localMem[376]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 868;
+         $display("Should not be executed   867");
       end
 
         868 :
@@ -9065,7 +7101,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 869;
+         $display("Should not be executed   868");
       end
 
         869 :
@@ -9073,9 +7109,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[391] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 870;
+         $display("Should not be executed   869");
       end
 
         870 :
@@ -9083,7 +7117,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 871;
+         $display("Should not be executed   870");
       end
 
         871 :
@@ -9091,7 +7125,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[391] >= localMem[389] ? 877 : 872;
+         $display("Should not be executed   871");
       end
 
         872 :
@@ -9099,9 +7133,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[392] = heapMem[localMem[390]*7 + localMem[391]];
-              updateArrayLength(2, 0, 0);
-              ip = 873;
+         $display("Should not be executed   872");
       end
 
         873 :
@@ -9109,9 +7141,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[392]*7 + 2] = localMem[376];
-              updateArrayLength(1, localMem[392], 2);
-              ip = 874;
+         $display("Should not be executed   873");
       end
 
         874 :
@@ -9119,7 +7149,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 875;
+         $display("Should not be executed   874");
       end
 
         875 :
@@ -9127,9 +7157,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[391] = localMem[391] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 876;
+         $display("Should not be executed   875");
       end
 
         876 :
@@ -9137,7 +7165,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 870;
+         $display("Should not be executed   876");
       end
 
         877 :
@@ -9145,7 +7173,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 878;
+         $display("Should not be executed   877");
       end
 
         878 :
@@ -9153,9 +7181,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[393] = heapMem[localMem[360]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 879;
+         $display("Should not be executed   878");
       end
 
         879 :
@@ -9163,8 +7189,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[393]] = localMem[374];
-              ip = 880;
+         $display("Should not be executed   879");
       end
 
         880 :
@@ -9172,7 +7197,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 888;
+         $display("Should not be executed   880");
       end
 
         881 :
@@ -9180,7 +7205,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 882;
+         $display("Should not be executed   881");
       end
 
         882 :
@@ -9188,9 +7213,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[394] = heapMem[localMem[360]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 883;
+         $display("Should not be executed   882");
       end
 
         883 :
@@ -9198,9 +7221,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[395] = heapMem[localMem[376]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 884;
+         $display("Should not be executed   883");
       end
 
         884 :
@@ -9208,13 +7229,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[373]) begin
-                  heapMem[NArea * localMem[395] + 0 + i] = heapMem[NArea * localMem[394] + localMem[374] + i];
-                  updateArrayLength(1, localMem[395], 0 + i);
-                end
-              end
-              ip = 885;
+         $display("Should not be executed   884");
       end
 
         885 :
@@ -9222,9 +7237,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[396] = heapMem[localMem[360]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 886;
+         $display("Should not be executed   885");
       end
 
         886 :
@@ -9232,9 +7245,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[397] = heapMem[localMem[376]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 887;
+         $display("Should not be executed   886");
       end
 
         887 :
@@ -9242,13 +7253,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[373]) begin
-                  heapMem[NArea * localMem[397] + 0 + i] = heapMem[NArea * localMem[396] + localMem[374] + i];
-                  updateArrayLength(1, localMem[397], 0 + i);
-                end
-              end
-              ip = 888;
+         $display("Should not be executed   887");
       end
 
         888 :
@@ -9256,7 +7261,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 889;
+         $display("Should not be executed   888");
       end
 
         889 :
@@ -9264,9 +7269,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[360]*7 + 0] = localMem[373];
-              updateArrayLength(1, localMem[360], 0);
-              ip = 890;
+         $display("Should not be executed   889");
       end
 
         890 :
@@ -9274,9 +7277,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[376]*7 + 2] = localMem[375];
-              updateArrayLength(1, localMem[376], 2);
-              ip = 891;
+         $display("Should not be executed   890");
       end
 
         891 :
@@ -9284,9 +7285,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[398] = heapMem[localMem[375]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 892;
+         $display("Should not be executed   891");
       end
 
         892 :
@@ -9294,9 +7293,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[399] = heapMem[localMem[375]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 893;
+         $display("Should not be executed   892");
       end
 
         893 :
@@ -9304,9 +7301,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[400] = heapMem[localMem[399]*7 + localMem[398]];
-              updateArrayLength(2, 0, 0);
-              ip = 894;
+         $display("Should not be executed   893");
       end
 
         894 :
@@ -9314,7 +7309,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[400] != localMem[360] ? 913 : 895;
+         $display("Should not be executed   894");
       end
 
         895 :
@@ -9322,9 +7317,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[401] = heapMem[localMem[360]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 896;
+         $display("Should not be executed   895");
       end
 
         896 :
@@ -9332,9 +7325,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[402] = heapMem[localMem[401]*7 + localMem[373]];
-              updateArrayLength(2, 0, 0);
-              ip = 897;
+         $display("Should not be executed   896");
       end
 
         897 :
@@ -9342,9 +7333,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[403] = heapMem[localMem[375]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 898;
+         $display("Should not be executed   897");
       end
 
         898 :
@@ -9352,9 +7341,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[403]*7 + localMem[398]] = localMem[402];
-              updateArrayLength(1, localMem[403], localMem[398]);
-              ip = 899;
+         $display("Should not be executed   898");
       end
 
         899 :
@@ -9362,9 +7349,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[404] = heapMem[localMem[360]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 900;
+         $display("Should not be executed   899");
       end
 
         900 :
@@ -9372,9 +7357,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[405] = heapMem[localMem[404]*7 + localMem[373]];
-              updateArrayLength(2, 0, 0);
-              ip = 901;
+         $display("Should not be executed   900");
       end
 
         901 :
@@ -9382,9 +7365,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[406] = heapMem[localMem[375]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 902;
+         $display("Should not be executed   901");
       end
 
         902 :
@@ -9392,9 +7373,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[406]*7 + localMem[398]] = localMem[405];
-              updateArrayLength(1, localMem[406], localMem[398]);
-              ip = 903;
+         $display("Should not be executed   902");
       end
 
         903 :
@@ -9402,9 +7381,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[407] = heapMem[localMem[360]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 904;
+         $display("Should not be executed   903");
       end
 
         904 :
@@ -9412,8 +7389,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[407]] = localMem[373];
-              ip = 905;
+         $display("Should not be executed   904");
       end
 
         905 :
@@ -9421,9 +7397,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[408] = heapMem[localMem[360]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 906;
+         $display("Should not be executed   905");
       end
 
         906 :
@@ -9431,8 +7405,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[408]] = localMem[373];
-              ip = 907;
+         $display("Should not be executed   906");
       end
 
         907 :
@@ -9440,9 +7413,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[409] = localMem[398] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 908;
+         $display("Should not be executed   907");
       end
 
         908 :
@@ -9450,9 +7421,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[375]*7 + 0] = localMem[409];
-              updateArrayLength(1, localMem[375], 0);
-              ip = 909;
+         $display("Should not be executed   908");
       end
 
         909 :
@@ -9460,9 +7429,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[410] = heapMem[localMem[375]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 910;
+         $display("Should not be executed   909");
       end
 
         910 :
@@ -9470,9 +7437,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[410]*7 + localMem[409]] = localMem[376];
-              updateArrayLength(1, localMem[410], localMem[409]);
-              ip = 911;
+         $display("Should not be executed   910");
       end
 
         911 :
@@ -9480,7 +7445,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1051;
+         $display("Should not be executed   911");
       end
 
         912 :
@@ -9488,7 +7453,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 935;
+         $display("Should not be executed   912");
       end
 
         913 :
@@ -9496,7 +7461,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 914;
+         $display("Should not be executed   913");
       end
 
         914 :
@@ -9504,7 +7469,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d assertNe", steps, ip);
 end
-            ip = 915;
+         $display("Should not be executed   914");
       end
 
         915 :
@@ -9512,9 +7477,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[411] = heapMem[localMem[375]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 916;
+         $display("Should not be executed   915");
       end
 
         916 :
@@ -9522,11 +7485,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d arrayIndex", steps, ip);
 end
-              localMem[412] = 0; k = arraySizes[localMem[411]];
-              for(i = 0; i < NArea; i = i + 1) begin
-                if (i < k && heapMem[localMem[411] * NArea + i] == localMem[360]) localMem[412] = i + 1;
-              end
-              ip = 917;
+         $display("Should not be executed   916");
       end
 
         917 :
@@ -9534,9 +7493,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d subtract", steps, ip);
 end
-              localMem[412] = localMem[412] - 1;
-              updateArrayLength(2, 0, 0);
-              ip = 918;
+         $display("Should not be executed   917");
       end
 
         918 :
@@ -9544,9 +7501,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[413] = heapMem[localMem[360]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 919;
+         $display("Should not be executed   918");
       end
 
         919 :
@@ -9554,9 +7509,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[414] = heapMem[localMem[413]*7 + localMem[373]];
-              updateArrayLength(2, 0, 0);
-              ip = 920;
+         $display("Should not be executed   919");
       end
 
         920 :
@@ -9564,9 +7517,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[415] = heapMem[localMem[360]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 921;
+         $display("Should not be executed   920");
       end
 
         921 :
@@ -9574,9 +7525,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[416] = heapMem[localMem[415]*7 + localMem[373]];
-              updateArrayLength(2, 0, 0);
-              ip = 922;
+         $display("Should not be executed   921");
       end
 
         922 :
@@ -9584,9 +7533,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[417] = heapMem[localMem[360]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 923;
+         $display("Should not be executed   922");
       end
 
         923 :
@@ -9594,8 +7541,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[417]] = localMem[373];
-              ip = 924;
+         $display("Should not be executed   923");
       end
 
         924 :
@@ -9603,9 +7549,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[418] = heapMem[localMem[360]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 925;
+         $display("Should not be executed   924");
       end
 
         925 :
@@ -9613,8 +7557,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[418]] = localMem[373];
-              ip = 926;
+         $display("Should not be executed   925");
       end
 
         926 :
@@ -9622,9 +7565,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[419] = heapMem[localMem[375]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 927;
+         $display("Should not be executed   926");
       end
 
         927 :
@@ -9632,18 +7573,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[419] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[412], localMem[419], arraySizes[localMem[419]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[412] && i <= arraySizes[localMem[419]]) begin
-                  heapMem[NArea * localMem[419] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[419] + localMem[412]] = localMem[414];                                    // Insert new value
-              arraySizes[localMem[419]] = arraySizes[localMem[419]] + 1;                              // Increase array size
-              ip = 928;
+         $display("Should not be executed   927");
       end
 
         928 :
@@ -9651,9 +7581,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[420] = heapMem[localMem[375]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 929;
+         $display("Should not be executed   928");
       end
 
         929 :
@@ -9661,18 +7589,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[420] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[412], localMem[420], arraySizes[localMem[420]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[412] && i <= arraySizes[localMem[420]]) begin
-                  heapMem[NArea * localMem[420] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[420] + localMem[412]] = localMem[416];                                    // Insert new value
-              arraySizes[localMem[420]] = arraySizes[localMem[420]] + 1;                              // Increase array size
-              ip = 930;
+         $display("Should not be executed   929");
       end
 
         930 :
@@ -9680,9 +7597,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[421] = heapMem[localMem[375]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 931;
+         $display("Should not be executed   930");
       end
 
         931 :
@@ -9690,9 +7605,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[422] = localMem[412] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 932;
+         $display("Should not be executed   931");
       end
 
         932 :
@@ -9700,18 +7613,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[421] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[422], localMem[421], arraySizes[localMem[421]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[422] && i <= arraySizes[localMem[421]]) begin
-                  heapMem[NArea * localMem[421] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[421] + localMem[422]] = localMem[376];                                    // Insert new value
-              arraySizes[localMem[421]] = arraySizes[localMem[421]] + 1;                              // Increase array size
-              ip = 933;
+         $display("Should not be executed   932");
       end
 
         933 :
@@ -9719,9 +7621,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[375]*7 + 0] = heapMem[localMem[375]*7 + 0] + 1;
-              updateArrayLength(1, localMem[375], 0);
-              ip = 934;
+         $display("Should not be executed   933");
       end
 
         934 :
@@ -9729,7 +7629,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1051;
+         $display("Should not be executed   934");
       end
 
         935 :
@@ -9737,7 +7637,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 936;
+         $display("Should not be executed   935");
       end
 
         936 :
@@ -9745,7 +7645,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 937;
+         $display("Should not be executed   936");
       end
 
         937 :
@@ -9753,17 +7653,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[423] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[423] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[423]] = 0;
-              ip = 938;
+         $display("Should not be executed   937");
       end
 
         938 :
@@ -9771,9 +7661,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[423]*7 + 0] = localMem[373];
-              updateArrayLength(1, localMem[423], 0);
-              ip = 939;
+         $display("Should not be executed   938");
       end
 
         939 :
@@ -9781,9 +7669,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[423]*7 + 2] = 0;
-              updateArrayLength(1, localMem[423], 2);
-              ip = 940;
+         $display("Should not be executed   939");
       end
 
         940 :
@@ -9791,17 +7677,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[424] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[424] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[424]] = 0;
-              ip = 941;
+         $display("Should not be executed   940");
       end
 
         941 :
@@ -9809,9 +7685,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[423]*7 + 4] = localMem[424];
-              updateArrayLength(1, localMem[423], 4);
-              ip = 942;
+         $display("Should not be executed   941");
       end
 
         942 :
@@ -9819,17 +7693,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[425] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[425] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[425]] = 0;
-              ip = 943;
+         $display("Should not be executed   942");
       end
 
         943 :
@@ -9837,9 +7701,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[423]*7 + 5] = localMem[425];
-              updateArrayLength(1, localMem[423], 5);
-              ip = 944;
+         $display("Should not be executed   943");
       end
 
         944 :
@@ -9847,9 +7709,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[423]*7 + 6] = 0;
-              updateArrayLength(1, localMem[423], 6);
-              ip = 945;
+         $display("Should not be executed   944");
       end
 
         945 :
@@ -9857,9 +7717,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[423]*7 + 3] = localMem[371];
-              updateArrayLength(1, localMem[423], 3);
-              ip = 946;
+         $display("Should not be executed   945");
       end
 
         946 :
@@ -9867,9 +7725,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[371]*7 + 1] = heapMem[localMem[371]*7 + 1] + 1;
-              updateArrayLength(1, localMem[371], 1);
-              ip = 947;
+         $display("Should not be executed   946");
       end
 
         947 :
@@ -9877,9 +7733,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[423]*7 + 1] = heapMem[localMem[371]*7 + 1];
-              updateArrayLength(1, localMem[423], 1);
-              ip = 948;
+         $display("Should not be executed   947");
       end
 
         948 :
@@ -9887,17 +7741,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[426] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[426] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[426]] = 0;
-              ip = 949;
+         $display("Should not be executed   948");
       end
 
         949 :
@@ -9905,9 +7749,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[426]*7 + 0] = localMem[373];
-              updateArrayLength(1, localMem[426], 0);
-              ip = 950;
+         $display("Should not be executed   949");
       end
 
         950 :
@@ -9915,9 +7757,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[426]*7 + 2] = 0;
-              updateArrayLength(1, localMem[426], 2);
-              ip = 951;
+         $display("Should not be executed   950");
       end
 
         951 :
@@ -9925,17 +7765,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[427] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[427] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[427]] = 0;
-              ip = 952;
+         $display("Should not be executed   951");
       end
 
         952 :
@@ -9943,9 +7773,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[426]*7 + 4] = localMem[427];
-              updateArrayLength(1, localMem[426], 4);
-              ip = 953;
+         $display("Should not be executed   952");
       end
 
         953 :
@@ -9953,17 +7781,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[428] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[428] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[428]] = 0;
-              ip = 954;
+         $display("Should not be executed   953");
       end
 
         954 :
@@ -9971,9 +7789,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[426]*7 + 5] = localMem[428];
-              updateArrayLength(1, localMem[426], 5);
-              ip = 955;
+         $display("Should not be executed   954");
       end
 
         955 :
@@ -9981,9 +7797,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[426]*7 + 6] = 0;
-              updateArrayLength(1, localMem[426], 6);
-              ip = 956;
+         $display("Should not be executed   955");
       end
 
         956 :
@@ -9991,9 +7805,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[426]*7 + 3] = localMem[371];
-              updateArrayLength(1, localMem[426], 3);
-              ip = 957;
+         $display("Should not be executed   956");
       end
 
         957 :
@@ -10001,9 +7813,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[371]*7 + 1] = heapMem[localMem[371]*7 + 1] + 1;
-              updateArrayLength(1, localMem[371], 1);
-              ip = 958;
+         $display("Should not be executed   957");
       end
 
         958 :
@@ -10011,9 +7821,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[426]*7 + 1] = heapMem[localMem[371]*7 + 1];
-              updateArrayLength(1, localMem[426], 1);
-              ip = 959;
+         $display("Should not be executed   958");
       end
 
         959 :
@@ -10021,8 +7829,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d not", steps, ip);
 end
-              localMem[429] = !heapMem[localMem[360]*7 + 6];
-              ip = 960;
+         $display("Should not be executed   959");
       end
 
         960 :
@@ -10030,7 +7837,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[429] != 0 ? 1012 : 961;
+         $display("Should not be executed   960");
       end
 
         961 :
@@ -10038,17 +7845,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[430] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[430] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[430]] = 0;
-              ip = 962;
+         $display("Should not be executed   961");
       end
 
         962 :
@@ -10056,9 +7853,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[423]*7 + 6] = localMem[430];
-              updateArrayLength(1, localMem[423], 6);
-              ip = 963;
+         $display("Should not be executed   962");
       end
 
         963 :
@@ -10066,17 +7861,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[431] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[431] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[431]] = 0;
-              ip = 964;
+         $display("Should not be executed   963");
       end
 
         964 :
@@ -10084,9 +7869,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[426]*7 + 6] = localMem[431];
-              updateArrayLength(1, localMem[426], 6);
-              ip = 965;
+         $display("Should not be executed   964");
       end
 
         965 :
@@ -10094,9 +7877,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[432] = heapMem[localMem[360]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 966;
+         $display("Should not be executed   965");
       end
 
         966 :
@@ -10104,9 +7885,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[433] = heapMem[localMem[423]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 967;
+         $display("Should not be executed   966");
       end
 
         967 :
@@ -10114,13 +7893,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[373]) begin
-                  heapMem[NArea * localMem[433] + 0 + i] = heapMem[NArea * localMem[432] + 0 + i];
-                  updateArrayLength(1, localMem[433], 0 + i);
-                end
-              end
-              ip = 968;
+         $display("Should not be executed   967");
       end
 
         968 :
@@ -10128,9 +7901,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[434] = heapMem[localMem[360]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 969;
+         $display("Should not be executed   968");
       end
 
         969 :
@@ -10138,9 +7909,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[435] = heapMem[localMem[423]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 970;
+         $display("Should not be executed   969");
       end
 
         970 :
@@ -10148,13 +7917,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[373]) begin
-                  heapMem[NArea * localMem[435] + 0 + i] = heapMem[NArea * localMem[434] + 0 + i];
-                  updateArrayLength(1, localMem[435], 0 + i);
-                end
-              end
-              ip = 971;
+         $display("Should not be executed   970");
       end
 
         971 :
@@ -10162,9 +7925,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[436] = heapMem[localMem[360]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 972;
+         $display("Should not be executed   971");
       end
 
         972 :
@@ -10172,9 +7933,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[437] = heapMem[localMem[423]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 973;
+         $display("Should not be executed   972");
       end
 
         973 :
@@ -10182,9 +7941,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[438] = localMem[373] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 974;
+         $display("Should not be executed   973");
       end
 
         974 :
@@ -10192,13 +7949,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[438]) begin
-                  heapMem[NArea * localMem[437] + 0 + i] = heapMem[NArea * localMem[436] + 0 + i];
-                  updateArrayLength(1, localMem[437], 0 + i);
-                end
-              end
-              ip = 975;
+         $display("Should not be executed   974");
       end
 
         975 :
@@ -10206,9 +7957,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[439] = heapMem[localMem[360]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 976;
+         $display("Should not be executed   975");
       end
 
         976 :
@@ -10216,9 +7965,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[440] = heapMem[localMem[426]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 977;
+         $display("Should not be executed   976");
       end
 
         977 :
@@ -10226,13 +7973,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[373]) begin
-                  heapMem[NArea * localMem[440] + 0 + i] = heapMem[NArea * localMem[439] + localMem[374] + i];
-                  updateArrayLength(1, localMem[440], 0 + i);
-                end
-              end
-              ip = 978;
+         $display("Should not be executed   977");
       end
 
         978 :
@@ -10240,9 +7981,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[441] = heapMem[localMem[360]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 979;
+         $display("Should not be executed   978");
       end
 
         979 :
@@ -10250,9 +7989,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[442] = heapMem[localMem[426]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 980;
+         $display("Should not be executed   979");
       end
 
         980 :
@@ -10260,13 +7997,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[373]) begin
-                  heapMem[NArea * localMem[442] + 0 + i] = heapMem[NArea * localMem[441] + localMem[374] + i];
-                  updateArrayLength(1, localMem[442], 0 + i);
-                end
-              end
-              ip = 981;
+         $display("Should not be executed   980");
       end
 
         981 :
@@ -10274,9 +8005,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[443] = heapMem[localMem[360]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 982;
+         $display("Should not be executed   981");
       end
 
         982 :
@@ -10284,9 +8013,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[444] = heapMem[localMem[426]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 983;
+         $display("Should not be executed   982");
       end
 
         983 :
@@ -10294,9 +8021,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[445] = localMem[373] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 984;
+         $display("Should not be executed   983");
       end
 
         984 :
@@ -10304,13 +8029,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[445]) begin
-                  heapMem[NArea * localMem[444] + 0 + i] = heapMem[NArea * localMem[443] + localMem[374] + i];
-                  updateArrayLength(1, localMem[444], 0 + i);
-                end
-              end
-              ip = 985;
+         $display("Should not be executed   984");
       end
 
         985 :
@@ -10318,9 +8037,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[446] = heapMem[localMem[423]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 986;
+         $display("Should not be executed   985");
       end
 
         986 :
@@ -10328,9 +8045,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[447] = localMem[446] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 987;
+         $display("Should not be executed   986");
       end
 
         987 :
@@ -10338,9 +8053,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[448] = heapMem[localMem[423]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 988;
+         $display("Should not be executed   987");
       end
 
         988 :
@@ -10348,7 +8061,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 989;
+         $display("Should not be executed   988");
       end
 
         989 :
@@ -10356,9 +8069,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[449] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 990;
+         $display("Should not be executed   989");
       end
 
         990 :
@@ -10366,7 +8077,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 991;
+         $display("Should not be executed   990");
       end
 
         991 :
@@ -10374,7 +8085,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[449] >= localMem[447] ? 997 : 992;
+         $display("Should not be executed   991");
       end
 
         992 :
@@ -10382,9 +8093,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[450] = heapMem[localMem[448]*7 + localMem[449]];
-              updateArrayLength(2, 0, 0);
-              ip = 993;
+         $display("Should not be executed   992");
       end
 
         993 :
@@ -10392,9 +8101,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[450]*7 + 2] = localMem[423];
-              updateArrayLength(1, localMem[450], 2);
-              ip = 994;
+         $display("Should not be executed   993");
       end
 
         994 :
@@ -10402,7 +8109,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 995;
+         $display("Should not be executed   994");
       end
 
         995 :
@@ -10410,9 +8117,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[449] = localMem[449] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 996;
+         $display("Should not be executed   995");
       end
 
         996 :
@@ -10420,7 +8125,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 990;
+         $display("Should not be executed   996");
       end
 
         997 :
@@ -10428,7 +8133,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 998;
+         $display("Should not be executed   997");
       end
 
         998 :
@@ -10436,9 +8141,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[451] = heapMem[localMem[426]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 999;
+         $display("Should not be executed   998");
       end
 
         999 :
@@ -10446,9 +8149,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[452] = localMem[451] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1000;
+         $display("Should not be executed   999");
       end
 
        1000 :
@@ -10456,9 +8157,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[453] = heapMem[localMem[426]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1001;
+         $display("Should not be executed  1000");
       end
 
        1001 :
@@ -10466,7 +8165,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1002;
+         $display("Should not be executed  1001");
       end
 
        1002 :
@@ -10474,9 +8173,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[454] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 1003;
+         $display("Should not be executed  1002");
       end
 
        1003 :
@@ -10484,7 +8181,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1004;
+         $display("Should not be executed  1003");
       end
 
        1004 :
@@ -10492,7 +8189,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[454] >= localMem[452] ? 1010 : 1005;
+         $display("Should not be executed  1004");
       end
 
        1005 :
@@ -10500,9 +8197,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[455] = heapMem[localMem[453]*7 + localMem[454]];
-              updateArrayLength(2, 0, 0);
-              ip = 1006;
+         $display("Should not be executed  1005");
       end
 
        1006 :
@@ -10510,9 +8205,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[455]*7 + 2] = localMem[426];
-              updateArrayLength(1, localMem[455], 2);
-              ip = 1007;
+         $display("Should not be executed  1006");
       end
 
        1007 :
@@ -10520,7 +8213,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1008;
+         $display("Should not be executed  1007");
       end
 
        1008 :
@@ -10528,9 +8221,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[454] = localMem[454] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1009;
+         $display("Should not be executed  1008");
       end
 
        1009 :
@@ -10538,7 +8229,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1003;
+         $display("Should not be executed  1009");
       end
 
        1010 :
@@ -10546,7 +8237,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1011;
+         $display("Should not be executed  1010");
       end
 
        1011 :
@@ -10554,7 +8245,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1027;
+         $display("Should not be executed  1011");
       end
 
        1012 :
@@ -10562,7 +8253,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1013;
+         $display("Should not be executed  1012");
       end
 
        1013 :
@@ -10570,17 +8261,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[456] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[456] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[456]] = 0;
-              ip = 1014;
+         $display("Should not be executed  1013");
       end
 
        1014 :
@@ -10588,9 +8269,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[360]*7 + 6] = localMem[456];
-              updateArrayLength(1, localMem[360], 6);
-              ip = 1015;
+         $display("Should not be executed  1014");
       end
 
        1015 :
@@ -10598,9 +8277,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[457] = heapMem[localMem[360]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1016;
+         $display("Should not be executed  1015");
       end
 
        1016 :
@@ -10608,9 +8285,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[458] = heapMem[localMem[423]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1017;
+         $display("Should not be executed  1016");
       end
 
        1017 :
@@ -10618,13 +8293,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[373]) begin
-                  heapMem[NArea * localMem[458] + 0 + i] = heapMem[NArea * localMem[457] + 0 + i];
-                  updateArrayLength(1, localMem[458], 0 + i);
-                end
-              end
-              ip = 1018;
+         $display("Should not be executed  1017");
       end
 
        1018 :
@@ -10632,9 +8301,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[459] = heapMem[localMem[360]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1019;
+         $display("Should not be executed  1018");
       end
 
        1019 :
@@ -10642,9 +8309,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[460] = heapMem[localMem[423]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1020;
+         $display("Should not be executed  1019");
       end
 
        1020 :
@@ -10652,13 +8317,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[373]) begin
-                  heapMem[NArea * localMem[460] + 0 + i] = heapMem[NArea * localMem[459] + 0 + i];
-                  updateArrayLength(1, localMem[460], 0 + i);
-                end
-              end
-              ip = 1021;
+         $display("Should not be executed  1020");
       end
 
        1021 :
@@ -10666,9 +8325,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[461] = heapMem[localMem[360]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1022;
+         $display("Should not be executed  1021");
       end
 
        1022 :
@@ -10676,9 +8333,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[462] = heapMem[localMem[426]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1023;
+         $display("Should not be executed  1022");
       end
 
        1023 :
@@ -10686,13 +8341,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[373]) begin
-                  heapMem[NArea * localMem[462] + 0 + i] = heapMem[NArea * localMem[461] + localMem[374] + i];
-                  updateArrayLength(1, localMem[462], 0 + i);
-                end
-              end
-              ip = 1024;
+         $display("Should not be executed  1023");
       end
 
        1024 :
@@ -10700,9 +8349,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[463] = heapMem[localMem[360]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1025;
+         $display("Should not be executed  1024");
       end
 
        1025 :
@@ -10710,9 +8357,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[464] = heapMem[localMem[426]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1026;
+         $display("Should not be executed  1025");
       end
 
        1026 :
@@ -10720,13 +8365,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[373]) begin
-                  heapMem[NArea * localMem[464] + 0 + i] = heapMem[NArea * localMem[463] + localMem[374] + i];
-                  updateArrayLength(1, localMem[464], 0 + i);
-                end
-              end
-              ip = 1027;
+         $display("Should not be executed  1026");
       end
 
        1027 :
@@ -10734,7 +8373,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1028;
+         $display("Should not be executed  1027");
       end
 
        1028 :
@@ -10742,9 +8381,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[423]*7 + 2] = localMem[360];
-              updateArrayLength(1, localMem[423], 2);
-              ip = 1029;
+         $display("Should not be executed  1028");
       end
 
        1029 :
@@ -10752,9 +8389,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[426]*7 + 2] = localMem[360];
-              updateArrayLength(1, localMem[426], 2);
-              ip = 1030;
+         $display("Should not be executed  1029");
       end
 
        1030 :
@@ -10762,9 +8397,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[465] = heapMem[localMem[360]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1031;
+         $display("Should not be executed  1030");
       end
 
        1031 :
@@ -10772,9 +8405,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[466] = heapMem[localMem[465]*7 + localMem[373]];
-              updateArrayLength(2, 0, 0);
-              ip = 1032;
+         $display("Should not be executed  1031");
       end
 
        1032 :
@@ -10782,9 +8413,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[467] = heapMem[localMem[360]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1033;
+         $display("Should not be executed  1032");
       end
 
        1033 :
@@ -10792,9 +8421,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[468] = heapMem[localMem[467]*7 + localMem[373]];
-              updateArrayLength(2, 0, 0);
-              ip = 1034;
+         $display("Should not be executed  1033");
       end
 
        1034 :
@@ -10802,9 +8429,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[469] = heapMem[localMem[360]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1035;
+         $display("Should not be executed  1034");
       end
 
        1035 :
@@ -10812,9 +8437,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[469]*7 + 0] = localMem[466];
-              updateArrayLength(1, localMem[469], 0);
-              ip = 1036;
+         $display("Should not be executed  1035");
       end
 
        1036 :
@@ -10822,9 +8445,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[470] = heapMem[localMem[360]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1037;
+         $display("Should not be executed  1036");
       end
 
        1037 :
@@ -10832,9 +8453,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[470]*7 + 0] = localMem[468];
-              updateArrayLength(1, localMem[470], 0);
-              ip = 1038;
+         $display("Should not be executed  1037");
       end
 
        1038 :
@@ -10842,9 +8461,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[471] = heapMem[localMem[360]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1039;
+         $display("Should not be executed  1038");
       end
 
        1039 :
@@ -10852,9 +8469,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[471]*7 + 0] = localMem[423];
-              updateArrayLength(1, localMem[471], 0);
-              ip = 1040;
+         $display("Should not be executed  1039");
       end
 
        1040 :
@@ -10862,9 +8477,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[472] = heapMem[localMem[360]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1041;
+         $display("Should not be executed  1040");
       end
 
        1041 :
@@ -10872,9 +8485,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[472]*7 + 1] = localMem[426];
-              updateArrayLength(1, localMem[472], 1);
-              ip = 1042;
+         $display("Should not be executed  1041");
       end
 
        1042 :
@@ -10882,9 +8493,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[360]*7 + 0] = 1;
-              updateArrayLength(1, localMem[360], 0);
-              ip = 1043;
+         $display("Should not be executed  1042");
       end
 
        1043 :
@@ -10892,9 +8501,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[473] = heapMem[localMem[360]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1044;
+         $display("Should not be executed  1043");
       end
 
        1044 :
@@ -10902,8 +8509,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[473]] = 1;
-              ip = 1045;
+         $display("Should not be executed  1044");
       end
 
        1045 :
@@ -10911,9 +8517,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[474] = heapMem[localMem[360]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1046;
+         $display("Should not be executed  1045");
       end
 
        1046 :
@@ -10921,8 +8525,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[474]] = 1;
-              ip = 1047;
+         $display("Should not be executed  1046");
       end
 
        1047 :
@@ -10930,9 +8533,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[475] = heapMem[localMem[360]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1048;
+         $display("Should not be executed  1047");
       end
 
        1048 :
@@ -10940,8 +8541,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[475]] = 2;
-              ip = 1049;
+         $display("Should not be executed  1048");
       end
 
        1049 :
@@ -10949,7 +8549,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1051;
+         $display("Should not be executed  1049");
       end
 
        1050 :
@@ -10957,7 +8557,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1056;
+         $display("Should not be executed  1050");
       end
 
        1051 :
@@ -10965,7 +8565,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1052;
+         $display("Should not be executed  1051");
       end
 
        1052 :
@@ -10973,9 +8573,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[369] = 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1053;
+         $display("Should not be executed  1052");
       end
 
        1053 :
@@ -10983,7 +8581,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1056;
+         $display("Should not be executed  1053");
       end
 
        1054 :
@@ -10991,7 +8589,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1055;
+         $display("Should not be executed  1054");
       end
 
        1055 :
@@ -10999,9 +8597,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[369] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 1056;
+         $display("Should not be executed  1055");
       end
 
        1056 :
@@ -11009,7 +8605,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1057;
+         $display("Should not be executed  1056");
       end
 
        1057 :
@@ -11017,7 +8613,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1058;
+         $display("Should not be executed  1057");
       end
 
        1058 :
@@ -11025,7 +8621,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1059;
+         $display("Should not be executed  1058");
       end
 
        1059 :
@@ -11096,17 +8692,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[478] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[478] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[478]] = 0;
-              ip = 1066;
+         $display("Should not be executed  1065");
       end
 
        1066 :
@@ -11114,9 +8700,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[478]*7 + 0] = 1;
-              updateArrayLength(1, localMem[478], 0);
-              ip = 1067;
+         $display("Should not be executed  1066");
       end
 
        1067 :
@@ -11124,9 +8708,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[478]*7 + 2] = 0;
-              updateArrayLength(1, localMem[478], 2);
-              ip = 1068;
+         $display("Should not be executed  1067");
       end
 
        1068 :
@@ -11134,17 +8716,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[479] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[479] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[479]] = 0;
-              ip = 1069;
+         $display("Should not be executed  1068");
       end
 
        1069 :
@@ -11152,9 +8724,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[478]*7 + 4] = localMem[479];
-              updateArrayLength(1, localMem[478], 4);
-              ip = 1070;
+         $display("Should not be executed  1069");
       end
 
        1070 :
@@ -11162,17 +8732,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[480] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[480] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[480]] = 0;
-              ip = 1071;
+         $display("Should not be executed  1070");
       end
 
        1071 :
@@ -11180,9 +8740,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[478]*7 + 5] = localMem[480];
-              updateArrayLength(1, localMem[478], 5);
-              ip = 1072;
+         $display("Should not be executed  1071");
       end
 
        1072 :
@@ -11190,9 +8748,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[478]*7 + 6] = 0;
-              updateArrayLength(1, localMem[478], 6);
-              ip = 1073;
+         $display("Should not be executed  1072");
       end
 
        1073 :
@@ -11200,9 +8756,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[478]*7 + 3] = localMem[0];
-              updateArrayLength(1, localMem[478], 3);
-              ip = 1074;
+         $display("Should not be executed  1073");
       end
 
        1074 :
@@ -11210,9 +8764,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[0]*7 + 1] = heapMem[localMem[0]*7 + 1] + 1;
-              updateArrayLength(1, localMem[0], 1);
-              ip = 1075;
+         $display("Should not be executed  1074");
       end
 
        1075 :
@@ -11220,9 +8772,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[478]*7 + 1] = heapMem[localMem[0]*7 + 1];
-              updateArrayLength(1, localMem[478], 1);
-              ip = 1076;
+         $display("Should not be executed  1075");
       end
 
        1076 :
@@ -11230,9 +8780,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[481] = heapMem[localMem[478]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1077;
+         $display("Should not be executed  1076");
       end
 
        1077 :
@@ -11240,9 +8788,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[481]*7 + 0] = 2;
-              updateArrayLength(1, localMem[481], 0);
-              ip = 1078;
+         $display("Should not be executed  1077");
       end
 
        1078 :
@@ -11250,9 +8796,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[482] = heapMem[localMem[478]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1079;
+         $display("Should not be executed  1078");
       end
 
        1079 :
@@ -11260,9 +8804,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[482]*7 + 0] = 22;
-              updateArrayLength(1, localMem[482], 0);
-              ip = 1080;
+         $display("Should not be executed  1079");
       end
 
        1080 :
@@ -11270,9 +8812,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[0]*7 + 0] = heapMem[localMem[0]*7 + 0] + 1;
-              updateArrayLength(1, localMem[0], 0);
-              ip = 1081;
+         $display("Should not be executed  1080");
       end
 
        1081 :
@@ -11280,9 +8820,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[0]*7 + 3] = localMem[478];
-              updateArrayLength(1, localMem[0], 3);
-              ip = 1082;
+         $display("Should not be executed  1081");
       end
 
        1082 :
@@ -11290,9 +8828,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[483] = heapMem[localMem[478]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1083;
+         $display("Should not be executed  1082");
       end
 
        1083 :
@@ -11300,8 +8836,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[483]] = 1;
-              ip = 1084;
+         $display("Should not be executed  1083");
       end
 
        1084 :
@@ -11309,9 +8844,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[484] = heapMem[localMem[478]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1085;
+         $display("Should not be executed  1084");
       end
 
        1085 :
@@ -11319,8 +8852,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[484]] = 1;
-              ip = 1086;
+         $display("Should not be executed  1085");
       end
 
        1086 :
@@ -11328,7 +8860,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 2115;
+         $display("Should not be executed  1086");
       end
 
        1087 :
@@ -11437,9 +8969,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d subtract", steps, ip);
 end
-              localMem[490] = localMem[490] - 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1099;
+         $display("Should not be executed  1098");
       end
 
        1099 :
@@ -11447,9 +8977,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[491] = heapMem[localMem[477]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1100;
+         $display("Should not be executed  1099");
       end
 
        1100 :
@@ -11457,9 +8985,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[491]*7 + localMem[490]] = 22;
-              updateArrayLength(1, localMem[491], localMem[490]);
-              ip = 1101;
+         $display("Should not be executed  1100");
       end
 
        1101 :
@@ -11467,7 +8993,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 2115;
+         $display("Should not be executed  1101");
       end
 
        1102 :
@@ -11602,7 +9128,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1116;
+         $display("Should not be executed  1115");
       end
 
        1116 :
@@ -11610,12 +9136,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d arrayCountLess", steps, ip);
 end
-              j = 0; k = arraySizes[localMem[489]];
-              for(i = 0; i < NArea; i = i + 1) begin
-                if (i < k && heapMem[localMem[489] * NArea + i] < 2) j = j + 1;
-              end
-              localMem[496] = j;
-              ip = 1117;
+         $display("Should not be executed  1116");
       end
 
        1117 :
@@ -11623,9 +9144,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[497] = heapMem[localMem[477]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1118;
+         $display("Should not be executed  1117");
       end
 
        1118 :
@@ -11633,18 +9152,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[497] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[496], localMem[497], arraySizes[localMem[497]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[496] && i <= arraySizes[localMem[497]]) begin
-                  heapMem[NArea * localMem[497] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[497] + localMem[496]] = 2;                                    // Insert new value
-              arraySizes[localMem[497]] = arraySizes[localMem[497]] + 1;                              // Increase array size
-              ip = 1119;
+         $display("Should not be executed  1118");
       end
 
        1119 :
@@ -11652,9 +9160,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[498] = heapMem[localMem[477]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1120;
+         $display("Should not be executed  1119");
       end
 
        1120 :
@@ -11662,18 +9168,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[498] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[496], localMem[498], arraySizes[localMem[498]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[496] && i <= arraySizes[localMem[498]]) begin
-                  heapMem[NArea * localMem[498] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[498] + localMem[496]] = 22;                                    // Insert new value
-              arraySizes[localMem[498]] = arraySizes[localMem[498]] + 1;                              // Increase array size
-              ip = 1121;
+         $display("Should not be executed  1120");
       end
 
        1121 :
@@ -11681,9 +9176,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[477]*7 + 0] = heapMem[localMem[477]*7 + 0] + 1;
-              updateArrayLength(1, localMem[477], 0);
-              ip = 1122;
+         $display("Should not be executed  1121");
       end
 
        1122 :
@@ -11691,9 +9184,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[0]*7 + 0] = heapMem[localMem[0]*7 + 0] + 1;
-              updateArrayLength(1, localMem[0], 0);
-              ip = 1123;
+         $display("Should not be executed  1122");
       end
 
        1123 :
@@ -11701,7 +9192,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 2115;
+         $display("Should not be executed  1123");
       end
 
        1124 :
@@ -11709,7 +9200,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1125;
+         $display("Should not be executed  1124");
       end
 
        1125 :
@@ -11717,7 +9208,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1126;
+         $display("Should not be executed  1125");
       end
 
        1126 :
@@ -11725,7 +9216,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1127;
+         $display("Should not be executed  1126");
       end
 
        1127 :
@@ -11733,9 +9224,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[499] = heapMem[localMem[0]*7 + 3];
-              updateArrayLength(2, 0, 0);
-              ip = 1128;
+         $display("Should not be executed  1127");
       end
 
        1128 :
@@ -11743,7 +9232,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1129;
+         $display("Should not be executed  1128");
       end
 
        1129 :
@@ -11751,9 +9240,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[501] = heapMem[localMem[499]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 1130;
+         $display("Should not be executed  1129");
       end
 
        1130 :
@@ -11761,9 +9248,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[502] = heapMem[localMem[499]*7 + 3];
-              updateArrayLength(2, 0, 0);
-              ip = 1131;
+         $display("Should not be executed  1130");
       end
 
        1131 :
@@ -11771,9 +9256,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[503] = heapMem[localMem[502]*7 + 2];
-              updateArrayLength(2, 0, 0);
-              ip = 1132;
+         $display("Should not be executed  1131");
       end
 
        1132 :
@@ -11781,7 +9264,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jLt", steps, ip);
 end
-              ip = localMem[501] <  localMem[503] ? 1352 : 1133;
+         $display("Should not be executed  1132");
       end
 
        1133 :
@@ -11789,9 +9272,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[504] = localMem[503];
-              updateArrayLength(2, 0, 0);
-              ip = 1134;
+         $display("Should not be executed  1133");
       end
 
        1134 :
@@ -11799,8 +9280,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftRight", steps, ip);
 end
-              localMem[504] = localMem[504] >> 1;
-              ip = 1135;
+         $display("Should not be executed  1134");
       end
 
        1135 :
@@ -11808,9 +9288,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[505] = localMem[504] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1136;
+         $display("Should not be executed  1135");
       end
 
        1136 :
@@ -11818,9 +9296,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[506] = heapMem[localMem[499]*7 + 2];
-              updateArrayLength(2, 0, 0);
-              ip = 1137;
+         $display("Should not be executed  1136");
       end
 
        1137 :
@@ -11828,7 +9304,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jEq", steps, ip);
 end
-              ip = localMem[506] == 0 ? 1234 : 1138;
+         $display("Should not be executed  1137");
       end
 
        1138 :
@@ -11836,17 +9312,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[507] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[507] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[507]] = 0;
-              ip = 1139;
+         $display("Should not be executed  1138");
       end
 
        1139 :
@@ -11854,9 +9320,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[507]*7 + 0] = localMem[504];
-              updateArrayLength(1, localMem[507], 0);
-              ip = 1140;
+         $display("Should not be executed  1139");
       end
 
        1140 :
@@ -11864,9 +9328,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[507]*7 + 2] = 0;
-              updateArrayLength(1, localMem[507], 2);
-              ip = 1141;
+         $display("Should not be executed  1140");
       end
 
        1141 :
@@ -11874,17 +9336,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[508] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[508] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[508]] = 0;
-              ip = 1142;
+         $display("Should not be executed  1141");
       end
 
        1142 :
@@ -11892,9 +9344,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[507]*7 + 4] = localMem[508];
-              updateArrayLength(1, localMem[507], 4);
-              ip = 1143;
+         $display("Should not be executed  1142");
       end
 
        1143 :
@@ -11902,17 +9352,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[509] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[509] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[509]] = 0;
-              ip = 1144;
+         $display("Should not be executed  1143");
       end
 
        1144 :
@@ -11920,9 +9360,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[507]*7 + 5] = localMem[509];
-              updateArrayLength(1, localMem[507], 5);
-              ip = 1145;
+         $display("Should not be executed  1144");
       end
 
        1145 :
@@ -11930,9 +9368,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[507]*7 + 6] = 0;
-              updateArrayLength(1, localMem[507], 6);
-              ip = 1146;
+         $display("Should not be executed  1145");
       end
 
        1146 :
@@ -11940,9 +9376,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[507]*7 + 3] = localMem[502];
-              updateArrayLength(1, localMem[507], 3);
-              ip = 1147;
+         $display("Should not be executed  1146");
       end
 
        1147 :
@@ -11950,9 +9384,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[502]*7 + 1] = heapMem[localMem[502]*7 + 1] + 1;
-              updateArrayLength(1, localMem[502], 1);
-              ip = 1148;
+         $display("Should not be executed  1147");
       end
 
        1148 :
@@ -11960,9 +9392,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[507]*7 + 1] = heapMem[localMem[502]*7 + 1];
-              updateArrayLength(1, localMem[507], 1);
-              ip = 1149;
+         $display("Should not be executed  1148");
       end
 
        1149 :
@@ -11970,8 +9400,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d not", steps, ip);
 end
-              localMem[510] = !heapMem[localMem[499]*7 + 6];
-              ip = 1150;
+         $display("Should not be executed  1149");
       end
 
        1150 :
@@ -11979,7 +9408,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[510] != 0 ? 1179 : 1151;
+         $display("Should not be executed  1150");
       end
 
        1151 :
@@ -11987,17 +9416,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[511] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[511] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[511]] = 0;
-              ip = 1152;
+         $display("Should not be executed  1151");
       end
 
        1152 :
@@ -12005,9 +9424,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[507]*7 + 6] = localMem[511];
-              updateArrayLength(1, localMem[507], 6);
-              ip = 1153;
+         $display("Should not be executed  1152");
       end
 
        1153 :
@@ -12015,9 +9432,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[512] = heapMem[localMem[499]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1154;
+         $display("Should not be executed  1153");
       end
 
        1154 :
@@ -12025,9 +9440,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[513] = heapMem[localMem[507]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1155;
+         $display("Should not be executed  1154");
       end
 
        1155 :
@@ -12035,13 +9448,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[504]) begin
-                  heapMem[NArea * localMem[513] + 0 + i] = heapMem[NArea * localMem[512] + localMem[505] + i];
-                  updateArrayLength(1, localMem[513], 0 + i);
-                end
-              end
-              ip = 1156;
+         $display("Should not be executed  1155");
       end
 
        1156 :
@@ -12049,9 +9456,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[514] = heapMem[localMem[499]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1157;
+         $display("Should not be executed  1156");
       end
 
        1157 :
@@ -12059,9 +9464,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[515] = heapMem[localMem[507]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1158;
+         $display("Should not be executed  1157");
       end
 
        1158 :
@@ -12069,13 +9472,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[504]) begin
-                  heapMem[NArea * localMem[515] + 0 + i] = heapMem[NArea * localMem[514] + localMem[505] + i];
-                  updateArrayLength(1, localMem[515], 0 + i);
-                end
-              end
-              ip = 1159;
+         $display("Should not be executed  1158");
       end
 
        1159 :
@@ -12083,9 +9480,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[516] = heapMem[localMem[499]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1160;
+         $display("Should not be executed  1159");
       end
 
        1160 :
@@ -12093,9 +9488,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[517] = heapMem[localMem[507]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1161;
+         $display("Should not be executed  1160");
       end
 
        1161 :
@@ -12103,9 +9496,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[518] = localMem[504] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1162;
+         $display("Should not be executed  1161");
       end
 
        1162 :
@@ -12113,13 +9504,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[518]) begin
-                  heapMem[NArea * localMem[517] + 0 + i] = heapMem[NArea * localMem[516] + localMem[505] + i];
-                  updateArrayLength(1, localMem[517], 0 + i);
-                end
-              end
-              ip = 1163;
+         $display("Should not be executed  1162");
       end
 
        1163 :
@@ -12127,9 +9512,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[519] = heapMem[localMem[507]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 1164;
+         $display("Should not be executed  1163");
       end
 
        1164 :
@@ -12137,9 +9520,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[520] = localMem[519] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1165;
+         $display("Should not be executed  1164");
       end
 
        1165 :
@@ -12147,9 +9528,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[521] = heapMem[localMem[507]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1166;
+         $display("Should not be executed  1165");
       end
 
        1166 :
@@ -12157,7 +9536,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1167;
+         $display("Should not be executed  1166");
       end
 
        1167 :
@@ -12165,9 +9544,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[522] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 1168;
+         $display("Should not be executed  1167");
       end
 
        1168 :
@@ -12175,7 +9552,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1169;
+         $display("Should not be executed  1168");
       end
 
        1169 :
@@ -12183,7 +9560,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[522] >= localMem[520] ? 1175 : 1170;
+         $display("Should not be executed  1169");
       end
 
        1170 :
@@ -12191,9 +9568,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[523] = heapMem[localMem[521]*7 + localMem[522]];
-              updateArrayLength(2, 0, 0);
-              ip = 1171;
+         $display("Should not be executed  1170");
       end
 
        1171 :
@@ -12201,9 +9576,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[523]*7 + 2] = localMem[507];
-              updateArrayLength(1, localMem[523], 2);
-              ip = 1172;
+         $display("Should not be executed  1171");
       end
 
        1172 :
@@ -12211,7 +9584,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1173;
+         $display("Should not be executed  1172");
       end
 
        1173 :
@@ -12219,9 +9592,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[522] = localMem[522] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1174;
+         $display("Should not be executed  1173");
       end
 
        1174 :
@@ -12229,7 +9600,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1168;
+         $display("Should not be executed  1174");
       end
 
        1175 :
@@ -12237,7 +9608,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1176;
+         $display("Should not be executed  1175");
       end
 
        1176 :
@@ -12245,9 +9616,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[524] = heapMem[localMem[499]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1177;
+         $display("Should not be executed  1176");
       end
 
        1177 :
@@ -12255,8 +9624,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[524]] = localMem[505];
-              ip = 1178;
+         $display("Should not be executed  1177");
       end
 
        1178 :
@@ -12264,7 +9632,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1186;
+         $display("Should not be executed  1178");
       end
 
        1179 :
@@ -12272,7 +9640,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1180;
+         $display("Should not be executed  1179");
       end
 
        1180 :
@@ -12280,9 +9648,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[525] = heapMem[localMem[499]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1181;
+         $display("Should not be executed  1180");
       end
 
        1181 :
@@ -12290,9 +9656,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[526] = heapMem[localMem[507]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1182;
+         $display("Should not be executed  1181");
       end
 
        1182 :
@@ -12300,13 +9664,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[504]) begin
-                  heapMem[NArea * localMem[526] + 0 + i] = heapMem[NArea * localMem[525] + localMem[505] + i];
-                  updateArrayLength(1, localMem[526], 0 + i);
-                end
-              end
-              ip = 1183;
+         $display("Should not be executed  1182");
       end
 
        1183 :
@@ -12314,9 +9672,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[527] = heapMem[localMem[499]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1184;
+         $display("Should not be executed  1183");
       end
 
        1184 :
@@ -12324,9 +9680,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[528] = heapMem[localMem[507]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1185;
+         $display("Should not be executed  1184");
       end
 
        1185 :
@@ -12334,13 +9688,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[504]) begin
-                  heapMem[NArea * localMem[528] + 0 + i] = heapMem[NArea * localMem[527] + localMem[505] + i];
-                  updateArrayLength(1, localMem[528], 0 + i);
-                end
-              end
-              ip = 1186;
+         $display("Should not be executed  1185");
       end
 
        1186 :
@@ -12348,7 +9696,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1187;
+         $display("Should not be executed  1186");
       end
 
        1187 :
@@ -12356,9 +9704,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[499]*7 + 0] = localMem[504];
-              updateArrayLength(1, localMem[499], 0);
-              ip = 1188;
+         $display("Should not be executed  1187");
       end
 
        1188 :
@@ -12366,9 +9712,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[507]*7 + 2] = localMem[506];
-              updateArrayLength(1, localMem[507], 2);
-              ip = 1189;
+         $display("Should not be executed  1188");
       end
 
        1189 :
@@ -12376,9 +9720,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[529] = heapMem[localMem[506]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 1190;
+         $display("Should not be executed  1189");
       end
 
        1190 :
@@ -12386,9 +9728,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[530] = heapMem[localMem[506]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1191;
+         $display("Should not be executed  1190");
       end
 
        1191 :
@@ -12396,9 +9736,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[531] = heapMem[localMem[530]*7 + localMem[529]];
-              updateArrayLength(2, 0, 0);
-              ip = 1192;
+         $display("Should not be executed  1191");
       end
 
        1192 :
@@ -12406,7 +9744,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[531] != localMem[499] ? 1211 : 1193;
+         $display("Should not be executed  1192");
       end
 
        1193 :
@@ -12414,9 +9752,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[532] = heapMem[localMem[499]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1194;
+         $display("Should not be executed  1193");
       end
 
        1194 :
@@ -12424,9 +9760,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[533] = heapMem[localMem[532]*7 + localMem[504]];
-              updateArrayLength(2, 0, 0);
-              ip = 1195;
+         $display("Should not be executed  1194");
       end
 
        1195 :
@@ -12434,9 +9768,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[534] = heapMem[localMem[506]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1196;
+         $display("Should not be executed  1195");
       end
 
        1196 :
@@ -12444,9 +9776,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[534]*7 + localMem[529]] = localMem[533];
-              updateArrayLength(1, localMem[534], localMem[529]);
-              ip = 1197;
+         $display("Should not be executed  1196");
       end
 
        1197 :
@@ -12454,9 +9784,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[535] = heapMem[localMem[499]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1198;
+         $display("Should not be executed  1197");
       end
 
        1198 :
@@ -12464,9 +9792,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[536] = heapMem[localMem[535]*7 + localMem[504]];
-              updateArrayLength(2, 0, 0);
-              ip = 1199;
+         $display("Should not be executed  1198");
       end
 
        1199 :
@@ -12474,9 +9800,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[537] = heapMem[localMem[506]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1200;
+         $display("Should not be executed  1199");
       end
 
        1200 :
@@ -12484,9 +9808,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[537]*7 + localMem[529]] = localMem[536];
-              updateArrayLength(1, localMem[537], localMem[529]);
-              ip = 1201;
+         $display("Should not be executed  1200");
       end
 
        1201 :
@@ -12494,9 +9816,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[538] = heapMem[localMem[499]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1202;
+         $display("Should not be executed  1201");
       end
 
        1202 :
@@ -12504,8 +9824,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[538]] = localMem[504];
-              ip = 1203;
+         $display("Should not be executed  1202");
       end
 
        1203 :
@@ -12513,9 +9832,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[539] = heapMem[localMem[499]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1204;
+         $display("Should not be executed  1203");
       end
 
        1204 :
@@ -12523,8 +9840,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[539]] = localMem[504];
-              ip = 1205;
+         $display("Should not be executed  1204");
       end
 
        1205 :
@@ -12532,9 +9848,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[540] = localMem[529] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1206;
+         $display("Should not be executed  1205");
       end
 
        1206 :
@@ -12542,9 +9856,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[506]*7 + 0] = localMem[540];
-              updateArrayLength(1, localMem[506], 0);
-              ip = 1207;
+         $display("Should not be executed  1206");
       end
 
        1207 :
@@ -12552,9 +9864,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[541] = heapMem[localMem[506]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1208;
+         $display("Should not be executed  1207");
       end
 
        1208 :
@@ -12562,9 +9872,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[541]*7 + localMem[540]] = localMem[507];
-              updateArrayLength(1, localMem[541], localMem[540]);
-              ip = 1209;
+         $display("Should not be executed  1208");
       end
 
        1209 :
@@ -12572,7 +9880,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1349;
+         $display("Should not be executed  1209");
       end
 
        1210 :
@@ -12580,7 +9888,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1233;
+         $display("Should not be executed  1210");
       end
 
        1211 :
@@ -12588,7 +9896,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1212;
+         $display("Should not be executed  1211");
       end
 
        1212 :
@@ -12596,7 +9904,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d assertNe", steps, ip);
 end
-            ip = 1213;
+         $display("Should not be executed  1212");
       end
 
        1213 :
@@ -12604,9 +9912,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[542] = heapMem[localMem[506]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1214;
+         $display("Should not be executed  1213");
       end
 
        1214 :
@@ -12614,11 +9920,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d arrayIndex", steps, ip);
 end
-              localMem[543] = 0; k = arraySizes[localMem[542]];
-              for(i = 0; i < NArea; i = i + 1) begin
-                if (i < k && heapMem[localMem[542] * NArea + i] == localMem[499]) localMem[543] = i + 1;
-              end
-              ip = 1215;
+         $display("Should not be executed  1214");
       end
 
        1215 :
@@ -12626,9 +9928,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d subtract", steps, ip);
 end
-              localMem[543] = localMem[543] - 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1216;
+         $display("Should not be executed  1215");
       end
 
        1216 :
@@ -12636,9 +9936,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[544] = heapMem[localMem[499]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1217;
+         $display("Should not be executed  1216");
       end
 
        1217 :
@@ -12646,9 +9944,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[545] = heapMem[localMem[544]*7 + localMem[504]];
-              updateArrayLength(2, 0, 0);
-              ip = 1218;
+         $display("Should not be executed  1217");
       end
 
        1218 :
@@ -12656,9 +9952,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[546] = heapMem[localMem[499]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1219;
+         $display("Should not be executed  1218");
       end
 
        1219 :
@@ -12666,9 +9960,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[547] = heapMem[localMem[546]*7 + localMem[504]];
-              updateArrayLength(2, 0, 0);
-              ip = 1220;
+         $display("Should not be executed  1219");
       end
 
        1220 :
@@ -12676,9 +9968,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[548] = heapMem[localMem[499]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1221;
+         $display("Should not be executed  1220");
       end
 
        1221 :
@@ -12686,8 +9976,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[548]] = localMem[504];
-              ip = 1222;
+         $display("Should not be executed  1221");
       end
 
        1222 :
@@ -12695,9 +9984,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[549] = heapMem[localMem[499]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1223;
+         $display("Should not be executed  1222");
       end
 
        1223 :
@@ -12705,8 +9992,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[549]] = localMem[504];
-              ip = 1224;
+         $display("Should not be executed  1223");
       end
 
        1224 :
@@ -12714,9 +10000,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[550] = heapMem[localMem[506]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1225;
+         $display("Should not be executed  1224");
       end
 
        1225 :
@@ -12724,18 +10008,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[550] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[543], localMem[550], arraySizes[localMem[550]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[543] && i <= arraySizes[localMem[550]]) begin
-                  heapMem[NArea * localMem[550] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[550] + localMem[543]] = localMem[545];                                    // Insert new value
-              arraySizes[localMem[550]] = arraySizes[localMem[550]] + 1;                              // Increase array size
-              ip = 1226;
+         $display("Should not be executed  1225");
       end
 
        1226 :
@@ -12743,9 +10016,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[551] = heapMem[localMem[506]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1227;
+         $display("Should not be executed  1226");
       end
 
        1227 :
@@ -12753,18 +10024,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[551] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[543], localMem[551], arraySizes[localMem[551]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[543] && i <= arraySizes[localMem[551]]) begin
-                  heapMem[NArea * localMem[551] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[551] + localMem[543]] = localMem[547];                                    // Insert new value
-              arraySizes[localMem[551]] = arraySizes[localMem[551]] + 1;                              // Increase array size
-              ip = 1228;
+         $display("Should not be executed  1227");
       end
 
        1228 :
@@ -12772,9 +10032,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[552] = heapMem[localMem[506]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1229;
+         $display("Should not be executed  1228");
       end
 
        1229 :
@@ -12782,9 +10040,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[553] = localMem[543] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1230;
+         $display("Should not be executed  1229");
       end
 
        1230 :
@@ -12792,18 +10048,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[552] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[553], localMem[552], arraySizes[localMem[552]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[553] && i <= arraySizes[localMem[552]]) begin
-                  heapMem[NArea * localMem[552] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[552] + localMem[553]] = localMem[507];                                    // Insert new value
-              arraySizes[localMem[552]] = arraySizes[localMem[552]] + 1;                              // Increase array size
-              ip = 1231;
+         $display("Should not be executed  1230");
       end
 
        1231 :
@@ -12811,9 +10056,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[506]*7 + 0] = heapMem[localMem[506]*7 + 0] + 1;
-              updateArrayLength(1, localMem[506], 0);
-              ip = 1232;
+         $display("Should not be executed  1231");
       end
 
        1232 :
@@ -12821,7 +10064,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1349;
+         $display("Should not be executed  1232");
       end
 
        1233 :
@@ -12829,7 +10072,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1234;
+         $display("Should not be executed  1233");
       end
 
        1234 :
@@ -12837,7 +10080,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1235;
+         $display("Should not be executed  1234");
       end
 
        1235 :
@@ -12845,17 +10088,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[554] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[554] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[554]] = 0;
-              ip = 1236;
+         $display("Should not be executed  1235");
       end
 
        1236 :
@@ -12863,9 +10096,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[554]*7 + 0] = localMem[504];
-              updateArrayLength(1, localMem[554], 0);
-              ip = 1237;
+         $display("Should not be executed  1236");
       end
 
        1237 :
@@ -12873,9 +10104,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[554]*7 + 2] = 0;
-              updateArrayLength(1, localMem[554], 2);
-              ip = 1238;
+         $display("Should not be executed  1237");
       end
 
        1238 :
@@ -12883,17 +10112,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[555] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[555] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[555]] = 0;
-              ip = 1239;
+         $display("Should not be executed  1238");
       end
 
        1239 :
@@ -12901,9 +10120,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[554]*7 + 4] = localMem[555];
-              updateArrayLength(1, localMem[554], 4);
-              ip = 1240;
+         $display("Should not be executed  1239");
       end
 
        1240 :
@@ -12911,17 +10128,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[556] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[556] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[556]] = 0;
-              ip = 1241;
+         $display("Should not be executed  1240");
       end
 
        1241 :
@@ -12929,9 +10136,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[554]*7 + 5] = localMem[556];
-              updateArrayLength(1, localMem[554], 5);
-              ip = 1242;
+         $display("Should not be executed  1241");
       end
 
        1242 :
@@ -12939,9 +10144,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[554]*7 + 6] = 0;
-              updateArrayLength(1, localMem[554], 6);
-              ip = 1243;
+         $display("Should not be executed  1242");
       end
 
        1243 :
@@ -12949,9 +10152,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[554]*7 + 3] = localMem[502];
-              updateArrayLength(1, localMem[554], 3);
-              ip = 1244;
+         $display("Should not be executed  1243");
       end
 
        1244 :
@@ -12959,9 +10160,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[502]*7 + 1] = heapMem[localMem[502]*7 + 1] + 1;
-              updateArrayLength(1, localMem[502], 1);
-              ip = 1245;
+         $display("Should not be executed  1244");
       end
 
        1245 :
@@ -12969,9 +10168,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[554]*7 + 1] = heapMem[localMem[502]*7 + 1];
-              updateArrayLength(1, localMem[554], 1);
-              ip = 1246;
+         $display("Should not be executed  1245");
       end
 
        1246 :
@@ -12979,17 +10176,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[557] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[557] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[557]] = 0;
-              ip = 1247;
+         $display("Should not be executed  1246");
       end
 
        1247 :
@@ -12997,9 +10184,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[557]*7 + 0] = localMem[504];
-              updateArrayLength(1, localMem[557], 0);
-              ip = 1248;
+         $display("Should not be executed  1247");
       end
 
        1248 :
@@ -13007,9 +10192,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[557]*7 + 2] = 0;
-              updateArrayLength(1, localMem[557], 2);
-              ip = 1249;
+         $display("Should not be executed  1248");
       end
 
        1249 :
@@ -13017,17 +10200,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[558] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[558] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[558]] = 0;
-              ip = 1250;
+         $display("Should not be executed  1249");
       end
 
        1250 :
@@ -13035,9 +10208,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[557]*7 + 4] = localMem[558];
-              updateArrayLength(1, localMem[557], 4);
-              ip = 1251;
+         $display("Should not be executed  1250");
       end
 
        1251 :
@@ -13045,17 +10216,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[559] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[559] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[559]] = 0;
-              ip = 1252;
+         $display("Should not be executed  1251");
       end
 
        1252 :
@@ -13063,9 +10224,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[557]*7 + 5] = localMem[559];
-              updateArrayLength(1, localMem[557], 5);
-              ip = 1253;
+         $display("Should not be executed  1252");
       end
 
        1253 :
@@ -13073,9 +10232,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[557]*7 + 6] = 0;
-              updateArrayLength(1, localMem[557], 6);
-              ip = 1254;
+         $display("Should not be executed  1253");
       end
 
        1254 :
@@ -13083,9 +10240,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[557]*7 + 3] = localMem[502];
-              updateArrayLength(1, localMem[557], 3);
-              ip = 1255;
+         $display("Should not be executed  1254");
       end
 
        1255 :
@@ -13093,9 +10248,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[502]*7 + 1] = heapMem[localMem[502]*7 + 1] + 1;
-              updateArrayLength(1, localMem[502], 1);
-              ip = 1256;
+         $display("Should not be executed  1255");
       end
 
        1256 :
@@ -13103,9 +10256,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[557]*7 + 1] = heapMem[localMem[502]*7 + 1];
-              updateArrayLength(1, localMem[557], 1);
-              ip = 1257;
+         $display("Should not be executed  1256");
       end
 
        1257 :
@@ -13113,8 +10264,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d not", steps, ip);
 end
-              localMem[560] = !heapMem[localMem[499]*7 + 6];
-              ip = 1258;
+         $display("Should not be executed  1257");
       end
 
        1258 :
@@ -13122,7 +10272,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[560] != 0 ? 1310 : 1259;
+         $display("Should not be executed  1258");
       end
 
        1259 :
@@ -13130,17 +10280,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[561] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[561] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[561]] = 0;
-              ip = 1260;
+         $display("Should not be executed  1259");
       end
 
        1260 :
@@ -13148,9 +10288,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[554]*7 + 6] = localMem[561];
-              updateArrayLength(1, localMem[554], 6);
-              ip = 1261;
+         $display("Should not be executed  1260");
       end
 
        1261 :
@@ -13158,17 +10296,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[562] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[562] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[562]] = 0;
-              ip = 1262;
+         $display("Should not be executed  1261");
       end
 
        1262 :
@@ -13176,9 +10304,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[557]*7 + 6] = localMem[562];
-              updateArrayLength(1, localMem[557], 6);
-              ip = 1263;
+         $display("Should not be executed  1262");
       end
 
        1263 :
@@ -13186,9 +10312,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[563] = heapMem[localMem[499]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1264;
+         $display("Should not be executed  1263");
       end
 
        1264 :
@@ -13196,9 +10320,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[564] = heapMem[localMem[554]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1265;
+         $display("Should not be executed  1264");
       end
 
        1265 :
@@ -13206,13 +10328,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[504]) begin
-                  heapMem[NArea * localMem[564] + 0 + i] = heapMem[NArea * localMem[563] + 0 + i];
-                  updateArrayLength(1, localMem[564], 0 + i);
-                end
-              end
-              ip = 1266;
+         $display("Should not be executed  1265");
       end
 
        1266 :
@@ -13220,9 +10336,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[565] = heapMem[localMem[499]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1267;
+         $display("Should not be executed  1266");
       end
 
        1267 :
@@ -13230,9 +10344,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[566] = heapMem[localMem[554]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1268;
+         $display("Should not be executed  1267");
       end
 
        1268 :
@@ -13240,13 +10352,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[504]) begin
-                  heapMem[NArea * localMem[566] + 0 + i] = heapMem[NArea * localMem[565] + 0 + i];
-                  updateArrayLength(1, localMem[566], 0 + i);
-                end
-              end
-              ip = 1269;
+         $display("Should not be executed  1268");
       end
 
        1269 :
@@ -13254,9 +10360,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[567] = heapMem[localMem[499]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1270;
+         $display("Should not be executed  1269");
       end
 
        1270 :
@@ -13264,9 +10368,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[568] = heapMem[localMem[554]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1271;
+         $display("Should not be executed  1270");
       end
 
        1271 :
@@ -13274,9 +10376,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[569] = localMem[504] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1272;
+         $display("Should not be executed  1271");
       end
 
        1272 :
@@ -13284,13 +10384,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[569]) begin
-                  heapMem[NArea * localMem[568] + 0 + i] = heapMem[NArea * localMem[567] + 0 + i];
-                  updateArrayLength(1, localMem[568], 0 + i);
-                end
-              end
-              ip = 1273;
+         $display("Should not be executed  1272");
       end
 
        1273 :
@@ -13298,9 +10392,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[570] = heapMem[localMem[499]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1274;
+         $display("Should not be executed  1273");
       end
 
        1274 :
@@ -13308,9 +10400,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[571] = heapMem[localMem[557]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1275;
+         $display("Should not be executed  1274");
       end
 
        1275 :
@@ -13318,13 +10408,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[504]) begin
-                  heapMem[NArea * localMem[571] + 0 + i] = heapMem[NArea * localMem[570] + localMem[505] + i];
-                  updateArrayLength(1, localMem[571], 0 + i);
-                end
-              end
-              ip = 1276;
+         $display("Should not be executed  1275");
       end
 
        1276 :
@@ -13332,9 +10416,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[572] = heapMem[localMem[499]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1277;
+         $display("Should not be executed  1276");
       end
 
        1277 :
@@ -13342,9 +10424,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[573] = heapMem[localMem[557]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1278;
+         $display("Should not be executed  1277");
       end
 
        1278 :
@@ -13352,13 +10432,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[504]) begin
-                  heapMem[NArea * localMem[573] + 0 + i] = heapMem[NArea * localMem[572] + localMem[505] + i];
-                  updateArrayLength(1, localMem[573], 0 + i);
-                end
-              end
-              ip = 1279;
+         $display("Should not be executed  1278");
       end
 
        1279 :
@@ -13366,9 +10440,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[574] = heapMem[localMem[499]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1280;
+         $display("Should not be executed  1279");
       end
 
        1280 :
@@ -13376,9 +10448,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[575] = heapMem[localMem[557]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1281;
+         $display("Should not be executed  1280");
       end
 
        1281 :
@@ -13386,9 +10456,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[576] = localMem[504] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1282;
+         $display("Should not be executed  1281");
       end
 
        1282 :
@@ -13396,13 +10464,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[576]) begin
-                  heapMem[NArea * localMem[575] + 0 + i] = heapMem[NArea * localMem[574] + localMem[505] + i];
-                  updateArrayLength(1, localMem[575], 0 + i);
-                end
-              end
-              ip = 1283;
+         $display("Should not be executed  1282");
       end
 
        1283 :
@@ -13410,9 +10472,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[577] = heapMem[localMem[554]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 1284;
+         $display("Should not be executed  1283");
       end
 
        1284 :
@@ -13420,9 +10480,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[578] = localMem[577] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1285;
+         $display("Should not be executed  1284");
       end
 
        1285 :
@@ -13430,9 +10488,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[579] = heapMem[localMem[554]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1286;
+         $display("Should not be executed  1285");
       end
 
        1286 :
@@ -13440,7 +10496,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1287;
+         $display("Should not be executed  1286");
       end
 
        1287 :
@@ -13448,9 +10504,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[580] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 1288;
+         $display("Should not be executed  1287");
       end
 
        1288 :
@@ -13458,7 +10512,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1289;
+         $display("Should not be executed  1288");
       end
 
        1289 :
@@ -13466,7 +10520,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[580] >= localMem[578] ? 1295 : 1290;
+         $display("Should not be executed  1289");
       end
 
        1290 :
@@ -13474,9 +10528,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[581] = heapMem[localMem[579]*7 + localMem[580]];
-              updateArrayLength(2, 0, 0);
-              ip = 1291;
+         $display("Should not be executed  1290");
       end
 
        1291 :
@@ -13484,9 +10536,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[581]*7 + 2] = localMem[554];
-              updateArrayLength(1, localMem[581], 2);
-              ip = 1292;
+         $display("Should not be executed  1291");
       end
 
        1292 :
@@ -13494,7 +10544,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1293;
+         $display("Should not be executed  1292");
       end
 
        1293 :
@@ -13502,9 +10552,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[580] = localMem[580] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1294;
+         $display("Should not be executed  1293");
       end
 
        1294 :
@@ -13512,7 +10560,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1288;
+         $display("Should not be executed  1294");
       end
 
        1295 :
@@ -13520,7 +10568,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1296;
+         $display("Should not be executed  1295");
       end
 
        1296 :
@@ -13528,9 +10576,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[582] = heapMem[localMem[557]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 1297;
+         $display("Should not be executed  1296");
       end
 
        1297 :
@@ -13538,9 +10584,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[583] = localMem[582] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1298;
+         $display("Should not be executed  1297");
       end
 
        1298 :
@@ -13548,9 +10592,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[584] = heapMem[localMem[557]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1299;
+         $display("Should not be executed  1298");
       end
 
        1299 :
@@ -13558,7 +10600,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1300;
+         $display("Should not be executed  1299");
       end
 
        1300 :
@@ -13566,9 +10608,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[585] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 1301;
+         $display("Should not be executed  1300");
       end
 
        1301 :
@@ -13576,7 +10616,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1302;
+         $display("Should not be executed  1301");
       end
 
        1302 :
@@ -13584,7 +10624,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[585] >= localMem[583] ? 1308 : 1303;
+         $display("Should not be executed  1302");
       end
 
        1303 :
@@ -13592,9 +10632,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[586] = heapMem[localMem[584]*7 + localMem[585]];
-              updateArrayLength(2, 0, 0);
-              ip = 1304;
+         $display("Should not be executed  1303");
       end
 
        1304 :
@@ -13602,9 +10640,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[586]*7 + 2] = localMem[557];
-              updateArrayLength(1, localMem[586], 2);
-              ip = 1305;
+         $display("Should not be executed  1304");
       end
 
        1305 :
@@ -13612,7 +10648,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1306;
+         $display("Should not be executed  1305");
       end
 
        1306 :
@@ -13620,9 +10656,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[585] = localMem[585] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1307;
+         $display("Should not be executed  1306");
       end
 
        1307 :
@@ -13630,7 +10664,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1301;
+         $display("Should not be executed  1307");
       end
 
        1308 :
@@ -13638,7 +10672,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1309;
+         $display("Should not be executed  1308");
       end
 
        1309 :
@@ -13646,7 +10680,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1325;
+         $display("Should not be executed  1309");
       end
 
        1310 :
@@ -13654,7 +10688,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1311;
+         $display("Should not be executed  1310");
       end
 
        1311 :
@@ -13662,17 +10696,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[587] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[587] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[587]] = 0;
-              ip = 1312;
+         $display("Should not be executed  1311");
       end
 
        1312 :
@@ -13680,9 +10704,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[499]*7 + 6] = localMem[587];
-              updateArrayLength(1, localMem[499], 6);
-              ip = 1313;
+         $display("Should not be executed  1312");
       end
 
        1313 :
@@ -13690,9 +10712,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[588] = heapMem[localMem[499]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1314;
+         $display("Should not be executed  1313");
       end
 
        1314 :
@@ -13700,9 +10720,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[589] = heapMem[localMem[554]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1315;
+         $display("Should not be executed  1314");
       end
 
        1315 :
@@ -13710,13 +10728,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[504]) begin
-                  heapMem[NArea * localMem[589] + 0 + i] = heapMem[NArea * localMem[588] + 0 + i];
-                  updateArrayLength(1, localMem[589], 0 + i);
-                end
-              end
-              ip = 1316;
+         $display("Should not be executed  1315");
       end
 
        1316 :
@@ -13724,9 +10736,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[590] = heapMem[localMem[499]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1317;
+         $display("Should not be executed  1316");
       end
 
        1317 :
@@ -13734,9 +10744,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[591] = heapMem[localMem[554]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1318;
+         $display("Should not be executed  1317");
       end
 
        1318 :
@@ -13744,13 +10752,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[504]) begin
-                  heapMem[NArea * localMem[591] + 0 + i] = heapMem[NArea * localMem[590] + 0 + i];
-                  updateArrayLength(1, localMem[591], 0 + i);
-                end
-              end
-              ip = 1319;
+         $display("Should not be executed  1318");
       end
 
        1319 :
@@ -13758,9 +10760,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[592] = heapMem[localMem[499]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1320;
+         $display("Should not be executed  1319");
       end
 
        1320 :
@@ -13768,9 +10768,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[593] = heapMem[localMem[557]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1321;
+         $display("Should not be executed  1320");
       end
 
        1321 :
@@ -13778,13 +10776,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[504]) begin
-                  heapMem[NArea * localMem[593] + 0 + i] = heapMem[NArea * localMem[592] + localMem[505] + i];
-                  updateArrayLength(1, localMem[593], 0 + i);
-                end
-              end
-              ip = 1322;
+         $display("Should not be executed  1321");
       end
 
        1322 :
@@ -13792,9 +10784,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[594] = heapMem[localMem[499]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1323;
+         $display("Should not be executed  1322");
       end
 
        1323 :
@@ -13802,9 +10792,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[595] = heapMem[localMem[557]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1324;
+         $display("Should not be executed  1323");
       end
 
        1324 :
@@ -13812,13 +10800,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[504]) begin
-                  heapMem[NArea * localMem[595] + 0 + i] = heapMem[NArea * localMem[594] + localMem[505] + i];
-                  updateArrayLength(1, localMem[595], 0 + i);
-                end
-              end
-              ip = 1325;
+         $display("Should not be executed  1324");
       end
 
        1325 :
@@ -13826,7 +10808,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1326;
+         $display("Should not be executed  1325");
       end
 
        1326 :
@@ -13834,9 +10816,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[554]*7 + 2] = localMem[499];
-              updateArrayLength(1, localMem[554], 2);
-              ip = 1327;
+         $display("Should not be executed  1326");
       end
 
        1327 :
@@ -13844,9 +10824,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[557]*7 + 2] = localMem[499];
-              updateArrayLength(1, localMem[557], 2);
-              ip = 1328;
+         $display("Should not be executed  1327");
       end
 
        1328 :
@@ -13854,9 +10832,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[596] = heapMem[localMem[499]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1329;
+         $display("Should not be executed  1328");
       end
 
        1329 :
@@ -13864,9 +10840,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[597] = heapMem[localMem[596]*7 + localMem[504]];
-              updateArrayLength(2, 0, 0);
-              ip = 1330;
+         $display("Should not be executed  1329");
       end
 
        1330 :
@@ -13874,9 +10848,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[598] = heapMem[localMem[499]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1331;
+         $display("Should not be executed  1330");
       end
 
        1331 :
@@ -13884,9 +10856,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[599] = heapMem[localMem[598]*7 + localMem[504]];
-              updateArrayLength(2, 0, 0);
-              ip = 1332;
+         $display("Should not be executed  1331");
       end
 
        1332 :
@@ -13894,9 +10864,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[600] = heapMem[localMem[499]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1333;
+         $display("Should not be executed  1332");
       end
 
        1333 :
@@ -13904,9 +10872,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[600]*7 + 0] = localMem[597];
-              updateArrayLength(1, localMem[600], 0);
-              ip = 1334;
+         $display("Should not be executed  1333");
       end
 
        1334 :
@@ -13914,9 +10880,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[601] = heapMem[localMem[499]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1335;
+         $display("Should not be executed  1334");
       end
 
        1335 :
@@ -13924,9 +10888,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[601]*7 + 0] = localMem[599];
-              updateArrayLength(1, localMem[601], 0);
-              ip = 1336;
+         $display("Should not be executed  1335");
       end
 
        1336 :
@@ -13934,9 +10896,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[602] = heapMem[localMem[499]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1337;
+         $display("Should not be executed  1336");
       end
 
        1337 :
@@ -13944,9 +10904,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[602]*7 + 0] = localMem[554];
-              updateArrayLength(1, localMem[602], 0);
-              ip = 1338;
+         $display("Should not be executed  1337");
       end
 
        1338 :
@@ -13954,9 +10912,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[603] = heapMem[localMem[499]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1339;
+         $display("Should not be executed  1338");
       end
 
        1339 :
@@ -13964,9 +10920,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[603]*7 + 1] = localMem[557];
-              updateArrayLength(1, localMem[603], 1);
-              ip = 1340;
+         $display("Should not be executed  1339");
       end
 
        1340 :
@@ -13974,9 +10928,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[499]*7 + 0] = 1;
-              updateArrayLength(1, localMem[499], 0);
-              ip = 1341;
+         $display("Should not be executed  1340");
       end
 
        1341 :
@@ -13984,9 +10936,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[604] = heapMem[localMem[499]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1342;
+         $display("Should not be executed  1341");
       end
 
        1342 :
@@ -13994,8 +10944,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[604]] = 1;
-              ip = 1343;
+         $display("Should not be executed  1342");
       end
 
        1343 :
@@ -14003,9 +10952,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[605] = heapMem[localMem[499]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1344;
+         $display("Should not be executed  1343");
       end
 
        1344 :
@@ -14013,8 +10960,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[605]] = 1;
-              ip = 1345;
+         $display("Should not be executed  1344");
       end
 
        1345 :
@@ -14022,9 +10968,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[606] = heapMem[localMem[499]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1346;
+         $display("Should not be executed  1345");
       end
 
        1346 :
@@ -14032,8 +10976,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[606]] = 2;
-              ip = 1347;
+         $display("Should not be executed  1346");
       end
 
        1347 :
@@ -14041,7 +10984,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1349;
+         $display("Should not be executed  1347");
       end
 
        1348 :
@@ -14049,7 +10992,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1354;
+         $display("Should not be executed  1348");
       end
 
        1349 :
@@ -14057,7 +11000,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1350;
+         $display("Should not be executed  1349");
       end
 
        1350 :
@@ -14065,9 +11008,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[500] = 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1351;
+         $display("Should not be executed  1350");
       end
 
        1351 :
@@ -14075,7 +11016,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1354;
+         $display("Should not be executed  1351");
       end
 
        1352 :
@@ -14083,7 +11024,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1353;
+         $display("Should not be executed  1352");
       end
 
        1353 :
@@ -14091,9 +11032,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[500] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 1354;
+         $display("Should not be executed  1353");
       end
 
        1354 :
@@ -14101,7 +11040,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1355;
+         $display("Should not be executed  1354");
       end
 
        1355 :
@@ -14109,7 +11048,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1356;
+         $display("Should not be executed  1355");
       end
 
        1356 :
@@ -14117,7 +11056,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1357;
+         $display("Should not be executed  1356");
       end
 
        1357 :
@@ -14125,9 +11064,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[607] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 1358;
+         $display("Should not be executed  1357");
       end
 
        1358 :
@@ -14135,7 +11072,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1359;
+         $display("Should not be executed  1358");
       end
 
        1359 :
@@ -14143,7 +11080,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[607] >= 99 ? 1857 : 1360;
+         $display("Should not be executed  1359");
       end
 
        1360 :
@@ -14151,9 +11088,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[608] = heapMem[localMem[499]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 1361;
+         $display("Should not be executed  1360");
       end
 
        1361 :
@@ -14161,9 +11096,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d subtract", steps, ip);
 end
-              localMem[609] = localMem[608] - 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1362;
+         $display("Should not be executed  1361");
       end
 
        1362 :
@@ -14171,9 +11104,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[610] = heapMem[localMem[499]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1363;
+         $display("Should not be executed  1362");
       end
 
        1363 :
@@ -14181,9 +11112,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[611] = heapMem[localMem[610]*7 + localMem[609]];
-              updateArrayLength(2, 0, 0);
-              ip = 1364;
+         $display("Should not be executed  1363");
       end
 
        1364 :
@@ -14191,7 +11120,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jLe", steps, ip);
 end
-              ip = 2 <= localMem[611] ? 1605 : 1365;
+         $display("Should not be executed  1364");
       end
 
        1365 :
@@ -14199,8 +11128,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d not", steps, ip);
 end
-              localMem[612] = !heapMem[localMem[499]*7 + 6];
-              ip = 1366;
+         $display("Should not be executed  1365");
       end
 
        1366 :
@@ -14208,7 +11136,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jEq", steps, ip);
 end
-              ip = localMem[612] == 0 ? 1371 : 1367;
+         $display("Should not be executed  1366");
       end
 
        1367 :
@@ -14216,9 +11144,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[476]*7 + 0] = localMem[499];
-              updateArrayLength(1, localMem[476], 0);
-              ip = 1368;
+         $display("Should not be executed  1367");
       end
 
        1368 :
@@ -14226,9 +11152,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[476]*7 + 1] = 2;
-              updateArrayLength(1, localMem[476], 1);
-              ip = 1369;
+         $display("Should not be executed  1368");
       end
 
        1369 :
@@ -14236,9 +11160,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d subtract", steps, ip);
 end
-              heapMem[localMem[476]*7 + 2] = localMem[608] - 1;
-              updateArrayLength(1, localMem[476], 2);
-              ip = 1370;
+         $display("Should not be executed  1369");
       end
 
        1370 :
@@ -14246,7 +11168,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1861;
+         $display("Should not be executed  1370");
       end
 
        1371 :
@@ -14254,7 +11176,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1372;
+         $display("Should not be executed  1371");
       end
 
        1372 :
@@ -14262,9 +11184,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[613] = heapMem[localMem[499]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1373;
+         $display("Should not be executed  1372");
       end
 
        1373 :
@@ -14272,9 +11192,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[614] = heapMem[localMem[613]*7 + localMem[608]];
-              updateArrayLength(2, 0, 0);
-              ip = 1374;
+         $display("Should not be executed  1373");
       end
 
        1374 :
@@ -14282,7 +11200,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1375;
+         $display("Should not be executed  1374");
       end
 
        1375 :
@@ -14290,9 +11208,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[616] = heapMem[localMem[614]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 1376;
+         $display("Should not be executed  1375");
       end
 
        1376 :
@@ -14300,9 +11216,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[617] = heapMem[localMem[614]*7 + 3];
-              updateArrayLength(2, 0, 0);
-              ip = 1377;
+         $display("Should not be executed  1376");
       end
 
        1377 :
@@ -14310,9 +11224,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[618] = heapMem[localMem[617]*7 + 2];
-              updateArrayLength(2, 0, 0);
-              ip = 1378;
+         $display("Should not be executed  1377");
       end
 
        1378 :
@@ -14320,7 +11232,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jLt", steps, ip);
 end
-              ip = localMem[616] <  localMem[618] ? 1598 : 1379;
+         $display("Should not be executed  1378");
       end
 
        1379 :
@@ -14328,9 +11240,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[619] = localMem[618];
-              updateArrayLength(2, 0, 0);
-              ip = 1380;
+         $display("Should not be executed  1379");
       end
 
        1380 :
@@ -14338,8 +11248,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftRight", steps, ip);
 end
-              localMem[619] = localMem[619] >> 1;
-              ip = 1381;
+         $display("Should not be executed  1380");
       end
 
        1381 :
@@ -14347,9 +11256,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[620] = localMem[619] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1382;
+         $display("Should not be executed  1381");
       end
 
        1382 :
@@ -14357,9 +11264,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[621] = heapMem[localMem[614]*7 + 2];
-              updateArrayLength(2, 0, 0);
-              ip = 1383;
+         $display("Should not be executed  1382");
       end
 
        1383 :
@@ -14367,7 +11272,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jEq", steps, ip);
 end
-              ip = localMem[621] == 0 ? 1480 : 1384;
+         $display("Should not be executed  1383");
       end
 
        1384 :
@@ -14375,17 +11280,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[622] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[622] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[622]] = 0;
-              ip = 1385;
+         $display("Should not be executed  1384");
       end
 
        1385 :
@@ -14393,9 +11288,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[622]*7 + 0] = localMem[619];
-              updateArrayLength(1, localMem[622], 0);
-              ip = 1386;
+         $display("Should not be executed  1385");
       end
 
        1386 :
@@ -14403,9 +11296,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[622]*7 + 2] = 0;
-              updateArrayLength(1, localMem[622], 2);
-              ip = 1387;
+         $display("Should not be executed  1386");
       end
 
        1387 :
@@ -14413,17 +11304,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[623] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[623] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[623]] = 0;
-              ip = 1388;
+         $display("Should not be executed  1387");
       end
 
        1388 :
@@ -14431,9 +11312,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[622]*7 + 4] = localMem[623];
-              updateArrayLength(1, localMem[622], 4);
-              ip = 1389;
+         $display("Should not be executed  1388");
       end
 
        1389 :
@@ -14441,17 +11320,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[624] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[624] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[624]] = 0;
-              ip = 1390;
+         $display("Should not be executed  1389");
       end
 
        1390 :
@@ -14459,9 +11328,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[622]*7 + 5] = localMem[624];
-              updateArrayLength(1, localMem[622], 5);
-              ip = 1391;
+         $display("Should not be executed  1390");
       end
 
        1391 :
@@ -14469,9 +11336,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[622]*7 + 6] = 0;
-              updateArrayLength(1, localMem[622], 6);
-              ip = 1392;
+         $display("Should not be executed  1391");
       end
 
        1392 :
@@ -14479,9 +11344,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[622]*7 + 3] = localMem[617];
-              updateArrayLength(1, localMem[622], 3);
-              ip = 1393;
+         $display("Should not be executed  1392");
       end
 
        1393 :
@@ -14489,9 +11352,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[617]*7 + 1] = heapMem[localMem[617]*7 + 1] + 1;
-              updateArrayLength(1, localMem[617], 1);
-              ip = 1394;
+         $display("Should not be executed  1393");
       end
 
        1394 :
@@ -14499,9 +11360,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[622]*7 + 1] = heapMem[localMem[617]*7 + 1];
-              updateArrayLength(1, localMem[622], 1);
-              ip = 1395;
+         $display("Should not be executed  1394");
       end
 
        1395 :
@@ -14509,8 +11368,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d not", steps, ip);
 end
-              localMem[625] = !heapMem[localMem[614]*7 + 6];
-              ip = 1396;
+         $display("Should not be executed  1395");
       end
 
        1396 :
@@ -14518,7 +11376,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[625] != 0 ? 1425 : 1397;
+         $display("Should not be executed  1396");
       end
 
        1397 :
@@ -14526,17 +11384,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[626] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[626] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[626]] = 0;
-              ip = 1398;
+         $display("Should not be executed  1397");
       end
 
        1398 :
@@ -14544,9 +11392,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[622]*7 + 6] = localMem[626];
-              updateArrayLength(1, localMem[622], 6);
-              ip = 1399;
+         $display("Should not be executed  1398");
       end
 
        1399 :
@@ -14554,9 +11400,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[627] = heapMem[localMem[614]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1400;
+         $display("Should not be executed  1399");
       end
 
        1400 :
@@ -14564,9 +11408,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[628] = heapMem[localMem[622]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1401;
+         $display("Should not be executed  1400");
       end
 
        1401 :
@@ -14574,13 +11416,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[619]) begin
-                  heapMem[NArea * localMem[628] + 0 + i] = heapMem[NArea * localMem[627] + localMem[620] + i];
-                  updateArrayLength(1, localMem[628], 0 + i);
-                end
-              end
-              ip = 1402;
+         $display("Should not be executed  1401");
       end
 
        1402 :
@@ -14588,9 +11424,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[629] = heapMem[localMem[614]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1403;
+         $display("Should not be executed  1402");
       end
 
        1403 :
@@ -14598,9 +11432,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[630] = heapMem[localMem[622]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1404;
+         $display("Should not be executed  1403");
       end
 
        1404 :
@@ -14608,13 +11440,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[619]) begin
-                  heapMem[NArea * localMem[630] + 0 + i] = heapMem[NArea * localMem[629] + localMem[620] + i];
-                  updateArrayLength(1, localMem[630], 0 + i);
-                end
-              end
-              ip = 1405;
+         $display("Should not be executed  1404");
       end
 
        1405 :
@@ -14622,9 +11448,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[631] = heapMem[localMem[614]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1406;
+         $display("Should not be executed  1405");
       end
 
        1406 :
@@ -14632,9 +11456,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[632] = heapMem[localMem[622]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1407;
+         $display("Should not be executed  1406");
       end
 
        1407 :
@@ -14642,9 +11464,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[633] = localMem[619] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1408;
+         $display("Should not be executed  1407");
       end
 
        1408 :
@@ -14652,13 +11472,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[633]) begin
-                  heapMem[NArea * localMem[632] + 0 + i] = heapMem[NArea * localMem[631] + localMem[620] + i];
-                  updateArrayLength(1, localMem[632], 0 + i);
-                end
-              end
-              ip = 1409;
+         $display("Should not be executed  1408");
       end
 
        1409 :
@@ -14666,9 +11480,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[634] = heapMem[localMem[622]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 1410;
+         $display("Should not be executed  1409");
       end
 
        1410 :
@@ -14676,9 +11488,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[635] = localMem[634] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1411;
+         $display("Should not be executed  1410");
       end
 
        1411 :
@@ -14686,9 +11496,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[636] = heapMem[localMem[622]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1412;
+         $display("Should not be executed  1411");
       end
 
        1412 :
@@ -14696,7 +11504,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1413;
+         $display("Should not be executed  1412");
       end
 
        1413 :
@@ -14704,9 +11512,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[637] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 1414;
+         $display("Should not be executed  1413");
       end
 
        1414 :
@@ -14714,7 +11520,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1415;
+         $display("Should not be executed  1414");
       end
 
        1415 :
@@ -14722,7 +11528,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[637] >= localMem[635] ? 1421 : 1416;
+         $display("Should not be executed  1415");
       end
 
        1416 :
@@ -14730,9 +11536,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[638] = heapMem[localMem[636]*7 + localMem[637]];
-              updateArrayLength(2, 0, 0);
-              ip = 1417;
+         $display("Should not be executed  1416");
       end
 
        1417 :
@@ -14740,9 +11544,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[638]*7 + 2] = localMem[622];
-              updateArrayLength(1, localMem[638], 2);
-              ip = 1418;
+         $display("Should not be executed  1417");
       end
 
        1418 :
@@ -14750,7 +11552,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1419;
+         $display("Should not be executed  1418");
       end
 
        1419 :
@@ -14758,9 +11560,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[637] = localMem[637] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1420;
+         $display("Should not be executed  1419");
       end
 
        1420 :
@@ -14768,7 +11568,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1414;
+         $display("Should not be executed  1420");
       end
 
        1421 :
@@ -14776,7 +11576,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1422;
+         $display("Should not be executed  1421");
       end
 
        1422 :
@@ -14784,9 +11584,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[639] = heapMem[localMem[614]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1423;
+         $display("Should not be executed  1422");
       end
 
        1423 :
@@ -14794,8 +11592,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[639]] = localMem[620];
-              ip = 1424;
+         $display("Should not be executed  1423");
       end
 
        1424 :
@@ -14803,7 +11600,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1432;
+         $display("Should not be executed  1424");
       end
 
        1425 :
@@ -14811,7 +11608,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1426;
+         $display("Should not be executed  1425");
       end
 
        1426 :
@@ -14819,9 +11616,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[640] = heapMem[localMem[614]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1427;
+         $display("Should not be executed  1426");
       end
 
        1427 :
@@ -14829,9 +11624,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[641] = heapMem[localMem[622]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1428;
+         $display("Should not be executed  1427");
       end
 
        1428 :
@@ -14839,13 +11632,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[619]) begin
-                  heapMem[NArea * localMem[641] + 0 + i] = heapMem[NArea * localMem[640] + localMem[620] + i];
-                  updateArrayLength(1, localMem[641], 0 + i);
-                end
-              end
-              ip = 1429;
+         $display("Should not be executed  1428");
       end
 
        1429 :
@@ -14853,9 +11640,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[642] = heapMem[localMem[614]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1430;
+         $display("Should not be executed  1429");
       end
 
        1430 :
@@ -14863,9 +11648,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[643] = heapMem[localMem[622]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1431;
+         $display("Should not be executed  1430");
       end
 
        1431 :
@@ -14873,13 +11656,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[619]) begin
-                  heapMem[NArea * localMem[643] + 0 + i] = heapMem[NArea * localMem[642] + localMem[620] + i];
-                  updateArrayLength(1, localMem[643], 0 + i);
-                end
-              end
-              ip = 1432;
+         $display("Should not be executed  1431");
       end
 
        1432 :
@@ -14887,7 +11664,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1433;
+         $display("Should not be executed  1432");
       end
 
        1433 :
@@ -14895,9 +11672,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[614]*7 + 0] = localMem[619];
-              updateArrayLength(1, localMem[614], 0);
-              ip = 1434;
+         $display("Should not be executed  1433");
       end
 
        1434 :
@@ -14905,9 +11680,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[622]*7 + 2] = localMem[621];
-              updateArrayLength(1, localMem[622], 2);
-              ip = 1435;
+         $display("Should not be executed  1434");
       end
 
        1435 :
@@ -14915,9 +11688,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[644] = heapMem[localMem[621]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 1436;
+         $display("Should not be executed  1435");
       end
 
        1436 :
@@ -14925,9 +11696,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[645] = heapMem[localMem[621]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1437;
+         $display("Should not be executed  1436");
       end
 
        1437 :
@@ -14935,9 +11704,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[646] = heapMem[localMem[645]*7 + localMem[644]];
-              updateArrayLength(2, 0, 0);
-              ip = 1438;
+         $display("Should not be executed  1437");
       end
 
        1438 :
@@ -14945,7 +11712,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[646] != localMem[614] ? 1457 : 1439;
+         $display("Should not be executed  1438");
       end
 
        1439 :
@@ -14953,9 +11720,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[647] = heapMem[localMem[614]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1440;
+         $display("Should not be executed  1439");
       end
 
        1440 :
@@ -14963,9 +11728,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[648] = heapMem[localMem[647]*7 + localMem[619]];
-              updateArrayLength(2, 0, 0);
-              ip = 1441;
+         $display("Should not be executed  1440");
       end
 
        1441 :
@@ -14973,9 +11736,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[649] = heapMem[localMem[621]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1442;
+         $display("Should not be executed  1441");
       end
 
        1442 :
@@ -14983,9 +11744,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[649]*7 + localMem[644]] = localMem[648];
-              updateArrayLength(1, localMem[649], localMem[644]);
-              ip = 1443;
+         $display("Should not be executed  1442");
       end
 
        1443 :
@@ -14993,9 +11752,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[650] = heapMem[localMem[614]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1444;
+         $display("Should not be executed  1443");
       end
 
        1444 :
@@ -15003,9 +11760,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[651] = heapMem[localMem[650]*7 + localMem[619]];
-              updateArrayLength(2, 0, 0);
-              ip = 1445;
+         $display("Should not be executed  1444");
       end
 
        1445 :
@@ -15013,9 +11768,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[652] = heapMem[localMem[621]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1446;
+         $display("Should not be executed  1445");
       end
 
        1446 :
@@ -15023,9 +11776,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[652]*7 + localMem[644]] = localMem[651];
-              updateArrayLength(1, localMem[652], localMem[644]);
-              ip = 1447;
+         $display("Should not be executed  1446");
       end
 
        1447 :
@@ -15033,9 +11784,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[653] = heapMem[localMem[614]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1448;
+         $display("Should not be executed  1447");
       end
 
        1448 :
@@ -15043,8 +11792,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[653]] = localMem[619];
-              ip = 1449;
+         $display("Should not be executed  1448");
       end
 
        1449 :
@@ -15052,9 +11800,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[654] = heapMem[localMem[614]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1450;
+         $display("Should not be executed  1449");
       end
 
        1450 :
@@ -15062,8 +11808,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[654]] = localMem[619];
-              ip = 1451;
+         $display("Should not be executed  1450");
       end
 
        1451 :
@@ -15071,9 +11816,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[655] = localMem[644] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1452;
+         $display("Should not be executed  1451");
       end
 
        1452 :
@@ -15081,9 +11824,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[621]*7 + 0] = localMem[655];
-              updateArrayLength(1, localMem[621], 0);
-              ip = 1453;
+         $display("Should not be executed  1452");
       end
 
        1453 :
@@ -15091,9 +11832,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[656] = heapMem[localMem[621]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1454;
+         $display("Should not be executed  1453");
       end
 
        1454 :
@@ -15101,9 +11840,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[656]*7 + localMem[655]] = localMem[622];
-              updateArrayLength(1, localMem[656], localMem[655]);
-              ip = 1455;
+         $display("Should not be executed  1454");
       end
 
        1455 :
@@ -15111,7 +11848,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1595;
+         $display("Should not be executed  1455");
       end
 
        1456 :
@@ -15119,7 +11856,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1479;
+         $display("Should not be executed  1456");
       end
 
        1457 :
@@ -15127,7 +11864,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1458;
+         $display("Should not be executed  1457");
       end
 
        1458 :
@@ -15135,7 +11872,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d assertNe", steps, ip);
 end
-            ip = 1459;
+         $display("Should not be executed  1458");
       end
 
        1459 :
@@ -15143,9 +11880,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[657] = heapMem[localMem[621]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1460;
+         $display("Should not be executed  1459");
       end
 
        1460 :
@@ -15153,11 +11888,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d arrayIndex", steps, ip);
 end
-              localMem[658] = 0; k = arraySizes[localMem[657]];
-              for(i = 0; i < NArea; i = i + 1) begin
-                if (i < k && heapMem[localMem[657] * NArea + i] == localMem[614]) localMem[658] = i + 1;
-              end
-              ip = 1461;
+         $display("Should not be executed  1460");
       end
 
        1461 :
@@ -15165,9 +11896,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d subtract", steps, ip);
 end
-              localMem[658] = localMem[658] - 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1462;
+         $display("Should not be executed  1461");
       end
 
        1462 :
@@ -15175,9 +11904,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[659] = heapMem[localMem[614]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1463;
+         $display("Should not be executed  1462");
       end
 
        1463 :
@@ -15185,9 +11912,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[660] = heapMem[localMem[659]*7 + localMem[619]];
-              updateArrayLength(2, 0, 0);
-              ip = 1464;
+         $display("Should not be executed  1463");
       end
 
        1464 :
@@ -15195,9 +11920,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[661] = heapMem[localMem[614]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1465;
+         $display("Should not be executed  1464");
       end
 
        1465 :
@@ -15205,9 +11928,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[662] = heapMem[localMem[661]*7 + localMem[619]];
-              updateArrayLength(2, 0, 0);
-              ip = 1466;
+         $display("Should not be executed  1465");
       end
 
        1466 :
@@ -15215,9 +11936,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[663] = heapMem[localMem[614]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1467;
+         $display("Should not be executed  1466");
       end
 
        1467 :
@@ -15225,8 +11944,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[663]] = localMem[619];
-              ip = 1468;
+         $display("Should not be executed  1467");
       end
 
        1468 :
@@ -15234,9 +11952,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[664] = heapMem[localMem[614]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1469;
+         $display("Should not be executed  1468");
       end
 
        1469 :
@@ -15244,8 +11960,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[664]] = localMem[619];
-              ip = 1470;
+         $display("Should not be executed  1469");
       end
 
        1470 :
@@ -15253,9 +11968,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[665] = heapMem[localMem[621]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1471;
+         $display("Should not be executed  1470");
       end
 
        1471 :
@@ -15263,18 +11976,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[665] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[658], localMem[665], arraySizes[localMem[665]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[658] && i <= arraySizes[localMem[665]]) begin
-                  heapMem[NArea * localMem[665] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[665] + localMem[658]] = localMem[660];                                    // Insert new value
-              arraySizes[localMem[665]] = arraySizes[localMem[665]] + 1;                              // Increase array size
-              ip = 1472;
+         $display("Should not be executed  1471");
       end
 
        1472 :
@@ -15282,9 +11984,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[666] = heapMem[localMem[621]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1473;
+         $display("Should not be executed  1472");
       end
 
        1473 :
@@ -15292,18 +11992,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[666] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[658], localMem[666], arraySizes[localMem[666]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[658] && i <= arraySizes[localMem[666]]) begin
-                  heapMem[NArea * localMem[666] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[666] + localMem[658]] = localMem[662];                                    // Insert new value
-              arraySizes[localMem[666]] = arraySizes[localMem[666]] + 1;                              // Increase array size
-              ip = 1474;
+         $display("Should not be executed  1473");
       end
 
        1474 :
@@ -15311,9 +12000,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[667] = heapMem[localMem[621]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1475;
+         $display("Should not be executed  1474");
       end
 
        1475 :
@@ -15321,9 +12008,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[668] = localMem[658] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1476;
+         $display("Should not be executed  1475");
       end
 
        1476 :
@@ -15331,18 +12016,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[667] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[668], localMem[667], arraySizes[localMem[667]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[668] && i <= arraySizes[localMem[667]]) begin
-                  heapMem[NArea * localMem[667] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[667] + localMem[668]] = localMem[622];                                    // Insert new value
-              arraySizes[localMem[667]] = arraySizes[localMem[667]] + 1;                              // Increase array size
-              ip = 1477;
+         $display("Should not be executed  1476");
       end
 
        1477 :
@@ -15350,9 +12024,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[621]*7 + 0] = heapMem[localMem[621]*7 + 0] + 1;
-              updateArrayLength(1, localMem[621], 0);
-              ip = 1478;
+         $display("Should not be executed  1477");
       end
 
        1478 :
@@ -15360,7 +12032,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1595;
+         $display("Should not be executed  1478");
       end
 
        1479 :
@@ -15368,7 +12040,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1480;
+         $display("Should not be executed  1479");
       end
 
        1480 :
@@ -15376,7 +12048,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1481;
+         $display("Should not be executed  1480");
       end
 
        1481 :
@@ -15384,17 +12056,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[669] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[669] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[669]] = 0;
-              ip = 1482;
+         $display("Should not be executed  1481");
       end
 
        1482 :
@@ -15402,9 +12064,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[669]*7 + 0] = localMem[619];
-              updateArrayLength(1, localMem[669], 0);
-              ip = 1483;
+         $display("Should not be executed  1482");
       end
 
        1483 :
@@ -15412,9 +12072,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[669]*7 + 2] = 0;
-              updateArrayLength(1, localMem[669], 2);
-              ip = 1484;
+         $display("Should not be executed  1483");
       end
 
        1484 :
@@ -15422,17 +12080,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[670] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[670] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[670]] = 0;
-              ip = 1485;
+         $display("Should not be executed  1484");
       end
 
        1485 :
@@ -15440,9 +12088,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[669]*7 + 4] = localMem[670];
-              updateArrayLength(1, localMem[669], 4);
-              ip = 1486;
+         $display("Should not be executed  1485");
       end
 
        1486 :
@@ -15450,17 +12096,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[671] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[671] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[671]] = 0;
-              ip = 1487;
+         $display("Should not be executed  1486");
       end
 
        1487 :
@@ -15468,9 +12104,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[669]*7 + 5] = localMem[671];
-              updateArrayLength(1, localMem[669], 5);
-              ip = 1488;
+         $display("Should not be executed  1487");
       end
 
        1488 :
@@ -15478,9 +12112,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[669]*7 + 6] = 0;
-              updateArrayLength(1, localMem[669], 6);
-              ip = 1489;
+         $display("Should not be executed  1488");
       end
 
        1489 :
@@ -15488,9 +12120,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[669]*7 + 3] = localMem[617];
-              updateArrayLength(1, localMem[669], 3);
-              ip = 1490;
+         $display("Should not be executed  1489");
       end
 
        1490 :
@@ -15498,9 +12128,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[617]*7 + 1] = heapMem[localMem[617]*7 + 1] + 1;
-              updateArrayLength(1, localMem[617], 1);
-              ip = 1491;
+         $display("Should not be executed  1490");
       end
 
        1491 :
@@ -15508,9 +12136,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[669]*7 + 1] = heapMem[localMem[617]*7 + 1];
-              updateArrayLength(1, localMem[669], 1);
-              ip = 1492;
+         $display("Should not be executed  1491");
       end
 
        1492 :
@@ -15518,17 +12144,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[672] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[672] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[672]] = 0;
-              ip = 1493;
+         $display("Should not be executed  1492");
       end
 
        1493 :
@@ -15536,9 +12152,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[672]*7 + 0] = localMem[619];
-              updateArrayLength(1, localMem[672], 0);
-              ip = 1494;
+         $display("Should not be executed  1493");
       end
 
        1494 :
@@ -15546,9 +12160,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[672]*7 + 2] = 0;
-              updateArrayLength(1, localMem[672], 2);
-              ip = 1495;
+         $display("Should not be executed  1494");
       end
 
        1495 :
@@ -15556,17 +12168,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[673] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[673] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[673]] = 0;
-              ip = 1496;
+         $display("Should not be executed  1495");
       end
 
        1496 :
@@ -15574,9 +12176,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[672]*7 + 4] = localMem[673];
-              updateArrayLength(1, localMem[672], 4);
-              ip = 1497;
+         $display("Should not be executed  1496");
       end
 
        1497 :
@@ -15584,17 +12184,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[674] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[674] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[674]] = 0;
-              ip = 1498;
+         $display("Should not be executed  1497");
       end
 
        1498 :
@@ -15602,9 +12192,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[672]*7 + 5] = localMem[674];
-              updateArrayLength(1, localMem[672], 5);
-              ip = 1499;
+         $display("Should not be executed  1498");
       end
 
        1499 :
@@ -15612,9 +12200,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[672]*7 + 6] = 0;
-              updateArrayLength(1, localMem[672], 6);
-              ip = 1500;
+         $display("Should not be executed  1499");
       end
 
        1500 :
@@ -15622,9 +12208,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[672]*7 + 3] = localMem[617];
-              updateArrayLength(1, localMem[672], 3);
-              ip = 1501;
+         $display("Should not be executed  1500");
       end
 
        1501 :
@@ -15632,9 +12216,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[617]*7 + 1] = heapMem[localMem[617]*7 + 1] + 1;
-              updateArrayLength(1, localMem[617], 1);
-              ip = 1502;
+         $display("Should not be executed  1501");
       end
 
        1502 :
@@ -15642,9 +12224,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[672]*7 + 1] = heapMem[localMem[617]*7 + 1];
-              updateArrayLength(1, localMem[672], 1);
-              ip = 1503;
+         $display("Should not be executed  1502");
       end
 
        1503 :
@@ -15652,8 +12232,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d not", steps, ip);
 end
-              localMem[675] = !heapMem[localMem[614]*7 + 6];
-              ip = 1504;
+         $display("Should not be executed  1503");
       end
 
        1504 :
@@ -15661,7 +12240,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[675] != 0 ? 1556 : 1505;
+         $display("Should not be executed  1504");
       end
 
        1505 :
@@ -15669,17 +12248,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[676] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[676] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[676]] = 0;
-              ip = 1506;
+         $display("Should not be executed  1505");
       end
 
        1506 :
@@ -15687,9 +12256,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[669]*7 + 6] = localMem[676];
-              updateArrayLength(1, localMem[669], 6);
-              ip = 1507;
+         $display("Should not be executed  1506");
       end
 
        1507 :
@@ -15697,17 +12264,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[677] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[677] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[677]] = 0;
-              ip = 1508;
+         $display("Should not be executed  1507");
       end
 
        1508 :
@@ -15715,9 +12272,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[672]*7 + 6] = localMem[677];
-              updateArrayLength(1, localMem[672], 6);
-              ip = 1509;
+         $display("Should not be executed  1508");
       end
 
        1509 :
@@ -15725,9 +12280,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[678] = heapMem[localMem[614]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1510;
+         $display("Should not be executed  1509");
       end
 
        1510 :
@@ -15735,9 +12288,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[679] = heapMem[localMem[669]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1511;
+         $display("Should not be executed  1510");
       end
 
        1511 :
@@ -15745,13 +12296,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[619]) begin
-                  heapMem[NArea * localMem[679] + 0 + i] = heapMem[NArea * localMem[678] + 0 + i];
-                  updateArrayLength(1, localMem[679], 0 + i);
-                end
-              end
-              ip = 1512;
+         $display("Should not be executed  1511");
       end
 
        1512 :
@@ -15759,9 +12304,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[680] = heapMem[localMem[614]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1513;
+         $display("Should not be executed  1512");
       end
 
        1513 :
@@ -15769,9 +12312,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[681] = heapMem[localMem[669]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1514;
+         $display("Should not be executed  1513");
       end
 
        1514 :
@@ -15779,13 +12320,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[619]) begin
-                  heapMem[NArea * localMem[681] + 0 + i] = heapMem[NArea * localMem[680] + 0 + i];
-                  updateArrayLength(1, localMem[681], 0 + i);
-                end
-              end
-              ip = 1515;
+         $display("Should not be executed  1514");
       end
 
        1515 :
@@ -15793,9 +12328,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[682] = heapMem[localMem[614]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1516;
+         $display("Should not be executed  1515");
       end
 
        1516 :
@@ -15803,9 +12336,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[683] = heapMem[localMem[669]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1517;
+         $display("Should not be executed  1516");
       end
 
        1517 :
@@ -15813,9 +12344,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[684] = localMem[619] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1518;
+         $display("Should not be executed  1517");
       end
 
        1518 :
@@ -15823,13 +12352,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[684]) begin
-                  heapMem[NArea * localMem[683] + 0 + i] = heapMem[NArea * localMem[682] + 0 + i];
-                  updateArrayLength(1, localMem[683], 0 + i);
-                end
-              end
-              ip = 1519;
+         $display("Should not be executed  1518");
       end
 
        1519 :
@@ -15837,9 +12360,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[685] = heapMem[localMem[614]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1520;
+         $display("Should not be executed  1519");
       end
 
        1520 :
@@ -15847,9 +12368,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[686] = heapMem[localMem[672]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1521;
+         $display("Should not be executed  1520");
       end
 
        1521 :
@@ -15857,13 +12376,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[619]) begin
-                  heapMem[NArea * localMem[686] + 0 + i] = heapMem[NArea * localMem[685] + localMem[620] + i];
-                  updateArrayLength(1, localMem[686], 0 + i);
-                end
-              end
-              ip = 1522;
+         $display("Should not be executed  1521");
       end
 
        1522 :
@@ -15871,9 +12384,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[687] = heapMem[localMem[614]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1523;
+         $display("Should not be executed  1522");
       end
 
        1523 :
@@ -15881,9 +12392,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[688] = heapMem[localMem[672]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1524;
+         $display("Should not be executed  1523");
       end
 
        1524 :
@@ -15891,13 +12400,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[619]) begin
-                  heapMem[NArea * localMem[688] + 0 + i] = heapMem[NArea * localMem[687] + localMem[620] + i];
-                  updateArrayLength(1, localMem[688], 0 + i);
-                end
-              end
-              ip = 1525;
+         $display("Should not be executed  1524");
       end
 
        1525 :
@@ -15905,9 +12408,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[689] = heapMem[localMem[614]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1526;
+         $display("Should not be executed  1525");
       end
 
        1526 :
@@ -15915,9 +12416,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[690] = heapMem[localMem[672]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1527;
+         $display("Should not be executed  1526");
       end
 
        1527 :
@@ -15925,9 +12424,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[691] = localMem[619] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1528;
+         $display("Should not be executed  1527");
       end
 
        1528 :
@@ -15935,13 +12432,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[691]) begin
-                  heapMem[NArea * localMem[690] + 0 + i] = heapMem[NArea * localMem[689] + localMem[620] + i];
-                  updateArrayLength(1, localMem[690], 0 + i);
-                end
-              end
-              ip = 1529;
+         $display("Should not be executed  1528");
       end
 
        1529 :
@@ -15949,9 +12440,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[692] = heapMem[localMem[669]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 1530;
+         $display("Should not be executed  1529");
       end
 
        1530 :
@@ -15959,9 +12448,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[693] = localMem[692] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1531;
+         $display("Should not be executed  1530");
       end
 
        1531 :
@@ -15969,9 +12456,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[694] = heapMem[localMem[669]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1532;
+         $display("Should not be executed  1531");
       end
 
        1532 :
@@ -15979,7 +12464,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1533;
+         $display("Should not be executed  1532");
       end
 
        1533 :
@@ -15987,9 +12472,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[695] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 1534;
+         $display("Should not be executed  1533");
       end
 
        1534 :
@@ -15997,7 +12480,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1535;
+         $display("Should not be executed  1534");
       end
 
        1535 :
@@ -16005,7 +12488,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[695] >= localMem[693] ? 1541 : 1536;
+         $display("Should not be executed  1535");
       end
 
        1536 :
@@ -16013,9 +12496,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[696] = heapMem[localMem[694]*7 + localMem[695]];
-              updateArrayLength(2, 0, 0);
-              ip = 1537;
+         $display("Should not be executed  1536");
       end
 
        1537 :
@@ -16023,9 +12504,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[696]*7 + 2] = localMem[669];
-              updateArrayLength(1, localMem[696], 2);
-              ip = 1538;
+         $display("Should not be executed  1537");
       end
 
        1538 :
@@ -16033,7 +12512,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1539;
+         $display("Should not be executed  1538");
       end
 
        1539 :
@@ -16041,9 +12520,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[695] = localMem[695] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1540;
+         $display("Should not be executed  1539");
       end
 
        1540 :
@@ -16051,7 +12528,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1534;
+         $display("Should not be executed  1540");
       end
 
        1541 :
@@ -16059,7 +12536,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1542;
+         $display("Should not be executed  1541");
       end
 
        1542 :
@@ -16067,9 +12544,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[697] = heapMem[localMem[672]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 1543;
+         $display("Should not be executed  1542");
       end
 
        1543 :
@@ -16077,9 +12552,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[698] = localMem[697] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1544;
+         $display("Should not be executed  1543");
       end
 
        1544 :
@@ -16087,9 +12560,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[699] = heapMem[localMem[672]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1545;
+         $display("Should not be executed  1544");
       end
 
        1545 :
@@ -16097,7 +12568,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1546;
+         $display("Should not be executed  1545");
       end
 
        1546 :
@@ -16105,9 +12576,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[700] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 1547;
+         $display("Should not be executed  1546");
       end
 
        1547 :
@@ -16115,7 +12584,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1548;
+         $display("Should not be executed  1547");
       end
 
        1548 :
@@ -16123,7 +12592,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[700] >= localMem[698] ? 1554 : 1549;
+         $display("Should not be executed  1548");
       end
 
        1549 :
@@ -16131,9 +12600,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[701] = heapMem[localMem[699]*7 + localMem[700]];
-              updateArrayLength(2, 0, 0);
-              ip = 1550;
+         $display("Should not be executed  1549");
       end
 
        1550 :
@@ -16141,9 +12608,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[701]*7 + 2] = localMem[672];
-              updateArrayLength(1, localMem[701], 2);
-              ip = 1551;
+         $display("Should not be executed  1550");
       end
 
        1551 :
@@ -16151,7 +12616,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1552;
+         $display("Should not be executed  1551");
       end
 
        1552 :
@@ -16159,9 +12624,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[700] = localMem[700] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1553;
+         $display("Should not be executed  1552");
       end
 
        1553 :
@@ -16169,7 +12632,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1547;
+         $display("Should not be executed  1553");
       end
 
        1554 :
@@ -16177,7 +12640,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1555;
+         $display("Should not be executed  1554");
       end
 
        1555 :
@@ -16185,7 +12648,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1571;
+         $display("Should not be executed  1555");
       end
 
        1556 :
@@ -16193,7 +12656,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1557;
+         $display("Should not be executed  1556");
       end
 
        1557 :
@@ -16201,17 +12664,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[702] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[702] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[702]] = 0;
-              ip = 1558;
+         $display("Should not be executed  1557");
       end
 
        1558 :
@@ -16219,9 +12672,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[614]*7 + 6] = localMem[702];
-              updateArrayLength(1, localMem[614], 6);
-              ip = 1559;
+         $display("Should not be executed  1558");
       end
 
        1559 :
@@ -16229,9 +12680,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[703] = heapMem[localMem[614]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1560;
+         $display("Should not be executed  1559");
       end
 
        1560 :
@@ -16239,9 +12688,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[704] = heapMem[localMem[669]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1561;
+         $display("Should not be executed  1560");
       end
 
        1561 :
@@ -16249,13 +12696,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[619]) begin
-                  heapMem[NArea * localMem[704] + 0 + i] = heapMem[NArea * localMem[703] + 0 + i];
-                  updateArrayLength(1, localMem[704], 0 + i);
-                end
-              end
-              ip = 1562;
+         $display("Should not be executed  1561");
       end
 
        1562 :
@@ -16263,9 +12704,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[705] = heapMem[localMem[614]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1563;
+         $display("Should not be executed  1562");
       end
 
        1563 :
@@ -16273,9 +12712,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[706] = heapMem[localMem[669]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1564;
+         $display("Should not be executed  1563");
       end
 
        1564 :
@@ -16283,13 +12720,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[619]) begin
-                  heapMem[NArea * localMem[706] + 0 + i] = heapMem[NArea * localMem[705] + 0 + i];
-                  updateArrayLength(1, localMem[706], 0 + i);
-                end
-              end
-              ip = 1565;
+         $display("Should not be executed  1564");
       end
 
        1565 :
@@ -16297,9 +12728,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[707] = heapMem[localMem[614]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1566;
+         $display("Should not be executed  1565");
       end
 
        1566 :
@@ -16307,9 +12736,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[708] = heapMem[localMem[672]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1567;
+         $display("Should not be executed  1566");
       end
 
        1567 :
@@ -16317,13 +12744,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[619]) begin
-                  heapMem[NArea * localMem[708] + 0 + i] = heapMem[NArea * localMem[707] + localMem[620] + i];
-                  updateArrayLength(1, localMem[708], 0 + i);
-                end
-              end
-              ip = 1568;
+         $display("Should not be executed  1567");
       end
 
        1568 :
@@ -16331,9 +12752,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[709] = heapMem[localMem[614]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1569;
+         $display("Should not be executed  1568");
       end
 
        1569 :
@@ -16341,9 +12760,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[710] = heapMem[localMem[672]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1570;
+         $display("Should not be executed  1569");
       end
 
        1570 :
@@ -16351,13 +12768,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[619]) begin
-                  heapMem[NArea * localMem[710] + 0 + i] = heapMem[NArea * localMem[709] + localMem[620] + i];
-                  updateArrayLength(1, localMem[710], 0 + i);
-                end
-              end
-              ip = 1571;
+         $display("Should not be executed  1570");
       end
 
        1571 :
@@ -16365,7 +12776,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1572;
+         $display("Should not be executed  1571");
       end
 
        1572 :
@@ -16373,9 +12784,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[669]*7 + 2] = localMem[614];
-              updateArrayLength(1, localMem[669], 2);
-              ip = 1573;
+         $display("Should not be executed  1572");
       end
 
        1573 :
@@ -16383,9 +12792,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[672]*7 + 2] = localMem[614];
-              updateArrayLength(1, localMem[672], 2);
-              ip = 1574;
+         $display("Should not be executed  1573");
       end
 
        1574 :
@@ -16393,9 +12800,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[711] = heapMem[localMem[614]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1575;
+         $display("Should not be executed  1574");
       end
 
        1575 :
@@ -16403,9 +12808,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[712] = heapMem[localMem[711]*7 + localMem[619]];
-              updateArrayLength(2, 0, 0);
-              ip = 1576;
+         $display("Should not be executed  1575");
       end
 
        1576 :
@@ -16413,9 +12816,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[713] = heapMem[localMem[614]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1577;
+         $display("Should not be executed  1576");
       end
 
        1577 :
@@ -16423,9 +12824,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[714] = heapMem[localMem[713]*7 + localMem[619]];
-              updateArrayLength(2, 0, 0);
-              ip = 1578;
+         $display("Should not be executed  1577");
       end
 
        1578 :
@@ -16433,9 +12832,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[715] = heapMem[localMem[614]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1579;
+         $display("Should not be executed  1578");
       end
 
        1579 :
@@ -16443,9 +12840,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[715]*7 + 0] = localMem[712];
-              updateArrayLength(1, localMem[715], 0);
-              ip = 1580;
+         $display("Should not be executed  1579");
       end
 
        1580 :
@@ -16453,9 +12848,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[716] = heapMem[localMem[614]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1581;
+         $display("Should not be executed  1580");
       end
 
        1581 :
@@ -16463,9 +12856,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[716]*7 + 0] = localMem[714];
-              updateArrayLength(1, localMem[716], 0);
-              ip = 1582;
+         $display("Should not be executed  1581");
       end
 
        1582 :
@@ -16473,9 +12864,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[717] = heapMem[localMem[614]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1583;
+         $display("Should not be executed  1582");
       end
 
        1583 :
@@ -16483,9 +12872,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[717]*7 + 0] = localMem[669];
-              updateArrayLength(1, localMem[717], 0);
-              ip = 1584;
+         $display("Should not be executed  1583");
       end
 
        1584 :
@@ -16493,9 +12880,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[718] = heapMem[localMem[614]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1585;
+         $display("Should not be executed  1584");
       end
 
        1585 :
@@ -16503,9 +12888,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[718]*7 + 1] = localMem[672];
-              updateArrayLength(1, localMem[718], 1);
-              ip = 1586;
+         $display("Should not be executed  1585");
       end
 
        1586 :
@@ -16513,9 +12896,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[614]*7 + 0] = 1;
-              updateArrayLength(1, localMem[614], 0);
-              ip = 1587;
+         $display("Should not be executed  1586");
       end
 
        1587 :
@@ -16523,9 +12904,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[719] = heapMem[localMem[614]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1588;
+         $display("Should not be executed  1587");
       end
 
        1588 :
@@ -16533,8 +12912,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[719]] = 1;
-              ip = 1589;
+         $display("Should not be executed  1588");
       end
 
        1589 :
@@ -16542,9 +12920,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[720] = heapMem[localMem[614]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1590;
+         $display("Should not be executed  1589");
       end
 
        1590 :
@@ -16552,8 +12928,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[720]] = 1;
-              ip = 1591;
+         $display("Should not be executed  1590");
       end
 
        1591 :
@@ -16561,9 +12936,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[721] = heapMem[localMem[614]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1592;
+         $display("Should not be executed  1591");
       end
 
        1592 :
@@ -16571,8 +12944,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[721]] = 2;
-              ip = 1593;
+         $display("Should not be executed  1592");
       end
 
        1593 :
@@ -16580,7 +12952,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1595;
+         $display("Should not be executed  1593");
       end
 
        1594 :
@@ -16588,7 +12960,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1600;
+         $display("Should not be executed  1594");
       end
 
        1595 :
@@ -16596,7 +12968,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1596;
+         $display("Should not be executed  1595");
       end
 
        1596 :
@@ -16604,9 +12976,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[615] = 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1597;
+         $display("Should not be executed  1596");
       end
 
        1597 :
@@ -16614,7 +12984,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1600;
+         $display("Should not be executed  1597");
       end
 
        1598 :
@@ -16622,7 +12992,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1599;
+         $display("Should not be executed  1598");
       end
 
        1599 :
@@ -16630,9 +13000,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[615] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 1600;
+         $display("Should not be executed  1599");
       end
 
        1600 :
@@ -16640,7 +13008,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1601;
+         $display("Should not be executed  1600");
       end
 
        1601 :
@@ -16648,7 +13016,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[615] != 0 ? 1603 : 1602;
+         $display("Should not be executed  1601");
       end
 
        1602 :
@@ -16656,9 +13024,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[499] = localMem[614];
-              updateArrayLength(2, 0, 0);
-              ip = 1603;
+         $display("Should not be executed  1602");
       end
 
        1603 :
@@ -16666,7 +13032,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1604;
+         $display("Should not be executed  1603");
       end
 
        1604 :
@@ -16674,7 +13040,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1854;
+         $display("Should not be executed  1604");
       end
 
        1605 :
@@ -16682,7 +13048,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1606;
+         $display("Should not be executed  1605");
       end
 
        1606 :
@@ -16690,9 +13056,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[722] = heapMem[localMem[499]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1607;
+         $display("Should not be executed  1606");
       end
 
        1607 :
@@ -16700,11 +13064,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d arrayIndex", steps, ip);
 end
-              localMem[723] = 0; k = arraySizes[localMem[722]];
-              for(i = 0; i < NArea; i = i + 1) begin
-                if (i < k && heapMem[localMem[722] * NArea + i] == 2) localMem[723] = i + 1;
-              end
-              ip = 1608;
+         $display("Should not be executed  1607");
       end
 
        1608 :
@@ -16712,7 +13072,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jEq", steps, ip);
 end
-              ip = localMem[723] == 0 ? 1613 : 1609;
+         $display("Should not be executed  1608");
       end
 
        1609 :
@@ -16720,9 +13080,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[476]*7 + 0] = localMem[499];
-              updateArrayLength(1, localMem[476], 0);
-              ip = 1610;
+         $display("Should not be executed  1609");
       end
 
        1610 :
@@ -16730,9 +13088,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[476]*7 + 1] = 1;
-              updateArrayLength(1, localMem[476], 1);
-              ip = 1611;
+         $display("Should not be executed  1610");
       end
 
        1611 :
@@ -16740,9 +13096,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d subtract", steps, ip);
 end
-              heapMem[localMem[476]*7 + 2] = localMem[723] - 1;
-              updateArrayLength(1, localMem[476], 2);
-              ip = 1612;
+         $display("Should not be executed  1611");
       end
 
        1612 :
@@ -16750,7 +13104,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1861;
+         $display("Should not be executed  1612");
       end
 
        1613 :
@@ -16758,7 +13112,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1614;
+         $display("Should not be executed  1613");
       end
 
        1614 :
@@ -16766,12 +13120,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d arrayCountLess", steps, ip);
 end
-              j = 0; k = arraySizes[localMem[722]];
-              for(i = 0; i < NArea; i = i + 1) begin
-                if (i < k && heapMem[localMem[722] * NArea + i] < 2) j = j + 1;
-              end
-              localMem[724] = j;
-              ip = 1615;
+         $display("Should not be executed  1614");
       end
 
        1615 :
@@ -16779,8 +13128,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d not", steps, ip);
 end
-              localMem[725] = !heapMem[localMem[499]*7 + 6];
-              ip = 1616;
+         $display("Should not be executed  1615");
       end
 
        1616 :
@@ -16788,7 +13136,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jEq", steps, ip);
 end
-              ip = localMem[725] == 0 ? 1621 : 1617;
+         $display("Should not be executed  1616");
       end
 
        1617 :
@@ -16796,9 +13144,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[476]*7 + 0] = localMem[499];
-              updateArrayLength(1, localMem[476], 0);
-              ip = 1618;
+         $display("Should not be executed  1617");
       end
 
        1618 :
@@ -16806,9 +13152,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[476]*7 + 1] = 0;
-              updateArrayLength(1, localMem[476], 1);
-              ip = 1619;
+         $display("Should not be executed  1618");
       end
 
        1619 :
@@ -16816,9 +13160,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[476]*7 + 2] = localMem[724];
-              updateArrayLength(1, localMem[476], 2);
-              ip = 1620;
+         $display("Should not be executed  1619");
       end
 
        1620 :
@@ -16826,7 +13168,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1861;
+         $display("Should not be executed  1620");
       end
 
        1621 :
@@ -16834,7 +13176,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1622;
+         $display("Should not be executed  1621");
       end
 
        1622 :
@@ -16842,9 +13184,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[726] = heapMem[localMem[499]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1623;
+         $display("Should not be executed  1622");
       end
 
        1623 :
@@ -16852,9 +13192,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[727] = heapMem[localMem[726]*7 + localMem[724]];
-              updateArrayLength(2, 0, 0);
-              ip = 1624;
+         $display("Should not be executed  1623");
       end
 
        1624 :
@@ -16862,7 +13200,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1625;
+         $display("Should not be executed  1624");
       end
 
        1625 :
@@ -16870,9 +13208,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[729] = heapMem[localMem[727]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 1626;
+         $display("Should not be executed  1625");
       end
 
        1626 :
@@ -16880,9 +13216,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[730] = heapMem[localMem[727]*7 + 3];
-              updateArrayLength(2, 0, 0);
-              ip = 1627;
+         $display("Should not be executed  1626");
       end
 
        1627 :
@@ -16890,9 +13224,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[731] = heapMem[localMem[730]*7 + 2];
-              updateArrayLength(2, 0, 0);
-              ip = 1628;
+         $display("Should not be executed  1627");
       end
 
        1628 :
@@ -16900,7 +13232,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jLt", steps, ip);
 end
-              ip = localMem[729] <  localMem[731] ? 1848 : 1629;
+         $display("Should not be executed  1628");
       end
 
        1629 :
@@ -16908,9 +13240,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[732] = localMem[731];
-              updateArrayLength(2, 0, 0);
-              ip = 1630;
+         $display("Should not be executed  1629");
       end
 
        1630 :
@@ -16918,8 +13248,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftRight", steps, ip);
 end
-              localMem[732] = localMem[732] >> 1;
-              ip = 1631;
+         $display("Should not be executed  1630");
       end
 
        1631 :
@@ -16927,9 +13256,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[733] = localMem[732] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1632;
+         $display("Should not be executed  1631");
       end
 
        1632 :
@@ -16937,9 +13264,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[734] = heapMem[localMem[727]*7 + 2];
-              updateArrayLength(2, 0, 0);
-              ip = 1633;
+         $display("Should not be executed  1632");
       end
 
        1633 :
@@ -16947,7 +13272,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jEq", steps, ip);
 end
-              ip = localMem[734] == 0 ? 1730 : 1634;
+         $display("Should not be executed  1633");
       end
 
        1634 :
@@ -16955,17 +13280,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[735] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[735] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[735]] = 0;
-              ip = 1635;
+         $display("Should not be executed  1634");
       end
 
        1635 :
@@ -16973,9 +13288,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[735]*7 + 0] = localMem[732];
-              updateArrayLength(1, localMem[735], 0);
-              ip = 1636;
+         $display("Should not be executed  1635");
       end
 
        1636 :
@@ -16983,9 +13296,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[735]*7 + 2] = 0;
-              updateArrayLength(1, localMem[735], 2);
-              ip = 1637;
+         $display("Should not be executed  1636");
       end
 
        1637 :
@@ -16993,17 +13304,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[736] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[736] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[736]] = 0;
-              ip = 1638;
+         $display("Should not be executed  1637");
       end
 
        1638 :
@@ -17011,9 +13312,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[735]*7 + 4] = localMem[736];
-              updateArrayLength(1, localMem[735], 4);
-              ip = 1639;
+         $display("Should not be executed  1638");
       end
 
        1639 :
@@ -17021,17 +13320,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[737] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[737] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[737]] = 0;
-              ip = 1640;
+         $display("Should not be executed  1639");
       end
 
        1640 :
@@ -17039,9 +13328,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[735]*7 + 5] = localMem[737];
-              updateArrayLength(1, localMem[735], 5);
-              ip = 1641;
+         $display("Should not be executed  1640");
       end
 
        1641 :
@@ -17049,9 +13336,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[735]*7 + 6] = 0;
-              updateArrayLength(1, localMem[735], 6);
-              ip = 1642;
+         $display("Should not be executed  1641");
       end
 
        1642 :
@@ -17059,9 +13344,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[735]*7 + 3] = localMem[730];
-              updateArrayLength(1, localMem[735], 3);
-              ip = 1643;
+         $display("Should not be executed  1642");
       end
 
        1643 :
@@ -17069,9 +13352,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[730]*7 + 1] = heapMem[localMem[730]*7 + 1] + 1;
-              updateArrayLength(1, localMem[730], 1);
-              ip = 1644;
+         $display("Should not be executed  1643");
       end
 
        1644 :
@@ -17079,9 +13360,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[735]*7 + 1] = heapMem[localMem[730]*7 + 1];
-              updateArrayLength(1, localMem[735], 1);
-              ip = 1645;
+         $display("Should not be executed  1644");
       end
 
        1645 :
@@ -17089,8 +13368,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d not", steps, ip);
 end
-              localMem[738] = !heapMem[localMem[727]*7 + 6];
-              ip = 1646;
+         $display("Should not be executed  1645");
       end
 
        1646 :
@@ -17098,7 +13376,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[738] != 0 ? 1675 : 1647;
+         $display("Should not be executed  1646");
       end
 
        1647 :
@@ -17106,17 +13384,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[739] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[739] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[739]] = 0;
-              ip = 1648;
+         $display("Should not be executed  1647");
       end
 
        1648 :
@@ -17124,9 +13392,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[735]*7 + 6] = localMem[739];
-              updateArrayLength(1, localMem[735], 6);
-              ip = 1649;
+         $display("Should not be executed  1648");
       end
 
        1649 :
@@ -17134,9 +13400,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[740] = heapMem[localMem[727]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1650;
+         $display("Should not be executed  1649");
       end
 
        1650 :
@@ -17144,9 +13408,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[741] = heapMem[localMem[735]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1651;
+         $display("Should not be executed  1650");
       end
 
        1651 :
@@ -17154,13 +13416,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[732]) begin
-                  heapMem[NArea * localMem[741] + 0 + i] = heapMem[NArea * localMem[740] + localMem[733] + i];
-                  updateArrayLength(1, localMem[741], 0 + i);
-                end
-              end
-              ip = 1652;
+         $display("Should not be executed  1651");
       end
 
        1652 :
@@ -17168,9 +13424,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[742] = heapMem[localMem[727]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1653;
+         $display("Should not be executed  1652");
       end
 
        1653 :
@@ -17178,9 +13432,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[743] = heapMem[localMem[735]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1654;
+         $display("Should not be executed  1653");
       end
 
        1654 :
@@ -17188,13 +13440,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[732]) begin
-                  heapMem[NArea * localMem[743] + 0 + i] = heapMem[NArea * localMem[742] + localMem[733] + i];
-                  updateArrayLength(1, localMem[743], 0 + i);
-                end
-              end
-              ip = 1655;
+         $display("Should not be executed  1654");
       end
 
        1655 :
@@ -17202,9 +13448,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[744] = heapMem[localMem[727]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1656;
+         $display("Should not be executed  1655");
       end
 
        1656 :
@@ -17212,9 +13456,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[745] = heapMem[localMem[735]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1657;
+         $display("Should not be executed  1656");
       end
 
        1657 :
@@ -17222,9 +13464,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[746] = localMem[732] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1658;
+         $display("Should not be executed  1657");
       end
 
        1658 :
@@ -17232,13 +13472,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[746]) begin
-                  heapMem[NArea * localMem[745] + 0 + i] = heapMem[NArea * localMem[744] + localMem[733] + i];
-                  updateArrayLength(1, localMem[745], 0 + i);
-                end
-              end
-              ip = 1659;
+         $display("Should not be executed  1658");
       end
 
        1659 :
@@ -17246,9 +13480,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[747] = heapMem[localMem[735]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 1660;
+         $display("Should not be executed  1659");
       end
 
        1660 :
@@ -17256,9 +13488,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[748] = localMem[747] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1661;
+         $display("Should not be executed  1660");
       end
 
        1661 :
@@ -17266,9 +13496,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[749] = heapMem[localMem[735]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1662;
+         $display("Should not be executed  1661");
       end
 
        1662 :
@@ -17276,7 +13504,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1663;
+         $display("Should not be executed  1662");
       end
 
        1663 :
@@ -17284,9 +13512,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[750] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 1664;
+         $display("Should not be executed  1663");
       end
 
        1664 :
@@ -17294,7 +13520,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1665;
+         $display("Should not be executed  1664");
       end
 
        1665 :
@@ -17302,7 +13528,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[750] >= localMem[748] ? 1671 : 1666;
+         $display("Should not be executed  1665");
       end
 
        1666 :
@@ -17310,9 +13536,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[751] = heapMem[localMem[749]*7 + localMem[750]];
-              updateArrayLength(2, 0, 0);
-              ip = 1667;
+         $display("Should not be executed  1666");
       end
 
        1667 :
@@ -17320,9 +13544,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[751]*7 + 2] = localMem[735];
-              updateArrayLength(1, localMem[751], 2);
-              ip = 1668;
+         $display("Should not be executed  1667");
       end
 
        1668 :
@@ -17330,7 +13552,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1669;
+         $display("Should not be executed  1668");
       end
 
        1669 :
@@ -17338,9 +13560,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[750] = localMem[750] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1670;
+         $display("Should not be executed  1669");
       end
 
        1670 :
@@ -17348,7 +13568,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1664;
+         $display("Should not be executed  1670");
       end
 
        1671 :
@@ -17356,7 +13576,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1672;
+         $display("Should not be executed  1671");
       end
 
        1672 :
@@ -17364,9 +13584,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[752] = heapMem[localMem[727]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1673;
+         $display("Should not be executed  1672");
       end
 
        1673 :
@@ -17374,8 +13592,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[752]] = localMem[733];
-              ip = 1674;
+         $display("Should not be executed  1673");
       end
 
        1674 :
@@ -17383,7 +13600,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1682;
+         $display("Should not be executed  1674");
       end
 
        1675 :
@@ -17391,7 +13608,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1676;
+         $display("Should not be executed  1675");
       end
 
        1676 :
@@ -17399,9 +13616,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[753] = heapMem[localMem[727]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1677;
+         $display("Should not be executed  1676");
       end
 
        1677 :
@@ -17409,9 +13624,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[754] = heapMem[localMem[735]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1678;
+         $display("Should not be executed  1677");
       end
 
        1678 :
@@ -17419,13 +13632,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[732]) begin
-                  heapMem[NArea * localMem[754] + 0 + i] = heapMem[NArea * localMem[753] + localMem[733] + i];
-                  updateArrayLength(1, localMem[754], 0 + i);
-                end
-              end
-              ip = 1679;
+         $display("Should not be executed  1678");
       end
 
        1679 :
@@ -17433,9 +13640,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[755] = heapMem[localMem[727]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1680;
+         $display("Should not be executed  1679");
       end
 
        1680 :
@@ -17443,9 +13648,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[756] = heapMem[localMem[735]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1681;
+         $display("Should not be executed  1680");
       end
 
        1681 :
@@ -17453,13 +13656,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[732]) begin
-                  heapMem[NArea * localMem[756] + 0 + i] = heapMem[NArea * localMem[755] + localMem[733] + i];
-                  updateArrayLength(1, localMem[756], 0 + i);
-                end
-              end
-              ip = 1682;
+         $display("Should not be executed  1681");
       end
 
        1682 :
@@ -17467,7 +13664,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1683;
+         $display("Should not be executed  1682");
       end
 
        1683 :
@@ -17475,9 +13672,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[727]*7 + 0] = localMem[732];
-              updateArrayLength(1, localMem[727], 0);
-              ip = 1684;
+         $display("Should not be executed  1683");
       end
 
        1684 :
@@ -17485,9 +13680,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[735]*7 + 2] = localMem[734];
-              updateArrayLength(1, localMem[735], 2);
-              ip = 1685;
+         $display("Should not be executed  1684");
       end
 
        1685 :
@@ -17495,9 +13688,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[757] = heapMem[localMem[734]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 1686;
+         $display("Should not be executed  1685");
       end
 
        1686 :
@@ -17505,9 +13696,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[758] = heapMem[localMem[734]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1687;
+         $display("Should not be executed  1686");
       end
 
        1687 :
@@ -17515,9 +13704,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[759] = heapMem[localMem[758]*7 + localMem[757]];
-              updateArrayLength(2, 0, 0);
-              ip = 1688;
+         $display("Should not be executed  1687");
       end
 
        1688 :
@@ -17525,7 +13712,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[759] != localMem[727] ? 1707 : 1689;
+         $display("Should not be executed  1688");
       end
 
        1689 :
@@ -17533,9 +13720,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[760] = heapMem[localMem[727]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1690;
+         $display("Should not be executed  1689");
       end
 
        1690 :
@@ -17543,9 +13728,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[761] = heapMem[localMem[760]*7 + localMem[732]];
-              updateArrayLength(2, 0, 0);
-              ip = 1691;
+         $display("Should not be executed  1690");
       end
 
        1691 :
@@ -17553,9 +13736,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[762] = heapMem[localMem[734]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1692;
+         $display("Should not be executed  1691");
       end
 
        1692 :
@@ -17563,9 +13744,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[762]*7 + localMem[757]] = localMem[761];
-              updateArrayLength(1, localMem[762], localMem[757]);
-              ip = 1693;
+         $display("Should not be executed  1692");
       end
 
        1693 :
@@ -17573,9 +13752,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[763] = heapMem[localMem[727]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1694;
+         $display("Should not be executed  1693");
       end
 
        1694 :
@@ -17583,9 +13760,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[764] = heapMem[localMem[763]*7 + localMem[732]];
-              updateArrayLength(2, 0, 0);
-              ip = 1695;
+         $display("Should not be executed  1694");
       end
 
        1695 :
@@ -17593,9 +13768,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[765] = heapMem[localMem[734]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1696;
+         $display("Should not be executed  1695");
       end
 
        1696 :
@@ -17603,9 +13776,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[765]*7 + localMem[757]] = localMem[764];
-              updateArrayLength(1, localMem[765], localMem[757]);
-              ip = 1697;
+         $display("Should not be executed  1696");
       end
 
        1697 :
@@ -17613,9 +13784,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[766] = heapMem[localMem[727]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1698;
+         $display("Should not be executed  1697");
       end
 
        1698 :
@@ -17623,8 +13792,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[766]] = localMem[732];
-              ip = 1699;
+         $display("Should not be executed  1698");
       end
 
        1699 :
@@ -17632,9 +13800,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[767] = heapMem[localMem[727]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1700;
+         $display("Should not be executed  1699");
       end
 
        1700 :
@@ -17642,8 +13808,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[767]] = localMem[732];
-              ip = 1701;
+         $display("Should not be executed  1700");
       end
 
        1701 :
@@ -17651,9 +13816,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[768] = localMem[757] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1702;
+         $display("Should not be executed  1701");
       end
 
        1702 :
@@ -17661,9 +13824,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[734]*7 + 0] = localMem[768];
-              updateArrayLength(1, localMem[734], 0);
-              ip = 1703;
+         $display("Should not be executed  1702");
       end
 
        1703 :
@@ -17671,9 +13832,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[769] = heapMem[localMem[734]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1704;
+         $display("Should not be executed  1703");
       end
 
        1704 :
@@ -17681,9 +13840,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[769]*7 + localMem[768]] = localMem[735];
-              updateArrayLength(1, localMem[769], localMem[768]);
-              ip = 1705;
+         $display("Should not be executed  1704");
       end
 
        1705 :
@@ -17691,7 +13848,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1845;
+         $display("Should not be executed  1705");
       end
 
        1706 :
@@ -17699,7 +13856,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1729;
+         $display("Should not be executed  1706");
       end
 
        1707 :
@@ -17707,7 +13864,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1708;
+         $display("Should not be executed  1707");
       end
 
        1708 :
@@ -17715,7 +13872,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d assertNe", steps, ip);
 end
-            ip = 1709;
+         $display("Should not be executed  1708");
       end
 
        1709 :
@@ -17723,9 +13880,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[770] = heapMem[localMem[734]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1710;
+         $display("Should not be executed  1709");
       end
 
        1710 :
@@ -17733,11 +13888,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d arrayIndex", steps, ip);
 end
-              localMem[771] = 0; k = arraySizes[localMem[770]];
-              for(i = 0; i < NArea; i = i + 1) begin
-                if (i < k && heapMem[localMem[770] * NArea + i] == localMem[727]) localMem[771] = i + 1;
-              end
-              ip = 1711;
+         $display("Should not be executed  1710");
       end
 
        1711 :
@@ -17745,9 +13896,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d subtract", steps, ip);
 end
-              localMem[771] = localMem[771] - 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1712;
+         $display("Should not be executed  1711");
       end
 
        1712 :
@@ -17755,9 +13904,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[772] = heapMem[localMem[727]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1713;
+         $display("Should not be executed  1712");
       end
 
        1713 :
@@ -17765,9 +13912,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[773] = heapMem[localMem[772]*7 + localMem[732]];
-              updateArrayLength(2, 0, 0);
-              ip = 1714;
+         $display("Should not be executed  1713");
       end
 
        1714 :
@@ -17775,9 +13920,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[774] = heapMem[localMem[727]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1715;
+         $display("Should not be executed  1714");
       end
 
        1715 :
@@ -17785,9 +13928,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[775] = heapMem[localMem[774]*7 + localMem[732]];
-              updateArrayLength(2, 0, 0);
-              ip = 1716;
+         $display("Should not be executed  1715");
       end
 
        1716 :
@@ -17795,9 +13936,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[776] = heapMem[localMem[727]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1717;
+         $display("Should not be executed  1716");
       end
 
        1717 :
@@ -17805,8 +13944,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[776]] = localMem[732];
-              ip = 1718;
+         $display("Should not be executed  1717");
       end
 
        1718 :
@@ -17814,9 +13952,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[777] = heapMem[localMem[727]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1719;
+         $display("Should not be executed  1718");
       end
 
        1719 :
@@ -17824,8 +13960,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[777]] = localMem[732];
-              ip = 1720;
+         $display("Should not be executed  1719");
       end
 
        1720 :
@@ -17833,9 +13968,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[778] = heapMem[localMem[734]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1721;
+         $display("Should not be executed  1720");
       end
 
        1721 :
@@ -17843,18 +13976,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[778] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[771], localMem[778], arraySizes[localMem[778]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[771] && i <= arraySizes[localMem[778]]) begin
-                  heapMem[NArea * localMem[778] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[778] + localMem[771]] = localMem[773];                                    // Insert new value
-              arraySizes[localMem[778]] = arraySizes[localMem[778]] + 1;                              // Increase array size
-              ip = 1722;
+         $display("Should not be executed  1721");
       end
 
        1722 :
@@ -17862,9 +13984,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[779] = heapMem[localMem[734]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1723;
+         $display("Should not be executed  1722");
       end
 
        1723 :
@@ -17872,18 +13992,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[779] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[771], localMem[779], arraySizes[localMem[779]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[771] && i <= arraySizes[localMem[779]]) begin
-                  heapMem[NArea * localMem[779] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[779] + localMem[771]] = localMem[775];                                    // Insert new value
-              arraySizes[localMem[779]] = arraySizes[localMem[779]] + 1;                              // Increase array size
-              ip = 1724;
+         $display("Should not be executed  1723");
       end
 
        1724 :
@@ -17891,9 +14000,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[780] = heapMem[localMem[734]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1725;
+         $display("Should not be executed  1724");
       end
 
        1725 :
@@ -17901,9 +14008,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[781] = localMem[771] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1726;
+         $display("Should not be executed  1725");
       end
 
        1726 :
@@ -17911,18 +14016,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[780] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[781], localMem[780], arraySizes[localMem[780]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[781] && i <= arraySizes[localMem[780]]) begin
-                  heapMem[NArea * localMem[780] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[780] + localMem[781]] = localMem[735];                                    // Insert new value
-              arraySizes[localMem[780]] = arraySizes[localMem[780]] + 1;                              // Increase array size
-              ip = 1727;
+         $display("Should not be executed  1726");
       end
 
        1727 :
@@ -17930,9 +14024,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[734]*7 + 0] = heapMem[localMem[734]*7 + 0] + 1;
-              updateArrayLength(1, localMem[734], 0);
-              ip = 1728;
+         $display("Should not be executed  1727");
       end
 
        1728 :
@@ -17940,7 +14032,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1845;
+         $display("Should not be executed  1728");
       end
 
        1729 :
@@ -17948,7 +14040,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1730;
+         $display("Should not be executed  1729");
       end
 
        1730 :
@@ -17956,7 +14048,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1731;
+         $display("Should not be executed  1730");
       end
 
        1731 :
@@ -17964,17 +14056,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[782] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[782] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[782]] = 0;
-              ip = 1732;
+         $display("Should not be executed  1731");
       end
 
        1732 :
@@ -17982,9 +14064,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[782]*7 + 0] = localMem[732];
-              updateArrayLength(1, localMem[782], 0);
-              ip = 1733;
+         $display("Should not be executed  1732");
       end
 
        1733 :
@@ -17992,9 +14072,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[782]*7 + 2] = 0;
-              updateArrayLength(1, localMem[782], 2);
-              ip = 1734;
+         $display("Should not be executed  1733");
       end
 
        1734 :
@@ -18002,17 +14080,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[783] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[783] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[783]] = 0;
-              ip = 1735;
+         $display("Should not be executed  1734");
       end
 
        1735 :
@@ -18020,9 +14088,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[782]*7 + 4] = localMem[783];
-              updateArrayLength(1, localMem[782], 4);
-              ip = 1736;
+         $display("Should not be executed  1735");
       end
 
        1736 :
@@ -18030,17 +14096,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[784] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[784] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[784]] = 0;
-              ip = 1737;
+         $display("Should not be executed  1736");
       end
 
        1737 :
@@ -18048,9 +14104,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[782]*7 + 5] = localMem[784];
-              updateArrayLength(1, localMem[782], 5);
-              ip = 1738;
+         $display("Should not be executed  1737");
       end
 
        1738 :
@@ -18058,9 +14112,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[782]*7 + 6] = 0;
-              updateArrayLength(1, localMem[782], 6);
-              ip = 1739;
+         $display("Should not be executed  1738");
       end
 
        1739 :
@@ -18068,9 +14120,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[782]*7 + 3] = localMem[730];
-              updateArrayLength(1, localMem[782], 3);
-              ip = 1740;
+         $display("Should not be executed  1739");
       end
 
        1740 :
@@ -18078,9 +14128,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[730]*7 + 1] = heapMem[localMem[730]*7 + 1] + 1;
-              updateArrayLength(1, localMem[730], 1);
-              ip = 1741;
+         $display("Should not be executed  1740");
       end
 
        1741 :
@@ -18088,9 +14136,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[782]*7 + 1] = heapMem[localMem[730]*7 + 1];
-              updateArrayLength(1, localMem[782], 1);
-              ip = 1742;
+         $display("Should not be executed  1741");
       end
 
        1742 :
@@ -18098,17 +14144,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[785] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[785] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[785]] = 0;
-              ip = 1743;
+         $display("Should not be executed  1742");
       end
 
        1743 :
@@ -18116,9 +14152,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[785]*7 + 0] = localMem[732];
-              updateArrayLength(1, localMem[785], 0);
-              ip = 1744;
+         $display("Should not be executed  1743");
       end
 
        1744 :
@@ -18126,9 +14160,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[785]*7 + 2] = 0;
-              updateArrayLength(1, localMem[785], 2);
-              ip = 1745;
+         $display("Should not be executed  1744");
       end
 
        1745 :
@@ -18136,17 +14168,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[786] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[786] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[786]] = 0;
-              ip = 1746;
+         $display("Should not be executed  1745");
       end
 
        1746 :
@@ -18154,9 +14176,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[785]*7 + 4] = localMem[786];
-              updateArrayLength(1, localMem[785], 4);
-              ip = 1747;
+         $display("Should not be executed  1746");
       end
 
        1747 :
@@ -18164,17 +14184,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[787] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[787] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[787]] = 0;
-              ip = 1748;
+         $display("Should not be executed  1747");
       end
 
        1748 :
@@ -18182,9 +14192,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[785]*7 + 5] = localMem[787];
-              updateArrayLength(1, localMem[785], 5);
-              ip = 1749;
+         $display("Should not be executed  1748");
       end
 
        1749 :
@@ -18192,9 +14200,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[785]*7 + 6] = 0;
-              updateArrayLength(1, localMem[785], 6);
-              ip = 1750;
+         $display("Should not be executed  1749");
       end
 
        1750 :
@@ -18202,9 +14208,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[785]*7 + 3] = localMem[730];
-              updateArrayLength(1, localMem[785], 3);
-              ip = 1751;
+         $display("Should not be executed  1750");
       end
 
        1751 :
@@ -18212,9 +14216,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[730]*7 + 1] = heapMem[localMem[730]*7 + 1] + 1;
-              updateArrayLength(1, localMem[730], 1);
-              ip = 1752;
+         $display("Should not be executed  1751");
       end
 
        1752 :
@@ -18222,9 +14224,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[785]*7 + 1] = heapMem[localMem[730]*7 + 1];
-              updateArrayLength(1, localMem[785], 1);
-              ip = 1753;
+         $display("Should not be executed  1752");
       end
 
        1753 :
@@ -18232,8 +14232,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d not", steps, ip);
 end
-              localMem[788] = !heapMem[localMem[727]*7 + 6];
-              ip = 1754;
+         $display("Should not be executed  1753");
       end
 
        1754 :
@@ -18241,7 +14240,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[788] != 0 ? 1806 : 1755;
+         $display("Should not be executed  1754");
       end
 
        1755 :
@@ -18249,17 +14248,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[789] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[789] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[789]] = 0;
-              ip = 1756;
+         $display("Should not be executed  1755");
       end
 
        1756 :
@@ -18267,9 +14256,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[782]*7 + 6] = localMem[789];
-              updateArrayLength(1, localMem[782], 6);
-              ip = 1757;
+         $display("Should not be executed  1756");
       end
 
        1757 :
@@ -18277,17 +14264,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[790] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[790] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[790]] = 0;
-              ip = 1758;
+         $display("Should not be executed  1757");
       end
 
        1758 :
@@ -18295,9 +14272,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[785]*7 + 6] = localMem[790];
-              updateArrayLength(1, localMem[785], 6);
-              ip = 1759;
+         $display("Should not be executed  1758");
       end
 
        1759 :
@@ -18305,9 +14280,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[791] = heapMem[localMem[727]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1760;
+         $display("Should not be executed  1759");
       end
 
        1760 :
@@ -18315,9 +14288,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[792] = heapMem[localMem[782]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1761;
+         $display("Should not be executed  1760");
       end
 
        1761 :
@@ -18325,13 +14296,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[732]) begin
-                  heapMem[NArea * localMem[792] + 0 + i] = heapMem[NArea * localMem[791] + 0 + i];
-                  updateArrayLength(1, localMem[792], 0 + i);
-                end
-              end
-              ip = 1762;
+         $display("Should not be executed  1761");
       end
 
        1762 :
@@ -18339,9 +14304,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[793] = heapMem[localMem[727]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1763;
+         $display("Should not be executed  1762");
       end
 
        1763 :
@@ -18349,9 +14312,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[794] = heapMem[localMem[782]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1764;
+         $display("Should not be executed  1763");
       end
 
        1764 :
@@ -18359,13 +14320,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[732]) begin
-                  heapMem[NArea * localMem[794] + 0 + i] = heapMem[NArea * localMem[793] + 0 + i];
-                  updateArrayLength(1, localMem[794], 0 + i);
-                end
-              end
-              ip = 1765;
+         $display("Should not be executed  1764");
       end
 
        1765 :
@@ -18373,9 +14328,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[795] = heapMem[localMem[727]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1766;
+         $display("Should not be executed  1765");
       end
 
        1766 :
@@ -18383,9 +14336,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[796] = heapMem[localMem[782]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1767;
+         $display("Should not be executed  1766");
       end
 
        1767 :
@@ -18393,9 +14344,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[797] = localMem[732] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1768;
+         $display("Should not be executed  1767");
       end
 
        1768 :
@@ -18403,13 +14352,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[797]) begin
-                  heapMem[NArea * localMem[796] + 0 + i] = heapMem[NArea * localMem[795] + 0 + i];
-                  updateArrayLength(1, localMem[796], 0 + i);
-                end
-              end
-              ip = 1769;
+         $display("Should not be executed  1768");
       end
 
        1769 :
@@ -18417,9 +14360,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[798] = heapMem[localMem[727]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1770;
+         $display("Should not be executed  1769");
       end
 
        1770 :
@@ -18427,9 +14368,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[799] = heapMem[localMem[785]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1771;
+         $display("Should not be executed  1770");
       end
 
        1771 :
@@ -18437,13 +14376,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[732]) begin
-                  heapMem[NArea * localMem[799] + 0 + i] = heapMem[NArea * localMem[798] + localMem[733] + i];
-                  updateArrayLength(1, localMem[799], 0 + i);
-                end
-              end
-              ip = 1772;
+         $display("Should not be executed  1771");
       end
 
        1772 :
@@ -18451,9 +14384,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[800] = heapMem[localMem[727]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1773;
+         $display("Should not be executed  1772");
       end
 
        1773 :
@@ -18461,9 +14392,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[801] = heapMem[localMem[785]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1774;
+         $display("Should not be executed  1773");
       end
 
        1774 :
@@ -18471,13 +14400,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[732]) begin
-                  heapMem[NArea * localMem[801] + 0 + i] = heapMem[NArea * localMem[800] + localMem[733] + i];
-                  updateArrayLength(1, localMem[801], 0 + i);
-                end
-              end
-              ip = 1775;
+         $display("Should not be executed  1774");
       end
 
        1775 :
@@ -18485,9 +14408,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[802] = heapMem[localMem[727]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1776;
+         $display("Should not be executed  1775");
       end
 
        1776 :
@@ -18495,9 +14416,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[803] = heapMem[localMem[785]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1777;
+         $display("Should not be executed  1776");
       end
 
        1777 :
@@ -18505,9 +14424,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[804] = localMem[732] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1778;
+         $display("Should not be executed  1777");
       end
 
        1778 :
@@ -18515,13 +14432,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[804]) begin
-                  heapMem[NArea * localMem[803] + 0 + i] = heapMem[NArea * localMem[802] + localMem[733] + i];
-                  updateArrayLength(1, localMem[803], 0 + i);
-                end
-              end
-              ip = 1779;
+         $display("Should not be executed  1778");
       end
 
        1779 :
@@ -18529,9 +14440,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[805] = heapMem[localMem[782]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 1780;
+         $display("Should not be executed  1779");
       end
 
        1780 :
@@ -18539,9 +14448,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[806] = localMem[805] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1781;
+         $display("Should not be executed  1780");
       end
 
        1781 :
@@ -18549,9 +14456,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[807] = heapMem[localMem[782]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1782;
+         $display("Should not be executed  1781");
       end
 
        1782 :
@@ -18559,7 +14464,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1783;
+         $display("Should not be executed  1782");
       end
 
        1783 :
@@ -18567,9 +14472,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[808] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 1784;
+         $display("Should not be executed  1783");
       end
 
        1784 :
@@ -18577,7 +14480,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1785;
+         $display("Should not be executed  1784");
       end
 
        1785 :
@@ -18585,7 +14488,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[808] >= localMem[806] ? 1791 : 1786;
+         $display("Should not be executed  1785");
       end
 
        1786 :
@@ -18593,9 +14496,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[809] = heapMem[localMem[807]*7 + localMem[808]];
-              updateArrayLength(2, 0, 0);
-              ip = 1787;
+         $display("Should not be executed  1786");
       end
 
        1787 :
@@ -18603,9 +14504,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[809]*7 + 2] = localMem[782];
-              updateArrayLength(1, localMem[809], 2);
-              ip = 1788;
+         $display("Should not be executed  1787");
       end
 
        1788 :
@@ -18613,7 +14512,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1789;
+         $display("Should not be executed  1788");
       end
 
        1789 :
@@ -18621,9 +14520,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[808] = localMem[808] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1790;
+         $display("Should not be executed  1789");
       end
 
        1790 :
@@ -18631,7 +14528,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1784;
+         $display("Should not be executed  1790");
       end
 
        1791 :
@@ -18639,7 +14536,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1792;
+         $display("Should not be executed  1791");
       end
 
        1792 :
@@ -18647,9 +14544,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[810] = heapMem[localMem[785]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 1793;
+         $display("Should not be executed  1792");
       end
 
        1793 :
@@ -18657,9 +14552,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[811] = localMem[810] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1794;
+         $display("Should not be executed  1793");
       end
 
        1794 :
@@ -18667,9 +14560,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[812] = heapMem[localMem[785]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1795;
+         $display("Should not be executed  1794");
       end
 
        1795 :
@@ -18677,7 +14568,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1796;
+         $display("Should not be executed  1795");
       end
 
        1796 :
@@ -18685,9 +14576,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[813] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 1797;
+         $display("Should not be executed  1796");
       end
 
        1797 :
@@ -18695,7 +14584,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1798;
+         $display("Should not be executed  1797");
       end
 
        1798 :
@@ -18703,7 +14592,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[813] >= localMem[811] ? 1804 : 1799;
+         $display("Should not be executed  1798");
       end
 
        1799 :
@@ -18711,9 +14600,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[814] = heapMem[localMem[812]*7 + localMem[813]];
-              updateArrayLength(2, 0, 0);
-              ip = 1800;
+         $display("Should not be executed  1799");
       end
 
        1800 :
@@ -18721,9 +14608,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[814]*7 + 2] = localMem[785];
-              updateArrayLength(1, localMem[814], 2);
-              ip = 1801;
+         $display("Should not be executed  1800");
       end
 
        1801 :
@@ -18731,7 +14616,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1802;
+         $display("Should not be executed  1801");
       end
 
        1802 :
@@ -18739,9 +14624,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[813] = localMem[813] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1803;
+         $display("Should not be executed  1802");
       end
 
        1803 :
@@ -18749,7 +14632,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1797;
+         $display("Should not be executed  1803");
       end
 
        1804 :
@@ -18757,7 +14640,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1805;
+         $display("Should not be executed  1804");
       end
 
        1805 :
@@ -18765,7 +14648,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1821;
+         $display("Should not be executed  1805");
       end
 
        1806 :
@@ -18773,7 +14656,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1807;
+         $display("Should not be executed  1806");
       end
 
        1807 :
@@ -18781,17 +14664,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[815] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[815] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[815]] = 0;
-              ip = 1808;
+         $display("Should not be executed  1807");
       end
 
        1808 :
@@ -18799,9 +14672,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[727]*7 + 6] = localMem[815];
-              updateArrayLength(1, localMem[727], 6);
-              ip = 1809;
+         $display("Should not be executed  1808");
       end
 
        1809 :
@@ -18809,9 +14680,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[816] = heapMem[localMem[727]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1810;
+         $display("Should not be executed  1809");
       end
 
        1810 :
@@ -18819,9 +14688,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[817] = heapMem[localMem[782]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1811;
+         $display("Should not be executed  1810");
       end
 
        1811 :
@@ -18829,13 +14696,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[732]) begin
-                  heapMem[NArea * localMem[817] + 0 + i] = heapMem[NArea * localMem[816] + 0 + i];
-                  updateArrayLength(1, localMem[817], 0 + i);
-                end
-              end
-              ip = 1812;
+         $display("Should not be executed  1811");
       end
 
        1812 :
@@ -18843,9 +14704,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[818] = heapMem[localMem[727]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1813;
+         $display("Should not be executed  1812");
       end
 
        1813 :
@@ -18853,9 +14712,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[819] = heapMem[localMem[782]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1814;
+         $display("Should not be executed  1813");
       end
 
        1814 :
@@ -18863,13 +14720,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[732]) begin
-                  heapMem[NArea * localMem[819] + 0 + i] = heapMem[NArea * localMem[818] + 0 + i];
-                  updateArrayLength(1, localMem[819], 0 + i);
-                end
-              end
-              ip = 1815;
+         $display("Should not be executed  1814");
       end
 
        1815 :
@@ -18877,9 +14728,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[820] = heapMem[localMem[727]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1816;
+         $display("Should not be executed  1815");
       end
 
        1816 :
@@ -18887,9 +14736,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[821] = heapMem[localMem[785]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1817;
+         $display("Should not be executed  1816");
       end
 
        1817 :
@@ -18897,13 +14744,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[732]) begin
-                  heapMem[NArea * localMem[821] + 0 + i] = heapMem[NArea * localMem[820] + localMem[733] + i];
-                  updateArrayLength(1, localMem[821], 0 + i);
-                end
-              end
-              ip = 1818;
+         $display("Should not be executed  1817");
       end
 
        1818 :
@@ -18911,9 +14752,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[822] = heapMem[localMem[727]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1819;
+         $display("Should not be executed  1818");
       end
 
        1819 :
@@ -18921,9 +14760,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[823] = heapMem[localMem[785]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1820;
+         $display("Should not be executed  1819");
       end
 
        1820 :
@@ -18931,13 +14768,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[732]) begin
-                  heapMem[NArea * localMem[823] + 0 + i] = heapMem[NArea * localMem[822] + localMem[733] + i];
-                  updateArrayLength(1, localMem[823], 0 + i);
-                end
-              end
-              ip = 1821;
+         $display("Should not be executed  1820");
       end
 
        1821 :
@@ -18945,7 +14776,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1822;
+         $display("Should not be executed  1821");
       end
 
        1822 :
@@ -18953,9 +14784,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[782]*7 + 2] = localMem[727];
-              updateArrayLength(1, localMem[782], 2);
-              ip = 1823;
+         $display("Should not be executed  1822");
       end
 
        1823 :
@@ -18963,9 +14792,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[785]*7 + 2] = localMem[727];
-              updateArrayLength(1, localMem[785], 2);
-              ip = 1824;
+         $display("Should not be executed  1823");
       end
 
        1824 :
@@ -18973,9 +14800,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[824] = heapMem[localMem[727]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1825;
+         $display("Should not be executed  1824");
       end
 
        1825 :
@@ -18983,9 +14808,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[825] = heapMem[localMem[824]*7 + localMem[732]];
-              updateArrayLength(2, 0, 0);
-              ip = 1826;
+         $display("Should not be executed  1825");
       end
 
        1826 :
@@ -18993,9 +14816,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[826] = heapMem[localMem[727]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1827;
+         $display("Should not be executed  1826");
       end
 
        1827 :
@@ -19003,9 +14824,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[827] = heapMem[localMem[826]*7 + localMem[732]];
-              updateArrayLength(2, 0, 0);
-              ip = 1828;
+         $display("Should not be executed  1827");
       end
 
        1828 :
@@ -19013,9 +14832,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[828] = heapMem[localMem[727]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1829;
+         $display("Should not be executed  1828");
       end
 
        1829 :
@@ -19023,9 +14840,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[828]*7 + 0] = localMem[825];
-              updateArrayLength(1, localMem[828], 0);
-              ip = 1830;
+         $display("Should not be executed  1829");
       end
 
        1830 :
@@ -19033,9 +14848,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[829] = heapMem[localMem[727]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1831;
+         $display("Should not be executed  1830");
       end
 
        1831 :
@@ -19043,9 +14856,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[829]*7 + 0] = localMem[827];
-              updateArrayLength(1, localMem[829], 0);
-              ip = 1832;
+         $display("Should not be executed  1831");
       end
 
        1832 :
@@ -19053,9 +14864,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[830] = heapMem[localMem[727]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1833;
+         $display("Should not be executed  1832");
       end
 
        1833 :
@@ -19063,9 +14872,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[830]*7 + 0] = localMem[782];
-              updateArrayLength(1, localMem[830], 0);
-              ip = 1834;
+         $display("Should not be executed  1833");
       end
 
        1834 :
@@ -19073,9 +14880,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[831] = heapMem[localMem[727]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1835;
+         $display("Should not be executed  1834");
       end
 
        1835 :
@@ -19083,9 +14888,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[831]*7 + 1] = localMem[785];
-              updateArrayLength(1, localMem[831], 1);
-              ip = 1836;
+         $display("Should not be executed  1835");
       end
 
        1836 :
@@ -19093,9 +14896,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[727]*7 + 0] = 1;
-              updateArrayLength(1, localMem[727], 0);
-              ip = 1837;
+         $display("Should not be executed  1836");
       end
 
        1837 :
@@ -19103,9 +14904,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[832] = heapMem[localMem[727]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1838;
+         $display("Should not be executed  1837");
       end
 
        1838 :
@@ -19113,8 +14912,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[832]] = 1;
-              ip = 1839;
+         $display("Should not be executed  1838");
       end
 
        1839 :
@@ -19122,9 +14920,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[833] = heapMem[localMem[727]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1840;
+         $display("Should not be executed  1839");
       end
 
        1840 :
@@ -19132,8 +14928,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[833]] = 1;
-              ip = 1841;
+         $display("Should not be executed  1840");
       end
 
        1841 :
@@ -19141,9 +14936,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[834] = heapMem[localMem[727]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1842;
+         $display("Should not be executed  1841");
       end
 
        1842 :
@@ -19151,8 +14944,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[834]] = 2;
-              ip = 1843;
+         $display("Should not be executed  1842");
       end
 
        1843 :
@@ -19160,7 +14952,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1845;
+         $display("Should not be executed  1843");
       end
 
        1844 :
@@ -19168,7 +14960,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1850;
+         $display("Should not be executed  1844");
       end
 
        1845 :
@@ -19176,7 +14968,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1846;
+         $display("Should not be executed  1845");
       end
 
        1846 :
@@ -19184,9 +14976,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[728] = 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1847;
+         $display("Should not be executed  1846");
       end
 
        1847 :
@@ -19194,7 +14984,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1850;
+         $display("Should not be executed  1847");
       end
 
        1848 :
@@ -19202,7 +14992,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1849;
+         $display("Should not be executed  1848");
       end
 
        1849 :
@@ -19210,9 +15000,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[728] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 1850;
+         $display("Should not be executed  1849");
       end
 
        1850 :
@@ -19220,7 +15008,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1851;
+         $display("Should not be executed  1850");
       end
 
        1851 :
@@ -19228,7 +15016,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[728] != 0 ? 1853 : 1852;
+         $display("Should not be executed  1851");
       end
 
        1852 :
@@ -19236,9 +15024,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[499] = localMem[727];
-              updateArrayLength(2, 0, 0);
-              ip = 1853;
+         $display("Should not be executed  1852");
       end
 
        1853 :
@@ -19246,7 +15032,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1854;
+         $display("Should not be executed  1853");
       end
 
        1854 :
@@ -19254,7 +15040,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1855;
+         $display("Should not be executed  1854");
       end
 
        1855 :
@@ -19262,9 +15048,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[607] = localMem[607] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1856;
+         $display("Should not be executed  1855");
       end
 
        1856 :
@@ -19272,7 +15056,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1358;
+         $display("Should not be executed  1856");
       end
 
        1857 :
@@ -19280,7 +15064,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1858;
+         $display("Should not be executed  1857");
       end
 
        1858 :
@@ -19288,7 +15072,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d assert", steps, ip);
 end
-            ip = 1859;
+         $display("Should not be executed  1858");
       end
 
        1859 :
@@ -19296,7 +15080,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1860;
+         $display("Should not be executed  1859");
       end
 
        1860 :
@@ -19304,7 +15088,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1861;
+         $display("Should not be executed  1860");
       end
 
        1861 :
@@ -19312,7 +15096,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1862;
+         $display("Should not be executed  1861");
       end
 
        1862 :
@@ -19320,9 +15104,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[835] = heapMem[localMem[476]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 1863;
+         $display("Should not be executed  1862");
       end
 
        1863 :
@@ -19330,9 +15112,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[836] = heapMem[localMem[476]*7 + 1];
-              updateArrayLength(2, 0, 0);
-              ip = 1864;
+         $display("Should not be executed  1863");
       end
 
        1864 :
@@ -19340,9 +15120,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[837] = heapMem[localMem[476]*7 + 2];
-              updateArrayLength(2, 0, 0);
-              ip = 1865;
+         $display("Should not be executed  1864");
       end
 
        1865 :
@@ -19350,7 +15128,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[836] != 1 ? 1869 : 1866;
+         $display("Should not be executed  1865");
       end
 
        1866 :
@@ -19358,9 +15136,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[838] = heapMem[localMem[835]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1867;
+         $display("Should not be executed  1866");
       end
 
        1867 :
@@ -19368,9 +15144,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[838]*7 + localMem[837]] = 22;
-              updateArrayLength(1, localMem[838], localMem[837]);
-              ip = 1868;
+         $display("Should not be executed  1867");
       end
 
        1868 :
@@ -19378,7 +15152,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 2115;
+         $display("Should not be executed  1868");
       end
 
        1869 :
@@ -19386,7 +15160,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1870;
+         $display("Should not be executed  1869");
       end
 
        1870 :
@@ -19394,7 +15168,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[836] != 2 ? 1878 : 1871;
+         $display("Should not be executed  1870");
       end
 
        1871 :
@@ -19402,9 +15176,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[839] = localMem[837] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1872;
+         $display("Should not be executed  1871");
       end
 
        1872 :
@@ -19412,9 +15184,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[840] = heapMem[localMem[835]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1873;
+         $display("Should not be executed  1872");
       end
 
        1873 :
@@ -19422,18 +15192,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[840] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[839], localMem[840], arraySizes[localMem[840]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[839] && i <= arraySizes[localMem[840]]) begin
-                  heapMem[NArea * localMem[840] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[840] + localMem[839]] = 2;                                    // Insert new value
-              arraySizes[localMem[840]] = arraySizes[localMem[840]] + 1;                              // Increase array size
-              ip = 1874;
+         $display("Should not be executed  1873");
       end
 
        1874 :
@@ -19441,9 +15200,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[841] = heapMem[localMem[835]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1875;
+         $display("Should not be executed  1874");
       end
 
        1875 :
@@ -19451,18 +15208,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[841] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[839], localMem[841], arraySizes[localMem[841]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[839] && i <= arraySizes[localMem[841]]) begin
-                  heapMem[NArea * localMem[841] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[841] + localMem[839]] = 22;                                    // Insert new value
-              arraySizes[localMem[841]] = arraySizes[localMem[841]] + 1;                              // Increase array size
-              ip = 1876;
+         $display("Should not be executed  1875");
       end
 
        1876 :
@@ -19470,9 +15216,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[835]*7 + 0] = heapMem[localMem[835]*7 + 0] + 1;
-              updateArrayLength(1, localMem[835], 0);
-              ip = 1877;
+         $display("Should not be executed  1876");
       end
 
        1877 :
@@ -19480,7 +15224,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1884;
+         $display("Should not be executed  1877");
       end
 
        1878 :
@@ -19488,7 +15232,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1879;
+         $display("Should not be executed  1878");
       end
 
        1879 :
@@ -19496,9 +15240,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[842] = heapMem[localMem[835]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1880;
+         $display("Should not be executed  1879");
       end
 
        1880 :
@@ -19506,18 +15248,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[842] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[837], localMem[842], arraySizes[localMem[842]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[837] && i <= arraySizes[localMem[842]]) begin
-                  heapMem[NArea * localMem[842] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[842] + localMem[837]] = 2;                                    // Insert new value
-              arraySizes[localMem[842]] = arraySizes[localMem[842]] + 1;                              // Increase array size
-              ip = 1881;
+         $display("Should not be executed  1880");
       end
 
        1881 :
@@ -19525,9 +15256,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[843] = heapMem[localMem[835]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1882;
+         $display("Should not be executed  1881");
       end
 
        1882 :
@@ -19535,18 +15264,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[843] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[837], localMem[843], arraySizes[localMem[843]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[837] && i <= arraySizes[localMem[843]]) begin
-                  heapMem[NArea * localMem[843] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[843] + localMem[837]] = 22;                                    // Insert new value
-              arraySizes[localMem[843]] = arraySizes[localMem[843]] + 1;                              // Increase array size
-              ip = 1883;
+         $display("Should not be executed  1882");
       end
 
        1883 :
@@ -19554,9 +15272,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[835]*7 + 0] = heapMem[localMem[835]*7 + 0] + 1;
-              updateArrayLength(1, localMem[835], 0);
-              ip = 1884;
+         $display("Should not be executed  1883");
       end
 
        1884 :
@@ -19564,7 +15280,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1885;
+         $display("Should not be executed  1884");
       end
 
        1885 :
@@ -19572,9 +15288,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[0]*7 + 0] = heapMem[localMem[0]*7 + 0] + 1;
-              updateArrayLength(1, localMem[0], 0);
-              ip = 1886;
+         $display("Should not be executed  1885");
       end
 
        1886 :
@@ -19582,7 +15296,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1887;
+         $display("Should not be executed  1886");
       end
 
        1887 :
@@ -19590,9 +15304,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[845] = heapMem[localMem[835]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 1888;
+         $display("Should not be executed  1887");
       end
 
        1888 :
@@ -19600,9 +15312,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[846] = heapMem[localMem[835]*7 + 3];
-              updateArrayLength(2, 0, 0);
-              ip = 1889;
+         $display("Should not be executed  1888");
       end
 
        1889 :
@@ -19610,9 +15320,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[847] = heapMem[localMem[846]*7 + 2];
-              updateArrayLength(2, 0, 0);
-              ip = 1890;
+         $display("Should not be executed  1889");
       end
 
        1890 :
@@ -19620,7 +15328,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jLt", steps, ip);
 end
-              ip = localMem[845] <  localMem[847] ? 2110 : 1891;
+         $display("Should not be executed  1890");
       end
 
        1891 :
@@ -19628,9 +15336,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[848] = localMem[847];
-              updateArrayLength(2, 0, 0);
-              ip = 1892;
+         $display("Should not be executed  1891");
       end
 
        1892 :
@@ -19638,8 +15344,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftRight", steps, ip);
 end
-              localMem[848] = localMem[848] >> 1;
-              ip = 1893;
+         $display("Should not be executed  1892");
       end
 
        1893 :
@@ -19647,9 +15352,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[849] = localMem[848] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1894;
+         $display("Should not be executed  1893");
       end
 
        1894 :
@@ -19657,9 +15360,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[850] = heapMem[localMem[835]*7 + 2];
-              updateArrayLength(2, 0, 0);
-              ip = 1895;
+         $display("Should not be executed  1894");
       end
 
        1895 :
@@ -19667,7 +15368,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jEq", steps, ip);
 end
-              ip = localMem[850] == 0 ? 1992 : 1896;
+         $display("Should not be executed  1895");
       end
 
        1896 :
@@ -19675,17 +15376,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[851] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[851] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[851]] = 0;
-              ip = 1897;
+         $display("Should not be executed  1896");
       end
 
        1897 :
@@ -19693,9 +15384,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[851]*7 + 0] = localMem[848];
-              updateArrayLength(1, localMem[851], 0);
-              ip = 1898;
+         $display("Should not be executed  1897");
       end
 
        1898 :
@@ -19703,9 +15392,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[851]*7 + 2] = 0;
-              updateArrayLength(1, localMem[851], 2);
-              ip = 1899;
+         $display("Should not be executed  1898");
       end
 
        1899 :
@@ -19713,17 +15400,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[852] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[852] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[852]] = 0;
-              ip = 1900;
+         $display("Should not be executed  1899");
       end
 
        1900 :
@@ -19731,9 +15408,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[851]*7 + 4] = localMem[852];
-              updateArrayLength(1, localMem[851], 4);
-              ip = 1901;
+         $display("Should not be executed  1900");
       end
 
        1901 :
@@ -19741,17 +15416,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[853] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[853] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[853]] = 0;
-              ip = 1902;
+         $display("Should not be executed  1901");
       end
 
        1902 :
@@ -19759,9 +15424,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[851]*7 + 5] = localMem[853];
-              updateArrayLength(1, localMem[851], 5);
-              ip = 1903;
+         $display("Should not be executed  1902");
       end
 
        1903 :
@@ -19769,9 +15432,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[851]*7 + 6] = 0;
-              updateArrayLength(1, localMem[851], 6);
-              ip = 1904;
+         $display("Should not be executed  1903");
       end
 
        1904 :
@@ -19779,9 +15440,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[851]*7 + 3] = localMem[846];
-              updateArrayLength(1, localMem[851], 3);
-              ip = 1905;
+         $display("Should not be executed  1904");
       end
 
        1905 :
@@ -19789,9 +15448,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[846]*7 + 1] = heapMem[localMem[846]*7 + 1] + 1;
-              updateArrayLength(1, localMem[846], 1);
-              ip = 1906;
+         $display("Should not be executed  1905");
       end
 
        1906 :
@@ -19799,9 +15456,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[851]*7 + 1] = heapMem[localMem[846]*7 + 1];
-              updateArrayLength(1, localMem[851], 1);
-              ip = 1907;
+         $display("Should not be executed  1906");
       end
 
        1907 :
@@ -19809,8 +15464,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d not", steps, ip);
 end
-              localMem[854] = !heapMem[localMem[835]*7 + 6];
-              ip = 1908;
+         $display("Should not be executed  1907");
       end
 
        1908 :
@@ -19818,7 +15472,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[854] != 0 ? 1937 : 1909;
+         $display("Should not be executed  1908");
       end
 
        1909 :
@@ -19826,17 +15480,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[855] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[855] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[855]] = 0;
-              ip = 1910;
+         $display("Should not be executed  1909");
       end
 
        1910 :
@@ -19844,9 +15488,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[851]*7 + 6] = localMem[855];
-              updateArrayLength(1, localMem[851], 6);
-              ip = 1911;
+         $display("Should not be executed  1910");
       end
 
        1911 :
@@ -19854,9 +15496,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[856] = heapMem[localMem[835]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1912;
+         $display("Should not be executed  1911");
       end
 
        1912 :
@@ -19864,9 +15504,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[857] = heapMem[localMem[851]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1913;
+         $display("Should not be executed  1912");
       end
 
        1913 :
@@ -19874,13 +15512,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[848]) begin
-                  heapMem[NArea * localMem[857] + 0 + i] = heapMem[NArea * localMem[856] + localMem[849] + i];
-                  updateArrayLength(1, localMem[857], 0 + i);
-                end
-              end
-              ip = 1914;
+         $display("Should not be executed  1913");
       end
 
        1914 :
@@ -19888,9 +15520,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[858] = heapMem[localMem[835]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1915;
+         $display("Should not be executed  1914");
       end
 
        1915 :
@@ -19898,9 +15528,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[859] = heapMem[localMem[851]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1916;
+         $display("Should not be executed  1915");
       end
 
        1916 :
@@ -19908,13 +15536,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[848]) begin
-                  heapMem[NArea * localMem[859] + 0 + i] = heapMem[NArea * localMem[858] + localMem[849] + i];
-                  updateArrayLength(1, localMem[859], 0 + i);
-                end
-              end
-              ip = 1917;
+         $display("Should not be executed  1916");
       end
 
        1917 :
@@ -19922,9 +15544,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[860] = heapMem[localMem[835]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1918;
+         $display("Should not be executed  1917");
       end
 
        1918 :
@@ -19932,9 +15552,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[861] = heapMem[localMem[851]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1919;
+         $display("Should not be executed  1918");
       end
 
        1919 :
@@ -19942,9 +15560,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[862] = localMem[848] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1920;
+         $display("Should not be executed  1919");
       end
 
        1920 :
@@ -19952,13 +15568,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[862]) begin
-                  heapMem[NArea * localMem[861] + 0 + i] = heapMem[NArea * localMem[860] + localMem[849] + i];
-                  updateArrayLength(1, localMem[861], 0 + i);
-                end
-              end
-              ip = 1921;
+         $display("Should not be executed  1920");
       end
 
        1921 :
@@ -19966,9 +15576,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[863] = heapMem[localMem[851]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 1922;
+         $display("Should not be executed  1921");
       end
 
        1922 :
@@ -19976,9 +15584,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[864] = localMem[863] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1923;
+         $display("Should not be executed  1922");
       end
 
        1923 :
@@ -19986,9 +15592,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[865] = heapMem[localMem[851]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1924;
+         $display("Should not be executed  1923");
       end
 
        1924 :
@@ -19996,7 +15600,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1925;
+         $display("Should not be executed  1924");
       end
 
        1925 :
@@ -20004,9 +15608,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[866] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 1926;
+         $display("Should not be executed  1925");
       end
 
        1926 :
@@ -20014,7 +15616,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1927;
+         $display("Should not be executed  1926");
       end
 
        1927 :
@@ -20022,7 +15624,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[866] >= localMem[864] ? 1933 : 1928;
+         $display("Should not be executed  1927");
       end
 
        1928 :
@@ -20030,9 +15632,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[867] = heapMem[localMem[865]*7 + localMem[866]];
-              updateArrayLength(2, 0, 0);
-              ip = 1929;
+         $display("Should not be executed  1928");
       end
 
        1929 :
@@ -20040,9 +15640,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[867]*7 + 2] = localMem[851];
-              updateArrayLength(1, localMem[867], 2);
-              ip = 1930;
+         $display("Should not be executed  1929");
       end
 
        1930 :
@@ -20050,7 +15648,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1931;
+         $display("Should not be executed  1930");
       end
 
        1931 :
@@ -20058,9 +15656,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[866] = localMem[866] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1932;
+         $display("Should not be executed  1931");
       end
 
        1932 :
@@ -20068,7 +15664,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1926;
+         $display("Should not be executed  1932");
       end
 
        1933 :
@@ -20076,7 +15672,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1934;
+         $display("Should not be executed  1933");
       end
 
        1934 :
@@ -20084,9 +15680,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[868] = heapMem[localMem[835]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1935;
+         $display("Should not be executed  1934");
       end
 
        1935 :
@@ -20094,8 +15688,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[868]] = localMem[849];
-              ip = 1936;
+         $display("Should not be executed  1935");
       end
 
        1936 :
@@ -20103,7 +15696,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1944;
+         $display("Should not be executed  1936");
       end
 
        1937 :
@@ -20111,7 +15704,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1938;
+         $display("Should not be executed  1937");
       end
 
        1938 :
@@ -20119,9 +15712,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[869] = heapMem[localMem[835]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1939;
+         $display("Should not be executed  1938");
       end
 
        1939 :
@@ -20129,9 +15720,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[870] = heapMem[localMem[851]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1940;
+         $display("Should not be executed  1939");
       end
 
        1940 :
@@ -20139,13 +15728,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[848]) begin
-                  heapMem[NArea * localMem[870] + 0 + i] = heapMem[NArea * localMem[869] + localMem[849] + i];
-                  updateArrayLength(1, localMem[870], 0 + i);
-                end
-              end
-              ip = 1941;
+         $display("Should not be executed  1940");
       end
 
        1941 :
@@ -20153,9 +15736,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[871] = heapMem[localMem[835]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1942;
+         $display("Should not be executed  1941");
       end
 
        1942 :
@@ -20163,9 +15744,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[872] = heapMem[localMem[851]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1943;
+         $display("Should not be executed  1942");
       end
 
        1943 :
@@ -20173,13 +15752,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[848]) begin
-                  heapMem[NArea * localMem[872] + 0 + i] = heapMem[NArea * localMem[871] + localMem[849] + i];
-                  updateArrayLength(1, localMem[872], 0 + i);
-                end
-              end
-              ip = 1944;
+         $display("Should not be executed  1943");
       end
 
        1944 :
@@ -20187,7 +15760,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1945;
+         $display("Should not be executed  1944");
       end
 
        1945 :
@@ -20195,9 +15768,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[835]*7 + 0] = localMem[848];
-              updateArrayLength(1, localMem[835], 0);
-              ip = 1946;
+         $display("Should not be executed  1945");
       end
 
        1946 :
@@ -20205,9 +15776,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[851]*7 + 2] = localMem[850];
-              updateArrayLength(1, localMem[851], 2);
-              ip = 1947;
+         $display("Should not be executed  1946");
       end
 
        1947 :
@@ -20215,9 +15784,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[873] = heapMem[localMem[850]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 1948;
+         $display("Should not be executed  1947");
       end
 
        1948 :
@@ -20225,9 +15792,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[874] = heapMem[localMem[850]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1949;
+         $display("Should not be executed  1948");
       end
 
        1949 :
@@ -20235,9 +15800,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[875] = heapMem[localMem[874]*7 + localMem[873]];
-              updateArrayLength(2, 0, 0);
-              ip = 1950;
+         $display("Should not be executed  1949");
       end
 
        1950 :
@@ -20245,7 +15808,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[875] != localMem[835] ? 1969 : 1951;
+         $display("Should not be executed  1950");
       end
 
        1951 :
@@ -20253,9 +15816,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[876] = heapMem[localMem[835]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1952;
+         $display("Should not be executed  1951");
       end
 
        1952 :
@@ -20263,9 +15824,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[877] = heapMem[localMem[876]*7 + localMem[848]];
-              updateArrayLength(2, 0, 0);
-              ip = 1953;
+         $display("Should not be executed  1952");
       end
 
        1953 :
@@ -20273,9 +15832,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[878] = heapMem[localMem[850]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1954;
+         $display("Should not be executed  1953");
       end
 
        1954 :
@@ -20283,9 +15840,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[878]*7 + localMem[873]] = localMem[877];
-              updateArrayLength(1, localMem[878], localMem[873]);
-              ip = 1955;
+         $display("Should not be executed  1954");
       end
 
        1955 :
@@ -20293,9 +15848,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[879] = heapMem[localMem[835]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1956;
+         $display("Should not be executed  1955");
       end
 
        1956 :
@@ -20303,9 +15856,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[880] = heapMem[localMem[879]*7 + localMem[848]];
-              updateArrayLength(2, 0, 0);
-              ip = 1957;
+         $display("Should not be executed  1956");
       end
 
        1957 :
@@ -20313,9 +15864,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[881] = heapMem[localMem[850]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1958;
+         $display("Should not be executed  1957");
       end
 
        1958 :
@@ -20323,9 +15872,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[881]*7 + localMem[873]] = localMem[880];
-              updateArrayLength(1, localMem[881], localMem[873]);
-              ip = 1959;
+         $display("Should not be executed  1958");
       end
 
        1959 :
@@ -20333,9 +15880,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[882] = heapMem[localMem[835]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1960;
+         $display("Should not be executed  1959");
       end
 
        1960 :
@@ -20343,8 +15888,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[882]] = localMem[848];
-              ip = 1961;
+         $display("Should not be executed  1960");
       end
 
        1961 :
@@ -20352,9 +15896,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[883] = heapMem[localMem[835]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1962;
+         $display("Should not be executed  1961");
       end
 
        1962 :
@@ -20362,8 +15904,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[883]] = localMem[848];
-              ip = 1963;
+         $display("Should not be executed  1962");
       end
 
        1963 :
@@ -20371,9 +15912,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[884] = localMem[873] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1964;
+         $display("Should not be executed  1963");
       end
 
        1964 :
@@ -20381,9 +15920,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[850]*7 + 0] = localMem[884];
-              updateArrayLength(1, localMem[850], 0);
-              ip = 1965;
+         $display("Should not be executed  1964");
       end
 
        1965 :
@@ -20391,9 +15928,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[885] = heapMem[localMem[850]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1966;
+         $display("Should not be executed  1965");
       end
 
        1966 :
@@ -20401,9 +15936,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[885]*7 + localMem[884]] = localMem[851];
-              updateArrayLength(1, localMem[885], localMem[884]);
-              ip = 1967;
+         $display("Should not be executed  1966");
       end
 
        1967 :
@@ -20411,7 +15944,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 2107;
+         $display("Should not be executed  1967");
       end
 
        1968 :
@@ -20419,7 +15952,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 1991;
+         $display("Should not be executed  1968");
       end
 
        1969 :
@@ -20427,7 +15960,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1970;
+         $display("Should not be executed  1969");
       end
 
        1970 :
@@ -20435,7 +15968,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d assertNe", steps, ip);
 end
-            ip = 1971;
+         $display("Should not be executed  1970");
       end
 
        1971 :
@@ -20443,9 +15976,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[886] = heapMem[localMem[850]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1972;
+         $display("Should not be executed  1971");
       end
 
        1972 :
@@ -20453,11 +15984,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d arrayIndex", steps, ip);
 end
-              localMem[887] = 0; k = arraySizes[localMem[886]];
-              for(i = 0; i < NArea; i = i + 1) begin
-                if (i < k && heapMem[localMem[886] * NArea + i] == localMem[835]) localMem[887] = i + 1;
-              end
-              ip = 1973;
+         $display("Should not be executed  1972");
       end
 
        1973 :
@@ -20465,9 +15992,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d subtract", steps, ip);
 end
-              localMem[887] = localMem[887] - 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1974;
+         $display("Should not be executed  1973");
       end
 
        1974 :
@@ -20475,9 +16000,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[888] = heapMem[localMem[835]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1975;
+         $display("Should not be executed  1974");
       end
 
        1975 :
@@ -20485,9 +16008,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[889] = heapMem[localMem[888]*7 + localMem[848]];
-              updateArrayLength(2, 0, 0);
-              ip = 1976;
+         $display("Should not be executed  1975");
       end
 
        1976 :
@@ -20495,9 +16016,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[890] = heapMem[localMem[835]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1977;
+         $display("Should not be executed  1976");
       end
 
        1977 :
@@ -20505,9 +16024,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[891] = heapMem[localMem[890]*7 + localMem[848]];
-              updateArrayLength(2, 0, 0);
-              ip = 1978;
+         $display("Should not be executed  1977");
       end
 
        1978 :
@@ -20515,9 +16032,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[892] = heapMem[localMem[835]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1979;
+         $display("Should not be executed  1978");
       end
 
        1979 :
@@ -20525,8 +16040,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[892]] = localMem[848];
-              ip = 1980;
+         $display("Should not be executed  1979");
       end
 
        1980 :
@@ -20534,9 +16048,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[893] = heapMem[localMem[835]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1981;
+         $display("Should not be executed  1980");
       end
 
        1981 :
@@ -20544,8 +16056,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[893]] = localMem[848];
-              ip = 1982;
+         $display("Should not be executed  1981");
       end
 
        1982 :
@@ -20553,9 +16064,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[894] = heapMem[localMem[850]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 1983;
+         $display("Should not be executed  1982");
       end
 
        1983 :
@@ -20563,18 +16072,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[894] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[887], localMem[894], arraySizes[localMem[894]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[887] && i <= arraySizes[localMem[894]]) begin
-                  heapMem[NArea * localMem[894] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[894] + localMem[887]] = localMem[889];                                    // Insert new value
-              arraySizes[localMem[894]] = arraySizes[localMem[894]] + 1;                              // Increase array size
-              ip = 1984;
+         $display("Should not be executed  1983");
       end
 
        1984 :
@@ -20582,9 +16080,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[895] = heapMem[localMem[850]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 1985;
+         $display("Should not be executed  1984");
       end
 
        1985 :
@@ -20592,18 +16088,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[895] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[887], localMem[895], arraySizes[localMem[895]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[887] && i <= arraySizes[localMem[895]]) begin
-                  heapMem[NArea * localMem[895] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[895] + localMem[887]] = localMem[891];                                    // Insert new value
-              arraySizes[localMem[895]] = arraySizes[localMem[895]] + 1;                              // Increase array size
-              ip = 1986;
+         $display("Should not be executed  1985");
       end
 
        1986 :
@@ -20611,9 +16096,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[896] = heapMem[localMem[850]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 1987;
+         $display("Should not be executed  1986");
       end
 
        1987 :
@@ -20621,9 +16104,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[897] = localMem[887] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 1988;
+         $display("Should not be executed  1987");
       end
 
        1988 :
@@ -20631,18 +16112,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d shiftUp", steps, ip);
 end
-//$display("AAAA %4d %4d shiftUp", steps, ip);
-              for(i = 0; i < NArea; i = i + 1) arrayShift[i] = heapMem[NArea * localMem[896] + i]; // Copy source array
-//$display("BBBB pos=%d array=%d length=%d", localMem[897], localMem[896], arraySizes[localMem[896]]);
-              for(i = 0; i < NArea; i = i + 1) begin                            // Move original array up
-                if (i > localMem[897] && i <= arraySizes[localMem[896]]) begin
-                  heapMem[NArea * localMem[896] + i] = arrayShift[i-1];
-//$display("CCCC index=%d value=%d", i, arrayShift[i-1]);
-                end
-              end
-              heapMem[NArea * localMem[896] + localMem[897]] = localMem[851];                                    // Insert new value
-              arraySizes[localMem[896]] = arraySizes[localMem[896]] + 1;                              // Increase array size
-              ip = 1989;
+         $display("Should not be executed  1988");
       end
 
        1989 :
@@ -20650,9 +16120,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[850]*7 + 0] = heapMem[localMem[850]*7 + 0] + 1;
-              updateArrayLength(1, localMem[850], 0);
-              ip = 1990;
+         $display("Should not be executed  1989");
       end
 
        1990 :
@@ -20660,7 +16128,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 2107;
+         $display("Should not be executed  1990");
       end
 
        1991 :
@@ -20668,7 +16136,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1992;
+         $display("Should not be executed  1991");
       end
 
        1992 :
@@ -20676,7 +16144,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 1993;
+         $display("Should not be executed  1992");
       end
 
        1993 :
@@ -20684,17 +16152,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[898] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[898] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[898]] = 0;
-              ip = 1994;
+         $display("Should not be executed  1993");
       end
 
        1994 :
@@ -20702,9 +16160,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[898]*7 + 0] = localMem[848];
-              updateArrayLength(1, localMem[898], 0);
-              ip = 1995;
+         $display("Should not be executed  1994");
       end
 
        1995 :
@@ -20712,9 +16168,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[898]*7 + 2] = 0;
-              updateArrayLength(1, localMem[898], 2);
-              ip = 1996;
+         $display("Should not be executed  1995");
       end
 
        1996 :
@@ -20722,17 +16176,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[899] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[899] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[899]] = 0;
-              ip = 1997;
+         $display("Should not be executed  1996");
       end
 
        1997 :
@@ -20740,9 +16184,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[898]*7 + 4] = localMem[899];
-              updateArrayLength(1, localMem[898], 4);
-              ip = 1998;
+         $display("Should not be executed  1997");
       end
 
        1998 :
@@ -20750,17 +16192,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[900] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[900] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[900]] = 0;
-              ip = 1999;
+         $display("Should not be executed  1998");
       end
 
        1999 :
@@ -20768,9 +16200,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[898]*7 + 5] = localMem[900];
-              updateArrayLength(1, localMem[898], 5);
-              ip = 2000;
+         $display("Should not be executed  1999");
       end
 
        2000 :
@@ -20778,9 +16208,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[898]*7 + 6] = 0;
-              updateArrayLength(1, localMem[898], 6);
-              ip = 2001;
+         $display("Should not be executed  2000");
       end
 
        2001 :
@@ -20788,9 +16216,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[898]*7 + 3] = localMem[846];
-              updateArrayLength(1, localMem[898], 3);
-              ip = 2002;
+         $display("Should not be executed  2001");
       end
 
        2002 :
@@ -20798,9 +16224,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[846]*7 + 1] = heapMem[localMem[846]*7 + 1] + 1;
-              updateArrayLength(1, localMem[846], 1);
-              ip = 2003;
+         $display("Should not be executed  2002");
       end
 
        2003 :
@@ -20808,9 +16232,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[898]*7 + 1] = heapMem[localMem[846]*7 + 1];
-              updateArrayLength(1, localMem[898], 1);
-              ip = 2004;
+         $display("Should not be executed  2003");
       end
 
        2004 :
@@ -20818,17 +16240,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[901] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[901] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[901]] = 0;
-              ip = 2005;
+         $display("Should not be executed  2004");
       end
 
        2005 :
@@ -20836,9 +16248,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[901]*7 + 0] = localMem[848];
-              updateArrayLength(1, localMem[901], 0);
-              ip = 2006;
+         $display("Should not be executed  2005");
       end
 
        2006 :
@@ -20846,9 +16256,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[901]*7 + 2] = 0;
-              updateArrayLength(1, localMem[901], 2);
-              ip = 2007;
+         $display("Should not be executed  2006");
       end
 
        2007 :
@@ -20856,17 +16264,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[902] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[902] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[902]] = 0;
-              ip = 2008;
+         $display("Should not be executed  2007");
       end
 
        2008 :
@@ -20874,9 +16272,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[901]*7 + 4] = localMem[902];
-              updateArrayLength(1, localMem[901], 4);
-              ip = 2009;
+         $display("Should not be executed  2008");
       end
 
        2009 :
@@ -20884,17 +16280,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[903] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[903] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[903]] = 0;
-              ip = 2010;
+         $display("Should not be executed  2009");
       end
 
        2010 :
@@ -20902,9 +16288,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[901]*7 + 5] = localMem[903];
-              updateArrayLength(1, localMem[901], 5);
-              ip = 2011;
+         $display("Should not be executed  2010");
       end
 
        2011 :
@@ -20912,9 +16296,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[901]*7 + 6] = 0;
-              updateArrayLength(1, localMem[901], 6);
-              ip = 2012;
+         $display("Should not be executed  2011");
       end
 
        2012 :
@@ -20922,9 +16304,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[901]*7 + 3] = localMem[846];
-              updateArrayLength(1, localMem[901], 3);
-              ip = 2013;
+         $display("Should not be executed  2012");
       end
 
        2013 :
@@ -20932,9 +16312,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[846]*7 + 1] = heapMem[localMem[846]*7 + 1] + 1;
-              updateArrayLength(1, localMem[846], 1);
-              ip = 2014;
+         $display("Should not be executed  2013");
       end
 
        2014 :
@@ -20942,9 +16320,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[901]*7 + 1] = heapMem[localMem[846]*7 + 1];
-              updateArrayLength(1, localMem[901], 1);
-              ip = 2015;
+         $display("Should not be executed  2014");
       end
 
        2015 :
@@ -20952,8 +16328,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d not", steps, ip);
 end
-              localMem[904] = !heapMem[localMem[835]*7 + 6];
-              ip = 2016;
+         $display("Should not be executed  2015");
       end
 
        2016 :
@@ -20961,7 +16336,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jNe", steps, ip);
 end
-              ip = localMem[904] != 0 ? 2068 : 2017;
+         $display("Should not be executed  2016");
       end
 
        2017 :
@@ -20969,17 +16344,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[905] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[905] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[905]] = 0;
-              ip = 2018;
+         $display("Should not be executed  2017");
       end
 
        2018 :
@@ -20987,9 +16352,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[898]*7 + 6] = localMem[905];
-              updateArrayLength(1, localMem[898], 6);
-              ip = 2019;
+         $display("Should not be executed  2018");
       end
 
        2019 :
@@ -20997,17 +16360,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[906] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[906] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[906]] = 0;
-              ip = 2020;
+         $display("Should not be executed  2019");
       end
 
        2020 :
@@ -21015,9 +16368,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[901]*7 + 6] = localMem[906];
-              updateArrayLength(1, localMem[901], 6);
-              ip = 2021;
+         $display("Should not be executed  2020");
       end
 
        2021 :
@@ -21025,9 +16376,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[907] = heapMem[localMem[835]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 2022;
+         $display("Should not be executed  2021");
       end
 
        2022 :
@@ -21035,9 +16384,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[908] = heapMem[localMem[898]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 2023;
+         $display("Should not be executed  2022");
       end
 
        2023 :
@@ -21045,13 +16392,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[848]) begin
-                  heapMem[NArea * localMem[908] + 0 + i] = heapMem[NArea * localMem[907] + 0 + i];
-                  updateArrayLength(1, localMem[908], 0 + i);
-                end
-              end
-              ip = 2024;
+         $display("Should not be executed  2023");
       end
 
        2024 :
@@ -21059,9 +16400,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[909] = heapMem[localMem[835]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 2025;
+         $display("Should not be executed  2024");
       end
 
        2025 :
@@ -21069,9 +16408,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[910] = heapMem[localMem[898]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 2026;
+         $display("Should not be executed  2025");
       end
 
        2026 :
@@ -21079,13 +16416,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[848]) begin
-                  heapMem[NArea * localMem[910] + 0 + i] = heapMem[NArea * localMem[909] + 0 + i];
-                  updateArrayLength(1, localMem[910], 0 + i);
-                end
-              end
-              ip = 2027;
+         $display("Should not be executed  2026");
       end
 
        2027 :
@@ -21093,9 +16424,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[911] = heapMem[localMem[835]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 2028;
+         $display("Should not be executed  2027");
       end
 
        2028 :
@@ -21103,9 +16432,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[912] = heapMem[localMem[898]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 2029;
+         $display("Should not be executed  2028");
       end
 
        2029 :
@@ -21113,9 +16440,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[913] = localMem[848] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 2030;
+         $display("Should not be executed  2029");
       end
 
        2030 :
@@ -21123,13 +16448,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[913]) begin
-                  heapMem[NArea * localMem[912] + 0 + i] = heapMem[NArea * localMem[911] + 0 + i];
-                  updateArrayLength(1, localMem[912], 0 + i);
-                end
-              end
-              ip = 2031;
+         $display("Should not be executed  2030");
       end
 
        2031 :
@@ -21137,9 +16456,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[914] = heapMem[localMem[835]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 2032;
+         $display("Should not be executed  2031");
       end
 
        2032 :
@@ -21147,9 +16464,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[915] = heapMem[localMem[901]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 2033;
+         $display("Should not be executed  2032");
       end
 
        2033 :
@@ -21157,13 +16472,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[848]) begin
-                  heapMem[NArea * localMem[915] + 0 + i] = heapMem[NArea * localMem[914] + localMem[849] + i];
-                  updateArrayLength(1, localMem[915], 0 + i);
-                end
-              end
-              ip = 2034;
+         $display("Should not be executed  2033");
       end
 
        2034 :
@@ -21171,9 +16480,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[916] = heapMem[localMem[835]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 2035;
+         $display("Should not be executed  2034");
       end
 
        2035 :
@@ -21181,9 +16488,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[917] = heapMem[localMem[901]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 2036;
+         $display("Should not be executed  2035");
       end
 
        2036 :
@@ -21191,13 +16496,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[848]) begin
-                  heapMem[NArea * localMem[917] + 0 + i] = heapMem[NArea * localMem[916] + localMem[849] + i];
-                  updateArrayLength(1, localMem[917], 0 + i);
-                end
-              end
-              ip = 2037;
+         $display("Should not be executed  2036");
       end
 
        2037 :
@@ -21205,9 +16504,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[918] = heapMem[localMem[835]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 2038;
+         $display("Should not be executed  2037");
       end
 
        2038 :
@@ -21215,9 +16512,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[919] = heapMem[localMem[901]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 2039;
+         $display("Should not be executed  2038");
       end
 
        2039 :
@@ -21225,9 +16520,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[920] = localMem[848] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 2040;
+         $display("Should not be executed  2039");
       end
 
        2040 :
@@ -21235,13 +16528,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[920]) begin
-                  heapMem[NArea * localMem[919] + 0 + i] = heapMem[NArea * localMem[918] + localMem[849] + i];
-                  updateArrayLength(1, localMem[919], 0 + i);
-                end
-              end
-              ip = 2041;
+         $display("Should not be executed  2040");
       end
 
        2041 :
@@ -21249,9 +16536,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[921] = heapMem[localMem[898]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 2042;
+         $display("Should not be executed  2041");
       end
 
        2042 :
@@ -21259,9 +16544,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[922] = localMem[921] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 2043;
+         $display("Should not be executed  2042");
       end
 
        2043 :
@@ -21269,9 +16552,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[923] = heapMem[localMem[898]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 2044;
+         $display("Should not be executed  2043");
       end
 
        2044 :
@@ -21279,7 +16560,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 2045;
+         $display("Should not be executed  2044");
       end
 
        2045 :
@@ -21287,9 +16568,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[924] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 2046;
+         $display("Should not be executed  2045");
       end
 
        2046 :
@@ -21297,7 +16576,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 2047;
+         $display("Should not be executed  2046");
       end
 
        2047 :
@@ -21305,7 +16584,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[924] >= localMem[922] ? 2053 : 2048;
+         $display("Should not be executed  2047");
       end
 
        2048 :
@@ -21313,9 +16592,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[925] = heapMem[localMem[923]*7 + localMem[924]];
-              updateArrayLength(2, 0, 0);
-              ip = 2049;
+         $display("Should not be executed  2048");
       end
 
        2049 :
@@ -21323,9 +16600,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[925]*7 + 2] = localMem[898];
-              updateArrayLength(1, localMem[925], 2);
-              ip = 2050;
+         $display("Should not be executed  2049");
       end
 
        2050 :
@@ -21333,7 +16608,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 2051;
+         $display("Should not be executed  2050");
       end
 
        2051 :
@@ -21341,9 +16616,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[924] = localMem[924] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 2052;
+         $display("Should not be executed  2051");
       end
 
        2052 :
@@ -21351,7 +16624,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 2046;
+         $display("Should not be executed  2052");
       end
 
        2053 :
@@ -21359,7 +16632,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 2054;
+         $display("Should not be executed  2053");
       end
 
        2054 :
@@ -21367,9 +16640,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[926] = heapMem[localMem[901]*7 + 0];
-              updateArrayLength(2, 0, 0);
-              ip = 2055;
+         $display("Should not be executed  2054");
       end
 
        2055 :
@@ -21377,9 +16648,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[927] = localMem[926] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 2056;
+         $display("Should not be executed  2055");
       end
 
        2056 :
@@ -21387,9 +16656,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[928] = heapMem[localMem[901]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 2057;
+         $display("Should not be executed  2056");
       end
 
        2057 :
@@ -21397,7 +16664,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 2058;
+         $display("Should not be executed  2057");
       end
 
        2058 :
@@ -21405,9 +16672,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[929] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 2059;
+         $display("Should not be executed  2058");
       end
 
        2059 :
@@ -21415,7 +16680,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 2060;
+         $display("Should not be executed  2059");
       end
 
        2060 :
@@ -21423,7 +16688,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jGe", steps, ip);
 end
-              ip = localMem[929] >= localMem[927] ? 2066 : 2061;
+         $display("Should not be executed  2060");
       end
 
        2061 :
@@ -21431,9 +16696,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[930] = heapMem[localMem[928]*7 + localMem[929]];
-              updateArrayLength(2, 0, 0);
-              ip = 2062;
+         $display("Should not be executed  2061");
       end
 
        2062 :
@@ -21441,9 +16704,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[930]*7 + 2] = localMem[901];
-              updateArrayLength(1, localMem[930], 2);
-              ip = 2063;
+         $display("Should not be executed  2062");
       end
 
        2063 :
@@ -21451,7 +16712,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 2064;
+         $display("Should not be executed  2063");
       end
 
        2064 :
@@ -21459,9 +16720,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              localMem[929] = localMem[929] + 1;
-              updateArrayLength(2, 0, 0);
-              ip = 2065;
+         $display("Should not be executed  2064");
       end
 
        2065 :
@@ -21469,7 +16728,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 2059;
+         $display("Should not be executed  2065");
       end
 
        2066 :
@@ -21477,7 +16736,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 2067;
+         $display("Should not be executed  2066");
       end
 
        2067 :
@@ -21485,7 +16744,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 2083;
+         $display("Should not be executed  2067");
       end
 
        2068 :
@@ -21493,7 +16752,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 2069;
+         $display("Should not be executed  2068");
       end
 
        2069 :
@@ -21501,17 +16760,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
-              if (freedArraysTop > 0) begin
-                freedArraysTop = freedArraysTop - 1;
-                localMem[931] = freedArrays[freedArraysTop];
-              end
-              else begin
-                localMem[931] = allocs;
-                allocs = allocs + 1;
-
-              end
-              arraySizes[localMem[931]] = 0;
-              ip = 2070;
+         $display("Should not be executed  2069");
       end
 
        2070 :
@@ -21519,9 +16768,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[835]*7 + 6] = localMem[931];
-              updateArrayLength(1, localMem[835], 6);
-              ip = 2071;
+         $display("Should not be executed  2070");
       end
 
        2071 :
@@ -21529,9 +16776,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[932] = heapMem[localMem[835]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 2072;
+         $display("Should not be executed  2071");
       end
 
        2072 :
@@ -21539,9 +16784,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[933] = heapMem[localMem[898]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 2073;
+         $display("Should not be executed  2072");
       end
 
        2073 :
@@ -21549,13 +16792,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[848]) begin
-                  heapMem[NArea * localMem[933] + 0 + i] = heapMem[NArea * localMem[932] + 0 + i];
-                  updateArrayLength(1, localMem[933], 0 + i);
-                end
-              end
-              ip = 2074;
+         $display("Should not be executed  2073");
       end
 
        2074 :
@@ -21563,9 +16800,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[934] = heapMem[localMem[835]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 2075;
+         $display("Should not be executed  2074");
       end
 
        2075 :
@@ -21573,9 +16808,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[935] = heapMem[localMem[898]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 2076;
+         $display("Should not be executed  2075");
       end
 
        2076 :
@@ -21583,13 +16816,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[848]) begin
-                  heapMem[NArea * localMem[935] + 0 + i] = heapMem[NArea * localMem[934] + 0 + i];
-                  updateArrayLength(1, localMem[935], 0 + i);
-                end
-              end
-              ip = 2077;
+         $display("Should not be executed  2076");
       end
 
        2077 :
@@ -21597,9 +16824,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[936] = heapMem[localMem[835]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 2078;
+         $display("Should not be executed  2077");
       end
 
        2078 :
@@ -21607,9 +16832,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[937] = heapMem[localMem[901]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 2079;
+         $display("Should not be executed  2078");
       end
 
        2079 :
@@ -21617,13 +16840,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[848]) begin
-                  heapMem[NArea * localMem[937] + 0 + i] = heapMem[NArea * localMem[936] + localMem[849] + i];
-                  updateArrayLength(1, localMem[937], 0 + i);
-                end
-              end
-              ip = 2080;
+         $display("Should not be executed  2079");
       end
 
        2080 :
@@ -21631,9 +16848,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[938] = heapMem[localMem[835]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 2081;
+         $display("Should not be executed  2080");
       end
 
        2081 :
@@ -21641,9 +16856,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[939] = heapMem[localMem[901]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 2082;
+         $display("Should not be executed  2081");
       end
 
        2082 :
@@ -21651,13 +16864,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d moveLong", steps, ip);
 end
-              for(i = 0; i < NArea; i = i + 1) begin                            // Copy from source to target
-                if (i < localMem[848]) begin
-                  heapMem[NArea * localMem[939] + 0 + i] = heapMem[NArea * localMem[938] + localMem[849] + i];
-                  updateArrayLength(1, localMem[939], 0 + i);
-                end
-              end
-              ip = 2083;
+         $display("Should not be executed  2082");
       end
 
        2083 :
@@ -21665,7 +16872,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 2084;
+         $display("Should not be executed  2083");
       end
 
        2084 :
@@ -21673,9 +16880,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[898]*7 + 2] = localMem[835];
-              updateArrayLength(1, localMem[898], 2);
-              ip = 2085;
+         $display("Should not be executed  2084");
       end
 
        2085 :
@@ -21683,9 +16888,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[901]*7 + 2] = localMem[835];
-              updateArrayLength(1, localMem[901], 2);
-              ip = 2086;
+         $display("Should not be executed  2085");
       end
 
        2086 :
@@ -21693,9 +16896,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[940] = heapMem[localMem[835]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 2087;
+         $display("Should not be executed  2086");
       end
 
        2087 :
@@ -21703,9 +16904,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[941] = heapMem[localMem[940]*7 + localMem[848]];
-              updateArrayLength(2, 0, 0);
-              ip = 2088;
+         $display("Should not be executed  2087");
       end
 
        2088 :
@@ -21713,9 +16912,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[942] = heapMem[localMem[835]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 2089;
+         $display("Should not be executed  2088");
       end
 
        2089 :
@@ -21723,9 +16920,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[943] = heapMem[localMem[942]*7 + localMem[848]];
-              updateArrayLength(2, 0, 0);
-              ip = 2090;
+         $display("Should not be executed  2089");
       end
 
        2090 :
@@ -21733,9 +16928,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[944] = heapMem[localMem[835]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 2091;
+         $display("Should not be executed  2090");
       end
 
        2091 :
@@ -21743,9 +16936,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[944]*7 + 0] = localMem[941];
-              updateArrayLength(1, localMem[944], 0);
-              ip = 2092;
+         $display("Should not be executed  2091");
       end
 
        2092 :
@@ -21753,9 +16944,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[945] = heapMem[localMem[835]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 2093;
+         $display("Should not be executed  2092");
       end
 
        2093 :
@@ -21763,9 +16952,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[945]*7 + 0] = localMem[943];
-              updateArrayLength(1, localMem[945], 0);
-              ip = 2094;
+         $display("Should not be executed  2093");
       end
 
        2094 :
@@ -21773,9 +16960,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[946] = heapMem[localMem[835]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 2095;
+         $display("Should not be executed  2094");
       end
 
        2095 :
@@ -21783,9 +16968,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[946]*7 + 0] = localMem[898];
-              updateArrayLength(1, localMem[946], 0);
-              ip = 2096;
+         $display("Should not be executed  2095");
       end
 
        2096 :
@@ -21793,9 +16976,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[947] = heapMem[localMem[835]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 2097;
+         $display("Should not be executed  2096");
       end
 
        2097 :
@@ -21803,9 +16984,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[947]*7 + 1] = localMem[901];
-              updateArrayLength(1, localMem[947], 1);
-              ip = 2098;
+         $display("Should not be executed  2097");
       end
 
        2098 :
@@ -21813,9 +16992,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[835]*7 + 0] = 1;
-              updateArrayLength(1, localMem[835], 0);
-              ip = 2099;
+         $display("Should not be executed  2098");
       end
 
        2099 :
@@ -21823,9 +17000,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[948] = heapMem[localMem[835]*7 + 4];
-              updateArrayLength(2, 0, 0);
-              ip = 2100;
+         $display("Should not be executed  2099");
       end
 
        2100 :
@@ -21833,8 +17008,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[948]] = 1;
-              ip = 2101;
+         $display("Should not be executed  2100");
       end
 
        2101 :
@@ -21842,9 +17016,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[949] = heapMem[localMem[835]*7 + 5];
-              updateArrayLength(2, 0, 0);
-              ip = 2102;
+         $display("Should not be executed  2101");
       end
 
        2102 :
@@ -21852,8 +17024,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[949]] = 1;
-              ip = 2103;
+         $display("Should not be executed  2102");
       end
 
        2103 :
@@ -21861,9 +17032,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[950] = heapMem[localMem[835]*7 + 6];
-              updateArrayLength(2, 0, 0);
-              ip = 2104;
+         $display("Should not be executed  2103");
       end
 
        2104 :
@@ -21871,8 +17040,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d resize", steps, ip);
 end
-              arraySizes[localMem[950]] = 2;
-              ip = 2105;
+         $display("Should not be executed  2104");
       end
 
        2105 :
@@ -21880,7 +17048,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 2107;
+         $display("Should not be executed  2105");
       end
 
        2106 :
@@ -21888,7 +17056,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 2112;
+         $display("Should not be executed  2106");
       end
 
        2107 :
@@ -21896,7 +17064,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 2108;
+         $display("Should not be executed  2107");
       end
 
        2108 :
@@ -21904,9 +17072,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[844] = 1;
-              updateArrayLength(2, 0, 0);
-              ip = 2109;
+         $display("Should not be executed  2108");
       end
 
        2109 :
@@ -21914,7 +17080,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 2112;
+         $display("Should not be executed  2109");
       end
 
        2110 :
@@ -21922,7 +17088,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 2111;
+         $display("Should not be executed  2110");
       end
 
        2111 :
@@ -21930,9 +17096,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[844] = 0;
-              updateArrayLength(2, 0, 0);
-              ip = 2112;
+         $display("Should not be executed  2111");
       end
 
        2112 :
@@ -21940,7 +17104,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 2113;
+         $display("Should not be executed  2112");
       end
 
        2113 :
@@ -21948,7 +17112,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 2114;
+         $display("Should not be executed  2113");
       end
 
        2114 :
@@ -21956,7 +17120,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d label", steps, ip);
 end
-              ip = 2115;
+         $display("Should not be executed  2114");
       end
 
        2115 :
