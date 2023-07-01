@@ -152,6 +152,7 @@ on:
     paths:
       - '**.pm'
       - '**pushToGitHub.pl'
+      - '**.yml'
 
 jobs:
 END
