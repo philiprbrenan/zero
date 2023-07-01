@@ -108,15 +108,24 @@ sub job                                                                         
       run: |
         free -h
         df   -h
-        sudo find / -type f -exec du -h {} + | sort -rh | head -n 100
+        # Top 100 files might liberate another 8G    sudo find / -type f -exec du -h {} + | sort -rh | head -n 100
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 16G swapfile
+        sudo fallocate -l 20G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
         sudo swapon           swapfile
+        free -h
+
+    - name: Memory fallocate2
+      run: |
+        sudo fallocate -l  8G /mnt/swapfile2
+        sudo chmod 600        /mnt/swapfile2
+        sudo ls -la           /mnt/swapfile2
+        sudo mkswap           /mnt/swapfile2
+        sudo swapon           /mnt/swapfile2
         free -h
 
     - uses: actions/checkout\@v3
