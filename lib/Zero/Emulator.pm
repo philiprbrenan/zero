@@ -954,6 +954,9 @@ my sub pushArea($$$$)                                                           
   @_ == 4 or confess "Four parameters";
   $exec->checkArrayName(arenaHeap, $area, $name);
   $exec->PushMemoryArea->($exec, $area, $value);
+  $exec->widestAreaInArena->[arenaHeap] =                                       # Track the widest area in each arena
+    max($exec->widestAreaInArena->[arenaHeap]//0, $exec->areaLength($area));    # Pushing might well alter the size of the array
+
  }
 
 my sub popArea($$$$)                                                            # Pop a value from the specified memory area if possible else confess.
@@ -1259,7 +1262,7 @@ my sub areaContent($$)                                                          
   @$a
  }
 
-my sub areaLength($$)                                                           #P Content of an area containing a specified address in memory in the specified execution.
+sub areaLength($$)                                                              #P Content of an area containing a specified address in memory in the specified execution.
  {my ($exec, $array) = @_;                                                      # Execution environment, reference to array
   @_ == 2 or confess "Two parameters";
   my $a = $exec->heap($array);
@@ -3259,6 +3262,7 @@ sub compileToVerilog($$)                                                        
 
   my $NArrays = $compile->NArrays;
   my $NArea   = $compile->NArea;
+  my $NOut    = [split /\s+/, $exec->out]->@*;
   my $WLocal  = $compile->WLocal;
 
   my @c;                                                                        # Generated code
@@ -3664,6 +3668,8 @@ END
     tally=> \&skip,                                                             # Tally
    };
 
+  my sub f8($) {my $f = sprintf "%8d", $_[0]; \$f}                              # Format a number so things line up in the generated codef =
+
   push @c, <<END;                                                               # A case statement to select the next sub sequence to execute
 //-----------------------------------------------------------------------------
 // Fpga test
@@ -3676,16 +3682,16 @@ module fpga                                                                     
 
   parameter integer MemoryElementWidth =  12;                                   // Memory element width
 
-  parameter integer NArea   = $NArea;                                           // Size of each area on the heap
-  parameter integer NArrays = $NArrays;                                         // Maximum number of arrays
-  parameter integer NHeap   = $NArea*$NArrays;                                  // Amount of heap memory
-  parameter integer NLocal  = $WLocal;                                          // Size of local memory
-  parameter integer NOut    =  2000;                                            // Size of output area
+  parameter integer NArea   = ${&f8($NArea         )};                                         // Size of each area on the heap
+  parameter integer NArrays = ${&f8($NArrays       )};                                         // Maximum number of arrays
+  parameter integer NHeap   = ${&f8($NArea*$NArrays)};                                         // Amount of heap memory
+  parameter integer NLocal  = ${&f8($WLocal        )};                                         // Size of local memory
+  parameter integer NOut    = ${&f8($NOut          )};                                         // Size of output area
 END
 
   if (my $n = sprintf "%4d", scalar $exec->inOriginally->@*)                    # Input queue length
    {push @c, <<END;
-  parameter integer NIn            =  $n;                                       // Size of input area
+  parameter integer NIn     =  ${&f8($n)};                                        // Size of input area
 END
    }
 
