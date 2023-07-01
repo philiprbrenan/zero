@@ -1,4 +1,4 @@
-# Test 2023-07-01 at 22:59:37
+# Test 2023-07-01 at 23:00:30
 
 name: Test
 
@@ -32,7 +32,7 @@ jobs:
 
     - name: Memory make swap
       run: |
-        mkswap                swapfile
+        sudo mkswap           swapfile
 
     - name: Memory set swap
       run: |
@@ -105,7 +105,7 @@ jobs:
 
     - name: Memory make swap
       run: |
-        mkswap                swapfile
+        sudo mkswap           swapfile
 
     - name: Memory set swap
       run: |
