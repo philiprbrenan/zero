@@ -49,7 +49,7 @@ module fpga                                                                     
     outMemPos      = 0;
     allocs         = 0;
     freedArraysTop = 0;
-    if (0) begin                                                                // Clear memory
+    if (0) begin                                                  // Clear memory
       for(i = 0; i < NHeap;   i = i + 1)    heapMem[i] = 0;
       for(i = 0; i < NLocal;  i = i + 1)   localMem[i] = 0;
       for(i = 0; i < NArrays; i = i + 1) arraySizes[i] = 0;
