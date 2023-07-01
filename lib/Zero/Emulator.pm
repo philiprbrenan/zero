@@ -875,7 +875,7 @@ sub Zero::Emulator::Address::getMemoryAddress($)                                
   my $name    = $a->name;                                                       # Name
 
   $exec->widestAreaInArena->[$arena] =                                          # Track the widest area in each arena
-    max($exec->widestAreaInArena->[$arena]//0, $address);
+    max($exec->widestAreaInArena->[$arena]//0, $address+1);                     # addresses are zero based
 
   if ($exec->widestAreaInArena->[$arena] == $address)
    {$exec->namesOfWidestArrays->[$arena] = $exec->block->ArrayNumberToName($name);
