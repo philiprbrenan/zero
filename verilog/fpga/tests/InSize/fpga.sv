@@ -58,7 +58,7 @@ module fpga                                                                     
     inMem[1] = 44;
   end
 
-  always @(clock) begin                                                         // Each instruction
+  always @(*) begin                                                             // Each instruction
     steps = steps + 1;
     case(ip)
 
