@@ -14,7 +14,7 @@ module fpga                                                                     
   parameter integer NHeap   =        0;                                         // Amount of heap memory
   parameter integer NLocal  =        2;                                         // Size of local memory
   parameter integer NOut    =        2;                                         // Size of output area
-  parameter integer NIn     =         0;                                        // Size of input area
+  parameter integer NIn     =        0;                                         // Size of input area
   reg [MemoryElementWidth-1:0]   arraySizes[NArrays-1:0];                       // Size of each array
   reg [MemoryElementWidth-1:0]      heapMem[NHeap-1  :0];                       // Heap memory
   reg [MemoryElementWidth-1:0]     localMem[NLocal-1 :0];                       // Local memory
@@ -117,9 +117,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d out", steps, ip);
 end
-              outMem[outMemPos] = 222;
-              outMemPos = (outMemPos + 1) % NOut;
-              ip = 7;
+         $display("Should not be executed     6");
       end
 
           7 :
@@ -127,7 +125,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d jmp", steps, ip);
 end
-              ip = 11;
+         $display("Should not be executed     7");
       end
 
           8 :
