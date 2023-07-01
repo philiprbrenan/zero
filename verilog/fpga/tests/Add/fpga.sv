@@ -53,8 +53,11 @@ module fpga                                                                     
       for
        (i = 0;
         i < NHeap;
-      ++i)
-      heapMem[i] = 0;
+      ++
+      i
+      )
+      heapMem
+      [i] = 0;
       for(i = 0; i < NLocal;  ++i)   localMem[i] = 0;
       for(i = 0; i < NArrays; ++i) arraySizes[i] = 0;
     end
