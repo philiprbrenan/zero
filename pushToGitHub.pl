@@ -324,6 +324,11 @@ END
       my $b = fpe fp($s), qw(tangnano9k cst);                                   # Device description
 
       my $y = job("Yosys_$t").yosys(). <<END;
+    - name: Memory
+      if: \${{ always() }}
+      run: |
+        free -h
+
     - name: Yosys_$t
       if: \${{ always() }}
       run: |
