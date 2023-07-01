@@ -3763,7 +3763,7 @@ END
   if (1)                                                                        # A case statement to select each instruction to be executed in order
    {push @c, <<END;
 
-  always @(clock) begin                                                         // Each instruction
+  always @(*) begin                                                             // Each instruction
     steps = steps + 1;
     case(ip)
 END
