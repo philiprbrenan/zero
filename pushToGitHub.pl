@@ -114,15 +114,15 @@ sub job                                                                         
       run: |
         sudo fallocate -l 20G swapfile
         sudo chmod 600        swapfile
-        ls -la                swapfile
-
-    - name: Memory make swap
-      run: |
+        sudo ls -la           swapfile
         sudo mkswap           swapfile
-
-    - name: Memory set swap
-      run: |
         sudo swapon           swapfile
+        free -h
+        sudo fallocate -l 8G  /mnt/swapfile
+        sudo chmod 600        /mnt/swapfile
+        sudo ls -la           /mnt/swapfile
+        sudo mkswap           /mnt/swapfile
+        sudo swapon           /mnt/swapfile
         free -h
 
     - uses: actions/checkout\@v3
