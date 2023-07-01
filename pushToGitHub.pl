@@ -323,8 +323,8 @@ END
       my $P = setFileExtension $s, q(fs);                                       # Bit stream
       my $b = fpe fp($s), qw(tangnano9k cst);                                   # Device description
 
-      my $y = job("Yosys $t").yosys(). <<END;
-    - name: $t
+      my $y = job("Yosys_$t").yosys(). <<END;
+    - name: Yosys_$t
       if: \${{ always() }}
       run: |
         export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
