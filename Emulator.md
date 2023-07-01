@@ -4123,21 +4123,6 @@ Generate machine code and print it out in Verilog format. We need the just compl
 
 Compile each sub sequence of instructions into equivalent verilog.  A sub sequence starts at an instruction marked as an entry point
 
-## CompileToVerilog(%options)
-
-Execution environment for a block of code.
-
-       Parameter  Description
-    1  %options   Execution options
-
-## Zero::CompileToVerilog::deref($compile, $ref)
-
-Compile a reference in assembler format to a corresponding verilog expression
-
-       Parameter  Description
-    1  $compile   Compile
-    2  $ref       Reference
-
 ## compileToVerilog($exec, $name)
 
 Compile each sub sequence of instructions into equivalent verilog.  A sub sequence starts at an instruction marked as an entry point
@@ -4821,6 +4806,21 @@ Disassemble and remove context information from disassembly to make testing easi
 
        Parameter  Description
     1  $D         Machine code string
+
+## CompileToVerilog(%options)
+
+Execution environment for a block of code.
+
+       Parameter  Description
+    1  %options   Execution options
+
+## Zero::CompileToVerilog::deref($compile, $ref)
+
+Compile a reference in assembler format to a corresponding verilog expression
+
+       Parameter  Description
+    1  $compile   Compile
+    2  $ref       Reference
 
 # Index
 
