@@ -106,6 +106,12 @@ sub job                                                                         
       with:
         ref: 'main'
 
+    - name: Memory
+      if: \${{ always() }}
+      run: |
+        free -h
+        df   -h
+
     - uses: actions/checkout\@v3
       with:
         repository: philiprbrenan/DataTableText
@@ -314,7 +320,7 @@ END
     push @y, $y;
    }
 
-  if (1)                                                                        # Test run on fpga
+  if (0)                                                                        # Test run on fpga
    {for my $s(@tests)                                                           # Tests
      {my $t = fp($s) =~ s(/) (_)gsr;                                            # Test name in a form suitable for github
       my $v = setFileExtension $s, q(sv);                                       # Source file
@@ -324,10 +330,6 @@ END
       my $b = fpe fp($s), qw(tangnano9k cst);                                   # Device description
 
       my $y = job("Yosys_$t").yosys(). <<END;
-    - name: Memory
-      if: \${{ always() }}
-      run: |
-        free -h
 
     - name: Yosys_$t
       if: \${{ always() }}
