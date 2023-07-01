@@ -25,7 +25,7 @@ my $btree    = fpf $home, q(lib/Zero/BTree.pm);                                 
 my $readMe   = fpe $home, qw(README md2);                                       # Read me
 
 my $testsDir = fpd $home, qw(verilog fpga tests);                               # Tests folder
-my $lowLevel = 1;                                                               # Run the low level tests that prepare for an actual fpga - these take time
+my $lowLevel = 0;                                                               # Run the low level tests that prepare for an actual fpga - these take time
 my $macos    = 0;                                                               # Macos if true
 my $windows  = 0;                                                               # Windows if true
 my $openBsd  = 0;                                                               # OpenBsd if true
@@ -109,6 +109,7 @@ sub job                                                                         
         free -h
         df   -h
         # Top 100 files might liberate another 8G    sudo find / -type f -exec du -h {} + | sort -rh | head -n 100
+        du -sh .npm .cache .actions
 
     - name: Memory fallocate
       run: |
