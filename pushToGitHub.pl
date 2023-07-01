@@ -314,7 +314,7 @@ END
     push @y, $y;
    }
 
-  if (0)                                                                        # Test run on fpga
+  if (1)                                                                        # Test run on fpga
    {for my $s(@tests)                                                           # Tests
      {my $v = setFileExtension $s, q(sv);                                       # Source file
       my $j = setFileExtension $s, q(json);                                     # Json description
