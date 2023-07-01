@@ -407,6 +407,26 @@ Write an array to out
        Parameter  Description
     1  $target    Array to dump
 
+**Example:**
+
+    if (1)                                                                          
+     {Start 1;
+      my $a = Array "aaa";
+      ForIn
+       {my ($i, $v, $Check, $Next, $End) = @_;
+        Push $a, $v, "aaa";
+       };
+    
+      ArrayOut $a;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      my $e = Execute(suppressOutput=>1, in => [9,88,777]);
+      is_deeply $e->out, "9 88 777";
+    
+    # $e->generateVerilogMachineCode("ArrayOut") if $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+     }
+    
+
 ## ArrayIndex()
 
 Store in the target location the 1 based index of the second source operand in the array referenced by the first source operand if the secound source operand is present somwhere in the array else store 0 into the target location.  If the sought element appears in multiple locations, any one of these locations can be chosen.  The business of returning a zero based result with -1 signalling an error would have led to the confusion of "try catch" and we certainly do not want that.
