@@ -17,15 +17,15 @@ Includes an implementation of the [B-Tree](https://en.wikipedia.org/wiki/B-tree)
 large, extremely fast, associative memories can be manufactured on an
 industrial scale. In short: a __Database on a Chip__ or a **DoC**.
 
-A minimal CPU will require less [Silicon](https://en.wikipedia.org/wiki/Silicon) surface area to implement than a
-conventional CPU, making it possible to implement more such CPUs on a piece of [Silicon](https://en.wikipedia.org/wiki/Silicon) than would be possible if conventional CPUs were used to implement the
+A minimal [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) will require less [Silicon](https://en.wikipedia.org/wiki/Silicon) surface area to implement than a
+conventional [CPU](https://en.wikipedia.org/wiki/Central_processing_unit), making it possible to implement more such [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) on a piece of [Silicon](https://en.wikipedia.org/wiki/Silicon) than would be possible if a conventional [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) were used to implement the
 database.
 
 As the algoritms used by the **DoC** are all fixed in advance there is no need
 for instruction decode logic furthering reducing the amount [Silicon](https://en.wikipedia.org/wiki/Silicon) required
-per CPU while speeding up the processing of each instruction.
+per [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) while speeding up the processing of each instruction.
 
-The use of many small, fast CPUs will allow many database queries to be
+The use of many small, fast [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) will allow many database queries to be
 processed simultaneously in parallel to obtain much higher performance than can
 be achieved with conventional processors driven by decoded software.
 
@@ -52,7 +52,7 @@ Associative lookups are the [sine qua non](https://en.wikipedia.org/wiki/Sine_qu
 This arrangement should produce very fast associative lookups - much faster
 than can be performed by any generic system reliant on external, dynamically
 decoded software. Usage of power and [integrated circuit](https://en.wikipedia.org/wiki/Integrated_circuit) surface area should be reduced by
-having a minimal CPU to perform the lookups. Being able to deliver such lookups
+having a minimal [CPU](https://en.wikipedia.org/wiki/Central_processing_unit) to perform the lookups. Being able to deliver such lookups
 faster than can be done with conventional software solutions might prove
 profitable in much the same way as graphics chips, crypto mining chips and
 other such chips have proven to be because while we cannot sell good software
