@@ -112,13 +112,13 @@ sub job                                                                         
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 20G swapfile
+        sudo fallocate -l 16G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
         sudo swapon           swapfile
         free -h
-        sudo fallocate -l 8G  /mnt/swapfile
+        sudo fallocate -l  8G /mnt/swapfile
         sudo chmod 600        /mnt/swapfile
         sudo ls -la           /mnt/swapfile
         sudo mkswap           /mnt/swapfile
