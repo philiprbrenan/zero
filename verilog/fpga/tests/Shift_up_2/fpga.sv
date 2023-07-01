@@ -56,7 +56,7 @@ module fpga                                                                     
     end
   end
 
-  always @(clock) begin                                                         // Each instruction
+  always @(*) begin                                                             // Each instruction
     steps = steps + 1;
     case(ip)
 
