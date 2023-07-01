@@ -107,12 +107,18 @@ sub job                                                                         
         ref: 'main'
 
     - name: Memory
-      if: \${{ always() }}
       run: |
         free -h
         df   -h
+
+    - name: Memory fallocate
+      run: |
         sudo fallocate -l 16G swapfile
         sudo chmod 600        swapfile
+        ls -la                swapfile
+
+    - name: Memory set swap
+      run: |
         sudo swapon           swapfile
         free -h
 
