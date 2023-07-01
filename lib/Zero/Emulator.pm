@@ -523,9 +523,12 @@ sub getMemoryArea($$$)                                                          
   $exec->memory->[$arena][$area]
  }
 
-sub getMemoryLocation($$$$)                                                     #P Lowest level memory access to an array: get the address of the indicated location in memory.   This method is replaceable to model different memory structures.
+sub getMemoryLocation($$$$)                                                     #P Lowest level memory access to an array: get the address of the indicated location in memory to enable a write to that location.   This method is replaceable to model different memory structures.
  {my ($exec, $arena, $area, $address) = @_;                                     # Execution environment, arena, area, address, expected name of area
   @_ == 4 or confess "Four parameters";
+
+  $exec->trackWidestAreaInArena($arena, $address);                              # Track size of widest array
+
   \$exec->memory->[$arena][$area][$address];
  }
 
@@ -864,6 +867,12 @@ sub Zero::Emulator::Address::getMemoryValue($)                                  
   getMemory($a->exec, $a->arena, $a->area, $a->address, $a->name);
  }
 
+sub trackWidestAreaInArena($$$)                                                 # Track the width of the widest array in an area
+ {my ($exec, $arena, $address) = @_;                                            # Execution environment, arena, address in arena
+  $exec->widestAreaInArena->[$arena] =                                          # Track the widest area in each arena
+    max($exec->widestAreaInArena->[$arena]//0, $address+1);                     # Addresses are zero based
+ }
+
 sub Zero::Emulator::Address::getMemoryAddress($)                                #P Get address of memory location from an address.
  {my ($a) = @_;                                                                 # Address
   @_ == 1 or confess "One parameter";
@@ -874,8 +883,7 @@ sub Zero::Emulator::Address::getMemoryAddress($)                                
   my $address = $a->address;                                                    # Address
   my $name    = $a->name;                                                       # Name
 
-  $exec->widestAreaInArena->[$arena] =                                          # Track the widest area in each arena
-    max($exec->widestAreaInArena->[$arena]//0, $address+1);                     # Addresses are zero based
+  $exec->trackWidestAreaInArena($arena, $address);                              # Track widest array in arena
 
   if ($exec->widestAreaInArena->[$arena] == $address)
    {$exec->namesOfWidestArrays->[$arena] = $exec->block->ArrayNumberToName($name);
@@ -952,11 +960,9 @@ my sub freeArea($$$$)                                                           
 my sub pushArea($$$$)                                                           #P Push a value onto the specified heap array.
  {my ($exec, $area, $name, $value) = @_;                                        # Execution environment, array, name of allocation, value to assign
   @_ == 4 or confess "Four parameters";
-  $exec->checkArrayName(arenaHeap, $area, $name);
-  $exec->PushMemoryArea->($exec, $area, $value);
-  $exec->widestAreaInArena->[arenaHeap] =                                       # Track the widest area in each arena
-    max($exec->widestAreaInArena->[arenaHeap]//0, $exec->areaLength($area));    # Pushing might well alter the size of the array
-
+  $exec->checkArrayName(arenaHeap, $area, $name);                               # Confirm we are accessing the right kind of array
+  $exec->PushMemoryArea->($exec, $area, $value);                                # Push value
+  $exec->trackWidestAreaInArena(arenaHeap, $exec->areaLength($area));           # Track maximum width of the array
  }
 
 my sub popArea($$$$)                                                            # Pop a value from the specified memory area if possible else confess.
@@ -1266,6 +1272,7 @@ sub areaLength($$)                                                              
  {my ($exec, $array) = @_;                                                      # Execution environment, reference to array
   @_ == 2 or confess "Two parameters";
   my $a = $exec->heap($array);
+  return 0 unless defined $a;                                                   # Its entirely possible that the memory location has not yet been created
   stackTraceAndExit($exec, "Invalid area: ".dump($array)) unless defined $a;
   scalar @$a
  }
@@ -3691,7 +3698,7 @@ END
 
   if (my $n = sprintf "%4d", scalar $exec->inOriginally->@*)                    # Input queue length
    {push @c, <<END;
-  parameter integer NIn     =  ${&f8($n)};                                        // Size of input area
+  parameter integer NIn     = ${&f8($n)};                                         // Size of input area
 END
    }
 
@@ -3776,7 +3783,12 @@ if ($traceExecution) begin
 end
 END
 
-    if (my $a = $$gen{$action})                                                 # Action for this instruction
+    if (!$i->executed)                                                          # No code needed as this instruction never gets executed in this test
+     {push @c, <<END;
+         \$display("Should not be executed $n");
+END
+     }
+    elsif (my $a = $$gen{$action})                                              # Action for this instruction
      {&$a($i)
      }
     else
