@@ -316,14 +316,15 @@ END
 
   if (1)                                                                        # Test run on fpga
    {for my $s(@tests)                                                           # Tests
-     {my $v = setFileExtension $s, q(sv);                                       # Source file
+     {my $t = [split m(/), $s]->[-2];                                           # Test name is last file path component
+      my $v = setFileExtension $s, q(sv);                                       # Source file
       my $j = setFileExtension $s, q(json);                                     # Json description
       my $p = setFileExtension $s, q(pnr);                                      # Place and route
       my $P = setFileExtension $s, q(fs);                                       # Bit stream
       my $b = fpe fp($s), qw(tangnano9k cst);                                   # Device description
 
-      my $y = job("Yosys $s").yosys(). <<END;
-    - name: yosys $s
+      my $y = job("Yosys $t").yosys(). <<END;
+    - name: yosys $t
       if: \${{ always() }}
       run: |
         export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
