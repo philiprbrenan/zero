@@ -316,7 +316,7 @@ END
 
   if (1)                                                                        # Test run on fpga
    {for my $s(@tests)                                                           # Tests
-     {my $t = $s =~ s(/) (_)gsr;                                                # Test name in a form suitable for github
+     {my $t = fp($s) =~ s(/) (_)gsr;                                            # Test name in a form suitable for github
       my $v = setFileExtension $s, q(sv);                                       # Source file
       my $j = setFileExtension $s, q(json);                                     # Json description
       my $p = setFileExtension $s, q(pnr);                                      # Place and route
