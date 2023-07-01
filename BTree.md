@@ -309,8 +309,8 @@ Get the number of keys in the tree..
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [undef, 6, 539];
-      is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
+      is_deeply $e->widestAreaInArena,   [undef, 7, 540];
+    # is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];              # Only available in original memory scheme
       is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
       #say STDERR dump $e->tallyCount;
@@ -521,8 +521,8 @@ Get data field from find results.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [undef, 6, 539];
-      is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
+      is_deeply $e->widestAreaInArena,   [undef, 7, 540];
+    # is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];              # Only available in original memory scheme
       is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
       #say STDERR dump $e->tallyCount;
@@ -690,8 +690,8 @@ Get key field from find results.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [undef, 6, 539];
-      is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
+      is_deeply $e->widestAreaInArena,   [undef, 7, 540];
+    # is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];              # Only available in original memory scheme
       is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
       #say STDERR dump $e->tallyCount;
@@ -898,8 +898,8 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [undef, 6, 539];
-      is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
+      is_deeply $e->widestAreaInArena,   [undef, 7, 540];
+    # is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];              # Only available in original memory scheme
       is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
       #say STDERR dump $e->tallyCount;
@@ -1293,8 +1293,8 @@ Iterate over a tree.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [undef, 6, 539];
-      is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
+      is_deeply $e->widestAreaInArena,   [undef, 7, 540];
+    # is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];              # Only available in original memory scheme
       is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
       #say STDERR dump $e->tallyCount;
@@ -1466,8 +1466,8 @@ Print the keys held in a tree.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [undef, 6, 539];
-      is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
+      is_deeply $e->widestAreaInArena,   [undef, 7, 540];
+    # is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];              # Only available in original memory scheme
       is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
       #say STDERR dump $e->tallyCount;
@@ -1635,8 +1635,8 @@ Print the data held in a tree.
     
       my $e = Execute(suppressOutput=>1, in=>[@r]);
       is_deeply $e->outLines,            [1..@r];                                   # Expected sequence
-      is_deeply $e->widestAreaInArena,   [undef, 6, 539];
-      is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];
+      is_deeply $e->widestAreaInArena,   [undef, 7, 540];
+    # is_deeply $e->namesOfWidestArrays, [undef, "Node", "stackArea"];              # Only available in original memory scheme
       is_deeply $e->mostArrays,          [undef, 251, 1, 1, 1];
     
       #say STDERR dump $e->tallyCount;
