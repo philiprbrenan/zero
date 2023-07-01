@@ -50,7 +50,7 @@ sub ExecutionEnvironment(%)                                                     
     GetMemoryLocation=>    \&getMemoryLocation,                                 # Low level memory access - location
     Heap=>                 \&heap,                                              # Get the contents of the specified array
     in=>                    $options{in}//[],                                   # The input channel.  the L<In> instruction reads one element at a time from this array.
-    inOriginally=>          [($options{in}//[])->@*],                            # A copy of the input channel that does not get consumed by the execution of  the program so that we can use it to construct tests
+    inOriginally=>          [($options{in}//[])->@*],                           # A copy of the input channel that does not get consumed by the execution of  the program so that we can use it to construct tests
     instructionCounts=>     {},                                                 # The number of times each actual instruction is executed
     instructionPointer=>    0,                                                  # Current instruction
     lastAssignAddress=>     undef,                                              # Last assignment performed - address
@@ -60,10 +60,10 @@ sub ExecutionEnvironment(%)                                                     
     lastAssignType=>        undef,                                              # Last assignment performed - name of area assigned into
     lastAssignValue=>       undef,                                              # Last assignment performed - value
     memory=>                [],                                                 # Memory contents at the end of execution
-    memoryStringElementWidth=>   0,                                             # Width in bytes of a memory area element
+    memoryStringElementWidth=> 0,                                               # Width in bytes of a memory area element
     memoryString=>          '',                                                 # Memory packed into one string
     memoryStringLengths=>   [],                                                 # Lengths of each array
-    memoryStringElements=>   0,                                                 # Maximum number of elements in the user area of a heap arena if such is required by the memory allocation technique in play
+    memoryStringElements=>   0,                                                 # Maximum number of elements in an array on the heap
     memoryType=>            [],                                                 # Memory contents at the end of execution
     mostArrays=>            [],                                                 # The maximum number of arrays active at any point during the execution in each arena
     namesOfWidestArrays=>   [],                                                 # The name of the widest arrays in each arena
@@ -677,9 +677,9 @@ sub stringGetMemoryLocation($$$$)                                               
 sub stringAllocMemoryArea($$$$)                                                 #P Allocate a memory area.
  {my ($exec, $number, $arena, $area) = @_;                                      # Execution environment, name of allocation to bless result, arena to use, area to use
   @_ == 4 or confess "Four parameters";
-  return allocMemoryArea($exec, $number, $arena, $area) if $arena != arenaHeap; # Non heap  objects continue as normal because the number of local variables and subroutines a human can produce in one lifetime are limited,
+  return allocMemoryArea($exec, $number, $arena, $area) if $arena != arenaHeap; # Non heap objects continue as normal because the number of local variables and subroutines a human can produce in one lifetime are limited,
 
-  my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an an area
+  my $w = $exec->memoryStringElementWidth;                                      # Width of each element in an area
   vec($exec->memoryStringLengths, $area, $w) = 0;                               # Zero current length of area
  }
 
@@ -3131,7 +3131,9 @@ sub CompileToVerilog(%)                                                         
  {my (%options) = @_;                                                           # Execution options
 
   genHash(q(Zero::CompileToVerilog),                                            # Compile to verilog
-    NArea=>                 $options{NArea} // 10,                              # The size of an array in the heap area
+    NArea=>                 $options{NArea}   // 0,                             # The size of an array in the heap area
+    NArrays=>               $options{NArrays} // 0,                             # The number of heap arrays need
+    WLocal=>                $options{WLocal}  // 0,                             # Size of local area
     code=>                  '',                                                 # Generated code
     testBench=>             '',                                                 # Test bench for generated code
     constraints=>           '',                                                 # Constraints file
@@ -3250,8 +3252,14 @@ sub compileToVerilog($$)                                                        
  {my ($exec, $name) = @_;                                                       # Execution environment of completed run, name of subroutine to contain generated code
   @_ == 2 or confess "Two parameters";
 
-  my $NArea = 10;                                                               # We have to fix the area size in advance to make this process efficient
-  my $compile = CompileToVerilog(NArea=>$NArea);                                # Compilation environment
+  my $compile = CompileToVerilog
+   (NArea=>   $exec->widestAreaInArena->[arenaHeap],                            # The width of arrays on the heap
+    NArrays=> $exec->mostArrays       ->[arenaHeap],                            # The number of heap arrays need
+    WLocal=>  $exec->widestAreaInArena->[arenaLocal]);                          # Compilation environment
+
+  my $NArrays = $compile->NArrays;
+  my $NArea   = $compile->NArea;
+  my $WLocal  = $compile->WLocal;
 
   my @c;                                                                        # Generated code
 
@@ -3668,11 +3676,11 @@ module fpga                                                                     
 
   parameter integer MemoryElementWidth =  12;                                   // Memory element width
 
-  parameter integer NArea          = $NArea;                                    // Size of each area on the heap
-  parameter integer NArrays        =  2000;                                      // Maximum number of arrays
-  parameter integer NHeap          = 10000;                                      // Amount of heap memory
-  parameter integer NLocal         = 10000;                                      // Size of local memory
-  parameter integer NOut           =  2000;                                      // Size of output area
+  parameter integer NArea   = $NArea;                                           // Size of each area on the heap
+  parameter integer NArrays = $NArrays;                                         // Maximum number of arrays
+  parameter integer NHeap   = $NArea*$NArrays;                                  // Amount of heap memory
+  parameter integer NLocal  = $WLocal;                                          // Size of local memory
+  parameter integer NOut    =  2000;                                            // Size of output area
 END
 
   if (my $n = sprintf "%4d", scalar $exec->inOriginally->@*)                    # Input queue length
