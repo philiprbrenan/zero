@@ -3739,9 +3739,11 @@ END
     outMemPos      = 0;
     allocs         = 0;
     freedArraysTop = 0;
-    for(i = 0; i < NHeap;   ++i)    heapMem[i] = 0;
-    for(i = 0; i < NLocal;  ++i)   localMem[i] = 0;
-    for(i = 0; i < NArrays; ++i) arraySizes[i] = 0;
+    if ($traceExecution) begin                                                  // Clear memory
+      for(i = 0; i < NHeap;   ++i) begin    heapMem[i] = 0; end
+      for(i = 0; i < NLocal;  ++i) begin   localMem[i] = 0; end
+      for(i = 0; i < NArrays; ++i) begin arraySizes[i] = 0; end
+    end
 END
 
   if (1)                                                                        # Create input queue
