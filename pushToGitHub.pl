@@ -133,7 +133,7 @@ sub yosys {<<END}                                                               
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 22G swapfile
+        sudo fallocate -l 16G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
