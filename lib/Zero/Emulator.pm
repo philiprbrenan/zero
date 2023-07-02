@@ -10,6 +10,7 @@
 # Initially array dimensions were set automatically by assignment to and array - now we require the resize operation or push/pop; to set the array size
 # Check whether the array being accessed is actually allocated
 # Setting the array size on Mov means that we probably do not need all the resizes
+# Check wether iverilog supports multi dimensional arrays and if so can we use this in the string model ?
 use v5.30;
 package Zero::Emulator;
 our $VERSION = 20230519;                                                        # Version
