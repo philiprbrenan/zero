@@ -121,6 +121,17 @@ sub job                                                                         
 END
  }
 
+sub verilog {<<END}                                                             # Install verilog
+    - name: Ubuntu update
+      run:  sudo apt update
+
+    - name: Verilog
+      run:  sudo apt -y install iverilog
+
+    - name: Verilog Version
+      run:  iverilog -V
+END
+
 sub yosys {<<END}                                                               # Install yosys
     - name: Yosys
       run:  wget -q https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2023-06-14/oss-cad-suite-linux-x64-20230614.tgz
@@ -168,11 +179,6 @@ on:
 jobs:
 END
 
-=pod
-    - name: fpga
-      run:  cd verilog/fpga/;           iverilog -g2012 -o fpga fpga.sv && timeout 1m ./fpga
-=cut
-
   $y .= <<END;                                                                  # High level tests using Perl on Ubuntu
 
     - name: Ubuntu update
@@ -213,129 +219,90 @@ END
 
 END
 
-  $y .= job("fpga").yosys().<<END;                                              # Low level tests using verilog and yosys
+  $y .= job("fpga");                                                            # Low level tests using verilog abnd Yosys for a real device
+  $y .= &fpgaLowLevelTestsVerilog;                                              # Verilog
+  $y .= &fpgaLowLevelTestsYosys if $lowLevel;                                   # Yosys
+
+  my $f = writeFileUsingSavedToken $user, $repo, $wf, $y;                       # upload workflwo
+  lll "Ubuntu work flow for $repo written to: $f";
+ }
+
+sub highLevelTests{<<END}                                                       # High level tests using Perl on Ubuntu
+    - name: Ubuntu update
+      run:  sudo apt update
+
     - name: Verilog
       run:  sudo apt -y install iverilog
 
     - name: Verilog Version
       run:  iverilog -V
 
+    - name: Emulator
+      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib lib/Zero/Emulator.pm
+
+    - name: BubbleSort
+      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/bubbleSort.pl
+
+    - name: InsertionSort
+      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/insertionSort.pl
+
+    - name: QuickSort
+      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/quickSort.pl
+
+    - name: QuickSort Parallel
+      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/quickSortParallel.pl
+
+    - name: SelectionSort
+      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/selectionSort.pl
+
+    - name: TestEmulator
+      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/testEmulator.pl
+
+    - name: BTree
+      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib lib/Zero/BTree.pm
+
+    - name: TestBTree - last as it is longest
+      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/testBTree.pl
 END
 
-  $y .= &fpgaLowLevelTests;                                                     # Low level tests using Verilog on Ubuntu
-
-  $y .= <<'END'.run() if $macos;                                                # High level on Mac if requested
-  testMac:
-    runs-on: macos-latest
-
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        ref: 'main'
-
-END
-
-  $y .= <<'END'.run() if $windows;                                              # High level on windows if requested
-  testWindows:
-    runs-on: windows-latest
-
-    defaults:
-      run:
-        shell: wsl-bash {0}                                                     # Use Windows Services For Linux as the command line in subsequent steps
-
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        ref: 'main'
-
-    - uses: Vampire/setup-wsl@v2                                                # Install Windows Services For Linux - just: wsl --install -D Ubuntu
-      with:
-        distribution: Ubuntu-22.04
-
-    - name: Ubuntu
-      run: |
-        sudo apt-get -y update
-
-    - name: Configure Ubuntu
-      run: |
-        sudo apt-get -y install build-essential
-
-END
-
-  $y .= <<'END'.run() if $openBsd;                                              # High level on openBSD if requested
-  testOpenBsd:
-    runs-on: macos-12
-    name: OpenBSD
-    env:
-      MYTOKEN : ${{ secrets.MYTOKEN }}
-      MYTOKEN2: "value2"
-    steps:
-    - uses: actions/checkout@v3
-    - name: Test in OpenBSD
-      id: test
-      uses: vmactions/openbsd-vm@v0
-      with:
-        envs: 'MYTOKEN MYTOKEN2'
-        usesh: true
-        prepare: |
-          cpan install -T Data::Dump Data::Table::Text
-END
-
-  $y .= <<'END'.run() if $freeBsd;                                              # High level on freeBSD if requested
-  #
-  testFreeBsd:
-    runs-on: macos-12
-    name: FreeBSD
-    env:
-      MYTOKEN : ${{ secrets.MYTOKEN }}
-      MYTOKEN2: "value2"
-    steps:
-    - uses: actions/checkout@v3
-    - name: Test in OpenBSD
-      id: test
-      uses: vmactions/freebsd-vm@v0
-      with:
-        envs: 'MYTOKEN MYTOKEN2'
-        usesh: true
-        prepare: |
-          cpan install -T Data::Dump Data::Table::Text
-END
-
-  lll "Ubuntu work flow for $repo ", writeFileUsingSavedToken($user, $repo, $wf, $y);
+sub lowLevelTests                                                               # Low level tests to run
+ {map {s($home) ()r} searchDirectoryTreesForMatchingFiles($testsDir, qw(.sv));  # Test these local files
  }
 
-sub fpgaLowLevelTests                                                           # Low level tests
- {my @tests = map {s($home) ()r}                                                # Test these local files
-              searchDirectoryTreesForMatchingFiles($testsDir, qw(.sv));
-  my $h = fpd qw(verilog fpga tests);                                           # Home folder
-  my $f = q(GW1N-9C);                                                           # Device family
-  my $d = q(GW1NR-LV9QN88PC6/I5);                                               # Device
+sub fpgaLowLevelTestsVerilog                                                    # Low level tests
+ {my @tests = lowLevelTests;
 
-  my @y;
+  my $y = verilog();
+
   for my $s(@tests)                                                             # Test run as verilog
    {my $t = setFileExtension $s, q(tb);                                         # Test bench
 
-    my $y = <<END;
+    $y .= <<END;
     - name: $s
       if: \${{ always() }}
       run: |
         rm -f fpga z1.txt; iverilog -Iverilog/ -g2012 -o fpga $t $s && timeout 1m ./fpga | tee z1.txt; grep -qv "FAILED" z1.txt
 
 END
-    push @y, $y;
-last;
    }
+  $y
+ }
 
-  if ($lowLevel)                                                                # Test run on fpga
-   {for my $s(@tests)                                                           # Tests
-     {my $t = fp($s) =~ s(/) (_)gsr;                                            # Test name in a form suitable for github
-      my $v = setFileExtension $s, q(sv);                                       # Source file
-      my $j = setFileExtension $s, q(json);                                     # Json description
-      my $p = setFileExtension $s, q(pnr);                                      # Place and route
-      my $P = setFileExtension $s, q(fs);                                       # Bit stream
-      my $b = fpe fp($s), qw(tangnano9k cst);                                   # Device description
+sub fpgaLowLevelTestsYosys                                                      # Low level tests
+ {my @tests = lowLevelTests;
+  my $y = '';
+  my $d = q(GW1NR-LV9QN88PC6/I5);                                               # Device
+  my $f = q(GW1N-9C);                                                           # Device family
 
-      my $y = job("Yosys_$t").yosys(). <<END;
+  for my $s(@tests)                                                             # Tests
+   {my $t = fp($s) =~ s(/) (_)gsr;                                              # Test name in a form suitable for github
+    my $v = setFileExtension $s, q(sv);                                         # Source file
+    my $j = setFileExtension $s, q(json);                                       # Json description
+    my $p = setFileExtension $s, q(pnr);                                        # Place and route
+    my $P = setFileExtension $s, q(fs);                                         # Bit stream
+    my $b = fpe fp($s), qw(tangnano9k cst);                                     # Device description
+
+    $y .= job("Yosys_$t").yosys(). <<END;
 
     - name: Yosys_$t
       if: \${{ always() }}
@@ -347,17 +314,18 @@ last;
         #gowin_pack -d GW1N-9C -o $P $p
 
 END
-      push @y, $y;
-last;
-     }
    }
-  push @y, <<END;
+  $y
+ }
+
+sub fpgaLowLevelArtefacts                                                       # The resulting bitstreams used to progrma the fpga
+ {my $h = fpd qw(verilog fpga tests);                                           # Low level bit streams created by this run
+
+  <<END
     - uses: actions/upload-artifact\@v3
       with:
         path: $h
 END
-
-  join "\n", @y;
  }
 
 sub introEmulator{&introEmulator1.&introEmulator2}
@@ -543,3 +511,81 @@ END
   2  4     8 10    14    18    22 24    28    32    36    40    44    48 50    54    58 60    64    68 70    74    78    82    86 88    92    96   100102   106   110   114   118   122   126128   132   136   140142   146148   152154   158160   164   168170   174176   180   184186   190   194   198200   204   208   212214
 END
 END2
+
+
+sub macos{<<'END'}                                                              # High level on Mac if requested
+  testMac:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: 'main'
+
+END
+
+sub windows{<<'END'}                                                            # High level on windows if requested
+  testWindows:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: wsl-bash {0}                                                     # Use Windows Services For Linux as the command line in subsequent steps
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: 'main'
+
+    - uses: Vampire/setup-wsl@v2                                                # Install Windows Services For Linux - just: wsl --install -D Ubuntu
+      with:
+        distribution: Ubuntu-22.04
+
+    - name: Ubuntu
+      run: |
+        sudo apt-get -y update
+
+    - name: Configure Ubuntu
+      run: |
+        sudo apt-get -y install build-essential
+
+END
+
+sub openBsd{<<'END'}                                                            # High level on openBSD if requested
+  testOpenBsd:
+    runs-on: macos-12
+    name: OpenBSD
+    env:
+      MYTOKEN : ${{ secrets.MYTOKEN }}
+      MYTOKEN2: "value2"
+    steps:
+    - uses: actions/checkout@v3
+    - name: Test in OpenBSD
+      id: test
+      uses: vmactions/openbsd-vm@v0
+      with:
+        envs: 'MYTOKEN MYTOKEN2'
+        usesh: true
+        prepare: |
+          cpan install -T Data::Dump Data::Table::Text
+END
+
+sub freeBsd{<<'END'}                                                            # High level on freeBSD if requested
+  #
+  testFreeBsd:
+    runs-on: macos-12
+    name: FreeBSD
+    env:
+      MYTOKEN : ${{ secrets.MYTOKEN }}
+      MYTOKEN2: "value2"
+    steps:
+    - uses: actions/checkout@v3
+    - name: Test in OpenBSD
+      id: test
+      uses: vmactions/freebsd-vm@v0
+      with:
+        envs: 'MYTOKEN MYTOKEN2'
+        usesh: true
+        prepare: |
+          cpan install -T Data::Dump Data::Table::Text
+END
