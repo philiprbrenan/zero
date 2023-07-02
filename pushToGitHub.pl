@@ -25,7 +25,7 @@ my $btree    = fpf $home, q(lib/Zero/BTree.pm);                                 
 my $readMe   = fpe $home, qw(README md2);                                       # Read me
 
 my $testsDir = fpd $home, qw(verilog fpga tests);                               # Tests folder
-my $lowLevel = 0;                                                               # Run the low level tests that prepare for an actual fpga - these take time
+my $lowLevel = 1;                                                               # Run the low level tests that prepare for an actual fpga - these take time
 my $macos    = 0;                                                               # Macos if true
 my $windows  = 0;                                                               # Windows if true
 my $openBsd  = 0;                                                               # OpenBsd if true
@@ -109,25 +109,7 @@ sub job                                                                         
         free -h
         df   -h
         # Top 100 files might liberate another 8G    sudo find / -type f -exec du -h {} + | sort -rh | head -n 100
-        du -sh .npm .cache .actions
-
-    - name: Memory fallocate
-      run: |
-        sudo fallocate -l 23G swapfile
-        sudo chmod 600        swapfile
-        sudo ls -la           swapfile
-        sudo mkswap           swapfile
-        sudo swapon           swapfile
-        free -h
-
-    - name: Memory fallocate2
-      run: |
-        sudo fallocate -l  8G /mnt/swapfile2
-        sudo chmod 600        /mnt/swapfile2
-        sudo ls -la           /mnt/swapfile2
-        sudo mkswap           /mnt/swapfile2
-        sudo swapon           /mnt/swapfile2
-        free -h
+        du -h --max-depth=1 . | sort -hr
 
     - uses: actions/checkout\@v3
       with:
@@ -148,6 +130,24 @@ sub yosys {<<END}                                                               
 
     - name: Yosys untar
       run: tar -xf oss-cad-suite-linux-x64-20230614.tar
+
+    - name: Memory fallocate
+      run: |
+        sudo fallocate -l 24G swapfile
+        sudo chmod 600        swapfile
+        sudo ls -la           swapfile
+        sudo mkswap           swapfile
+        sudo swapon           swapfile
+        free -h
+
+    - name: Memory fallocate2
+      run: |
+        sudo fallocate -l  8G /mnt/swapfile2
+        sudo chmod 600        /mnt/swapfile2
+        sudo ls -la           /mnt/swapfile2
+        sudo mkswap           /mnt/swapfile2
+        sudo swapon           /mnt/swapfile2
+        free -h
 END
 
 sub run                                                                         # Work flow on github
