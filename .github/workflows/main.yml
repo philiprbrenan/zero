@@ -1,4 +1,4 @@
-# Test 2023-07-02 at 04:11:35
+# Test 2023-07-02 at 05:15:40
 
 name: Test
 
@@ -104,7 +104,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -417,7 +417,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -477,7 +477,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -537,7 +537,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -597,7 +597,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -657,7 +657,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -717,7 +717,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -777,7 +777,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -837,7 +837,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -897,7 +897,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -957,7 +957,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -1017,7 +1017,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -1077,7 +1077,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -1137,7 +1137,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -1197,7 +1197,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -1257,7 +1257,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -1317,7 +1317,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -1377,7 +1377,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -1437,7 +1437,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -1497,7 +1497,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -1557,7 +1557,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -1617,7 +1617,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -1677,7 +1677,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -1737,7 +1737,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -1797,7 +1797,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -1857,7 +1857,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -1917,7 +1917,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -1977,7 +1977,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -2037,7 +2037,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -2097,7 +2097,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -2157,7 +2157,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -2217,7 +2217,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -2277,7 +2277,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -2337,7 +2337,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -2397,7 +2397,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -2457,7 +2457,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -2517,7 +2517,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -2577,7 +2577,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -2637,7 +2637,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -2697,7 +2697,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -2757,7 +2757,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -2817,7 +2817,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -2877,7 +2877,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -2937,7 +2937,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 24G swapfile
+        sudo fallocate -l 22G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
