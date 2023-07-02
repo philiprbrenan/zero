@@ -308,11 +308,10 @@ sub fpgaLowLevelTestsYosys                                                      
       if: \${{ always() }}
       run: |
         export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -p "read_verilog $v;"
+        yosys -q -p "read_verilog $v;" -M MEM_LIMIT=16000
         #yosys -q -p "read_verilog $v; synth_gowin -top fpga -json $j"
         #nextpnr-gowin -v --debug --json $j --write $p --device "$d" --family $f --cst $b
         #gowin_pack -d GW1N-9C -o $P $p
-
 END
    }
   $y
