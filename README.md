@@ -261,7 +261,8 @@ time space dilemma.  But in designing for [Silicon](https://en.wikipedia.org/wik
 to get a trilemma of: time, space and power that has to be resolved to produce
 the optimal solution.  It should be noted that amd reports that their fpgas
 typically use 40x as much power and 3x as much time to produce the same result
-as an equivalent asic .
+as an equivalent asic . (Kuon and Rose, 2006).
+
 
 ### Code level parallelism
 
