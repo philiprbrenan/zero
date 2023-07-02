@@ -295,7 +295,7 @@ sub fpgaLowLevelTestsYosys                                                      
   my $f = q(GW1N-9C);                                                           # Device family
 
   for my $s(@tests)                                                             # Tests
-   {my $t = fp($s) =~ s(/) (_)gsr;                                              # Test name in a form suitable for github
+   {my $t = fp($s) =~ s(/) (_)gsr =~ s(verilog_fpga_tests_) ()gsr;              # Test name in a form suitable for github
     my $v = setFileExtension $s, q(sv);                                         # Source file
     my $j = setFileExtension $s, q(json);                                       # Json description
     my $p = setFileExtension $s, q(pnr);                                        # Place and route
@@ -308,8 +308,7 @@ sub fpgaLowLevelTestsYosys                                                      
       if: \${{ always() }}
       run: |
         export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -d -p "read_verilog -nomem2reg $v;"
-        #yosys -q -p "read_verilog $v; synth_gowin -top fpga -json $j"
+        yosys -q -d -p "read_verilog -nomem2reg $v;  synth_gowin -top fpga -json $j"
         #nextpnr-gowin -v --debug --json $j --write $p --device "$d" --family $f --cst $b
         #gowin_pack -d GW1N-9C -o $P $p
 END
