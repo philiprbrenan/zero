@@ -1,4 +1,4 @@
-# Test 2023-07-02 at 16:49:39
+# Test 2023-07-02 at 16:55:41
 
 name: Test
 
@@ -104,7 +104,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 16G swapfile
+        sudo fallocate -l 20G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
@@ -165,7 +165,7 @@ jobs:
 
     - name: Memory fallocate
       run: |
-        sudo fallocate -l 16G swapfile
+        sudo fallocate -l 20G swapfile
         sudo chmod 600        swapfile
         sudo ls -la           swapfile
         sudo mkswap           swapfile
