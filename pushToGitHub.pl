@@ -323,6 +323,7 @@ sub fpgaLowLevelTests                                                           
 
 END
     push @y, $y;
+last;
    }
 
   if ($lowLevel)                                                                # Test run on fpga
@@ -347,6 +348,7 @@ END
 
 END
       push @y, $y;
+last;
      }
    }
   push @y, <<END;
