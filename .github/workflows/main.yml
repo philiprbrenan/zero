@@ -1,4 +1,4 @@
-# Test 2023-07-03 at 08:11:19
+# Test 2023-07-03 at 08:15:17
 
 name: Test
 
@@ -380,11 +380,13 @@ jobs:
     - name: NextPnr_Add_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/Add/fpga.json --write verilog/fpga/tests/Add/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Add/tangnano9k.cst
 
     - name: Pack_Add_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/Add/fpga.fs verilog/fpga/tests/Add/fpga.pnr
 
 
@@ -446,11 +448,13 @@ jobs:
     - name: NextPnr_Array_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/Array/fpga.json --write verilog/fpga/tests/Array/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Array/tangnano9k.cst
 
     - name: Pack_Array_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/Array/fpga.fs verilog/fpga/tests/Array/fpga.pnr
 
 
@@ -512,11 +516,13 @@ jobs:
     - name: NextPnr_ArrayCountGreaterIndex_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/ArrayCountGreaterIndex/fpga.json --write verilog/fpga/tests/ArrayCountGreaterIndex/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/ArrayCountGreaterIndex/tangnano9k.cst
 
     - name: Pack_ArrayCountGreaterIndex_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/ArrayCountGreaterIndex/fpga.fs verilog/fpga/tests/ArrayCountGreaterIndex/fpga.pnr
 
 
@@ -578,11 +584,13 @@ jobs:
     - name: NextPnr_ArrayCountLess_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/ArrayCountLess/fpga.json --write verilog/fpga/tests/ArrayCountLess/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/ArrayCountLess/tangnano9k.cst
 
     - name: Pack_ArrayCountLess_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/ArrayCountLess/fpga.fs verilog/fpga/tests/ArrayCountLess/fpga.pnr
 
 
@@ -644,11 +652,13 @@ jobs:
     - name: NextPnr_ArrayIndex_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/ArrayIndex/fpga.json --write verilog/fpga/tests/ArrayIndex/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/ArrayIndex/tangnano9k.cst
 
     - name: Pack_ArrayIndex_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/ArrayIndex/fpga.fs verilog/fpga/tests/ArrayIndex/fpga.pnr
 
 
@@ -710,11 +720,13 @@ jobs:
     - name: NextPnr_Array_scans_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/Array_scans/fpga.json --write verilog/fpga/tests/Array_scans/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Array_scans/tangnano9k.cst
 
     - name: Pack_Array_scans_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/Array_scans/fpga.fs verilog/fpga/tests/Array_scans/fpga.pnr
 
 
@@ -776,11 +788,13 @@ jobs:
     - name: NextPnr_BTree_basic_1_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/BTree/basic/1/fpga.json --write verilog/fpga/tests/BTree/basic/1/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/basic/1/tangnano9k.cst
 
     - name: Pack_BTree_basic_1_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/basic/1/fpga.fs verilog/fpga/tests/BTree/basic/1/fpga.pnr
 
 
@@ -842,11 +856,13 @@ jobs:
     - name: NextPnr_BTree_basic_2_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/BTree/basic/2/fpga.json --write verilog/fpga/tests/BTree/basic/2/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/basic/2/tangnano9k.cst
 
     - name: Pack_BTree_basic_2_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/basic/2/fpga.fs verilog/fpga/tests/BTree/basic/2/fpga.pnr
 
 
@@ -908,11 +924,13 @@ jobs:
     - name: NextPnr_BTree_basic_3_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/BTree/basic/3/fpga.json --write verilog/fpga/tests/BTree/basic/3/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/basic/3/tangnano9k.cst
 
     - name: Pack_BTree_basic_3_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/basic/3/fpga.fs verilog/fpga/tests/BTree/basic/3/fpga.pnr
 
 
@@ -974,11 +992,13 @@ jobs:
     - name: NextPnr_BTree_basic_4_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/BTree/basic/4/fpga.json --write verilog/fpga/tests/BTree/basic/4/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/basic/4/tangnano9k.cst
 
     - name: Pack_BTree_basic_4_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/basic/4/fpga.fs verilog/fpga/tests/BTree/basic/4/fpga.pnr
 
 
@@ -1040,11 +1060,13 @@ jobs:
     - name: NextPnr_BTree_basic_5_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/BTree/basic/5/fpga.json --write verilog/fpga/tests/BTree/basic/5/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/basic/5/tangnano9k.cst
 
     - name: Pack_BTree_basic_5_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/basic/5/fpga.fs verilog/fpga/tests/BTree/basic/5/fpga.pnr
 
 
@@ -1106,11 +1128,13 @@ jobs:
     - name: NextPnr_BTree_basic_6_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/BTree/basic/6/fpga.json --write verilog/fpga/tests/BTree/basic/6/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/basic/6/tangnano9k.cst
 
     - name: Pack_BTree_basic_6_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/basic/6/fpga.fs verilog/fpga/tests/BTree/basic/6/fpga.pnr
 
 
@@ -1172,11 +1196,13 @@ jobs:
     - name: NextPnr_BTree_basic_7_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/BTree/basic/7/fpga.json --write verilog/fpga/tests/BTree/basic/7/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/basic/7/tangnano9k.cst
 
     - name: Pack_BTree_basic_7_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/basic/7/fpga.fs verilog/fpga/tests/BTree/basic/7/fpga.pnr
 
 
@@ -1238,11 +1264,13 @@ jobs:
     - name: NextPnr_BTree_in_1_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/BTree/in/1/fpga.json --write verilog/fpga/tests/BTree/in/1/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/in/1/tangnano9k.cst
 
     - name: Pack_BTree_in_1_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/in/1/fpga.fs verilog/fpga/tests/BTree/in/1/fpga.pnr
 
 
@@ -1304,11 +1332,13 @@ jobs:
     - name: NextPnr_BTree_in_2_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/BTree/in/2/fpga.json --write verilog/fpga/tests/BTree/in/2/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/in/2/tangnano9k.cst
 
     - name: Pack_BTree_in_2_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/in/2/fpga.fs verilog/fpga/tests/BTree/in/2/fpga.pnr
 
 
@@ -1370,11 +1400,13 @@ jobs:
     - name: NextPnr_BTree_in_3_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/BTree/in/3/fpga.json --write verilog/fpga/tests/BTree/in/3/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/in/3/tangnano9k.cst
 
     - name: Pack_BTree_in_3_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/in/3/fpga.fs verilog/fpga/tests/BTree/in/3/fpga.pnr
 
 
@@ -1436,11 +1468,13 @@ jobs:
     - name: NextPnr_BTree_in_4_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/BTree/in/4/fpga.json --write verilog/fpga/tests/BTree/in/4/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/in/4/tangnano9k.cst
 
     - name: Pack_BTree_in_4_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/in/4/fpga.fs verilog/fpga/tests/BTree/in/4/fpga.pnr
 
 
@@ -1502,11 +1536,13 @@ jobs:
     - name: NextPnr_BTree_insert_01_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/BTree/insert/01/fpga.json --write verilog/fpga/tests/BTree/insert/01/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/insert/01/tangnano9k.cst
 
     - name: Pack_BTree_insert_01_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/insert/01/fpga.fs verilog/fpga/tests/BTree/insert/01/fpga.pnr
 
 
@@ -1568,11 +1604,13 @@ jobs:
     - name: NextPnr_BTree_insert_02_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/BTree/insert/02/fpga.json --write verilog/fpga/tests/BTree/insert/02/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/insert/02/tangnano9k.cst
 
     - name: Pack_BTree_insert_02_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/insert/02/fpga.fs verilog/fpga/tests/BTree/insert/02/fpga.pnr
 
 
@@ -1634,11 +1672,13 @@ jobs:
     - name: NextPnr_BTree_insert_03_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/BTree/insert/03/fpga.json --write verilog/fpga/tests/BTree/insert/03/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/insert/03/tangnano9k.cst
 
     - name: Pack_BTree_insert_03_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/insert/03/fpga.fs verilog/fpga/tests/BTree/insert/03/fpga.pnr
 
 
@@ -1700,11 +1740,13 @@ jobs:
     - name: NextPnr_BTree_insert_04_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/BTree/insert/04/fpga.json --write verilog/fpga/tests/BTree/insert/04/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/insert/04/tangnano9k.cst
 
     - name: Pack_BTree_insert_04_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/insert/04/fpga.fs verilog/fpga/tests/BTree/insert/04/fpga.pnr
 
 
@@ -1766,11 +1808,13 @@ jobs:
     - name: NextPnr_BTree_insert_05_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/BTree/insert/05/fpga.json --write verilog/fpga/tests/BTree/insert/05/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/insert/05/tangnano9k.cst
 
     - name: Pack_BTree_insert_05_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/insert/05/fpga.fs verilog/fpga/tests/BTree/insert/05/fpga.pnr
 
 
@@ -1832,11 +1876,13 @@ jobs:
     - name: NextPnr_BTree_insert_06_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/BTree/insert/06/fpga.json --write verilog/fpga/tests/BTree/insert/06/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/insert/06/tangnano9k.cst
 
     - name: Pack_BTree_insert_06_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/insert/06/fpga.fs verilog/fpga/tests/BTree/insert/06/fpga.pnr
 
 
@@ -1898,11 +1944,13 @@ jobs:
     - name: NextPnr_BTree_insert_66_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/BTree/insert/66/fpga.json --write verilog/fpga/tests/BTree/insert/66/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/BTree/insert/66/tangnano9k.cst
 
     - name: Pack_BTree_insert_66_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/BTree/insert/66/fpga.fs verilog/fpga/tests/BTree/insert/66/fpga.pnr
 
 
@@ -1964,11 +2012,13 @@ jobs:
     - name: NextPnr_ForIn_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/ForIn/fpga.json --write verilog/fpga/tests/ForIn/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/ForIn/tangnano9k.cst
 
     - name: Pack_ForIn_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/ForIn/fpga.fs verilog/fpga/tests/ForIn/fpga.pnr
 
 
@@ -2030,11 +2080,13 @@ jobs:
     - name: NextPnr_Free_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/Free/fpga.json --write verilog/fpga/tests/Free/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Free/tangnano9k.cst
 
     - name: Pack_Free_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/Free/fpga.fs verilog/fpga/tests/Free/fpga.pnr
 
 
@@ -2096,11 +2148,13 @@ jobs:
     - name: NextPnr_In_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/In/fpga.json --write verilog/fpga/tests/In/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/In/tangnano9k.cst
 
     - name: Pack_In_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/In/fpga.fs verilog/fpga/tests/In/fpga.pnr
 
 
@@ -2162,11 +2216,13 @@ jobs:
     - name: NextPnr_InSize_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/InSize/fpga.json --write verilog/fpga/tests/InSize/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/InSize/tangnano9k.cst
 
     - name: Pack_InSize_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/InSize/fpga.fs verilog/fpga/tests/InSize/fpga.pnr
 
 
@@ -2228,11 +2284,13 @@ jobs:
     - name: NextPnr_JFalse_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/JFalse/fpga.json --write verilog/fpga/tests/JFalse/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/JFalse/tangnano9k.cst
 
     - name: Pack_JFalse_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/JFalse/fpga.fs verilog/fpga/tests/JFalse/fpga.pnr
 
 
@@ -2294,11 +2352,13 @@ jobs:
     - name: NextPnr_Jeq_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/Jeq/fpga.json --write verilog/fpga/tests/Jeq/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Jeq/tangnano9k.cst
 
     - name: Pack_Jeq_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/Jeq/fpga.fs verilog/fpga/tests/Jeq/fpga.pnr
 
 
@@ -2360,11 +2420,13 @@ jobs:
     - name: NextPnr_Jmp_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/Jmp/fpga.json --write verilog/fpga/tests/Jmp/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Jmp/tangnano9k.cst
 
     - name: Pack_Jmp_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/Jmp/fpga.fs verilog/fpga/tests/Jmp/fpga.pnr
 
 
@@ -2426,11 +2488,13 @@ jobs:
     - name: NextPnr_Mov_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/Mov/fpga.json --write verilog/fpga/tests/Mov/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Mov/tangnano9k.cst
 
     - name: Pack_Mov_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/Mov/fpga.fs verilog/fpga/tests/Mov/fpga.pnr
 
 
@@ -2492,11 +2556,13 @@ jobs:
     - name: NextPnr_Mov2_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/Mov2/fpga.json --write verilog/fpga/tests/Mov2/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Mov2/tangnano9k.cst
 
     - name: Pack_Mov2_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/Mov2/fpga.fs verilog/fpga/tests/Mov2/fpga.pnr
 
 
@@ -2558,11 +2624,13 @@ jobs:
     - name: NextPnr_MoveLong_1_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/MoveLong_1/fpga.json --write verilog/fpga/tests/MoveLong_1/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/MoveLong_1/tangnano9k.cst
 
     - name: Pack_MoveLong_1_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/MoveLong_1/fpga.fs verilog/fpga/tests/MoveLong_1/fpga.pnr
 
 
@@ -2624,11 +2692,13 @@ jobs:
     - name: NextPnr_MoveLong_2_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/MoveLong_2/fpga.json --write verilog/fpga/tests/MoveLong_2/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/MoveLong_2/tangnano9k.cst
 
     - name: Pack_MoveLong_2_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/MoveLong_2/fpga.fs verilog/fpga/tests/MoveLong_2/fpga.pnr
 
 
@@ -2690,11 +2760,13 @@ jobs:
     - name: NextPnr_Not_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/Not/fpga.json --write verilog/fpga/tests/Not/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Not/tangnano9k.cst
 
     - name: Pack_Not_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/Not/fpga.fs verilog/fpga/tests/Not/fpga.pnr
 
 
@@ -2756,11 +2828,13 @@ jobs:
     - name: NextPnr_Pop_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/Pop/fpga.json --write verilog/fpga/tests/Pop/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Pop/tangnano9k.cst
 
     - name: Pack_Pop_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/Pop/fpga.fs verilog/fpga/tests/Pop/fpga.pnr
 
 
@@ -2822,11 +2896,13 @@ jobs:
     - name: NextPnr_Push_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/Push/fpga.json --write verilog/fpga/tests/Push/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Push/tangnano9k.cst
 
     - name: Pack_Push_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/Push/fpga.fs verilog/fpga/tests/Push/fpga.pnr
 
 
@@ -2888,11 +2964,13 @@ jobs:
     - name: NextPnr_ShiftLeft_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/ShiftLeft/fpga.json --write verilog/fpga/tests/ShiftLeft/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/ShiftLeft/tangnano9k.cst
 
     - name: Pack_ShiftLeft_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/ShiftLeft/fpga.fs verilog/fpga/tests/ShiftLeft/fpga.pnr
 
 
@@ -2954,11 +3032,13 @@ jobs:
     - name: NextPnr_ShiftRight_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/ShiftRight/fpga.json --write verilog/fpga/tests/ShiftRight/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/ShiftRight/tangnano9k.cst
 
     - name: Pack_ShiftRight_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/ShiftRight/fpga.fs verilog/fpga/tests/ShiftRight/fpga.pnr
 
 
@@ -3020,11 +3100,13 @@ jobs:
     - name: NextPnr_Shift_up_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/Shift_up/fpga.json --write verilog/fpga/tests/Shift_up/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Shift_up/tangnano9k.cst
 
     - name: Pack_Shift_up_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/Shift_up/fpga.fs verilog/fpga/tests/Shift_up/fpga.pnr
 
 
@@ -3086,11 +3168,13 @@ jobs:
     - name: NextPnr_Shift_up_2_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/Shift_up_2/fpga.json --write verilog/fpga/tests/Shift_up_2/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Shift_up_2/tangnano9k.cst
 
     - name: Pack_Shift_up_2_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/Shift_up_2/fpga.fs verilog/fpga/tests/Shift_up_2/fpga.pnr
 
 
@@ -3152,11 +3236,13 @@ jobs:
     - name: NextPnr_Subtract_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/Subtract/fpga.json --write verilog/fpga/tests/Subtract/fpga.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/Subtract/tangnano9k.cst
 
     - name: Pack_Subtract_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/Subtract/fpga.fs verilog/fpga/tests/Subtract/fpga.pnr
 
 
@@ -3218,10 +3304,12 @@ jobs:
     - name: NextPnr_memory_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json verilog/fpga/tests/memory/memory.json --write verilog/fpga/tests/memory/memory.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/memory/tangnano9k.cst
 
     - name: Pack_memory_
       if: ${{ always() }}
       run: |
+        export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o verilog/fpga/tests/memory/memory.fs verilog/fpga/tests/memory/memory.pnr
 
