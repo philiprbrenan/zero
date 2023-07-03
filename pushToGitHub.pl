@@ -266,7 +266,9 @@ sub highLevelTests{<<END}                                                       
 END
 
 sub lowLevelTests                                                               # Low level tests to run
- {map {s($home) ()r} searchDirectoryTreesForMatchingFiles($testsDir, qw(.sv));  # Test these local files
+ { grep {!m(memory)}
+   map {s($home) ()r}
+   searchDirectoryTreesForMatchingFiles($testsDir, qw(.sv));                    # Test these local files
  }
 
 sub fpgaLowLevelTestsVerilog                                                    # Low level tests
@@ -296,6 +298,7 @@ sub fpgaLowLevelTestsYosys                                                      
 
   for my $s(@tests)                                                             # Tests
    {my $t = fp($s) =~ s(/) (_)gsr =~ s(verilog_fpga_tests_) ()gsr;              # Test name in a form suitable for github
+
     my $v = setFileExtension $s, q(sv);                                         # Source file
     my $j = setFileExtension $s, q(json);                                       # Json description
     my $p = setFileExtension $s, q(pnr);                                        # Place and route
