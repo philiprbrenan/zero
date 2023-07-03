@@ -1,4 +1,4 @@
-# Test 2023-07-03 at 03:52:06
+# Test 2023-07-03 at 03:55:02
 
 name: Test
 
@@ -160,7 +160,7 @@ jobs:
       if: ${{ always() }}
       run: |
         export PATH="$PATH:$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -d -p "read_verilog -nomem2reg verilog/fpga/tests/memory/memory.sv"
-        #yosys -q -d -p "read_verilog -nomem2reg verilog/fpga/tests/memory/memory.sv; synth_gowin -top fpga -json verilog/fpga/tests/memory/memory.json"
+        #yosys -q -d -p "read_verilog -nomem2reg verilog/fpga/tests/memory/memory.sv"
+         yosys -q -d -p "read_verilog -nomem2reg verilog/fpga/tests/memory/memory.sv; synth_gowin -top fpga -json verilog/fpga/tests/memory/memory.json"
         #nextpnr-gowin -v --debug --json verilog/fpga/tests/memory/memory.json --write verilog/fpga/tests/memory/memory.pnr --device "GW1NR-LV9QN88PC6/I5" --family GW1N-9C --cst verilog/fpga/tests/memory/tangnano9k.cst
         #gowin_pack -d GW1N-9C -o verilog/fpga/tests/memory/memory.fs verilog/fpga/tests/memory/memory.pnr
