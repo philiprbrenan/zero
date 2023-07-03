@@ -6,7 +6,6 @@
 # Key compression in each node by eliminating any common prefix present in each key in each node especially useful if we were to add attributes like userid, process, string position, rwx etc to front of each key.  Data does does not need this additional information.
 # Use resize on keys, not on data or down.  Can we use the implicit size of keys to avoid having a size in field the Node?
 # Change Sequential back to parallel - it was too difficult to debug the code with parallel in effect because it kept reordering the code in different ways
-# Area size must be a power of 2 to avoid multiplication
 use v5.30;
 package Zero::BTree;
 our $VERSION = 20230519;                                                        # Version
