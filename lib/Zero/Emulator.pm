@@ -3685,7 +3685,8 @@ END
 // Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
 module fpga                                                                     // Run test programs
- (input  wire reset,                                                            // Reset - reset occurs when high - must be allowed to go for a run to occur
+ (input  wire clock,                                                            // Driving clock
+  input  wire reset,                                                            // Restart program
   output reg  finished,                                                         // Goes high when the program has finished
   output reg  success);                                                         // Goes high on finish if all the tests passed
 
@@ -3724,9 +3725,6 @@ END
   integer steps;                                                                // Number of steps executed so far
   integer i, j, k;                                                              // A useful counter
 
-  reg clock;                                                                    // Clock - has to be one bit wide for yosys
-  reg finishedReg;                                                              // Finished avoid D latch
-
   task updateArrayLength(input integer arena, input integer array, input integer index); // Update array length if we are updating an array
     begin
       if (arena == $arenaHeap && arraySizes[array] < index + 1) arraySizes[array] = index + 1;
@@ -3737,23 +3735,24 @@ END
   if (1)                                                                        # A case statement to select each instruction to be executed in order
    {push @c, <<END;
 
-  always @(*) begin                                                             // Each instruction
+  always @(posedge clock) begin                                                 // Each instruction
     if (reset) begin
       ip             = 0;
-      clock          = 0;
       steps          = 0;
       inMemPos       = 0;
       outMemPos      = 0;
       allocs         = 0;
       freedArraysTop = 0;
-      finishedReg    = 0;
+      finished       = 0;
+      success        = 0;
+
 END
 
-    my @i = $exec->inOriginally->@*;
+    my @i = $exec->inOriginally->@*;                                            # Load input queue
     for my $i(keys @i)
      {my $I = $i[$i];
       push @c, <<END;
-    inMem[$i] = $I;
+      inMem[$i] = $I;
 END
      }
 
@@ -3804,24 +3803,16 @@ END
 END
    }
 
-  my $steps = sprintf "%6d", $exec->totalInstructions + 1;                    # The extra step is to allow the tests to be analyzed by the test bench
-  push @c, <<END;                                                             # End of last sub sequence
-        default: begin
-          finishedReg = 1;                                                      // Show we have finished
-        end
+  my $steps = sprintf "%6d", $exec->totalInstructions + 1;                      # The extra step is to allow the tests to be analyzed by the test bench
+  push @c, <<END;                                                               # End of last sub sequence
       endcase
-      if (steps <= $steps) clock <= ~ clock;                                    // Must be non sequential to fire the next iteration
       if ($traceExecution) begin
         for(i = 0; i < $memoryPrintWidth; i = i + 1) \$write("%2d",   localMem[i]); \$display("");
         for(i = 0; i < $memoryPrintWidth; i = i + 1) \$write("%2d",    heapMem[i]); \$display("");
         for(i = 0; i < $memoryPrintWidth; i = i + 1) \$write("%2d", arraySizes[i]); \$display("");
       end
-    end
-  end
-
-  always @(posedge(finishedReg)) begin                                          // When we have finished
-    finished = 1;                                                               // Show finished
-    success  = 1;                                                               // Show success
+      finished = steps > $steps;
+      success  = 1;
 END
 
   if (1)                                                                        # Check output queue matches out expectations
@@ -3829,12 +3820,13 @@ END
     for my $o(keys @o)
      {my $O = $o[$o];
       push @c, <<END;
-          success  = success && outMem[$o] == $O;
+      success  = success && outMem[$o] == $O;
 END
      }
    }
 
   push @c, <<END;                                                               # End of module
+    end
   end
 
 endmodule
@@ -3848,23 +3840,30 @@ END
 // Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
 module fpga_tb();                                                               // Test fpga
-  reg reset;                                                                    // Execute the next instruction
+  reg clock;                                                                    // Driving clock
+  reg reset;                                                                    // Reset to start of program
   reg finished;                                                                 // Goes high when the program has finished
-  reg success;                                                                  // Goes high on finish if all the tests passed
+  reg success;                                                                  // Indicates success or failure at finish
 
   `include "tests.sv"                                                           // Test routines
 
   fpga f                                                                        // Fpga
-   (.reset    (reset),
+   (.clock    (clock),
+    .reset    (reset),
     .finished (finished),
     .success  (success )
    );
 
   initial begin                                                                 // Test the fpga
-       reset = 0;
+       clock = 0;
     #1 reset = 1;
+    #1 clock = 1;
     #1 reset = 0;
-    #1
+    #1 clock = 0;
+    while(!finished) begin;
+      #1 clock = 1;
+      #1 clock = 0;
+    end
     ok(finished == 1, "Finished");
     ok(success  == 1, "Success");
     checkAllTestsPassed(2);
