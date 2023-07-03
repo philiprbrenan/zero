@@ -29,9 +29,11 @@ module fpga                                                                     
   integer freedArraysTop;                                                       // Position in freed arrays stack
 
   integer ip;                                                                   // Instruction pointer
-  reg     clock;                                                                // Clock - has to be one bit wide for yosys
   integer steps;                                                                // Number of steps executed so far
   integer i, j, k;                                                              // A useful counter
+
+  reg clock;                                                                    // Clock - has to be one bit wide for yosys
+  reg finishedReg;                                                              // Finished avoid D latch
 
   task updateArrayLength(input integer arena, input integer array, input integer index); // Update array length if we are updating an array
     begin
@@ -44,12 +46,12 @@ module fpga                                                                     
       ip             = 0;
       clock          = 0;
       steps          = 0;
-      finished       = 0;
-      success        = 0;
       inMemPos       = 0;
       outMemPos      = 0;
       allocs         = 0;
       freedArraysTop = 0;
+      finishedReg    = 0;
+
       if (0) begin                                                  // Clear memory
         for(i = 0; i < NHeap;   i = i + 1)    heapMem[i] = 0;
         for(i = 0; i < NLocal;  i = i + 1)   localMem[i] = 0;
@@ -628,7 +630,21 @@ end
               ip = 68;
         end
         default: begin
-          success  = 1;
+          finishedReg = 1;                                                      // Show we have finished
+        end
+      endcase
+      if (steps <=    256) clock <= ~ clock;                                    // Must be non sequential to fire the next iteration
+      if (0) begin
+        for(i = 0; i < 200; i = i + 1) $write("%2d",   localMem[i]); $display("");
+        for(i = 0; i < 200; i = i + 1) $write("%2d",    heapMem[i]); $display("");
+        for(i = 0; i < 200; i = i + 1) $write("%2d", arraySizes[i]); $display("");
+      end
+    end
+  end
+
+  always @(posedge(finishedReg)) begin                                          // When we have finished
+    finished = 1;                                                               // Show finished
+    success  = 1;                                                               // Show success
           success  = success && outMem[0] == 1;
           success  = success && outMem[1] == 3;
           success  = success && outMem[2] == 5;
@@ -654,15 +670,6 @@ end
           success  = success && outMem[22] == 5;
           success  = success && outMem[23] == 7;
           success  = success && outMem[24] == 8;
-          finished = 1;
-        end
-      endcase
-      if (steps <=    256) clock <= ~ clock;                                    // Must be non sequential to fire the next iteration
-      if (0) begin
-        for(i = 0; i < 200; i = i + 1) $write("%2d",   localMem[i]); $display("");
-        for(i = 0; i < 200; i = i + 1) $write("%2d",    heapMem[i]); $display("");
-        for(i = 0; i < 200; i = i + 1) $write("%2d", arraySizes[i]); $display("");
-      end
-    end
   end
+
 endmodule
