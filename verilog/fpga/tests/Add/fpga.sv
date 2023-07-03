@@ -10,7 +10,7 @@ module fpga                                                                     
 
   parameter integer MemoryElementWidth =  12;                                   // Memory element width
 
-  parameter integer NArea   =        0;                                         // Size of each area on the heap
+  parameter integer NArea   =        1;                                         // Size of each area on the heap
   parameter integer NArrays =        0;                                         // Maximum number of arrays
   parameter integer NHeap   =        0;                                         // Amount of heap memory
   parameter integer NLocal  =        1;                                         // Size of local memory
@@ -76,7 +76,7 @@ if (0) begin
   $display("AAAA %4d %4d out", steps, ip);
 end
               outMem[outMemPos] = localMem[0];
-              outMemPos = (outMemPos + 1) % NOut;
+              outMemPos = outMemPos + 1;
               ip = 2;
         end
       endcase
@@ -85,9 +85,9 @@ end
         for(i = 0; i < 200; i = i + 1) $write("%2d",    heapMem[i]); $display("");
         for(i = 0; i < 200; i = i + 1) $write("%2d", arraySizes[i]); $display("");
       end
-      finished = steps >      3;
       success  = 1;
       success  = success && outMem[0] == 5;
+      finished = steps >      3;
     end
   end
 
