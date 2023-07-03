@@ -316,11 +316,13 @@ sub fpgaLowLevelTestsYosys                                                      
     - name: NextPnr_$t
       if: \${{ always() }}
       run: |
+        export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         nextpnr-gowin --json $j --write $p --device "$d" --family $f --cst $b
 
     - name: Pack_$t
       if: \${{ always() }}
       run: |
+        export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         gowin_pack -d GW1N-9C -o $P $p
 
 END
