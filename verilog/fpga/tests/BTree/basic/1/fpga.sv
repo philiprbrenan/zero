@@ -3,7 +3,7 @@
 // Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
 module fpga                                                                     // Run test programs
- (input  wire run,                                                              // Run - clock at lest once to allow code to be loaded
+ (input  wire reset,                                                            // Reset - reset occurs when high - must be allowed to go for a run to occur
   output reg  finished,                                                         // Goes high when the program has finished
   output reg  success);                                                         // Goes high on finish if all the tests passed
 
@@ -29,9 +29,11 @@ module fpga                                                                     
   integer freedArraysTop;                                                       // Position in freed arrays stack
 
   integer ip;                                                                   // Instruction pointer
-  reg     clock;                                                                // Clock - has to be one bit wide for yosys
   integer steps;                                                                // Number of steps executed so far
   integer i, j, k;                                                              // A useful counter
+
+  reg clock;                                                                    // Clock - has to be one bit wide for yosys
+  reg finishedReg;                                                              // Finished avoid D latch
 
   task updateArrayLength(input integer arena, input integer array, input integer index); // Update array length if we are updating an array
     begin
@@ -39,29 +41,29 @@ module fpga                                                                     
     end
   endtask
 
-  always @(posedge run) begin                                                   // Initialize
-    ip             = 0;
-    clock          = 0;
-    steps          = 0;
-    finished       = 0;
-    success        = 0;
-    inMemPos       = 0;
-    outMemPos      = 0;
-    allocs         = 0;
-    freedArraysTop = 0;
-    if (0) begin                                                  // Clear memory
-      for(i = 0; i < NHeap;   i = i + 1)    heapMem[i] = 0;
-      for(i = 0; i < NLocal;  i = i + 1)   localMem[i] = 0;
-      for(i = 0; i < NArrays; i = i + 1) arraySizes[i] = 0;
-    end
-  end
-
   always @(*) begin                                                             // Each instruction
-    steps = steps + 1;
-    case(ip)
+    if (reset) begin
+      ip             = 0;
+      clock          = 0;
+      steps          = 0;
+      inMemPos       = 0;
+      outMemPos      = 0;
+      allocs         = 0;
+      freedArraysTop = 0;
+      finishedReg    = 0;
+
+      if (0) begin                                                  // Clear memory
+        for(i = 0; i < NHeap;   i = i + 1)    heapMem[i] = 0;
+        for(i = 0; i < NLocal;  i = i + 1)   localMem[i] = 0;
+        for(i = 0; i < NArrays; i = i + 1) arraySizes[i] = 0;
+      end
+    end
+    else begin
+      steps = steps + 1;
+      case(ip)
 
           0 :
-      begin                                                                     // array
+        begin                                                                   // array
 if (0) begin
   $display("AAAA %4d %4d array", steps, ip);
 end
@@ -76,68 +78,74 @@ end
               end
               arraySizes[localMem[0]] = 0;
               ip = 1;
-      end
+        end
 
           1 :
-      begin                                                                     // mov
+        begin                                                                   // mov
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
               heapMem[localMem[0]*4 + 2] = 3;
               updateArrayLength(1, localMem[0], 2);
               ip = 2;
-      end
+        end
 
           2 :
-      begin                                                                     // mov
+        begin                                                                   // mov
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
               heapMem[localMem[0]*4 + 3] = 0;
               updateArrayLength(1, localMem[0], 3);
               ip = 3;
-      end
+        end
 
           3 :
-      begin                                                                     // mov
+        begin                                                                   // mov
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
               heapMem[localMem[0]*4 + 0] = 0;
               updateArrayLength(1, localMem[0], 0);
               ip = 4;
-      end
+        end
 
           4 :
-      begin                                                                     // mov
+        begin                                                                   // mov
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
               heapMem[localMem[0]*4 + 1] = 0;
               updateArrayLength(1, localMem[0], 1);
               ip = 5;
-      end
+        end
 
           5 :
-      begin                                                                     // out
+        begin                                                                   // out
 if (0) begin
   $display("AAAA %4d %4d out", steps, ip);
 end
               outMem[outMemPos] = localMem[0];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 6;
+        end
+        default: begin
+          finishedReg = 1;                                                      // Show we have finished
+        end
+      endcase
+      if (steps <=      7) clock <= ~ clock;                                    // Must be non sequential to fire the next iteration
+      if (0) begin
+        for(i = 0; i < 200; i = i + 1) $write("%2d",   localMem[i]); $display("");
+        for(i = 0; i < 200; i = i + 1) $write("%2d",    heapMem[i]); $display("");
+        for(i = 0; i < 200; i = i + 1) $write("%2d", arraySizes[i]); $display("");
       end
-      default: begin
-        success  = 1;
-        success  = success && outMem[0] == 0;
-        finished = 1;
-      end
-    endcase
-    if (steps <=      7) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
-    if (0) begin
-      for(i = 0; i < 200; i = i + 1) $write("%2d",   localMem[i]); $display("");
-      for(i = 0; i < 200; i = i + 1) $write("%2d",    heapMem[i]); $display("");
-      for(i = 0; i < 200; i = i + 1) $write("%2d", arraySizes[i]); $display("");
     end
   end
+
+  always @(posedge(finishedReg)) begin                                          // When we have finished
+    finished = 1;                                                               // Show finished
+    success  = 1;                                                               // Show success
+          success  = success && outMem[0] == 0;
+  end
+
 endmodule
