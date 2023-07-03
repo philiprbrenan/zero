@@ -10,9 +10,9 @@ module fpga                                                                     
 
   parameter integer MemoryElementWidth =  12;                                   // Memory element width
 
-  parameter integer NArea   =        2;                                         // Size of each area on the heap
+  parameter integer NArea   =        4;                                         // Size of each area on the heap
   parameter integer NArrays =        1;                                         // Maximum number of arrays
-  parameter integer NHeap   =        2;                                         // Amount of heap memory
+  parameter integer NHeap   =        4;                                         // Amount of heap memory
   parameter integer NLocal  =        5;                                         // Size of local memory
   parameter integer NOut    =        2;                                         // Size of output area
   parameter integer NIn     =        0;                                         // Size of input area
@@ -83,7 +83,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[0]*2 + 2] = 3;
+              heapMem[localMem[0]*4 + 2] = 3;
               updateArrayLength(1, localMem[0], 2);
               ip = 2;
         end
@@ -93,7 +93,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[0]*2 + 3] = 0;
+              heapMem[localMem[0]*4 + 3] = 0;
               updateArrayLength(1, localMem[0], 3);
               ip = 3;
         end
@@ -103,7 +103,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[0]*2 + 0] = 0;
+              heapMem[localMem[0]*4 + 0] = 0;
               updateArrayLength(1, localMem[0], 0);
               ip = 4;
         end
@@ -113,7 +113,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[0]*2 + 1] = 0;
+              heapMem[localMem[0]*4 + 1] = 0;
               updateArrayLength(1, localMem[0], 1);
               ip = 5;
         end
@@ -123,7 +123,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[1] = heapMem[localMem[0]*2 + 3];
+              localMem[1] = heapMem[localMem[0]*4 + 3];
               updateArrayLength(2, 0, 0);
               ip = 6;
         end
@@ -133,7 +133,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[0]*2 + 3] = 1;
+              heapMem[localMem[0]*4 + 3] = 1;
               updateArrayLength(1, localMem[0], 3);
               ip = 7;
         end
@@ -143,7 +143,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[2] = heapMem[localMem[0]*2 + 3];
+              localMem[2] = heapMem[localMem[0]*4 + 3];
               updateArrayLength(2, 0, 0);
               ip = 8;
         end
@@ -153,7 +153,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[3] = heapMem[localMem[0]*2 + 2];
+              localMem[3] = heapMem[localMem[0]*4 + 2];
               updateArrayLength(2, 0, 0);
               ip = 9;
         end
@@ -163,7 +163,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[0]*2 + 0] = heapMem[localMem[0]*2 + 0] + 1;
+              heapMem[localMem[0]*4 + 0] = heapMem[localMem[0]*4 + 0] + 1;
               updateArrayLength(1, localMem[0], 0);
               ip = 10;
         end
@@ -173,7 +173,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[0]*2 + 0] = heapMem[localMem[0]*2 + 0] + 1;
+              heapMem[localMem[0]*4 + 0] = heapMem[localMem[0]*4 + 0] + 1;
               updateArrayLength(1, localMem[0], 0);
               ip = 11;
         end
@@ -183,7 +183,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[0]*2 + 0] = heapMem[localMem[0]*2 + 0] + 1;
+              heapMem[localMem[0]*4 + 0] = heapMem[localMem[0]*4 + 0] + 1;
               updateArrayLength(1, localMem[0], 0);
               ip = 12;
         end
@@ -193,8 +193,8 @@ end
 if (0) begin
   $display("AAAA %4d %4d out", steps, ip);
 end
-              outMem[outMemPos] = heapMem[localMem[0]*2 + 0];
-              outMemPos = (outMemPos + 1) % NOut;
+              outMem[outMemPos] = heapMem[localMem[0]*4 + 0];
+              outMemPos = outMemPos + 1;
               ip = 13;
         end
 
@@ -203,7 +203,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[0]*2 + 1] = heapMem[localMem[0]*2 + 1] + 1;
+              heapMem[localMem[0]*4 + 1] = heapMem[localMem[0]*4 + 1] + 1;
               updateArrayLength(1, localMem[0], 1);
               ip = 14;
         end
@@ -213,7 +213,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[0]*2 + 1] = heapMem[localMem[0]*2 + 1] + 1;
+              heapMem[localMem[0]*4 + 1] = heapMem[localMem[0]*4 + 1] + 1;
               updateArrayLength(1, localMem[0], 1);
               ip = 15;
         end
@@ -223,7 +223,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[0]*2 + 1] = heapMem[localMem[0]*2 + 1] + 1;
+              heapMem[localMem[0]*4 + 1] = heapMem[localMem[0]*4 + 1] + 1;
               updateArrayLength(1, localMem[0], 1);
               ip = 16;
         end
@@ -233,7 +233,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[0]*2 + 1] = heapMem[localMem[0]*2 + 1] + 1;
+              heapMem[localMem[0]*4 + 1] = heapMem[localMem[0]*4 + 1] + 1;
               updateArrayLength(1, localMem[0], 1);
               ip = 17;
         end
@@ -243,7 +243,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
-              heapMem[localMem[0]*2 + 1] = heapMem[localMem[0]*2 + 1] + 1;
+              heapMem[localMem[0]*4 + 1] = heapMem[localMem[0]*4 + 1] + 1;
               updateArrayLength(1, localMem[0], 1);
               ip = 18;
         end
@@ -253,7 +253,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              localMem[4] = heapMem[localMem[0]*2 + 1];
+              localMem[4] = heapMem[localMem[0]*4 + 1];
               updateArrayLength(2, 0, 0);
               ip = 19;
         end
@@ -264,7 +264,7 @@ if (0) begin
   $display("AAAA %4d %4d out", steps, ip);
 end
               outMem[outMemPos] = localMem[4];
-              outMemPos = (outMemPos + 1) % NOut;
+              outMemPos = outMemPos + 1;
               ip = 20;
         end
       endcase
@@ -273,10 +273,10 @@ end
         for(i = 0; i < 200; i = i + 1) $write("%2d",    heapMem[i]); $display("");
         for(i = 0; i < 200; i = i + 1) $write("%2d", arraySizes[i]); $display("");
       end
-      finished = steps >     21;
       success  = 1;
       success  = success && outMem[0] == 3;
       success  = success && outMem[1] == 5;
+      finished = steps >     21;
     end
   end
 
