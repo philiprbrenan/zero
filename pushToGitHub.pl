@@ -313,7 +313,7 @@ sub fpgaLowLevelTestsYosys                                                      
         export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
         #yosys -q -d -p "read_verilog -nomem2reg $v; synth_gowin -top fpga -json $j"
         yosys -q -d -p "read_verilog $v; synth_gowin -top fpga -json $j"
-        nextpnr-gowin -v --debug --json $j --write $p --device "$d" --family $f --cst $b
+        nextpnr-gowin --json $j --write $p --device "$d" --family $f --cst $b
         gowin_pack -d GW1N-9C -o $P $p
 END
    }
