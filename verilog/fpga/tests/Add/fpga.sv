@@ -39,7 +39,8 @@ module fpga                                                                     
     end
   endtask
 
-  always @(posedge run) begin                                                   // Initialize
+  always @(*) begin                                                             // Each instruction
+   if (run) begin                                                      // Initialize
     ip             = 0;
     clock          = 0;
     steps          = 0;
@@ -55,8 +56,7 @@ module fpga                                                                     
       for(i = 0; i < NArrays; i = i + 1) arraySizes[i] = 0;
     end
   end
-
-  always @(*) begin                                                             // Each instruction
+  else begin
     steps = steps + 1;
     case(ip)
 
@@ -91,5 +91,6 @@ end
       for(i = 0; i < 200; i = i + 1) $write("%2d",    heapMem[i]); $display("");
       for(i = 0; i < 200; i = i + 1) $write("%2d", arraySizes[i]); $display("");
     end
+  end
   end
 endmodule
