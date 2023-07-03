@@ -266,7 +266,7 @@ sub highLevelTests{<<END}                                                       
 END
 
 sub lowLevelTests                                                               # Low level tests to run
- { grep {!m(memory)}
+ { grep {m(memory)}
    map {s($home) ()r}
    searchDirectoryTreesForMatchingFiles($testsDir, qw(.sv));                    # Test these local files
  }
