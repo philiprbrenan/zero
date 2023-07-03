@@ -3,7 +3,8 @@
 // Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
 module fpga                                                                     // Run test programs
- (input  wire reset,                                                            // Reset - reset occurs when high - must be allowed to go for a run to occur
+ (input  wire clock,                                                            // Driving clock
+  input  wire reset,                                                            // Restart program
   output reg  finished,                                                         // Goes high when the program has finished
   output reg  success);                                                         // Goes high on finish if all the tests passed
 
@@ -32,47 +33,44 @@ module fpga                                                                     
   integer steps;                                                                // Number of steps executed so far
   integer i, j, k;                                                              // A useful counter
 
-  reg clock;                                                                    // Clock - has to be one bit wide for yosys
-  reg finishedReg;                                                              // Finished avoid D latch
-
   task updateArrayLength(input integer arena, input integer array, input integer index); // Update array length if we are updating an array
     begin
       if (arena == 1 && arraySizes[array] < index + 1) arraySizes[array] = index + 1;
     end
   endtask
-    inMem[0] = 0;
-    inMem[1] = 1;
-    inMem[2] = 3;
-    inMem[3] = 33;
-    inMem[4] = 1;
-    inMem[5] = 1;
-    inMem[6] = 11;
-    inMem[7] = 1;
-    inMem[8] = 2;
-    inMem[9] = 22;
-    inMem[10] = 1;
-    inMem[11] = 4;
-    inMem[12] = 44;
-    inMem[13] = 2;
-    inMem[14] = 5;
-    inMem[15] = 2;
-    inMem[16] = 2;
-    inMem[17] = 2;
-    inMem[18] = 6;
-    inMem[19] = 2;
-    inMem[20] = 3;
 
-  always @(*) begin                                                             // Each instruction
+  always @(posedge clock) begin                                                 // Each instruction
     if (reset) begin
       ip             = 0;
-      clock          = 0;
       steps          = 0;
       inMemPos       = 0;
       outMemPos      = 0;
       allocs         = 0;
       freedArraysTop = 0;
-      finishedReg    = 0;
+      finished       = 0;
+      success        = 0;
 
+      inMem[0] = 0;
+      inMem[1] = 1;
+      inMem[2] = 3;
+      inMem[3] = 33;
+      inMem[4] = 1;
+      inMem[5] = 1;
+      inMem[6] = 11;
+      inMem[7] = 1;
+      inMem[8] = 2;
+      inMem[9] = 22;
+      inMem[10] = 1;
+      inMem[11] = 4;
+      inMem[12] = 44;
+      inMem[13] = 2;
+      inMem[14] = 5;
+      inMem[15] = 2;
+      inMem[16] = 2;
+      inMem[17] = 2;
+      inMem[18] = 6;
+      inMem[19] = 2;
+      inMem[20] = 3;
       if (0) begin                                                  // Clear memory
         for(i = 0; i < NHeap;   i = i + 1)    heapMem[i] = 0;
         for(i = 0; i < NLocal;  i = i + 1)   localMem[i] = 0;
@@ -9780,28 +9778,21 @@ if (0) begin
 end
               ip = 1148;
         end
-        default: begin
-          finishedReg = 1;                                                      // Show we have finished
-        end
       endcase
-      if (steps <=    523) clock <= ~ clock;                                    // Must be non sequential to fire the next iteration
       if (0) begin
         for(i = 0; i < 200; i = i + 1) $write("%2d",   localMem[i]); $display("");
         for(i = 0; i < 200; i = i + 1) $write("%2d",    heapMem[i]); $display("");
         for(i = 0; i < 200; i = i + 1) $write("%2d", arraySizes[i]); $display("");
       end
+      finished = steps >    523;
+      success  = 1;
+      success  = success && outMem[0] == 0;
+      success  = success && outMem[1] == 1;
+      success  = success && outMem[2] == 22;
+      success  = success && outMem[3] == 0;
+      success  = success && outMem[4] == 1;
+      success  = success && outMem[5] == 33;
     end
-  end
-
-  always @(posedge(finishedReg)) begin                                          // When we have finished
-    finished = 1;                                                               // Show finished
-    success  = 1;                                                               // Show success
-          success  = success && outMem[0] == 0;
-          success  = success && outMem[1] == 1;
-          success  = success && outMem[2] == 22;
-          success  = success && outMem[3] == 0;
-          success  = success && outMem[4] == 1;
-          success  = success && outMem[5] == 33;
   end
 
 endmodule
