@@ -16,7 +16,7 @@ module fpga_tb();                                                               
    );
 
   initial begin                                                                 // Test the fpga
-    run = 0; #1 run = 1;
+    run = 0; #1 run = 1; #1 run = 0;
   end
 
   always @(posedge finished) begin                                              // Finished
