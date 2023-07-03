@@ -266,7 +266,7 @@ sub highLevelTests{<<END}                                                       
 END
 
 sub lowLevelTests                                                               # Low level tests to run
- { grep {m(memory)}
+ { #grep {m(memory)}
    map {s($home) ()r}
    searchDirectoryTreesForMatchingFiles($testsDir, qw(.sv));                    # Test these local files
  }
@@ -311,14 +311,23 @@ sub fpgaLowLevelTestsYosys                                                      
       if: \${{ always() }}
       run: |
         export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        #yosys -q -d -p "read_verilog -nomem2reg $v; synth_gowin -top fpga -json $j"
         yosys -q -d -p "read_verilog $v; synth_gowin -top fpga -json $j"
+
+    - name: NextPnr_$t
+      if: \${{ always() }}
+      run: |
         nextpnr-gowin --json $j --write $p --device "$d" --family $f --cst $b
+
+    - name: Pack_$t
+      if: \${{ always() }}
+      run: |
         gowin_pack -d GW1N-9C -o $P $p
+
 END
    }
   $y
  }
+#yosys -q -d -p "read_verilog -nomem2reg $v; synth_gowin -top fpga -json $j"    # nomem2reg
 
 sub fpgaLowLevelArtefacts                                                       # The resulting bitstreams used to progrma the fpga
  {my $h = fpd qw(verilog fpga tests);                                           # Low level bit streams created by this run
