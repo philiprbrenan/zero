@@ -10,9 +10,9 @@ module fpga                                                                     
 
   parameter integer MemoryElementWidth =  12;                                   // Memory element width
 
-  parameter integer NArea   =        4;                                         // Size of each area on the heap
+  parameter integer NArea   =       16;                                         // Size of each area on the heap
   parameter integer NArrays =        2;                                         // Maximum number of arrays
-  parameter integer NHeap   =        8;                                         // Amount of heap memory
+  parameter integer NHeap   =       32;                                         // Amount of heap memory
   parameter integer NLocal  =        4;                                         // Size of local memory
   parameter integer NOut    =        0;                                         // Size of output area
   parameter integer NIn     =        0;                                         // Size of input area
@@ -135,7 +135,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[0]*4 + localMem[2]] = localMem[2];
+              heapMem[localMem[0]*16 + localMem[2]] = localMem[2];
               updateArrayLength(1, localMem[0], localMem[2]);
               ip = 7;
         end
@@ -155,7 +155,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[1]*4 + localMem[2]] = localMem[3];
+              heapMem[localMem[1]*16 + localMem[2]] = localMem[3];
               updateArrayLength(1, localMem[1], localMem[2]);
               ip = 9;
         end
@@ -213,8 +213,8 @@ end
         for(i = 0; i < 200; i = i + 1) $write("%2d",    heapMem[i]); $display("");
         for(i = 0; i < 200; i = i + 1) $write("%2d", arraySizes[i]); $display("");
       end
-      finished = steps >     89;
       success  = 1;
+      finished = steps >     89;
     end
   end
 
