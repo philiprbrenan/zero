@@ -3684,7 +3684,7 @@ END
 // Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
 module fpga                                                                     // Run test programs
- (input  wire run,                                                              // Run - clock at lest once to allow code to be loaded
+ (input  wire reset,                                                            // Reset - reset occurs when high - must be allowed to go for a run to occur
   output reg  finished,                                                         // Goes high when the program has finished
   output reg  success);                                                         // Goes high on finish if all the tests passed
 
@@ -3729,22 +3729,6 @@ END
       if (arena == $arenaHeap && arraySizes[array] < index + 1) arraySizes[array] = index + 1;
     end
   endtask
-
-  always @(posedge run) begin                                                   // Initialize
-    ip             = 0;
-    clock          = 0;
-    steps          = 0;
-    finished       = 0;
-    success        = 0;
-    inMemPos       = 0;
-    outMemPos      = 0;
-    allocs         = 0;
-    freedArraysTop = 0;
-    if ($traceExecution) begin                                                  // Clear memory
-      for(i = 0; i < NHeap;   i = i + 1)    heapMem[i] = 0;
-      for(i = 0; i < NLocal;  i = i + 1)   localMem[i] = 0;
-      for(i = 0; i < NArrays; i = i + 1) arraySizes[i] = 0;
-    end
 END
 
   if (1)                                                                        # Create input queue
@@ -3757,16 +3741,29 @@ END
      }
    }
 
-   push @c, <<END;                                                              # End of initialization
-  end
-END
-
   if (1)                                                                        # A case statement to select each instruction to be executed in order
    {push @c, <<END;
 
   always @(*) begin                                                             // Each instruction
-    steps = steps + 1;
-    case(ip)
+    if (reset) begin
+      ip             = 0;
+      clock          = 0;
+      steps          = 0;
+      finished       = 0;
+      success        = 0;
+      inMemPos       = 0;
+      outMemPos      = 0;
+      allocs         = 0;
+      freedArraysTop = 0;
+      if ($traceExecution) begin                                                  // Clear memory
+        for(i = 0; i < NHeap;   i = i + 1)    heapMem[i] = 0;
+        for(i = 0; i < NLocal;  i = i + 1)   localMem[i] = 0;
+        for(i = 0; i < NArrays; i = i + 1) arraySizes[i] = 0;
+      end
+    end
+    else begin
+      steps = steps + 1;
+      case(ip)
 END
    }
 
@@ -3780,7 +3777,7 @@ END
     push @c, <<END;
 
       $n :
-      begin                                                                     // $action
+        begin                                                                   // $action
 if ($traceExecution) begin
   \$display("AAAA %4d %4d $action", steps, ip);
 end
@@ -3788,7 +3785,7 @@ END
 
     if (!$i->executed)                                                          # No code needed as this instruction never gets executed in this test
      {push @c, <<END;
-         \$display("Should not be executed $n");
+           \$display("Should not be executed $n");
 END
      }
     elsif (my $a = $$gen{$action})                                              # Action for this instruction
@@ -3799,12 +3796,12 @@ END
      }
 
     push @c, <<END;
-      end
+        end
 END
    }
   push @c, <<END;                                                               # End of last sub sequence
-      default: begin
-        success  = 1;
+        default: begin
+          success  = 1;
 END
 
   if (1)                                                                        # Check output queue matches out expectations
@@ -3812,7 +3809,7 @@ END
     for my $o(keys @o)
      {my $O = $o[$o];
       push @c, <<END;
-        success  = success && outMem[$o] == $O;
+          success  = success && outMem[$o] == $O;
 END
      }
    }
@@ -3820,14 +3817,15 @@ END
   if (1)                                                                        # Show finish
    {my $steps = sprintf "%6d", $exec->totalInstructions + 1;                    # The extra step is to allow the tests to be analyzed by the test bench
     push @c, <<END;                                                             # End of last sub sequence
-        finished = 1;
+          finished = 1;
+        end
+      endcase
+      if (steps <= $steps) clock <= ~ clock;                                    // Must be non sequential to fire the next iteration
+      if ($traceExecution) begin
+        for(i = 0; i < $memoryPrintWidth; i = i + 1) \$write("%2d",   localMem[i]); \$display("");
+        for(i = 0; i < $memoryPrintWidth; i = i + 1) \$write("%2d",    heapMem[i]); \$display("");
+        for(i = 0; i < $memoryPrintWidth; i = i + 1) \$write("%2d", arraySizes[i]); \$display("");
       end
-    endcase
-    if (steps <= $steps) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
-    if ($traceExecution) begin
-      for(i = 0; i < $memoryPrintWidth; i = i + 1) \$write("%2d",   localMem[i]); \$display("");
-      for(i = 0; i < $memoryPrintWidth; i = i + 1) \$write("%2d",    heapMem[i]); \$display("");
-      for(i = 0; i < $memoryPrintWidth; i = i + 1) \$write("%2d", arraySizes[i]); \$display("");
     end
   end
 endmodule
@@ -3842,25 +3840,26 @@ END
 // Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
 module fpga_tb();                                                               // Test fpga
-  reg run   = 0;                                                                // Execute the next instruction
+  reg reset;                                                                // Execute the next instruction
   reg finished;                                                                 // Goes high when the program has finished
   reg success;                                                                  // Goes high on finish if all the tests passed
 
   `include "tests.sv"                                                           // Test routines
 
   fpga f                                                                        // Fpga
-   (.run      (run),
+   (.reset    (reset),
     .finished (finished),
     .success  (success )
    );
 
   initial begin                                                                 // Test the fpga
-    run = 0; #1 run = 1;
-  end
-
-  always @(posedge finished) begin                                              // Finished
-    ok(success == 1, "Success");
-    checkAllTestsPassed(1);
+       reset = 0;
+    #1 reset = 1;
+    #1 reset = 0;
+    #1
+    ok(finished == 1, "Finished");
+    ok(success  == 1, "Success");
+    checkAllTestsPassed(2);
     $finish();
   end
 endmodule
