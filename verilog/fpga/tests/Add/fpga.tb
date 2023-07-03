@@ -3,25 +3,26 @@
 // Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
 module fpga_tb();                                                               // Test fpga
-  reg run   = 0;                                                                // Execute the next instruction
+  reg reset;                                                                // Execute the next instruction
   reg finished;                                                                 // Goes high when the program has finished
   reg success;                                                                  // Goes high on finish if all the tests passed
 
   `include "tests.sv"                                                           // Test routines
 
   fpga f                                                                        // Fpga
-   (.run      (run),
+   (.reset    (reset),
     .finished (finished),
     .success  (success )
    );
 
   initial begin                                                                 // Test the fpga
-    run = 0; #1 run = 1; #1 run = 0;
-  end
-
-  always @(posedge finished) begin                                              // Finished
-    ok(success == 1, "Success");
-    checkAllTestsPassed(1);
+       reset = 0;
+    #1 reset = 1;
+    #1 reset = 0;
+    #1
+    ok(finished == 1, "Finished");
+    ok(success  == 1, "Success");
+    checkAllTestsPassed(2);
     $finish();
   end
 endmodule
