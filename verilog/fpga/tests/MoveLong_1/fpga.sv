@@ -9,9 +9,9 @@ module fpga                                                                     
 
   parameter integer MemoryElementWidth =  12;                                   // Memory element width
 
-  parameter integer NArea   =       10;                                         // Size of each area on the heap
+  parameter integer NArea   =        4;                                         // Size of each area on the heap
   parameter integer NArrays =        2;                                         // Maximum number of arrays
-  parameter integer NHeap   =       20;                                         // Amount of heap memory
+  parameter integer NHeap   =        8;                                         // Amount of heap memory
   parameter integer NLocal  =        4;                                         // Size of local memory
   parameter integer NOut    =        0;                                         // Size of output area
   parameter integer NIn     =        0;                                         // Size of input area
@@ -51,7 +51,6 @@ module fpga                                                                     
       allocs         = 0;
       freedArraysTop = 0;
       finishedReg    = 0;
-
       if (0) begin                                                  // Clear memory
         for(i = 0; i < NHeap;   i = i + 1)    heapMem[i] = 0;
         for(i = 0; i < NLocal;  i = i + 1)   localMem[i] = 0;
@@ -137,7 +136,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[0]*10 + localMem[2]] = localMem[2];
+              heapMem[localMem[0]*4 + localMem[2]] = localMem[2];
               updateArrayLength(1, localMem[0], localMem[2]);
               ip = 7;
         end
@@ -157,7 +156,7 @@ end
 if (0) begin
   $display("AAAA %4d %4d mov", steps, ip);
 end
-              heapMem[localMem[1]*10 + localMem[2]] = localMem[3];
+              heapMem[localMem[1]*4 + localMem[2]] = localMem[3];
               updateArrayLength(1, localMem[1], localMem[2]);
               ip = 9;
         end
