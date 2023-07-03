@@ -10,9 +10,9 @@ module fpga                                                                     
 
   parameter integer MemoryElementWidth =  12;                                   // Memory element width
 
-  parameter integer NArea   =        0;                                         // Size of each area on the heap
+  parameter integer NArea   =        1;                                         // Size of each area on the heap
   parameter integer NArrays =        1;                                         // Maximum number of arrays
-  parameter integer NHeap   =        0;                                         // Amount of heap memory
+  parameter integer NHeap   =        1;                                         // Amount of heap memory
   parameter integer NLocal  =        3;                                         // Size of local memory
   parameter integer NOut    =        3;                                         // Size of output area
   parameter integer NIn     =        0;                                         // Size of input area
@@ -84,7 +84,7 @@ if (0) begin
   $display("AAAA %4d %4d out", steps, ip);
 end
               outMem[outMemPos] = localMem[0];
-              outMemPos = (outMemPos + 1) % NOut;
+              outMemPos = outMemPos + 1;
               ip = 2;
         end
 
@@ -123,7 +123,7 @@ if (0) begin
   $display("AAAA %4d %4d out", steps, ip);
 end
               outMem[outMemPos] = localMem[1];
-              outMemPos = (outMemPos + 1) % NOut;
+              outMemPos = outMemPos + 1;
               ip = 5;
         end
 
@@ -162,7 +162,7 @@ if (0) begin
   $display("AAAA %4d %4d out", steps, ip);
 end
               outMem[outMemPos] = localMem[2];
-              outMemPos = (outMemPos + 1) % NOut;
+              outMemPos = outMemPos + 1;
               ip = 8;
         end
 
@@ -182,11 +182,11 @@ end
         for(i = 0; i < 200; i = i + 1) $write("%2d",    heapMem[i]); $display("");
         for(i = 0; i < 200; i = i + 1) $write("%2d", arraySizes[i]); $display("");
       end
-      finished = steps >     10;
       success  = 1;
       success  = success && outMem[0] == 0;
       success  = success && outMem[1] == 0;
       success  = success && outMem[2] == 0;
+      finished = steps >     10;
     end
   end
 
