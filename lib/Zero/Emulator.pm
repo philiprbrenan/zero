@@ -3143,12 +3143,12 @@ sub CompileToVerilog(%)                                                         
  {my (%options) = @_;                                                           # Execution options
 
   genHash(q(Zero::CompileToVerilog),                                            # Compile to verilog
-    NArea=> containingPowerOfTwo($options{NArea}   // 0),                       # The size of an array in the heap area
-    NArrays=>                    $options{NArrays} // 0,                        # The number of heap arrays need
-    WLocal=>                     $options{WLocal}  // 0,                        # Size of local area
-    code=>                       '',                                            # Generated code
-    testBench=>                  '',                                            # Test bench for generated code
-    constraints=>                '',                                            # Constraints file
+    NArea=> 2**containingPowerOfTwo($options{NArea}   // 0),                    # The size of an array in the heap area
+    NArrays=>                       $options{NArrays} // 0,                     # The number of heap arrays need
+    WLocal=>                        $options{WLocal}  // 0,                     # Size of local area
+    code=>                          '',                                         # Generated code
+    testBench=>                     '',                                         # Test bench for generated code
+    constraints=>                   '',                                         # Constraints file
    );
  }
 
@@ -3589,7 +3589,7 @@ END
       my $n   = $i->number + 1;
       push @c, <<END;
               outMem[outMemPos] = $s;
-              outMemPos = (outMemPos + 1) % NOut;
+              outMemPos = outMemPos + 1;
               ip = $n;
 END
      },
@@ -3811,7 +3811,6 @@ END
         for(i = 0; i < $memoryPrintWidth; i = i + 1) \$write("%2d",    heapMem[i]); \$display("");
         for(i = 0; i < $memoryPrintWidth; i = i + 1) \$write("%2d", arraySizes[i]); \$display("");
       end
-      finished = steps > $steps;
       success  = 1;
 END
 
@@ -3826,6 +3825,7 @@ END
    }
 
   push @c, <<END;                                                               # End of module
+      finished = steps > $steps;
     end
   end
 
