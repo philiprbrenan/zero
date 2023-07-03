@@ -311,7 +311,7 @@ sub fpgaLowLevelTestsYosys                                                      
       if: \${{ always() }}
       run: |
         export PATH="\$PATH:\$GITHUB_WORKSPACE/oss-cad-suite/bin/"
-        yosys -q -d -p "read_verilog  -nomem2reg $v; synth_gowin -top fpga -json $j"
+        yosys -q -d -p "read_verilog -nomem2reg $v; synth_gowin -top fpga -json $j"
 
     - name: NextPnr_$t
       if: \${{ always() }}
