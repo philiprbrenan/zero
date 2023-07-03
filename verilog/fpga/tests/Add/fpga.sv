@@ -3,7 +3,8 @@
 // Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
 module fpga                                                                     // Run test programs
- (input  wire reset,                                                            // Reset - reset occurs when high - must be allowed to go for a run to occur
+ (input  wire clock,                                                            // Driving clock
+  input  wire reset,                                                            // Restart program
   output reg  finished,                                                         // Goes high when the program has finished
   output reg  success);                                                         // Goes high on finish if all the tests passed
 
@@ -32,25 +33,23 @@ module fpga                                                                     
   integer steps;                                                                // Number of steps executed so far
   integer i, j, k;                                                              // A useful counter
 
-  reg clock;                                                                    // Clock - has to be one bit wide for yosys
-  reg finishedReg;                                                              // Finished avoid D latch
-
   task updateArrayLength(input integer arena, input integer array, input integer index); // Update array length if we are updating an array
     begin
       if (arena == 1 && arraySizes[array] < index + 1) arraySizes[array] = index + 1;
     end
   endtask
 
-  always @(*) begin                                                             // Each instruction
+  always @(posedge clock) begin                                                 // Each instruction
     if (reset) begin
       ip             = 0;
-      clock          = 0;
       steps          = 0;
       inMemPos       = 0;
       outMemPos      = 0;
       allocs         = 0;
       freedArraysTop = 0;
-      finishedReg    = 0;
+      finished       = 0;
+      success        = 0;
+
       if (0) begin                                                  // Clear memory
         for(i = 0; i < NHeap;   i = i + 1)    heapMem[i] = 0;
         for(i = 0; i < NLocal;  i = i + 1)   localMem[i] = 0;
@@ -80,23 +79,16 @@ end
               outMemPos = (outMemPos + 1) % NOut;
               ip = 2;
         end
-        default: begin
-          finishedReg = 1;                                                      // Show we have finished
-        end
       endcase
-      if (steps <=      3) clock <= ~ clock;                                    // Must be non sequential to fire the next iteration
       if (0) begin
         for(i = 0; i < 200; i = i + 1) $write("%2d",   localMem[i]); $display("");
         for(i = 0; i < 200; i = i + 1) $write("%2d",    heapMem[i]); $display("");
         for(i = 0; i < 200; i = i + 1) $write("%2d", arraySizes[i]); $display("");
       end
+      finished = steps >      3;
+      success  = 1;
+      success  = success && outMem[0] == 5;
     end
-  end
-
-  always @(posedge(finishedReg)) begin                                          // When we have finished
-    finished = 1;                                                               // Show finished
-    success  = 1;                                                               // Show success
-          success  = success && outMem[0] == 5;
   end
 
 endmodule
