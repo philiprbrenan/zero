@@ -11,6 +11,7 @@
 # Check whether the array being accessed is actually allocated
 # Setting the array size on Mov means that we probably do not need all the resizes
 # Check wether iverilog supports multi dimensional arrays and if so can we use this in the string model ?
+# Area size must be a power of 2 to avoid multiplication **see containingPowerOfTwo
 use v5.30;
 package Zero::Emulator;
 our $VERSION = 20230519;                                                        # Version
@@ -3142,12 +3143,12 @@ sub CompileToVerilog(%)                                                         
  {my (%options) = @_;                                                           # Execution options
 
   genHash(q(Zero::CompileToVerilog),                                            # Compile to verilog
-    NArea=>                 $options{NArea}   // 0,                             # The size of an array in the heap area
-    NArrays=>               $options{NArrays} // 0,                             # The number of heap arrays need
-    WLocal=>                $options{WLocal}  // 0,                             # Size of local area
-    code=>                  '',                                                 # Generated code
-    testBench=>             '',                                                 # Test bench for generated code
-    constraints=>           '',                                                 # Constraints file
+    NArea=> containingPowerOfTwo($options{NArea}   // 0),                       # The size of an array in the heap area
+    NArrays=>                    $options{NArrays} // 0,                        # The number of heap arrays need
+    WLocal=>                     $options{WLocal}  // 0,                        # Size of local area
+    code=>                       '',                                            # Generated code
+    testBench=>                  '',                                            # Test bench for generated code
+    constraints=>                '',                                            # Constraints file
    );
  }
 
@@ -3733,16 +3734,6 @@ END
   endtask
 END
 
-  if (1)                                                                        # Create input queue
-   {my @i = $exec->inOriginally->@*;
-    for my $i(keys @i)
-     {my $I = $i[$i];
-      push @c, <<END;
-    inMem[$i] = $I;
-END
-     }
-   }
-
   if (1)                                                                        # A case statement to select each instruction to be executed in order
    {push @c, <<END;
 
@@ -3756,7 +3747,18 @@ END
       allocs         = 0;
       freedArraysTop = 0;
       finishedReg    = 0;
+END
 
+    my @i = $exec->inOriginally->@*;
+    for my $i(keys @i)
+     {my $I = $i[$i];
+      push @c, <<END;
+    inMem[$i] = $I;
+END
+     }
+
+
+    push @c, <<END;
       if ($traceExecution) begin                                                  // Clear memory
         for(i = 0; i < NHeap;   i = i + 1)    heapMem[i] = 0;
         for(i = 0; i < NLocal;  i = i + 1)   localMem[i] = 0;
