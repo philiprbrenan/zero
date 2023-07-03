@@ -40,8 +40,6 @@ module fpga                                                                     
       if (arena == 1 && arraySizes[array] < index + 1) arraySizes[array] = index + 1;
     end
   endtask
-    inMem[0] = 88;
-    inMem[1] = 44;
 
   always @(*) begin                                                             // Each instruction
     if (reset) begin
@@ -53,7 +51,8 @@ module fpga                                                                     
       allocs         = 0;
       freedArraysTop = 0;
       finishedReg    = 0;
-
+    inMem[0] = 88;
+    inMem[1] = 44;
       if (0) begin                                                  // Clear memory
         for(i = 0; i < NHeap;   i = i + 1)    heapMem[i] = 0;
         for(i = 0; i < NLocal;  i = i + 1)   localMem[i] = 0;
