@@ -3,7 +3,7 @@
 // Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
 module fpga_tb();                                                               // Test fpga
-  reg reset;                                                                // Execute the next instruction
+  reg reset;                                                                    // Execute the next instruction
   reg finished;                                                                 // Goes high when the program has finished
   reg success;                                                                  // Goes high on finish if all the tests passed
 
