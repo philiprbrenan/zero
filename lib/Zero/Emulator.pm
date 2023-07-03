@@ -3720,9 +3720,11 @@ END
   integer freedArraysTop;                                                       // Position in freed arrays stack
 
   integer ip;                                                                   // Instruction pointer
-  reg     clock;                                                                // Clock - has to be one bit wide for yosys
   integer steps;                                                                // Number of steps executed so far
   integer i, j, k;                                                              // A useful counter
+
+  reg clock;                                                                    // Clock - has to be one bit wide for yosys
+  reg finishedReg;                                                              // Finished avoid D latch
 
   task updateArrayLength(input integer arena, input integer array, input integer index); // Update array length if we are updating an array
     begin
@@ -3749,12 +3751,12 @@ END
       ip             = 0;
       clock          = 0;
       steps          = 0;
-      finished       = 0;
-      success        = 0;
       inMemPos       = 0;
       outMemPos      = 0;
       allocs         = 0;
       freedArraysTop = 0;
+      finishedReg    = 0;
+
       if ($traceExecution) begin                                                  // Clear memory
         for(i = 0; i < NHeap;   i = i + 1)    heapMem[i] = 0;
         for(i = 0; i < NLocal;  i = i + 1)   localMem[i] = 0;
@@ -3799,9 +3801,25 @@ END
         end
 END
    }
-  push @c, <<END;                                                               # End of last sub sequence
+
+  my $steps = sprintf "%6d", $exec->totalInstructions + 1;                    # The extra step is to allow the tests to be analyzed by the test bench
+  push @c, <<END;                                                             # End of last sub sequence
         default: begin
-          success  = 1;
+          finishedReg = 1;                                                      // Show we have finished
+        end
+      endcase
+      if (steps <= $steps) clock <= ~ clock;                                    // Must be non sequential to fire the next iteration
+      if ($traceExecution) begin
+        for(i = 0; i < $memoryPrintWidth; i = i + 1) \$write("%2d",   localMem[i]); \$display("");
+        for(i = 0; i < $memoryPrintWidth; i = i + 1) \$write("%2d",    heapMem[i]); \$display("");
+        for(i = 0; i < $memoryPrintWidth; i = i + 1) \$write("%2d", arraySizes[i]); \$display("");
+      end
+    end
+  end
+
+  always @(posedge(finishedReg)) begin                                          // When we have finished
+    finished = 1;                                                               // Show finished
+    success  = 1;                                                               // Show success
 END
 
   if (1)                                                                        # Check output queue matches out expectations
@@ -3814,23 +3832,11 @@ END
      }
    }
 
-  if (1)                                                                        # Show finish
-   {my $steps = sprintf "%6d", $exec->totalInstructions + 1;                    # The extra step is to allow the tests to be analyzed by the test bench
-    push @c, <<END;                                                             # End of last sub sequence
-          finished = 1;
-        end
-      endcase
-      if (steps <= $steps) clock <= ~ clock;                                    // Must be non sequential to fire the next iteration
-      if ($traceExecution) begin
-        for(i = 0; i < $memoryPrintWidth; i = i + 1) \$write("%2d",   localMem[i]); \$display("");
-        for(i = 0; i < $memoryPrintWidth; i = i + 1) \$write("%2d",    heapMem[i]); \$display("");
-        for(i = 0; i < $memoryPrintWidth; i = i + 1) \$write("%2d", arraySizes[i]); \$display("");
-      end
-    end
+  push @c, <<END;                                                               # End of module
   end
+
 endmodule
 END
-   }
 
   $compile->code = join '', @c;
 
@@ -3840,7 +3846,7 @@ END
 // Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
 module fpga_tb();                                                               // Test fpga
-  reg reset;                                                                // Execute the next instruction
+  reg reset;                                                                    // Execute the next instruction
   reg finished;                                                                 // Goes high when the program has finished
   reg success;                                                                  // Goes high on finish if all the tests passed
 
