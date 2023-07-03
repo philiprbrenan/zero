@@ -3,7 +3,7 @@
 // Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
 //------------------------------------------------------------------------------
 module fpga                                                                     // Run test programs
- (input  wire run,                                                              // Run - clock at lest once to allow code to be loaded
+ (input  wire reset,                                                            // Reset - reset occurs when high - must be allowed to go for a run to occur
   output reg  finished,                                                         // Goes high when the program has finished
   output reg  success);                                                         // Goes high on finish if all the tests passed
 
@@ -40,57 +40,57 @@ module fpga                                                                     
   endtask
 
   always @(*) begin                                                             // Each instruction
-   if (run) begin                                                      // Initialize
-    ip             = 0;
-    clock          = 0;
-    steps          = 0;
-    finished       = 0;
-    success        = 0;
-    inMemPos       = 0;
-    outMemPos      = 0;
-    allocs         = 0;
-    freedArraysTop = 0;
-    if (0) begin                                                  // Clear memory
-      for(i = 0; i < NHeap;   i = i + 1)    heapMem[i] = 0;
-      for(i = 0; i < NLocal;  i = i + 1)   localMem[i] = 0;
-      for(i = 0; i < NArrays; i = i + 1) arraySizes[i] = 0;
+    if (reset) begin
+      ip             = 0;
+      clock          = 0;
+      steps          = 0;
+      finished       = 0;
+      success        = 0;
+      inMemPos       = 0;
+      outMemPos      = 0;
+      allocs         = 0;
+      freedArraysTop = 0;
+      if (0) begin                                                  // Clear memory
+        for(i = 0; i < NHeap;   i = i + 1)    heapMem[i] = 0;
+        for(i = 0; i < NLocal;  i = i + 1)   localMem[i] = 0;
+        for(i = 0; i < NArrays; i = i + 1) arraySizes[i] = 0;
+      end
     end
-  end
-  else begin
-    steps = steps + 1;
-    case(ip)
+    else begin
+      steps = steps + 1;
+      case(ip)
 
           0 :
-      begin                                                                     // add
+        begin                                                                   // add
 if (0) begin
   $display("AAAA %4d %4d add", steps, ip);
 end
               localMem[0] = 3 + 2;
               updateArrayLength(2, 0, 0);
               ip = 1;
-      end
+        end
 
           1 :
-      begin                                                                     // out
+        begin                                                                   // out
 if (0) begin
   $display("AAAA %4d %4d out", steps, ip);
 end
               outMem[outMemPos] = localMem[0];
               outMemPos = (outMemPos + 1) % NOut;
               ip = 2;
+        end
+        default: begin
+          success  = 1;
+          success  = success && outMem[0] == 5;
+          finished = 1;
+        end
+      endcase
+      if (steps <=      3) clock <= ~ clock;                                    // Must be non sequential to fire the next iteration
+      if (0) begin
+        for(i = 0; i < 200; i = i + 1) $write("%2d",   localMem[i]); $display("");
+        for(i = 0; i < 200; i = i + 1) $write("%2d",    heapMem[i]); $display("");
+        for(i = 0; i < 200; i = i + 1) $write("%2d", arraySizes[i]); $display("");
       end
-      default: begin
-        success  = 1;
-        success  = success && outMem[0] == 5;
-        finished = 1;
-      end
-    endcase
-    if (steps <=      3) clock <= ~ clock;                                      // Must be non sequential to fire the next iteration
-    if (0) begin
-      for(i = 0; i < 200; i = i + 1) $write("%2d",   localMem[i]); $display("");
-      for(i = 0; i < 200; i = i + 1) $write("%2d",    heapMem[i]); $display("");
-      for(i = 0; i < 200; i = i + 1) $write("%2d", arraySizes[i]); $display("");
     end
-  end
   end
 endmodule
