@@ -93,7 +93,7 @@ owf($timeFile, time);                                                           
 &run();                                                                         # Upload run configuration
 
 sub lowLevelTests                                                               # Low level tests to run
- { grep {m(readWrite)}
+ { grep {m(readWrite|memory)}
    map {s($home) ()r}
    searchDirectoryTreesForMatchingFiles($testsDir, qw(.sv));                    # Test these local files
  }
