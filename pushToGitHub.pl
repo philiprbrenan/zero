@@ -91,6 +91,8 @@ for my $s(@uploadFiles)                                                         
 owf($timeFile, time);                                                           # Save current time
 
 &run();                                                                         # Upload run configuration
+say STDERR "AAAA", dump searchDirectoryTreesForMatchingFiles($testsDir, qw(.sv));
+exit;
 
 sub lowLevelTests                                                               # Low level tests to run
  { grep {m(readWrite|memory)}
