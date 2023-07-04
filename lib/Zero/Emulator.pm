@@ -3294,9 +3294,9 @@ END
   my $gen =                                                                     # Code generation for each instruction
    {add=> sub                                                                   # Add
      {my ($i) = @_;                                                             # Instruction
-      confirmLhsRef($i, $i->source,  "source");
-      confirmLhsRef($i, $i->source2, "source2");
-      confirmLhsRef($i, $i->target,  "target");
+      #confirmLhsRef($i, $i->source,  "source");
+      #confirmLhsRef($i, $i->source2, "source2");
+      #confirmLhsRef($i, $i->target,  "target");
       my $A = $compile->deref($i->target)->Arena;
       my $z = $compile->deref($i->target)->targetLocationArea;
       my $a = $compile->deref($i->source )->Value;
