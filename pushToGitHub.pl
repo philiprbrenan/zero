@@ -92,6 +92,12 @@ owf($timeFile, time);                                                           
 
 &run();                                                                         # Upload run configuration
 
+sub lowLevelTests                                                               # Low level tests to run
+ { grep {m(memory)}
+   map {s($home) ()r}
+   searchDirectoryTreesForMatchingFiles($testsDir, qw(.sv));                    # Test these local files
+ }
+
 sub job                                                                         # Create a job that runs on Ubuntu
  {my ($job) = @_;                                                               # Job name
    <<"END";
@@ -264,12 +270,6 @@ sub highLevelTests{<<END}                                                       
     - name: TestBTree - last as it is longest
       run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/testBTree.pl
 END
-
-sub lowLevelTests                                                               # Low level tests to run
- { #grep {m(memory)}
-   map {s($home) ()r}
-   searchDirectoryTreesForMatchingFiles($testsDir, qw(.sv));                    # Test these local files
- }
 
 sub fpgaLowLevelTestsVerilog                                                    # Low level tests
  {my @tests = lowLevelTests;
