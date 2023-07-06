@@ -143,12 +143,10 @@ if (1)                                                                          
 
   quickSort $a, "array";                                                        # Sort
 
-  ArrayDump $a;
+  ArrayOut $a;
 
-  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);             # Execute assembler program
-  is_deeply $e->out, <<END;
-[1 .. 8]
-END
+  my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
+  is_deeply $e->outLines, [1 .. 8];
 
   is_deeply $e->count,  298;                                                    # Instructions executed
   is_deeply $e->timeParallel,    278;
@@ -180,13 +178,11 @@ if (1)                                                                          
 
   quickSort $a, "array";                                                        # Quick sort
 
-  ArrayDump $a;
+  ArrayOut $a;
 
-  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);             # Execute assembler program
+  my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
 
-  is_deeply $e->out, <<END;
-[1 .. 32]
-END
+  is_deeply $e->outLines, [1 .. 32];
   is_deeply $e->count, 1471;                                                    # Approximately 5 times bigger
   is_deeply $e->timeParallel,    1289;
   is_deeply $e->timeSequential,  1471;
@@ -207,13 +203,11 @@ if (1)                                                                          
 
   quickSort $a, "array";                                                        # Quick sort
 
-  ArrayDump $a;
+  ArrayOut $a;
 
-  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);             # Execute assembler program
+  my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
   my $N = @a;
-  is_deeply $e->out, <<END;
-[1 .. $N]
-END
+  is_deeply $e->outLines, [1 .. $N];
   is_deeply $e->count, 9066;
   is_deeply $e->timeParallel,    7616;
   is_deeply $e->timeSequential,  9066;
