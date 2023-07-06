@@ -91,8 +91,6 @@ for my $s(@uploadFiles)                                                         
 owf($timeFile, time);                                                           # Save current time
 
 &run();                                                                         # Upload run configuration
-say STDERR "AAAA", dump searchDirectoryTreesForMatchingFiles($testsDir, qw(.sv));
-exit;
 
 sub lowLevelTests                                                               # Low level tests to run
  { grep {m(readWrite|memory)}
@@ -187,51 +185,12 @@ on:
 jobs:
 END
 
-  $y .= <<END;                                                                  # High level tests using Perl on Ubuntu
-
-    - name: Ubuntu update
-      run:  sudo apt update
-
-    - name: Verilog
-      run:  sudo apt -y install iverilog
-
-    - name: Verilog Version
-      run:  iverilog -V
-
-    - name: Emulator
-      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib lib/Zero/Emulator.pm
-
-    - name: BubbleSort
-      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/bubbleSort.pl
-
-    - name: InsertionSort
-      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/insertionSort.pl
-
-    - name: QuickSort
-      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/quickSort.pl
-
-    - name: QuickSort Parallel
-      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/quickSortParallel.pl
-
-    - name: SelectionSort
-      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/selectionSort.pl
-
-    - name: TestEmulator
-      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/testEmulator.pl
-
-    - name: BTree
-      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib lib/Zero/BTree.pm
-
-    - name: TestBTree - last as it is longest
-      run:  perl -I\$GITHUB_WORKSPACE/dtt/lib examples/testBTree.pl
-
-END
-
-  $y .= job("fpga");                                                            # Low level tests using verilog abnd Yosys for a real device
+  $y .= highLevelTests;                                                         # High level tests using Perl on Ubuntu
+  $y .= job("fpga");                                                            # Low level tests using verilog and Yosys for a real device
   $y .= &fpgaLowLevelTestsVerilog;                                              # Verilog
-  $y .= &fpgaLowLevelTestsYosys if $lowLevel;                                   # Yosys
+  $y .= &fpgaLowLevelTestsYosys if $lowLevel;                                   # Yosys jobs
 
-  my $f = writeFileUsingSavedToken $user, $repo, $wf, $y;                       # upload workflwo
+  my $f = writeFileUsingSavedToken $user, $repo, $wf, $y;                       # Upload workflow
   lll "Ubuntu work flow for $repo written to: $f";
  }
 
