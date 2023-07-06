@@ -98,6 +98,33 @@ sub lowLevelTests                                                               
    searchDirectoryTreesForMatchingFiles($testsDir, qw(.sv));                    # Test these local files
  }
 
+sub run                                                                         # Work flow on github
+ {my $d = dateTimeStamp;
+
+  my $y = <<"END".job("test");
+# Test $d
+
+name: Test
+
+on:
+  push:
+    paths:
+      - '**.pm'
+      - '**pushToGitHub.pl'
+      - '**.yml'
+
+jobs:
+END
+
+  $y .= &highLevelTests;                                                         # High level tests using Perl on Ubuntu
+  $y .= &job("fpga");                                                            # Low level tests using verilog and Yosys for a real device
+  $y .= &fpgaLowLevelTestsVerilog;                                              # Verilog
+  $y .= &fpgaLowLevelTestsYosys if $lowLevel;                                   # Yosys jobs
+
+  my $f = writeFileUsingSavedToken $user, $repo, $wf, $y;                       # Upload workflow
+  lll "Ubuntu work flow for $repo written to: $f";
+ }
+
 sub job                                                                         # Create a job that runs on Ubuntu
  {my ($job) = @_;                                                               # Job name
    <<"END";
@@ -109,13 +136,6 @@ sub job                                                                         
     - uses: actions/checkout\@v3
       with:
         ref: 'main'
-
-    - name: Memory
-      run: |
-        free -h
-        df   -h
-        # Top 100 files might liberate another 8G    sudo find / -type f -exec du -h {} + | sort -rh | head -n 100
-        du -h --max-depth=1 . | sort -hr
 
     - uses: actions/checkout\@v3
       with:
@@ -166,33 +186,6 @@ sub yosys {<<END}                                                               
         sudo swapon           /mnt/swapfile2
         free -h
 END
-
-sub run                                                                         # Work flow on github
- {my $d = dateTimeStamp;
-
-  my $y = <<"END".job("test");
-# Test $d
-
-name: Test
-
-on:
-  push:
-    paths:
-      - '**.pm'
-      - '**pushToGitHub.pl'
-      - '**.yml'
-
-jobs:
-END
-
-  $y .= highLevelTests;                                                         # High level tests using Perl on Ubuntu
-  $y .= job("fpga");                                                            # Low level tests using verilog and Yosys for a real device
-  $y .= &fpgaLowLevelTestsVerilog;                                              # Verilog
-  $y .= &fpgaLowLevelTestsYosys if $lowLevel;                                   # Yosys jobs
-
-  my $f = writeFileUsingSavedToken $user, $repo, $wf, $y;                       # Upload workflow
-  lll "Ubuntu work flow for $repo written to: $f";
- }
 
 sub highLevelTests{<<END}                                                       # High level tests using Perl on Ubuntu
     - name: Ubuntu update
