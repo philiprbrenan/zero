@@ -21,7 +21,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Time::HiRes qw(time);
-eval "use Test::More tests=>209" unless caller;
+eval "use Test::More tests=>210" unless caller;
 
 makeDieConfess;
 
