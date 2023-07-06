@@ -51,7 +51,7 @@ if (1)                                                                          
     Out $k;
    } $t;
 
-  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);             # Execute assembler program
+  my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
 
   is_deeply $e->outLines, [0..$N-1];                                            # Check output
 
@@ -99,7 +99,7 @@ if (1)                                                                          
     Out $k;                                                                     # Print
    } $t;
 
-  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);             # Assemble and execute the program
+  my $e = Execute(suppressOutput=>1);                                           # Assemble and execute the program
   is_deeply $e->outLines, [1..$N];                                              # Check output
 }
 
