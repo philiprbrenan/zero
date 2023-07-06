@@ -1,4 +1,4 @@
-# Test 2023-07-04 at 23:13:17
+# Test 2023-07-06 at 05:51:03
 
 name: Test
 
@@ -33,44 +33,7 @@ jobs:
 
     - name: Cpan
       run:  sudo cpan install -T Data::Dump
-
-    - name: Ubuntu update
-      run:  sudo apt update
-
-    - name: Verilog
-      run:  sudo apt -y install iverilog
-
-    - name: Verilog Version
-      run:  iverilog -V
-
-    - name: Emulator
-      run:  perl -I$GITHUB_WORKSPACE/dtt/lib lib/Zero/Emulator.pm
-
-    - name: BubbleSort
-      run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/bubbleSort.pl
-
-    - name: InsertionSort
-      run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/insertionSort.pl
-
-    - name: QuickSort
-      run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/quickSort.pl
-
-    - name: QuickSort Parallel
-      run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/quickSortParallel.pl
-
-    - name: SelectionSort
-      run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/selectionSort.pl
-
-    - name: TestEmulator
-      run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/testEmulator.pl
-
-    - name: BTree
-      run:  perl -I$GITHUB_WORKSPACE/dtt/lib lib/Zero/BTree.pm
-
-    - name: TestBTree - last as it is longest
-      run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/testBTree.pl
-
-
+highLevelTests
   fpga:
     runs-on: ubuntu-latest
 
