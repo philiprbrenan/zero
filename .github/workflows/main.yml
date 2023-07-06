@@ -1,4 +1,4 @@
-# Test 2023-07-06 at 05:51:03
+# Test 2023-07-06 at 05:57:35
 
 name: Test
 
@@ -19,13 +19,6 @@ jobs:
       with:
         ref: 'main'
 
-    - name: Memory
-      run: |
-        free -h
-        df   -h
-        # Top 100 files might liberate another 8G    sudo find / -type f -exec du -h {} + | sort -rh | head -n 100
-        du -h --max-depth=1 . | sort -hr
-
     - uses: actions/checkout@v3
       with:
         repository: philiprbrenan/DataTableText
@@ -33,7 +26,42 @@ jobs:
 
     - name: Cpan
       run:  sudo cpan install -T Data::Dump
-highLevelTests
+    - name: Ubuntu update
+      run:  sudo apt update
+
+    - name: Verilog
+      run:  sudo apt -y install iverilog
+
+    - name: Verilog Version
+      run:  iverilog -V
+
+    - name: Emulator
+      run:  perl -I$GITHUB_WORKSPACE/dtt/lib lib/Zero/Emulator.pm
+
+    - name: BubbleSort
+      run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/bubbleSort.pl
+
+    - name: InsertionSort
+      run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/insertionSort.pl
+
+    - name: QuickSort
+      run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/quickSort.pl
+
+    - name: QuickSort Parallel
+      run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/quickSortParallel.pl
+
+    - name: SelectionSort
+      run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/selectionSort.pl
+
+    - name: TestEmulator
+      run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/testEmulator.pl
+
+    - name: BTree
+      run:  perl -I$GITHUB_WORKSPACE/dtt/lib lib/Zero/BTree.pm
+
+    - name: TestBTree - last as it is longest
+      run:  perl -I$GITHUB_WORKSPACE/dtt/lib examples/testBTree.pl
+
   fpga:
     runs-on: ubuntu-latest
 
@@ -41,13 +69,6 @@ highLevelTests
     - uses: actions/checkout@v3
       with:
         ref: 'main'
-
-    - name: Memory
-      run: |
-        free -h
-        df   -h
-        # Top 100 files might liberate another 8G    sudo find / -type f -exec du -h {} + | sort -rh | head -n 100
-        du -h --max-depth=1 . | sort -hr
 
     - uses: actions/checkout@v3
       with:
@@ -77,13 +98,6 @@ highLevelTests
     - uses: actions/checkout@v3
       with:
         ref: 'main'
-
-    - name: Memory
-      run: |
-        free -h
-        df   -h
-        # Top 100 files might liberate another 8G    sudo find / -type f -exec du -h {} + | sort -rh | head -n 100
-        du -h --max-depth=1 . | sort -hr
 
     - uses: actions/checkout@v3
       with:
