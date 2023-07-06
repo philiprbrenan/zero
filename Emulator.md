@@ -428,7 +428,7 @@ Write an array to out
       ArrayOut $a;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1, in => [9,88,777]);
-      is_deeply $e->out, "9 88 777";
+      is_deeply $e->outLines, [9, 88, 777];
     
     # $e->compileToVerilog("ArrayOut") if $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
