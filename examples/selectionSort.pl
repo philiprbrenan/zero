@@ -42,13 +42,11 @@ if (1)                                                                          
 
   selectionSort($a, "array");                                                   # Sort
 
-  ArrayDump $a;
+  ArrayOut $a;
 
-  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);             # Execute assembler program
+  my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
 
-  is_deeply $e->out, <<END;
-[1 .. 8]
-END
+  is_deeply $e->outLines, [1 .. 8];
 
   is_deeply $e->count,           285;                                           # Instructions executed
   is_deeply $e->timeParallel,    270;
@@ -75,13 +73,11 @@ if (1)                                                                          
 
   selectionSort($a, "array");
 
-  ArrayDump $a;
+  ArrayOut $a;
 
-  my $e = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);             # Execute assembler program
+  my $e = Execute(suppressOutput=>1);                                           # Execute assembler program
 
-  is_deeply $e->out, <<END;
-[1 .. 32]
-END
+  is_deeply $e->outLines, [1 .. 32];
   is_deeply $e->count, 4356;                                                    # Approximately 4*4== 16 times bigger
   is_deeply $e->timeParallel,    3860;
   is_deeply $e->timeSequential,  4356;
