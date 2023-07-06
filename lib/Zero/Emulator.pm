@@ -5351,7 +5351,7 @@ if (1)                                                                          
    };
   ArrayOut $a;
   my $e = Execute(suppressOutput=>1, in => [9,88,777]);
-  is_deeply $e->out, "9 88 777";
+  is_deeply $e->outLines, [9, 88, 777];
 # $e->compileToVerilog("ArrayOut") if $debug;
  }
 
