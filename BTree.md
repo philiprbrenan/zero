@@ -171,7 +171,7 @@ Create a variable referring to a new tree descriptor.
     0
     END
       is_deeply $e->heap(0), [ 0, 0, 3, 0];
-      $e->generateVerilogMachineCode("BTree/basic/1");
+      $e->compileToVerilog("BTree/basic/1");
      }
     
     if (1)                                                                          
@@ -198,7 +198,7 @@ Create a variable referring to a new tree descriptor.
     5
     END
       is_deeply $e->heap(0), [ 3, 5, 3, 1];
-      $e->generateVerilogMachineCode("BTree/basic/2");
+      $e->compileToVerilog("BTree/basic/2");
      }
     
     if (1)                                                                             
@@ -227,7 +227,7 @@ Create a variable referring to a new tree descriptor.
     
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, "";                                                        # No asserts
-      $e->generateVerilogMachineCode("BTree/insert/66");
+      $e->compileToVerilog("BTree/insert/66");
      }
     
 
@@ -263,7 +263,7 @@ Get the number of keys in the tree..
       my $e = Execute(suppressOutput=>1, stringMemory=>1, in=>[@r]);
       is_deeply $e->outLines, [1..@r];                                              # Expected sequence
       #say STDERR printTreeKeys($e);
-      $e->generateVerilogMachineCode("BTree/in/2");
+      $e->compileToVerilog("BTree/in/2");
      }
     
     if (1)                                                                                
@@ -394,7 +394,7 @@ Get the number of keys in the tree..
             6       12    16             26          34    38          46       52             62             72          80    84             94    98            108         116   120   124            134   138               150               162            172            182            192            202         210
       2  4     8 10    14    18    22 24    28    32    36    40    44    48 50    54    58 60    64    68 70    74    78    82    86 88    92    96   100102   106   110   114   118   122   126128   132   136   140142   146148   152154   158160   164   168170   174176   180   184186   190   194   198200   204   208   212214
     END
-      $e->generateVerilogMachineCode("BTree/in/3");
+      $e->compileToVerilog("BTree/in/3");
      }
     
 
@@ -439,7 +439,7 @@ Get comparison from find result.
     
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, "";                                                        # No asserts
-      $e->generateVerilogMachineCode("BTree/insert/66");
+      $e->compileToVerilog("BTree/insert/66");
      }
     
 
@@ -475,7 +475,7 @@ Get data field from find results.
       my $e = Execute(suppressOutput=>1, stringMemory=>1, in=>[@r]);
       is_deeply $e->outLines, [1..@r];                                              # Expected sequence
       #say STDERR printTreeKeys($e);
-      $e->generateVerilogMachineCode("BTree/in/2");
+      $e->compileToVerilog("BTree/in/2");
      }
     
     if (1)                                                                                
@@ -606,7 +606,7 @@ Get data field from find results.
             6       12    16             26          34    38          46       52             62             72          80    84             94    98            108         116   120   124            134   138               150               162            172            182            192            202         210
       2  4     8 10    14    18    22 24    28    32    36    40    44    48 50    54    58 60    64    68 70    74    78    82    86 88    92    96   100102   106   110   114   118   122   126128   132   136   140142   146148   152154   158160   164   168170   174176   180   184186   190   194   198200   204   208   212214
     END
-      $e->generateVerilogMachineCode("BTree/in/3");
+      $e->compileToVerilog("BTree/in/3");
      }
     
 
@@ -644,7 +644,7 @@ Get key field from find results.
       my $e = Execute(suppressOutput=>1, stringMemory=>1, in=>[@r]);
       is_deeply $e->outLines, [1..@r];                                              # Expected sequence
       #say STDERR printTreeKeys($e);
-      $e->generateVerilogMachineCode("BTree/in/2");
+      $e->compileToVerilog("BTree/in/2");
      }
     
     if (1)                                                                                
@@ -775,7 +775,7 @@ Get key field from find results.
             6       12    16             26          34    38          46       52             62             72          80    84             94    98            108         116   120   124            134   138               150               162            172            182            192            202         210
       2  4     8 10    14    18    22 24    28    32    36    40    44    48 50    54    58 60    64    68 70    74    78    82    86 88    92    96   100102   106   110   114   118   122   126128   132   136   140142   146148   152154   158160   164   168170   174176   180   184186   190   194   198200   204   208   212214
     END
-      $e->generateVerilogMachineCode("BTree/in/3");
+      $e->compileToVerilog("BTree/in/3");
      }
     
 
@@ -822,7 +822,7 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
     
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, "";                                                        # No asserts
-      $e->generateVerilogMachineCode("BTree/insert/66");
+      $e->compileToVerilog("BTree/insert/66");
      }
     
     if (1)                                                                                
@@ -850,7 +850,7 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
       my $e = Execute(suppressOutput=>1, stringMemory=>1, in=>[@r]);
       is_deeply $e->outLines, [1..@r];                                              # Expected sequence
       #say STDERR printTreeKeys($e);
-      $e->generateVerilogMachineCode("BTree/in/2");
+      $e->compileToVerilog("BTree/in/2");
      }
     
     if (1)                                                                                
@@ -985,7 +985,7 @@ Find a key in a tree returning a [FindResult](https://metacpan.org/pod/FindResul
             6       12    16             26          34    38          46       52             62             72          80    84             94    98            108         116   120   124            134   138               150               162            172            182            192            202         210
       2  4     8 10    14    18    22 24    28    32    36    40    44    48 50    54    58 60    64    68 70    74    78    82    86 88    92    96   100102   106   110   114   118   122   126128   132   136   140142   146148   152154   158160   164   168170   174176   180   184186   190   194   198200   204   208   212214
     END
-      $e->generateVerilogMachineCode("BTree/in/3");
+      $e->compileToVerilog("BTree/in/3");
      }
     
 
@@ -1027,7 +1027,7 @@ Insert a key and its associated data into a tree.
       is_deeply $e->heap(2), bless([1, 1, 0, 0, 3, 4, 0], "Node");
       is_deeply $e->heap(3), bless([1], "Keys");
       is_deeply $e->heap(4), bless([11], "Data");
-      $e->generateVerilogMachineCode("BTree/insert/01");
+      $e->compileToVerilog("BTree/insert/01");
      }
     
     if (1)                                                                          
@@ -1045,7 +1045,7 @@ Insert a key and its associated data into a tree.
       is_deeply $e->heap(2), bless([2, 1, 0, 0, 3, 4, 0], "Node");
       is_deeply $e->heap(3), bless([1, 2], "Keys");
       is_deeply $e->heap(4), bless([11, 22], "Data");
-      $e->generateVerilogMachineCode("BTree/insert/02");
+      $e->compileToVerilog("BTree/insert/02");
      }
     
     if (1)                                                                          
@@ -1060,7 +1060,7 @@ Insert a key and its associated data into a tree.
       is_deeply $e->heap(2), bless([3, 1, 0, 0, 3, 4, 0], "Node");
       is_deeply $e->heap(3), bless([1, 2, 3], "Keys");
       is_deeply $e->heap(4), bless([11, 22, 33], "Data");
-      $e->generateVerilogMachineCode("BTree/insert/03");
+      $e->compileToVerilog("BTree/insert/03");
      }
     
     if (1)                                                                          
@@ -1082,7 +1082,7 @@ Insert a key and its associated data into a tree.
       is_deeply $e->heap(9 ), bless([3, 4], "Keys");
       is_deeply $e->heap(10), bless([33, 44], "Data");
       is_deeply $e->heap(11), bless([5, 8], "Down");
-      $e->generateVerilogMachineCode("BTree/insert/04");
+      $e->compileToVerilog("BTree/insert/04");
      }
     
     if (1)                                                                          
@@ -1108,7 +1108,7 @@ Insert a key and its associated data into a tree.
       is_deeply $e->heap(12), bless([1, 4, 2, 0, 13, 14, 0], "Node");
       is_deeply $e->heap(13), bless([5], "Keys");
       is_deeply $e->heap(14), bless([55], "Data");
-      $e->generateVerilogMachineCode("BTree/insert/05");
+      $e->compileToVerilog("BTree/insert/05");
      }
     
     if (1)                                                                          
@@ -1133,7 +1133,7 @@ Insert a key and its associated data into a tree.
       is_deeply $e->heap(12), bless([2, 4, 2, 0, 13, 14, 0], "Node");
       is_deeply $e->heap(13), bless([5, 6], "Keys");
       is_deeply $e->heap(14), bless([55, 66], "Data");
-      $e->generateVerilogMachineCode("BTree/insert/06");
+      $e->compileToVerilog("BTree/insert/06");
      }
     
     if (1)                                                                          
@@ -1202,7 +1202,7 @@ Insert a key and its associated data into a tree.
     
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->out, "";                                                        # No asserts
-      $e->generateVerilogMachineCode("BTree/insert/66");
+      $e->compileToVerilog("BTree/insert/66");
      }
     
 
@@ -1245,7 +1245,7 @@ Iterate over a tree.
       my $e = Execute(suppressOutput=>1, stringMemory=>1, in=>[@r]);
       is_deeply $e->outLines, [1..@r];                                              # Expected sequence
       #say STDERR printTreeKeys($e);
-      $e->generateVerilogMachineCode("BTree/in/2");
+      $e->compileToVerilog("BTree/in/2");
      }
     
     if (1)                                                                                
@@ -1380,7 +1380,7 @@ Iterate over a tree.
             6       12    16             26          34    38          46       52             62             72          80    84             94    98            108         116   120   124            134   138               150               162            172            182            192            202         210
       2  4     8 10    14    18    22 24    28    32    36    40    44    48 50    54    58 60    64    68 70    74    78    82    86 88    92    96   100102   106   110   114   118   122   126128   132   136   140142   146148   152154   158160   164   168170   174176   180   184186   190   194   198200   204   208   212214
     END
-      $e->generateVerilogMachineCode("BTree/in/3");
+      $e->compileToVerilog("BTree/in/3");
      }
     
 
@@ -1422,7 +1422,7 @@ Print the keys held in a tree.
     
       #say STDERR printTreeKeys($e);  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      $e->generateVerilogMachineCode("BTree/in/2");
+      $e->compileToVerilog("BTree/in/2");
      }
     
     if (1)                                                                                
@@ -1555,7 +1555,7 @@ Print the keys held in a tree.
             6       12    16             26          34    38          46       52             62             72          80    84             94    98            108         116   120   124            134   138               150               162            172            182            192            202         210
       2  4     8 10    14    18    22 24    28    32    36    40    44    48 50    54    58 60    64    68 70    74    78    82    86 88    92    96   100102   106   110   114   118   122   126128   132   136   140142   146148   152154   158160   164   168170   174176   180   184186   190   194   198200   204   208   212214
     END
-      $e->generateVerilogMachineCode("BTree/in/3");
+      $e->compileToVerilog("BTree/in/3");
      }
     
 
@@ -1591,7 +1591,7 @@ Print the data held in a tree.
       my $e = Execute(suppressOutput=>1, stringMemory=>1, in=>[@r]);
       is_deeply $e->outLines, [1..@r];                                              # Expected sequence
       #say STDERR printTreeKeys($e);
-      $e->generateVerilogMachineCode("BTree/in/2");
+      $e->compileToVerilog("BTree/in/2");
      }
     
     if (1)                                                                                
@@ -1724,7 +1724,7 @@ Print the data held in a tree.
             6       12    16             26          34    38          46       52             62             72          80    84             94    98            108         116   120   124            134   138               150               162            172            182            192            202         210
       2  4     8 10    14    18    22 24    28    32    36    40    44    48 50    54    58 60    64    68 70    74    78    82    86 88    92    96   100102   106   110   114   118   122   126128   132   136   140142   146148   152154   158160   164   168170   174176   180   184186   190   194   198200   204   208   212214
     END
-      $e->generateVerilogMachineCode("BTree/in/3");
+      $e->compileToVerilog("BTree/in/3");
      }
     
 
@@ -1777,7 +1777,7 @@ Start a tree
        };
       my $e = Execute(suppressOutput=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
       is_deeply $e->outLines, [0, 1, 22, 0, 1, 33];
-      $e->generateVerilogMachineCode("BTree/in/4");
+      $e->compileToVerilog("BTree/in/4");
      }
     
 
@@ -1826,7 +1826,7 @@ Insert into a tree.  Must be followed by the key and the associated data
        };
       my $e = Execute(suppressOutput=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
       is_deeply $e->outLines, [0, 1, 22, 0, 1, 33];
-      $e->generateVerilogMachineCode("BTree/in/4");
+      $e->compileToVerilog("BTree/in/4");
      }
     
 
@@ -1875,7 +1875,7 @@ Find in a tree. Must be followed by the key to find
        };
       my $e = Execute(suppressOutput=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
       is_deeply $e->outLines, [0, 1, 22, 0, 1, 33];
-      $e->generateVerilogMachineCode("BTree/in/4");
+      $e->compileToVerilog("BTree/in/4");
      }
     
 
@@ -1922,7 +1922,7 @@ Run test programs
        };
       my $e = Execute(suppressOutput=>1, in => [0, 1, 3, 33, 1, 1, 11, 1, 2, 22, 1, 4, 44, 2, 5, 2, 2, 2, 6, 2, 3]);
       is_deeply $e->outLines, [0, 1, 22, 0, 1, 33];
-      $e->generateVerilogMachineCode("BTree/in/4");
+      $e->compileToVerilog("BTree/in/4");
      }
     
 
