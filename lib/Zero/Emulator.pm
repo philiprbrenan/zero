@@ -21,7 +21,7 @@ use Carp qw(confess);
 use Data::Dump qw(dump);
 use Data::Table::Text qw(:all);
 use Time::HiRes qw(time);
-eval "use Test::More tests=>403" unless caller;
+eval "use Test::More tests=>209" unless caller;
 
 makeDieConfess;
 
@@ -34,7 +34,7 @@ our $memoryTechnique;                                                           
 sub ExecutionEnvironment(%)                                                     # Execution environment for a block of code.
  {my (%options) = @_;                                                           # Execution options
 
-  my $errors = setDifference(\%options, q(checkArrayNames code doubleWrite in maximumArraySize NotRead pointlessAssign sequentialTime stopOnError stringMemory suppressOutput trace));
+  my $errors = setDifference(\%options, q(checkArrayNames code doubleWrite in maximumArraySize NotRead pointlessAssign sequentialTime stopOnError stringMemory suppressOutput trace lowLevel));
   keys %$errors and confess "Invalid options: ".dump($errors);
 
   my $exec=                 genHash(q(Zero::Emulator),                          # Emulator execution environment
@@ -129,8 +129,8 @@ my sub stackFrame(%)                                                            
   );
  }
 
-sub Zero::Emulator::Assembly::instruction($%)                                   #P Create a new instruction.
- {my ($block, %options) = @_;                                                   # Block of code descriptor, options
+sub Instruction(%)                                                              #P Create a new instruction.
+ {my (%options) = @_;                                                           # Options
 
   my ($package, $fileName, $line) = caller($options{level} // 1);
 
@@ -144,22 +144,29 @@ sub Zero::Emulator::Assembly::instruction($%)                                   
     \@s
    };
 
-  if ($options{action} !~ m(\Avariable\Z)i)                                     # Non variable
-   {push $block->code->@*, my $i = genHash(q(Zero::Emulator::Assembly::Instruction),# Instruction details
-      action=>    $options{action },                                            # Instruction name
-      number=>    $options{number },                                            # Instruction sequence number
-      source=>    $options{source },                                            # Source memory address
-      source2=>   $options{source2},                                            # Secondary source memory address
-      target=>    $options{target },                                            # Target memory address
-      jump=>      $options{jump   },                                            # Jump target
-      line=>      $line,                                                        # Line in source file at which this instruction was encoded
-      file=>      fne $fileName,                                                # Source file in which instruction was encoded
-      context=>   stackTrace(),                                                 # The call context in which this instruction was created
-      executed=>  0,                                                            # The number of times this instruction was executed
-      step=>      0,                                                            # The last time (in steps from the start) that this instruction was executed
-      entry=>     0,                                                            # An entry point into the code
-    );
-    return $i;
+  genHash(q(Zero::Emulator::Assembly::Instruction),                             # Instruction details
+    action=>    $options{action },                                              # Instruction name
+    number=>    $options{number },                                              # Instruction sequence number
+    source=>    $options{source },                                              # Source memory address
+    source2=>   $options{source2},                                              # Secondary source memory address
+    target=>    $options{target },                                              # Target memory address
+    jump=>      $options{jump   },                                              # Jump target
+    line=>      $line,                                                          # Line in source file at which this instruction was encoded
+    file=>      fne $fileName,                                                  # Source file in which instruction was encoded
+    context=>   stackTrace(),                                                   # The call context in which this instruction was created
+    executed=>  0,                                                              # The number of times this instruction was executed
+    step=>      0,                                                              # The last time (in steps from the start) that this instruction was executed
+    entry=>     0,                                                              # An entry point into the code
+  );
+ }
+
+sub Zero::Emulator::Assembly::instruction($%)                                   #P Create a new instruction and add it to the specified assembly
+ {my ($block, %options) = @_;                                                   # Block of code descriptor, options
+
+  if ($options{action} !~ m(\Avariable\Z)i)                                     # Non variable instruction - variable instructions create data not code
+   {my $i = Instruction(%options);                                              # Instruction
+    push $block->code->@*, $i;                                                  # Add to assembly
+    return $i;                                                                  # Return new instruction
    }
  }
 
@@ -376,7 +383,7 @@ my sub Reference($$$$$)                                                         
  }
 
 sub Zero::Emulator::Assembly::Reference($$$)                                    # Record a reference to a left or right address.
- {my ($code, $r, $operand) = @_;                                                # Code block, reference, type of refence: 0-Target 1-Source 2-Source2
+ {my ($code, $r, $operand) = @_;                                                # Code block, reference, type of reference: 0-Target 1-Source 2-Source2
   @_ == 3 or confess "Three parameters";
   ref($r) and ref($r) !~ m(\A(array|scalar|ref)\Z)i and confess "Scalar or reference required, not: ".dump($r);
   my $arena = ref($r) =~ m(\Aarray\Z)i ? arenaHeap : arenaLocal;                # Local variables are variables that are not on the heap
@@ -384,12 +391,12 @@ sub Zero::Emulator::Assembly::Reference($$$)                                    
   if (ref($r) =~ m(array)i)                                                     # Reference represented as [area, address, name, delta]
    {my ($area, $Address, $name, $delta) = @$r;                                  # Delta is oddly useful, as illustrated by examples/*Sort, in that it enables us to avoid adding or subtracting one with a separate instruction that does not achieve very much in one clock but that which, is otherwise necessary.
     defined($area) and !defined($name) and confess "Name required for address specification: in [Area, address, name]";
-    my $address = $operand == 0 && isScalar($Address) ? \$Address : $Address;
+    my $address = isScalar($Address) ? \$Address : $Address;                    # A heap array reference can never be a constant
     return Reference($arena, $area, $address,
       $code->ArrayNameToNumber($name), $delta//0)
    }
   else                                                                          # Reference represented as an address
-   {my $R = $operand == 0 && isScalar($r) ? \$r : $r;
+   {my $R = $operand == 0 && isScalar($r) ? \$r : $r;                           # A non heap item can be a constant depending if it is on the right hand side
     return Reference($arena, undef, $R, $code->ArrayNameToNumber('stackArea'),0);
    }
  }
@@ -400,6 +407,38 @@ sub Zero::Emulator::Procedure::call($)                                          
   Zero::Emulator::Call($procedure->target);
  }
 
+sub Zero::Emulator::Assembly::lowLevelReplaceSource($$$)                        #P Convert a memory read from a source heap array into a move operation so that we can use a separate heap memory on the fpga. The instruction under consideration is at the top of the supplied instruction list. Add the move instruction and modify the original instruction if the source field can be replaced
+ {my ($assembly, $source, $block) = @_;                                         # Assembly options, instruction, instructions
+  return unless my $i = $$block[-1];
+  if (my $s = $$i{$source})                                                     # Source field to check
+   {if (ref($s) =~ m(Array) and $s->arena == arenaHeap)                         # Heap is source so replace
+     {pop @$block;
+      my $v = $assembly->variables->registers;                                  # Intermediate local source copy of heap
+      my $m = Instruction(action=>"mov", target=>$v, source=>$$i{$source});     # Move instruction
+      $$i{$source} = $assembly->Reference($v, 1);                               # Update original instruction witrh new source
+      push @$block, $m, $i;                                                     # New instruction sequence
+     }
+   }
+ }
+
+sub Zero::Emulator::Assembly::lowLevel($%)                                      #P Convert all heap memory operations into  mov's so that we can use a separate heap memory on the fpga
+ {my ($assembly, %options) = @_;                                                # Code block, assembly options
+
+  my $action = {add=>1};
+
+  my @l;                                                                        # The equivalent low level instruction sequence
+  my $code = $assembly->code;                                                   # The code to be assembled
+  for my $c(keys @$code)                                                        # Labels
+   {my $i = $$code[$c];
+    push @l, $i;
+    if ($$action{$i->action})                                                   # Replace heap references in this instruction
+     {$assembly->lowLevelReplaceSource(q(source),  \@l);
+      $assembly->lowLevelReplaceSource(q(source2), \@l);
+     }
+   }
+  $assembly->code = [@l];
+ }
+
 sub Zero::Emulator::Assembly::assemble($%)                                      #P Assemble a block of code to prepare it for execution.  This modifies the jump targets and so once assembled we cannot assembled again.
  {my ($Block, %options) = @_;                                                   # Code block, assembly options
 
@@ -408,6 +447,10 @@ sub Zero::Emulator::Assembly::assemble($%)                                      
 
   my %labels;                                                                   # Load labels
   my $stackFrame = AreaStructure("Stack");                                      # The current stack frame we are creating variables in
+
+  if ($options{lowLevel})                                                       # Convert all heap memory operations into  mov's so that we can use a separate heap memory on the fpga
+   {$Block->lowLevel(%options);
+   }
 
   for my $c(keys @$code)                                                        # Labels
    {my $i = $$code[$c];
@@ -989,7 +1032,7 @@ sub rwWrite($$$$)                                                               
      {my $Q = currentInstruction $exec;
       my $p = contextString($exec, $P, "Previous write");
       my $q = contextString($exec, $Q, "Current  write");
-      $exec->doubleWrite->{$p}{$q}++;
+      $exec->doubleWrite->{$p}{$q}++;                                           # Writing the same thing into memory again - pointless
      }
    }
   $exec->rw->[$arena][$area][$address] = currentInstruction $exec;
@@ -1414,7 +1457,7 @@ sub analyzeExecutionResults($%)                                                 
 sub Zero::Emulator::Assembly::execute($%)                                       #P Execute a block of code.
  {my ($block, %options) = @_;                                                   # Block of code, execution options
 
-  $block->assemble if $block;                                                   # Assemble unless we just want the instructions
+  $block->assemble(%options) if $block;                                         # Assemble unless we just want the instructions
 
   my $exec = ExecutionEnvironment(code=>$block, %options);                      # Create the execution environment
 
@@ -2052,15 +2095,6 @@ my sub nSource()                                                                
   (q(source), $r)
  }
 
-my sub xxSource($)                                                              # Record a source argument that cannot be a constant
- {my ($s) = @_;                                                                 # Source expression
-  if (ref($s) =~ m(\Aarray\Z)i && isScalar($$s[1]) or isScalar($s))
-   {confess "Constant not allowed for source operand of this instruction: "
-    .dump($s);
-   }
-  (q(source), $assembly->Reference($s, 1))
- }
-
 my sub xSource2($)                                                              # Record a source argument
  {my ($s) = @_;                                                                 # Source expression
   (q(source2), $assembly->Reference($s, 2))
@@ -2568,7 +2602,7 @@ sub Mov($;$) {                                                                  
 sub MoveLong($$$)                                                               #i Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand.
  {my ($target, $source, $source2) = @_;                                         # Target of move, source of move, length of move
   $assembly->instruction(action=>"moveLong", xTarget($target),
-    xxSource($source), xSource2($source2));
+    xSource($source), xSource2($source2));
  }
 
 sub Not($) {                                                                    #i Move and not.
@@ -2882,261 +2916,6 @@ my sub instructionListReadMe()                                                  
   $s
  }
 
-#my sub instructionListMapping()                                                 #P Map instructions to small integers.
-# {my $i = instructionList;
-#  my @n = map {$$_[0]} @$i;                                                     # Description of instruction
-#  my $n = join ' ', @n;
-#  say STDERR <<END;
-#my \@instructions = qw($n);
-#END
-#}
-#instructionListMapping(); exit;
-
-my sub rerefValue($$)                                                           #P Re-reference a value.
- {my ($value, $depth) = @_;                                                     # Value to reference, depth of reference
-  return   $value if $depth == 0;
-  return  \$value if $depth == 1;
-  return \\$value if $depth == 2;
-  confess "Rereference depth of $depth is too deep";
- }
-
-sub Zero::Emulator::Assembly::packRef($$$$)                                     #P Pack a reference into 8 bytes.
- {my ($code, $instruction, $ref, $type) = @_;                                   # Code block being packed, instruction being packed, reference being packed, type of reference being packed 0-target 1-source1 2-source2
-  @_ == 4 or confess "Four parameters";
-  if (!defined($ref) or ref($ref) =~ m(array)i && !@$ref)                       # Unused reference
-   {my $a = '';
-    vec($a, 0, 32) = 0;
-    vec($a, 1, 32) = 0;
-    vec($a, 7,  8) = 0;
-    return $a;
-   }
-
-  my @a = (arenaLocal, 0, 0, $ref, 0, 0);                                       # Local variable or constant
-  if (ref($ref) =~ m(Reference)i)                                               # Heap reference
-   {@a = @$ref{qw(arena area dArea address dAddress delta)}
-   }
-
-  $_ //= 0 for @a;
-  my ($arena, $area, $dArea, $address, $dAddress, $delta) = @a;
-
-  my $b = "too big, should be less than:";
-
-  my $bAddress = "$b 2**16";
-  my $bArea    = "$b 2**32";
-  my $bArena   = "$b 2**2";
-  my $bDelta   = "$b 2**7";
-
-  my @m;
-  push @m, "Area: $area $bArea"          if $area       >= 2**32;
-  push @m, "Address: $address $bAddress" if $address    >= 2**16;
-  push @m, "Arena: $arena $bArea"        if $arena      >= 2**2;
-  push @m, "Delta: $delta $bDelta"       if abs($delta) >  2**7;
-
-  if (@m)
-   {my $i = dump $instruction;
-    my $r = dump $ref;
-    my $c = join  "\n", $instruction->contextString, '';
-    my ($m) = @m;
-    confess <<END;
-Unable to pack reference: $r
-$m
-$i
-$c
-END
-   }
-
-  my $a = '';
-  vec($a, 0, 32) = $area;
-  vec($a, 2, 16) = $address;
-  vec($a, 24, 2) = $dAddress;
-  vec($a, 25, 2) = $dArea;
-  vec($a, 26, 2) = $arena;
-  vec($a, 7,  8) = $delta;
-  $a
- }
-
-sub Zero::Emulator::Assembly::unpackRef($$$)                                    #P Unpack a reference.
- {my ($code, $a, $operand) = @_;                                                # Code block being packed, instruction being packed, reference being packed, operand type 0-target 1-source 2-source2
-
-  my $vArea    = vec($a,  0, 32);
-  my $vAddress = vec($a,  2, 16);
-  my $dAddress = vec($a, 24,  2);
-  my $dArea    = vec($a, 25,  2);
-  my $arena    = vec($a, 26,  2);
-  my $delta    = vec($a,  7,  8);
-
-  my $area     = rerefValue($vArea,    $dArea);
-  my $address  = rerefValue($vAddress, $dAddress);
-  $code->Reference([$arena  != arenaHeap ? undef : $area, $address, 0, $delta], $operand);
- }
-
-sub Zero::Emulator::Assembly::packInstruction($$)                               #P Pack an instruction.
- {my ($code, $i) = @_;                                                          # Code being packed, instruction to pack
-  my  $a = '';
-  my $n = $instructions{$i->action};
-  vec($a, 0, 32) = $n;
-
-  vec($a, 1, 32) = 0;
-  $a .= $code->packRef($i, $i->target,  0);
-  $a .= $code->packRef($i, $i->source,  1);
-  $a .= $code->packRef($i, $i->source2, 2);
-
-  if (my $j = $i->jump)
-   {vec($a, 2, 32) = $j->address;
-   }
-
-  $a
- }
-
-my sub unpackInstruction($)                                                     #P Unpack an instruction.
- {my ($I) = @_;                                                                 # Instruction numbers, instruction to pack
-
-  my $i = vec($I, 0, 32);
-  my $n = $instructions[$i];
-  confess "Invalid instruction number: $i" unless defined $n;
-  $n
- }
-
-sub GenerateMachineCode(%)                                                      # Generate a string of machine code from the current block of code.
- {my (%options) = @_;                                                           # Generation options
-
-  my $code = $assembly->code;
-  my $pack = '';
-  for my $i(@$code)
-   {$pack .= $assembly->packInstruction($i);
-   }
-  $pack
- }
-
-sub disAssemble($)                                                              # Disassemble machine code.
- {my ($mc) = @_;                                                                # Machine code string
-
-  my $C = Assembly();
-
-  my $n = length($mc) / 32;                                                     # The instructions are formatted into 32 byte blocks
-  for my $i(1..$n)
-   {my $c = substr($mc, ($i-1)*32, 32);
-    my $i = $C->instruction                                                     #Fix: Need to remove fields not used by each instruction so that they are not inadvertantly interpreted later on
-     (action=>  unpackInstruction(substr($c,  0, 8)),
-      target=>  $C->unpackRef    (substr($c,  8, 8), 0),
-      source=>  $C->unpackRef    (substr($c, 16, 8), 1),
-      source2=> $C->unpackRef    (substr($c, 24, 8), 2));
-   }
-  $C
- }
-
-sub disAssembleMinusContext($)                                                  #P Disassemble and remove context information from disassembly to make testing easier.
- {my ($D) = @_;                                                                 # Machine code string
-
-  my $d = disAssemble  $D;
-
-  for my $c($d->code->@*)                                                       # Remove context fields
-   {delete @$c{qw(context executed file line number)};
-    delete $$c{$_}{name} for qw(target source source2);
-   }
-
-  delete @$d{qw(assembled files labelCounter labels procedures variables)};
-
-  $d
- }
-
-sub GenerateMachineCodeDisAssembleExecute(%)                                    #i Round trip: generate machine code and write it onto a string, disassemble the generated machine code string and recreate a block of code from it, then execute the reconstituted code to prove that it works as well as the original code.
- {my (%options) = @_;                                                           # Options
-  my $m = GenerateMachineCode;
-  my $M = disAssemble $m;
-     $M->execute(checkArrayNames=>0,  %options);
- }
-
-#D1 Generate Verilog
-
-sub generateVerilogMachineCode($$)                                              # Generate machine code and print it out in Verilog format. We need the just completed execution environment so we can examine the out channel for the expected results.
- {my ($exec, $name) = @_;                                                       # Execution environment of completed run, name of subroutine to contain generated code
-  @_ == 2 or confess "Two parameters";
-
-  if ($exec->compileToVerilogTests->{$name}++)
-   {confess "Duplicate compile to verilog test nanme: $name";
-   }
-  return $exec->compileToVerilog($name);                                        # Had to do all the generate machine code stuff to develop and test dereferencing - but it is now no longer needed as long as the compiled verilog can be placed on a fpga.  This code illustrates how one might encode the instructions but is in no way definitive.
-
-  my $string = GenerateMachineCode;                                             # Generate machine code as one long string
-  my $N = 32;
-  my $l = length($string);
-  my $L = int($l / $N);
-
-  my @v = <<END;
-  parameter integer NInstructions = $L;
-
-  task startTest();                                                             // $name: load code
-    begin
-END
-
-  my $z = 0;                                                                    # Number of zeroes
-  for my $i(0..$L-1)                                                            # Each instruction
-   {my $b = unpack "H*", substr($string, $i*$N, $N);                            # Instruction in binary
-    $z += length($b =~ s(1) ()gsr);                                             # Count zeroes in instructions
-    my $c = pad sprintf(qq(      code[%4d] = 'h$b;), $i), 80;                   # Pad instruction description so it prints evenly
-    push @v, $c."// ".$assembly->code->[$i]->action;                            # Opcode
-   }
-
-  my @o = <<END;                                                                # Check results
-    end
-  endtask
-
-  task endTest();                                                               // $name: Evaluate results in out channel
-    begin
-      success = 1;
-END
-
-  my @out = $exec->outLines->@*;
-  for my $i(keys @out)                                                          # Out channel expected content
-   {push @o, <<END;
-      success = success && outMem[$i] == $out[$i];
-END
-   }
-  push @o, <<END;                                                               # Finish results checking
-    end
-  endtask
-END
-
-  push @v, join "", @o;                                                         # Add results checking is present
-
-  my $c = join "\n", @v;                                                        # Write out if different from what we already have.  If it is the same do not disturb the time stamp because pushToGitHub relies on the timestamp to decide which files to push
-  my $f = fpe "../../verilog/fpga/tests", $name, qw(test sv);                   # This folder will be included to pull in this test
-  my $C = -e $f ? readFile($f) : '';
-  owf $f, $c unless $c eq $C;
- }
-
-my sub verilogInstructionDecode()                                               #P Create a verilog case statement to decode each instruction in the code array
- {my @i = @instructions;
-  my @t = <<END;
-  task executeInstruction();                                                    // Execute an instruction
-    begin
-      case(operator)
-END
-  my @s;
-  for my $i(keys @i)
-   {my ($N) = $i[$i];
-    my $n = $N."_instruction";
-    my $j = sprintf "    %4d", $i;
-    my $c = pad qq(  $j: begin; $n();), 72;                                     # Case statement
-    push @t, "$c    end // $n";
-    push @s, <<END;                                                             # Implementations
-  task $n();
-    begin                                                                       // $N
-     \$display("$N");
-    end
-  endtask
-END
-   }
-  push @t, <<END;
-      endcase
-    end
-  endtask
-END
-  join "\n", @t, @s;
-}
-#say STDERR verilogInstructionDecode(); exit;
-
 #D1 Compile to verilog                                                          # Compile each sub sequence of instructions into equivalent verilog.  A sub sequence starts at an instruction marked as an entry point
 
 sub CompileToVerilog(%)                                                         #P Execution environment for a block of code.
@@ -3283,6 +3062,28 @@ sub compileToVerilog($$)                                                        
             ip = $n;
 END
    }
+
+=pod
+Constant to local
+Constant to heap
+Local source
+Local target
+Constant array constant index  - as source
+Constant array variable index  - as source
+Variable array constant index  - as source
+Variable array variable index  - as source
+Constant array constant index  - as target
+Constant array variable index  - as target
+Variable array constant index  - as target
+Variable array variable index  - as target
+
+Constants
+Locals
+Heaps
+Parameters
+Return
+
+=cut
 
   my sub confirmLhsRef($$$)                                                     # Confirm a left hand reference is to a constant or to a local variable and to nothing else
    {my ($instruction, $ref, $type) = @_;                                        # Instruction, Reference in this instruction, the type of the reference
@@ -3960,12 +3761,9 @@ manager to prove that different implementations produce the same results.
 
 =cut
 
-for my $testSet(1..4) {                                                         # Select various combinations of execution engine and memory handler
+for my $testSet(1..2) {                                                         # Select various combinations of execution engine and memory handler
 say STDERR "TestSet: $testSet";
-my $ee = $testSet % 2 ? \&Execute :                                             # Assemble and execute
-                        \&GenerateMachineCodeDisAssembleExecute;                # Generate machine code, load code and execute
-
-$memoryTechnique = $testSet <= 2 ? undef : \&setStringMemoryTechnique;          # Set memory allocation technique
+$memoryTechnique = $testSet == 1 ? undef : \&setStringMemoryTechnique;          # Set memory allocation technique
 
 eval {goto latest if $debug};
 
@@ -3994,7 +3792,7 @@ if (1)                                                                          
   Out $i0;
   my $e = Execute(suppressOutput=>1, in=>[88, 44]);
   is_deeply $e->outLines, [88, 44, 2, 1, 0];
-  $e->generateVerilogMachineCode("InSize") if $testSet == 1 and $debug;
+  $e->compileToVerilog("InSize") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -4002,7 +3800,7 @@ if (1)                                                                          
  {Start 1;
   my $a = Var 22;
   AssertEq $a, 22;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, "";
  }
 
@@ -4010,7 +3808,7 @@ if (1)                                                                          
 if (1)                                                                          ##Nop
  {Start 1;
   Nop;
-  my $e = &$ee;
+  my $e = Execute;
   is_deeply $e->out, "";
  }
 
@@ -4019,7 +3817,7 @@ if (1)                                                                          
  {Start 1;
   my $a = Mov 2;
   Out $a;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [2];
  }
 
@@ -4030,7 +3828,7 @@ if (1)
   my $b = Mov  $$a;
   my $c = Mov  \$b;
   Out $c;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1, lowLevel=>1);
   is_deeply $e->outLines, [3];
  }
 
@@ -4039,9 +3837,9 @@ if (1)                                                                          
  {Start 1;
   my $a = Add 3, 2;
   Out  $a;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [5];
-  $e->generateVerilogMachineCode("Add") if $testSet == 1 and $debug;
+  $e->compileToVerilog("Add") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -4049,9 +3847,9 @@ if (1)                                                                          
  {Start 1;
   my $a = Subtract 4, 2;
   Out $a;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [2];
-  $e->generateVerilogMachineCode("Subtract") if $testSet == 1 and $debug;
+  $e->compileToVerilog("Subtract") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -4060,7 +3858,7 @@ if (1)                                                                          
   my $a = Mov 3;
   Dec $a;
   Out $a;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [2];
  }
 
@@ -4070,7 +3868,7 @@ if (1)                                                                          
   my $a = Mov 3;
   Inc $a;
   Out $a;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [4];
  }
 
@@ -4083,13 +3881,13 @@ if (1)                                                                          
   Out $a;
   Out $b;
   Out $c;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, <<END;
 3
 0
 1
 END
-  $e->generateVerilogMachineCode("Not") if $testSet == 1 and $debug;
+  $e->compileToVerilog("Not") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -4098,9 +3896,9 @@ if (1)                                                                          
   my $a = Mov 1;
   ShiftLeft $a, $a;
   Out $a;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [2];
-  $e->generateVerilogMachineCode("ShiftLeft") if $testSet == 1 and $debug;
+  $e->compileToVerilog("ShiftLeft") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -4109,9 +3907,9 @@ if (1)                                                                          
   my $a = Mov 4;
   ShiftRight $a, 1;
   Out $a;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [2];
-  $e->generateVerilogMachineCode("ShiftRight") if $testSet == 1 and $debug;
+  $e->compileToVerilog("ShiftRight") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -4123,16 +3921,16 @@ if (1)                                                                          
   setLabel($a);
     Out  2;
   setLabel($b);
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [2];
-  $e->generateVerilogMachineCode("Jmp") if $testSet == 1 and $debug;
+  $e->compileToVerilog("Jmp") if $testSet == 1 and $debug;
  }
 
 #latest:;
 if (1)                                                                          ##JLt ##Label
  {Start 1;
   Mov 0, 1;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
  }
 
 #latest:;
@@ -4152,7 +3950,7 @@ if (1)                                                                          
   setLabel($c);
     Out  4;
   setLabel($d);
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [2..3];
  }
 
@@ -4164,7 +3962,7 @@ if (1)                                                                          
     Out \0;
     Inc \0;
   Jlt $a, \0, 10;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [0..9];
  }
 
@@ -4176,14 +3974,14 @@ if (1)                                                                          
   Mov     [$a,  1, "aaa"],  22;
   my $A = Array "aaa";
   Mov     [$A,  1, "aaa"],  33;
-  my $B = Mov [$A, \1, "aaa"];
-  Out     [$a,  \0, "aaa"];
-  Out     [$a,  \1, "aaa"];
+  my $B = Mov [$A, 1, "aaa"];
+  Out     [$a,  0, "aaa"];
+  Out     [$a,  1, "aaa"];
   Out     $B;
 
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [11, 22, 33];
-  $e->generateVerilogMachineCode("Array") if $testSet == 1 and $debug;
+  $e->compileToVerilog("Array") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -4194,7 +3992,7 @@ if (1)                                                                          
     Return;
    };
   Call $w;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [1];
  }
 
@@ -4208,7 +4006,7 @@ if (1)                                                                          
    };
   ParamsPut 0, 999;
   Call $w;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [999];
  }
 
@@ -4222,7 +4020,7 @@ if (1)                                                                          
   Call $w;
   ReturnGet \0, 0;
   Out \0;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [999];
  }
 
@@ -4239,7 +4037,7 @@ if (1)                                                                          
   Call $add;
   my $c = ReturnGet 0;
   Out $c;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [4];
  }
 
@@ -4250,7 +4048,7 @@ if (1)                                                                          
    {Confess;
    };
   Call $c;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, <<END;
 Confess at:
     2     3 confess
@@ -4264,7 +4062,7 @@ if (1)                                                                          
   my $a = Array   "aaa";
   Push $a, 1,     "aaa";
   Push $a, 2,     "aaa";
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   #say STDERR $e->PrintHeap->($e); x;
   is_deeply $e->PrintHeap->($e), <<END;
 Heap: |  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
@@ -4283,7 +4081,7 @@ if (1)                                                                          
 
   Out $c;
   Out $d;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
 
   #say STDERR $e->PrintLocal->($e); x;
   is_deeply $e->PrintLocal->($e), <<END;
@@ -4292,7 +4090,7 @@ Local:    0    2    1
 END
   is_deeply $e->Heap->($e, 0), [];
   is_deeply $e->outLines, [2, 1];
-  $e->generateVerilogMachineCode("Pop") if $testSet == 1 and $debug;
+  $e->compileToVerilog("Pop") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -4306,7 +4104,7 @@ if (1)                                                                          
   Push $b, 11, "bbb";
   Push $b, 22, "bbb";
   Push $b, 33, "bbb";
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->GetMemoryArrays->($e), 2;
 
   #say STDERR $e->PrintHeap->($e); exit;
@@ -4326,7 +4124,7 @@ if (1)                                                                          
   my $c = Mov $a;
   Mov [$a, 0, 'alloc'], $b;
   Mov [$c, 1, 'alloc'], 2;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->Heap->($e, 0), [99, 2];
  }
 
@@ -4349,8 +4147,8 @@ if (1)                                                                          
   Out $a;
   Mov [$a, 1, 'node'], 1;
   Mov [$a, 2, 'node'], 2;
-  Out Mov [$a, \1, 'node'];
-  Out Mov [$a, \2, 'node'];
+  Out Mov [$a, 1, 'node'];
+  Out Mov [$a, 2, 'node'];
   Free $a, "node";
   my $e = Execute(suppressOutput=>1);
   #say STDERR $e->PrintHeap->($e); exit;
@@ -4427,7 +4225,7 @@ if (1)                                                                          
   Else
    {Out 0
    };
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [1];
  }
 
@@ -4441,7 +4239,7 @@ if (1)                                                                          
   Else
    {Out 0
    };
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [0];
  }
 
@@ -4453,7 +4251,7 @@ if (1)                                                                          
    {my ($i) = @_;
     Out $i;
    } 10;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [0..9];
  }
 
@@ -4464,7 +4262,7 @@ if (1)                                                                          
    {my ($i) = @_;
     Out $i;
    } 10, reverse=>1;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [reverse 0..9];
  }
 
@@ -4475,7 +4273,7 @@ if (1)                                                                          
    {my ($i) = @_;
     Out $i;
    } [2, 10];
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [2..9];
  }
 
@@ -4483,7 +4281,7 @@ if (1)                                                                          
 if (1)                                                                          ##Assert
  {Start 1;
   Assert;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, <<END;
 Assert failed
     1     1 assert
@@ -4495,7 +4293,7 @@ if (1)                                                                          
  {Start 1;
   Mov 0, 1;
   AssertEq \0, 2;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, <<END;
 Assert 1 == 2 failed
     1     2 assertEq
@@ -4507,7 +4305,7 @@ if (1)                                                                          
  {Start 1;
   Mov 0, 1;
   AssertNe \0, 1;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, <<END;
 Assert 1 != 1 failed
     1     2 assertNe
@@ -4519,7 +4317,7 @@ if (1)                                                                          
  {Start 1;
   Mov 0, 1;
   AssertLt \0, 0;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, <<END;
 Assert 1 <  0 failed
     1     2 assertLt
@@ -4531,7 +4329,7 @@ if (1)                                                                          
  {Start 1;
   Mov 0, 1;
   AssertLe \0, 0;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, <<END;
 Assert 1 <= 0 failed
     1     2 assertLe
@@ -4543,7 +4341,7 @@ if (1)                                                                          
  {Start 1;
   Mov 0, 1;
   AssertGt \0, 2;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, <<END;
 Assert 1 >  2 failed
     1     2 assertGt
@@ -4555,7 +4353,7 @@ if (1)                                                                          
  {Start 1;
   Mov 0, 1;
   AssertGe \0, 2;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, <<END;
 Assert 1 >= 2 failed
     1     2 assertGe
@@ -4567,7 +4365,7 @@ if (1)                                                                          
  {Start 1;
   AssertFalse 0;
   AssertTrue  0;
-  my $e = &$ee(suppressOutput=>1, trace=>1);
+  my $e = Execute(suppressOutput=>1, trace=>1);
   #say STDERR dump($e->out);
 
   is_deeply $e->out, <<END;
@@ -4583,7 +4381,7 @@ if (1)                                                                          
  {Start 1;
   AssertTrue  1;
   AssertFalse 1;
-  my $e = &$ee(suppressOutput=>1, trace=>1);
+  my $e = Execute(suppressOutput=>1, trace=>1);
   #say STDERR dump($e->out);
 
   is_deeply $e->out, <<END;
@@ -4601,7 +4399,7 @@ if (1)                                                                          
   my $b = Mov 2;
   Out $a;
   Out $b;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, <<END;
 1
 2
@@ -4640,7 +4438,7 @@ if (1)                                                                          
   my $V = Mov [$a, \$i, 'aaa'];
   AssertEq $v, $V;
   Out [$a, \$i, 'aaa'];
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [11];
  }
 
@@ -4649,7 +4447,7 @@ if (0)                                                                          
  {Start 1;
   my $a = Array "aaa";
   #Clear $a, 10, 'aaa';
-  my $e = &$ee(suppressOutput=>1, maximumArraySize=>10);
+  my $e = Execute(suppressOutput=>1, maximumArraySize=>10);
   is_deeply $e->Heap->($e, 0), [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
  }
 
@@ -4668,7 +4466,7 @@ if (1)                                                                          
    {Out 3;
    };
   Out 4;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, <<END;
 1
 2
@@ -4691,7 +4489,7 @@ if (1)                                                                          
    {Out 3;
    };
   Out 4;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, <<END;
 1
 3
@@ -4709,7 +4507,7 @@ if (1)                                                                          
   Then
    {Out 99;
    };
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [1..10];
   is_deeply $e->outLines, [1..10];
  }
@@ -4722,16 +4520,16 @@ if (0)                                                                          
   Mov 3, 1;
   Mov 3, 1;
   Mov 1, 1;
-  my $e = &$ee(suppressOutput=>0);
+  my $e = Execute(suppressOutput=>0);
   ok keys($e->doubleWrite->%*) == 2;                                            # In area 0, variable 1 was first written by instruction 0 then again by instruction 1 once.
  }
 
 #latest:;
 if (1)                                                                          # Pointless assign
  {Start 1;
-  Add 2,  1, 1;
-  Add 2, \2, 0;
-  my $e = &$ee(suppressOutput=>1);
+  Add 2, 1, 1;
+  Add 2, 2, 0;
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->pointlessAssign, { 1=>  1 };
  }
 
@@ -4745,7 +4543,7 @@ if (1)                                                                          
   ParamsPut 0, 1;  Call $set;
   ParamsPut 0, 2;  Call $set;
   ParamsPut 0, 3;  Call $set;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->out, <<END;
 1
 2
@@ -4757,7 +4555,7 @@ END
 if (1)                                                                          # Invalid address
  {Start 1;
   Mov 1, \0;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   ok $e->out =~ m"Cannot assign an undefined value";
  }
 
@@ -4768,7 +4566,7 @@ if (0)                                                                          
   my $b = Mov 2;
   my $c = Mov 5;
   my $d = LoadAddress $c;
-  my $f = LoadArea    [$a, \0, 'array'];
+  my $f = LoadArea    [$a, 0, 'array'];
 
   Out $d;
   Out $f;
@@ -4777,7 +4575,7 @@ if (0)                                                                          
   Mov [$a, \$c, 'array'], 33;
   Mov [$f, \$d, 'array'], 44;
 
-  my $e = &$ee(suppressOutput=>1, maximumArraySize=>6);
+  my $e = Execute(suppressOutput=>1, maximumArraySize=>6);
 
   is_deeply $e->out, <<END;
 2
@@ -4809,9 +4607,9 @@ if (1)                                                                          
     Out $a;
    } $a, "array";
 
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines,      [99, 0, 1, 2];
-  $e->generateVerilogMachineCode("Shift_up") if $testSet == 1 and $debug;
+  $e->compileToVerilog("Shift_up") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -4831,7 +4629,7 @@ if (1)                                                                          
     Out $a;
    } $a, "array";
 
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [0, 99, 1, 2];
  }
 
@@ -4854,9 +4652,9 @@ if (1)                                                                          
     Out $a;
    } $a, "array";
 
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines,      [0, 1, 99, 2];
-  $e->generateVerilogMachineCode("Shift_up_2") if $testSet == 1 and $debug;
+  $e->compileToVerilog("Shift_up_2") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -4871,7 +4669,7 @@ if (1)                                                                          
 
   ShiftUp [$a, 3, 'array'], 99;
 
-  my $e = &$ee(suppressOutput=>0);
+  my $e = Execute(suppressOutput=>0);
   is_deeply $e->Heap->($e, 0), [0, 1, 2, 99];
   is_deeply [$e->timeParallel, $e->timeSequential], [3,5];
  }
@@ -4888,7 +4686,7 @@ if (1)                                                                          
   Parallel @i;
 
   ShiftUp [$a, 2, 'array'], 26;
-  my $e = &$ee(suppressOutput=>1, maximumArraySize=>8);
+  my $e = Execute(suppressOutput=>1, maximumArraySize=>8);
   is_deeply $e->Heap->($e, 0), bless([10, 20, 26, 30, 40, 50, 60, 70], "array");
  }
 
@@ -4902,10 +4700,10 @@ if (1)                                                                          
     sub{Mov [$a, 1, 'array'], 99},
     sub{Mov [$a, 2, 'array'], 2};
 
-  my $b = ShiftDown [$a, \1, 'array'];
+  my $b = ShiftDown [$a, 1, 'array'];
   Out $b;
 
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->Heap->($e, 0), [0, 2];
   is_deeply $e->outLines, [99];
  }
@@ -4966,9 +4764,9 @@ if (1)                                                                          
       Out 10;
      };
    } 5;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [1, 3, 5, 9, 10, 2, 4, 5, 9, 10, 2, 4, 5, 9, 10, 2, 4, 6, 8, 10, 2, 4, 5, 7, 8];
-  $e->generateVerilogMachineCode("JFalse") if $testSet == 1 and $debug;
+  $e->compileToVerilog("JFalse") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -4987,11 +4785,11 @@ if (1)                                                                          
     Out 2;
    } 3;
 
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       19 instructions executed";
   is_deeply $e->outLines, [1, 2, 1, 1, 2];
-  $e->generateVerilogMachineCode("Mov2") if $testSet == 1 and $debug;
+  $e->compileToVerilog("Mov2") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -5006,7 +4804,7 @@ if (1)                                                                          
     Dump;
    } 3;
 
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->counts,                                                         # Several allocations and frees
    {array=>3, free=>3, add=>3, jGe=>4, jmp=>3, mov=>4
@@ -5031,7 +4829,7 @@ if (1)                                                                          
     sub{Mov [$a, 2, 'aaa'], 3};
   Resize $a, 2, "aaa";
   ArrayDump $a;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->Heap->($e, 0), [1, 2];
   is_deeply eval($e->out), [1,2];
@@ -5059,7 +4857,7 @@ if (1)                                                                          
    {Mov 3, 3;
     Mov 4, 4;
    };
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->out, <<END;
 Trace: 1
@@ -5164,7 +4962,7 @@ if (1)                                                                          
    };
 
   my $e = Execute(suppressOutput=>1, trace=>0, in=>[333, 22, 1]);
-  $e->generateVerilogMachineCode("ForIn") if $testSet == 1 and $debug;
+  $e->compileToVerilog("ForIn") if $testSet == 1 and $debug;
   is_deeply $e->outLines, [3, 333,  2, 22, 1, 1];
  }
 
@@ -5175,7 +4973,7 @@ if (1)                                                                          
   my @a = qw(6 8 4 2 1 3 5 7);
   Push $a, $_, "array" for @a;                                                  # Load array
   ArrayDump $a;
-  my $e = &$ee(suppressOutput=>1, maximumArraySize=>9);
+  my $e = Execute(suppressOutput=>1, maximumArraySize=>9);
   is_deeply $e->Heap->($e, 0),  [6, 8, 4, 2, 1, 3, 5, 7];
  }
 
@@ -5187,26 +4985,18 @@ if (1)                                                                          
   Mov [$a, 1, "aaa"], 22;
   Mov [$a, 2, "aaa"], 333;
   ArrayDump $a;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
 
   is_deeply eval($e->out), [1, 22, 333];
 
   #say STDERR $e->block->codeToString;
 
-  is_deeply $e->block->codeToString, <<'END' if $testSet % 2 == 1;
+  is_deeply $e->block->codeToString, <<'END';
 0000     array            0             3
 0001       mov [\0, 0, 3, 0]             1
 0002       mov [\0, 1, 3, 0]            22
 0003       mov [\0, 2, 3, 0]           333
 0004  arrayDump            0
-END
-
-  is_deeply $e->block->codeToString, <<'END' if $testSet % 2 == 0;
-0000     array [undef, 0, 3, 0]  [undef, 3, 3, 0]  [undef, 0, 3, 0]
-0001       mov [\0, 0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
-0002       mov [\0, 1, 3, 0]  [undef, 22, 3, 0]  [undef, 0, 3, 0]
-0003       mov [\0, 2, 3, 0]  [undef, 333, 3, 0]  [undef, 0, 3, 0]
-0004  arrayDump [undef, 0, 3, 0]  [undef, 0, 3, 0]  [undef, 0, 3, 0]
 END
  }
 
@@ -5223,12 +5013,12 @@ if (1)                                                                          
     Mov [$b, \$i, "bbb"], $j;
    } $N;
 
-  MoveLong [$b, \2, 'bbb'], [$a, \4, 'aaa'], 3;
+  MoveLong [$b, 2, 'bbb'], [$a, 4, 'aaa'], 3;
 
-  my $e = &$ee(suppressOutput=>1, maximumArraySize=>11);
+  my $e = Execute(suppressOutput=>1, maximumArraySize=>11);
   is_deeply $e->Heap->($e, 0), [0 .. 9];
   is_deeply $e->Heap->($e, 1), [100, 101, 4, 5, 6, 105 .. 109];
-  $e->generateVerilogMachineCode("MoveLong_1") if $testSet == 1 and $debug;
+  $e->compileToVerilog("MoveLong_1") if $testSet == 1 and $debug;
  }
 
 ####### Continue to check that all Verilog tests produce Out that is testable
@@ -5250,7 +5040,7 @@ if (1)                                                                          
   is_deeply $e->out, <<END;
 2
 END
-  $e->generateVerilogMachineCode("ArrayIndex") if $testSet == 1 and $debug;
+  $e->compileToVerilog("ArrayIndex") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -5266,7 +5056,7 @@ if (1)                                                                          
   is_deeply $e->out, <<END;
 1
 END
-  $e->generateVerilogMachineCode("ArrayCountLess") if $testSet == 1 and $debug;
+  $e->compileToVerilog("ArrayCountLess") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -5282,7 +5072,7 @@ if (1)                                                                          
   is_deeply $e->out, <<END;
 2
 END
-  $e->generateVerilogMachineCode("ArrayCountGreaterIndex") if $testSet == 1 and $debug;
+  $e->compileToVerilog("ArrayCountGreaterIndex") if $testSet == 1 and $debug;
  }
 
 if (1)                                                                          ##ArrayIndex ##ArrayCountLess ##ArrayCountGreater
@@ -5299,7 +5089,7 @@ if (1)                                                                          
 
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [qw(3 2 1 0 3 2 1 0 0 1 2 3)];
-  $e->generateVerilogMachineCode("Array_scans") if $testSet == 1 and $debug;
+  $e->compileToVerilog("Array_scans") if $testSet == 1 and $debug;
  }
 
 #latest:;
@@ -5328,7 +5118,7 @@ if (1)                                                                          
    {my $a = Mov 1;
     Inc $a;
    } $N;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
 
   is_deeply $e->out, <<END;
 TraceLabels: 1
@@ -5367,7 +5157,7 @@ if (1)                                                                          
   RandomSeed 1;
   my $a = Random 10;
   Out $a;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   ok $e->out =~ m(\A\d\Z);
  }
 
@@ -5376,27 +5166,10 @@ if (1)                                                                          
  {Start 1;
   my $a = Mov 1;
   Out $a;
-  my $e = &$ee(suppressOutput=>1);
+  my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [1];
  }
 }
-
-#latest:;
-if (1)                                                                          ##GenerateMachineCode ##GenerateMachineCodeDisAssembleExecute ##disAssemble
- {Start 1;
-  my $a = Mov 1;
-  my $g = GenerateMachineCode;
-
-  my $d = disAssemble $g;
-     $d->assemble;
-  is_deeply $d->codeToString, <<'END';
-0000       mov [undef, 0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
-END
-  my $e =  GenerateMachineCodeDisAssembleExecute;
-  is_deeply $e->block->codeToString, <<'END';
-0000       mov [0, 0, 3, 0]  [0, 1, 3, 0]  [0, 0, 3, 0]
-END
- }
 
 #latest:;
 if (1)                                                                          # String memory
@@ -5431,7 +5204,7 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1, stringMemory=>1);
   is_deeply $e->outLines, [qw(1 2 3 11 22 33)];
 
-  my $E = GenerateMachineCodeDisAssembleExecute(suppressOutput=>1);
+  my $E = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [qw(1 2 3 11 22 33)];
   is_deeply $e->mostArrays, [undef, 2, 1, 1, 1];
  }
@@ -5452,7 +5225,7 @@ if (1)
 
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [0,0,0];
-  $e->generateVerilogMachineCode("Free") if $debug;
+  $e->compileToVerilog("Free") if $debug;
  }
 
 #latest:;
@@ -5473,7 +5246,7 @@ if (1)                                                                          
    };
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [111, 333];
-  $e->generateVerilogMachineCode("Jeq") if $debug;
+  $e->compileToVerilog("Jeq") if $debug;
  }
 
 #latest:;
@@ -5491,7 +5264,7 @@ if (1)                                                                          
   my $e = Execute(suppressOutput=>1, stringMemory=>1);
   is_deeply $e->Heap->($e, 0), [1..2];
   is_deeply $e->outLines,      [1..2];
-  $e->generateVerilogMachineCode("Push") if $debug;
+  $e->compileToVerilog("Push") if $debug;
  }
 
 #latest:;
@@ -5505,7 +5278,7 @@ if (1)                                                                          
   Out $c;
   my $e = Execute(suppressOutput=>1);
   is_deeply $e->outLines, [1..3];
-  $e->generateVerilogMachineCode("Mov") if $debug;
+  $e->compileToVerilog("Mov") if $debug;
  }
 
 #latest:;
@@ -5513,16 +5286,16 @@ if (1)                                                                          
  {Start 1;
   my $a = Array "aaa";
   my $b = Array "bbb";
-  Mov [$a, \0, 'aaa'],  11;
-  Mov [$a, \1, 'aaa'],  22;
-  Mov [$a, \2, 'aaa'],  33;
-  Mov [$a, \3, 'aaa'],  44;
-  Mov [$a, \4, 'aaa'],  55;
-  Mov [$b, \0, 'bbb'],  66;
-  Mov [$b, \1, 'bbb'],  77;
-  Mov [$b, \2, 'bbb'],  88;
-  Mov [$b, \3, 'bbb'],  99;
-  Mov [$b, \4, 'bbb'], 101;
+  Mov [$a, 0, 'aaa'],  11;
+  Mov [$a, 1, 'aaa'],  22;
+  Mov [$a, 2, 'aaa'],  33;
+  Mov [$a, 3, 'aaa'],  44;
+  Mov [$a, 4, 'aaa'],  55;
+  Mov [$b, 0, 'bbb'],  66;
+  Mov [$b, 1, 'bbb'],  77;
+  Mov [$b, 2, 'bbb'],  88;
+  Mov [$b, 3, 'bbb'],  99;
+  Mov [$b, 4, 'bbb'], 101;
   Resize $a, 5, 'aaa';
   Resize $b, 5, 'bbb';
 
@@ -5536,7 +5309,7 @@ if (1)                                                                          
     Out $b;
    } $b, "bbb";
 
-  MoveLong [$a, \1, 'aaa'], [$b, \2, 'bbb'], 2;
+  MoveLong [$a, 1, 'aaa'], [$b, 2, 'bbb'], 2;
 
   ForArray
    {my ($i, $a, $Check, $Next, $End) = @_;
@@ -5552,7 +5325,7 @@ if (1)                                                                          
   is_deeply $e->heap(0), bless([11, 88, 99, 44, 55], "aaa");
   is_deeply $e->heap(1), bless([66, 77, 88, 99, 101],"bbb");
   is_deeply $e->outLines, [11, 22, 33, 44, 55, 66, 77, 88, 99, 101, 11, 88, 99, 44, 55, 66, 77, 88, 99, 101];
-  $e->generateVerilogMachineCode("MoveLong_2") if $debug;
+  $e->compileToVerilog("MoveLong_2") if $debug;
  }
 
 #latest:;
@@ -5565,7 +5338,7 @@ if (1)                                                                          
    };
   my $e = Execute(suppressOutput=>1, in => [33,22,11]);
   is_deeply $e->outLines, [3,33, 2,22, 1,11];
-  $e->generateVerilogMachineCode("In") if $debug;
+  $e->compileToVerilog("In") if $debug;
  }
 
 #latest:;
@@ -5579,7 +5352,7 @@ if (1)                                                                          
   ArrayOut $a;
   my $e = Execute(suppressOutput=>1, in => [9,88,777]);
   is_deeply $e->out, "9 88 777";
-# $e->generateVerilogMachineCode("ArrayOut") if $debug;
+# $e->compileToVerilog("ArrayOut") if $debug;
  }
 
 #latest:;
@@ -5599,6 +5372,19 @@ if (1)                                                                          
   is_deeply $e->outLines, [1,2,3, 3,33, 2,22, 1,11];
   is_deeply [map {$_->entry} $e->block->code->@*], [qw(1 0 0 1 0 0 0 0 0 0 0 0)]; # Sub sequence start points
   $e->compileToVerilog("ForIn") if $debug;
+ }
+
+latest:;
+if (1)                                                                          ##Add
+ {Start 1;
+  my $a = Array 'a';
+  Mov [$a, 0, 'a'], 11;
+  Mov [$a, 1, 'a'], 22;
+  Add [$a, 2, 'a'], [$a, 1, 'a'], [$a, 0, 'a'];
+  Out [$a, 2, 'a'];
+  my $e = Execute(suppressOutput=>1, lowLevel=>1);
+  is_deeply $e->outLines, [33];
+  #$e->compileToVerilog("Add") if $testSet == 1 and $debug;
  }
 
 =pod
