@@ -137,9 +137,9 @@ end
         end
 
           4 :
-        begin                                                                   // movWrite2
+        begin                                                                   // step
 if (0) begin
-  $display("AAAA %4d %4d movWrite2", steps, ip);
+  $display("AAAA %4d %4d step", steps, ip);
 end
               heapClock = 0;                                                    // Ready for next operation
               ip = 5;                                                          // Next instruction
@@ -168,9 +168,9 @@ end
         end
 
           7 :
-        begin                                                                   // movWrite2
+        begin                                                                   // step
 if (0) begin
-  $display("AAAA %4d %4d movWrite2", steps, ip);
+  $display("AAAA %4d %4d step", steps, ip);
 end
               heapClock = 0;                                                    // Ready for next operation
               ip = 8;                                                          // Next instruction
@@ -241,9 +241,9 @@ end
         end
 
          14 :
-        begin                                                                   // movWrite2
+        begin                                                                   // step
 if (0) begin
-  $display("AAAA %4d %4d movWrite2", steps, ip);
+  $display("AAAA %4d %4d step", steps, ip);
 end
               heapClock = 0;                                                    // Ready for next operation
               ip = 15;                                                          // Next instruction
