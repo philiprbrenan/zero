@@ -1608,7 +1608,7 @@ sub Zero::Emulator::Assembly::execute($%)                                       
      {my $i = currentInstruction $exec;
       my $a = right $exec, $i->target;
       my $m = $exec->GetMemoryArea->($exec, arenaHeap, $a);
-      $exec->output($_) for @$m;
+      $exec->output("$_\n") for @$m;
       $exec->timeDelta = 0;
      },
 
@@ -3928,7 +3928,7 @@ use vars qw(@ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 @ISA         = qw(Exporter);
 @EXPORT      = qw();
-@EXPORT_OK   = qw(Add Array ArrayCountGreater ArrayCountLess ArrayDump ArrayIndex ArraySize Assert AssertEq AssertFalse AssertGe AssertGt AssertLe AssertNe AssertTrue Bad Block Call Clear Confess Dec Dump Else Execute For ForArray ForIn Free GenerateMachineCodeDisAssembleExecute generateVerilogMachineCode Good IfEq IfFalse IfGe IfGt IfLe IfLt IfNe IfTrue In InSize Inc JFalse JTrue Jeq Jge Jgt Jle Jlt Jmp Jne LoadAddress LoadArea Mov MoveLong Nop Not Out Parallel ParamsGet ParamsPut Pop Procedure Push Random RandomSeed Resize Return ReturnGet ReturnPut Sequential ShiftDown ShiftLeft ShiftRight ShiftUp Start Subtract Tally Then Trace TraceLabels Var Watch);
+@EXPORT_OK   = qw(Add Array ArrayCountGreater ArrayCountLess ArrayDump ArrayOut ArrayIndex ArraySize Assert AssertEq AssertFalse AssertGe AssertGt AssertLe AssertNe AssertTrue Bad Block Call Clear Confess Dec Dump Else Execute For ForArray ForIn Free GenerateMachineCodeDisAssembleExecute generateVerilogMachineCode Good IfEq IfFalse IfGe IfGt IfLe IfLt IfNe IfTrue In InSize Inc JFalse JTrue Jeq Jge Jgt Jle Jlt Jmp Jne LoadAddress LoadArea Mov MoveLong Nop Not Out Parallel ParamsGet ParamsPut Pop Procedure Push Random RandomSeed Resize Return ReturnGet ReturnPut Sequential ShiftDown ShiftLeft ShiftRight ShiftUp Start Subtract Tally Then Trace TraceLabels Var Watch);
 %EXPORT_TAGS = (all=>[@EXPORT, @EXPORT_OK]);
 
 return 1 if caller;
@@ -5568,7 +5568,7 @@ if (1)                                                                          
    };
   ArrayOut $a;
   my $e = Execute(suppressOutput=>1, in => [9,88,777]);
-  is_deeply $e->out, "9 88 777";
+  is_deeply $e->outLines, [9, 88, 777];
 # $e->generateVerilogMachineCode("ArrayOut") if $debug;
  }
 
