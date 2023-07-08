@@ -25,7 +25,8 @@ my $btree    = fpf $home, q(lib/Zero/BTree.pm);                                 
 my $readMe   = fpe $home, qw(README md2);                                       # Read me
 
 my $testsDir = fpd $home, qw(verilog fpga tests);                               # Tests folder
-my $lowLevel = 1;                                                               # Run the low level tests that prepare for an actual fpga - these take time
+my $verilog  = 0;                                                               # Run the low level tests using verilog
+my $yosys    = 0;                                                               # Run the low level tests using Yosys
 my $macos    = 0;                                                               # Macos if true
 my $windows  = 0;                                                               # Windows if true
 my $openBsd  = 0;                                                               # OpenBsd if true
@@ -116,11 +117,12 @@ on:
 jobs:
 END
 
-  $y .= &highLevelTests;                                                         # High level tests using Perl on Ubuntu
-  $y .= &job("fpga");                                                            # Low level tests using verilog and Yosys for a real device
-  $y .= &fpgaLowLevelTestsVerilog;                                              # Verilog
-  $y .= &fpgaLowLevelTestsYosys if $lowLevel;                                   # Yosys jobs
-
+  $y .= &highLevelTests;                                                        # High level tests using Perl on Ubuntu
+  if ($verilog or $yosys)
+   {$y .= &job("fpga");                                                         # Low level tests using verilog and Yosys for a real device
+    $y .= &fpgaLowLevelTestsVerilog if $verilog;                                #   Verilog
+    $y .= &fpgaLowLevelTestsYosys   if $yosys;                                  #   Yosys jobs
+   }
   my $f = writeFileUsingSavedToken $user, $repo, $wf, $y;                       # Upload workflow
   lll "Ubuntu work flow for $repo written to: $f";
  }
