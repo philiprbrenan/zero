@@ -93,7 +93,7 @@ owf($timeFile, time);                                                           
 &run();                                                                         # Upload run configuration
 
 sub lowLevelTests                                                               # Low level tests to run
- { grep {m(memory)}
+ { grep {!m(BTree)}
    map  {s($home) ()r}
    searchDirectoryTreesForMatchingFiles($testsDir, qw(.sv));                    # Test these local files
  }
