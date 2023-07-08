@@ -1,33 +1,113 @@
-module memory_tb();
-  parameter integer MEM_SIZE = 16;
-  parameter integer DATA_WIDTH = 8;
-  reg clk;
-  reg write;
-  reg [MEM_SIZE-1:0] address;
-  reg [DATA_WIDTH-1:0] in;
-  reg [DATA_WIDTH-1:0] out;
+//-----------------------------------------------------------------------------
+// Test memory
+// Philip R Brenan at appaapps dot com, Appa Apps Ltd Inc., 2023
+//------------------------------------------------------------------------------
+module MemoryTB();                                                              // Mmeory test bench
+  parameter integer ARRAYS      = 256;                                          // Number of memory elements for both arrays and elements
+  parameter integer INDEX_BITS  =   3;                                          // Log2 width of an element in bits
+  parameter integer DATA_BITS   =   8;                                          // Log2 width of an element in bits
 
-  memory m(
-    .clk(clk),
-    .write(write),
-    .address(address),
+  reg                   clock;                                                  // Clock to drive array operations
+  reg [7:0]             action;                                                 // Operation to be performed on array
+  reg [ARRAYS     -1:0] array;                                                  // The number of the array to work on
+  reg [INDEX_BITS -1:0] index;                                                  // Index within array
+  reg [DATA_BITS  -1:0] in;                                                     // Input data
+  reg [DATA_BITS  -1:0] out;                                                    // Output data
+
+  `include "tests.sv"                                                           // Test routines
+
+  Memory m                                                                      // Create memory
+   (.clock(clock),
+    .action(action),
+    .array(array),
+    .index(index),
     .in(in),
     .out(out)
-  );
+   );
 
-  defparam m.MEM_SIZE = MEM_SIZE;
-  defparam m.DATA_WIDTH = DATA_WIDTH;
+  //defparam m.ARRAYS     = ARRAYS;
+  //defparam m.INDEX_BITS = INDEX_BITS;
+  //defparam m.DATA_BITS  = DATA_BITS;
 
-  `include "tests.sv"
+  task step();
+    begin
+       #1 clock = 1; #1 clock = 0;
+    end
+  endtask
 
-  initial begin
-    clk = 0;
-    write = 0;
-    address = 1;
-    #1 clk = 1;
-    #1 clk = 0;
-    ok(out == 22, "aaa");
+  initial begin                                                                 // Test the circular buffer
+    clock = 0;                     action = m.Reset; step();
 
-    checkAllTestsPassed(1);
+    array = 1;
+    index = 0; in = 11; action = m.Write; step();
+    index = 1; in = 22;                   step();
+    index = 2; in = 33;                   step();
+    index = 3; in = 44;                   step();
+
+    index = 2;          action = m.Read;    step();  ok(out == 33, "Read");
+                        action = m.Size;    step();  ok(out == 4,  "Size");
+               in = 22; action = m.Index;   step();  ok(out == 2, "Index");
+                        action = m.Less;    step();  ok(out == 1, "Less");
+                        action = m.Greater; step();  ok(out == 2, "Greater");
+                        action = m.Dec;     step();
+                        action = m.Size;    step();  ok(out == 3,  "Dec Size");
+                        action = m.Inc;     step();
+                        action = m.Size;    step();  ok(out == 4,  "Inc Size");
+                        action = m.Pop;     step();  ok(out == 44, "Pop");
+                        action = m.Size;    step();  ok(out == 3,  "Pop Size");
+
+               in=55;   action = m.Push;    step();
+    index = 3;          action = m.Read;    step();  ok(out == 55, "Read push");
+
+                        action = m.Size;    step();  ok(out == 4,  "Push Size");
+    index = 0;          action = m.Read;    step();  ok(out == 11, "PreUp 0");
+    index = 1;          action = m.Read;    step();  ok(out == 22, "PreUp 1");
+    index = 2;          action = m.Read;    step();  ok(out == 33, "PreUp 2");
+    index = 3;          action = m.Read;    step();  ok(out == 55, "PreUp 3");
+
+    index = 0; in = 99; action = m.Up;      step();
+                        action = m.Size;    step();  ok(out ==  5, "Up Size0");
+                        action = m.Read;    step();  ok(out == 99, "Up 01");
+    index = 1;          action = m.Read;    step();  ok(out == 11, "Up 02");
+    index = 2;          action = m.Read;    step();  ok(out == 22, "Up 03");
+    index = 3;          action = m.Read;    step();  ok(out == 33, "Up 04");
+    index = 4;          action = m.Read;    step();  ok(out == 55, "Up 05");
+
+    index = 1; in = 88; action = m.Up;      step();
+                        action = m.Size;    step();  ok(out ==  6, "Up Size1");
+    index = 0;          action = m.Read;    step();  ok(out == 99, "Up 11");
+    index = 1;          action = m.Read;    step();  ok(out == 88, "Up 12");
+    index = 2;          action = m.Read;    step();  ok(out == 11, "Up 13");
+    index = 3;          action = m.Read;    step();  ok(out == 22, "Up 14");
+    index = 4;          action = m.Read;    step();  ok(out == 33, "Up 15");
+    index = 5;          action = m.Read;    step();  ok(out == 55, "Up 16");
+
+
+    array = 2;
+    index = 0; in = 60; action = m.Write;   step();
+    index = 1; in = 61;                     step();
+    index = 2; in = 62;                     step();
+    index = 3; in = 63;                     step();
+    index = 4; in = 64;                     step();
+    index = 5; in = 65;                     step();
+    index = 6; in = 66;                     step();
+    index = 7; in = 67;                     step();
+                        action = m.Size;    step();  ok(out == 8, "Size MoveLong1");
+    array = 1;
+    index = 2;          action = m.Long1;   step();
+    array = 2;
+    index = 3; in = 2;  action = m.Long2;   step();
+
+    array = 2;
+                        action = m.Size;    step();  ok(out ==  8, "Size MoveLong2");
+    index = 0;          action = m.Read;    step();  ok(out == 60, "ML 0");
+    index = 1;                              step();  ok(out == 61, "ML 1");
+    index = 2;                              step();  ok(out == 62, "ML 2");
+    index = 3;                              step();  ok(out == 11, "ML 3");
+    index = 4;                              step();  ok(out == 22, "ML 4");
+    index = 5;                              step();  ok(out == 65, "ML 5");
+    index = 6;                              step();  ok(out == 66, "ML 6");
+    index = 7;                              step();  ok(out == 67, "ML 7");
+    checkAllTestsPassed(38);
   end
 endmodule
