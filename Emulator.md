@@ -1,10 +1,10 @@
 # Name
 
-Zero::Emulator - Assemble and emulate a program written in the [Zero](https://github.com/philiprbrenan/zeroLowLevel) assembler programming language.
+Zero::Emulator - Assemble and emulate a program written in the [Zero](https://github.com/philiprbrenan/zero) assembler programming language.
 
 <div>
 
-    <p><a href="https://github.com/philiprbrenan/zeroLowLevel"><img src="https://github.com/philiprbrenan/zeroLowLevel/workflows/Test/badge.svg"></a>
+    <p><a href="https://github.com/philiprbrenan/zero"><img src="https://github.com/philiprbrenan/zero/workflows/Test/badge.svg"></a>
 </div>
 
 # Synopsis
@@ -4870,9 +4870,9 @@ Compile a reference in assembler format to a corresponding verilog expression
 
 23 [Call](#call) - Call the subroutine at the target address.
 
-24 [CompileToVerilog](#compiletoverilog) - Execution environment for a block of code.
+24 [compileToVerilog](#compiletoverilog) - Compile each sub sequence of instructions into equivalent verilog.
 
-25 [compileToVerilog](#compiletoverilog) - Compile each sub sequence of instructions into equivalent verilog.
+25 [CompileToVerilog](#compiletoverilog) - Execution environment for a block of code.
 
 26 [Confess](#confess) - Confess with a stack trace showing the location both in the emulated code and in the code that produced the emulated code.
 
