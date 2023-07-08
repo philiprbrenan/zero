@@ -16,7 +16,7 @@ module MemoryTB();                                                              
 
   `include "tests.sv"                                                           // Test routines
 
-  Memory m                                                                      // Create memory
+  Memory #(2**16, 3, 16) m                                                      // Create memory
    (.clock(clock),
     .action(action),
     .array(array),
@@ -24,10 +24,6 @@ module MemoryTB();                                                              
     .in(in),
     .out(out)
    );
-
-  //defparam m.ARRAYS     = ARRAYS;
-  //defparam m.INDEX_BITS = INDEX_BITS;
-  //defparam m.DATA_BITS  = DATA_BITS;
 
   task step();
     begin
