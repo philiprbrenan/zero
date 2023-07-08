@@ -9,7 +9,7 @@ module Memory
   input wire [DATA_BITS  -1:0] in,                                              // Input data
   output reg [DATA_BITS  -1:0] out);                                            // Output data
 
-  parameter integer INDEX_MAX   = 2**INDEX_BITS;                                // Maximum index
+  parameter integer ARRAY_MAX_SIZE   = 2**INDEX_BITS;                           // Maximum index
 
   parameter integer Reset   =  1;                                               // Zero all memory sizes
   parameter integer Write   =  2;                                               // Write an element
@@ -27,9 +27,10 @@ module Memory
   parameter integer Push    = 14;                                               // Push if possible
   parameter integer Pop     = 15;                                               // Pop if possible
   parameter integer Dump    = 16;                                               // Dump
+  parameter integer Resize  = 17;                                               // Resize an array
 
-  reg [DATA_BITS -1:0] memory     [ARRAYS-1:0][INDEX_MAX-1:0];                  // Memory containing arrays in fixed blocks
-  reg [DATA_BITS -1:0] copy                   [INDEX_MAX-1:0];                  // Copy of one array
+  reg [DATA_BITS -1:0] memory     [ARRAYS-1:0][ARRAY_MAX_SIZE-1:0];             // Memory containing arrays in fixed blocks
+  reg [DATA_BITS -1:0] copy                   [ARRAY_MAX_SIZE-1:0];             // Copy of one array
   reg [INDEX_BITS  :0] arraySizes [ARRAYS-1:0];                                 // Current size of each array
 
   integer result;                                                               // Result of each array operation
@@ -45,7 +46,7 @@ module Memory
       end
       Write: begin                                                              // Write
         memory[array][index] = in;
-        if (index >= arraySizes[array] && index < INDEX_MAX) begin
+        if (index >= arraySizes[array] && index < ARRAY_MAX_SIZE) begin
           arraySizes[array] = index + 1;
         end
         out = in;
@@ -60,12 +61,12 @@ module Memory
         if (arraySizes[array] > 0) arraySizes[array] = arraySizes[array] - 1;
       end
       Inc: begin                                                                // Increment
-        if (arraySizes[array] < INDEX_MAX) arraySizes[array] = arraySizes[array] + 1;
+        if (arraySizes[array] < ARRAY_MAX_SIZE) arraySizes[array] = arraySizes[array] + 1;
       end
       Index: begin                                                              // Index
         result = 0;
         size   = arraySizes[array];
-        for(i = 0; i < INDEX_MAX; i = i + 1) begin
+        for(i = 0; i < ARRAY_MAX_SIZE; i = i + 1) begin
           if (i < size && memory[array][i] == in) result = i + 1;
 //$display("AAAA %d %d %d %d %d", i, size, memory[array][i], in, result);
         end
@@ -74,7 +75,7 @@ module Memory
       Less: begin                                                               // Count less
         result = 0;
         size   = arraySizes[array];
-        for(i = 0; i < INDEX_MAX; i = i + 1) begin
+        for(i = 0; i < ARRAY_MAX_SIZE; i = i + 1) begin
           if (i < size && memory[array][i] < in) result = result + 1;
 //$display("AAAA %d %d %d %d %d", i, size, memory[array][i], in, result);
         end
@@ -83,7 +84,7 @@ module Memory
       Greater: begin                                                            // Count greater
         result = 0;
         size   = arraySizes[array];
-        for(i = 0; i < INDEX_MAX; i = i + 1) begin
+        for(i = 0; i < ARRAY_MAX_SIZE; i = i + 1) begin
           if (i < size && memory[array][i] > in) result = result + 1;
 //$display("AAAA %d %d %d %d %d", i, size, memory[array][i], in, result);
         end
@@ -94,22 +95,22 @@ $display("Need Memory array down");
       end
       Up: begin                                                                 // Up
         size   = arraySizes[array];
-        for(i = 0; i < INDEX_MAX; i = i + 1) copy[i] = memory[array][i];        // Copy source array
-        for(i = 0; i < INDEX_MAX; i = i + 1) begin                              // Move original array up
+        for(i = 0; i < ARRAY_MAX_SIZE; i = i + 1) copy[i] = memory[array][i];   // Copy source array
+        for(i = 0; i < ARRAY_MAX_SIZE; i = i + 1) begin                         // Move original array up
           if (i > index && i <= size) begin
             memory[array][i] = copy[i-1];
           end
         end
         memory[array][index] = in;                                              // Insert new value
-        if (size < INDEX_MAX) arraySizes[array] = arraySizes[array] + 1;        // Increase array size
+        if (size < ARRAY_MAX_SIZE) arraySizes[array] = arraySizes[array] + 1;   // Increase array size
       end
       Long1: begin                                                              // Move long start
         moveLongStartArray = array;
         moveLongStartIndex = index;
       end
       Long2: begin                                                              // Move long finish
-        for(i = 0; i < INDEX_MAX; i = i + 1) begin                              // Copy from source to target
-          if (i < in && index + i < INDEX_MAX && moveLongStartIndex+i < INDEX_MAX) begin
+        for(i = 0; i < ARRAY_MAX_SIZE; i = i + 1) begin                         // Copy from source to target
+          if (i < in && index + i < ARRAY_MAX_SIZE && moveLongStartIndex+i < ARRAY_MAX_SIZE) begin
             memory[array][index+i] = memory[moveLongStartArray][moveLongStartIndex+i];
             if (index+i >= arraySizes[array]) arraySizes[array] = index+i+1;
           end
@@ -128,7 +129,10 @@ $display("Need Memory array down");
         end
       end
       Dump: begin                                                               // Dump
-        for(i = 0; i < INDEX_MAX; ++i) $display("%2d  %2d %2d", i, memory[1][i], memory[2][i]);
+        for(i = 0; i < ARRAY_MAX_SIZE; ++i) $display("%2d  %2d %2d", i, memory[1][i], memory[2][i]);
+      end
+      Resize: begin                                                             // Resize
+        if (in <= ARRAY_MAX_SIZE) arraySizes[array] = in;
       end
     endcase
   end
