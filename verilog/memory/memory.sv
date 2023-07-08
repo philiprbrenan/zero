@@ -1,4 +1,7 @@
 module Memory
+#(parameter integer ARRAYS     =  2**16,                                        // Number of memory elements for both arrays and elements
+  parameter integer INDEX_BITS =  3,                                            // Log2 width of an element in bits
+  parameter integer DATA_BITS  = 16)                                            // Log2 width of an element in bits
  (input wire                   clock,                                           // Clock to drive array operations
   input wire[7:0]              action,                                          // Operation to be performed on array
   input wire [ARRAYS     -1:0] array,                                           // The number of the array to work on
@@ -6,9 +9,6 @@ module Memory
   input wire [DATA_BITS  -1:0] in,                                              // Input data
   output reg [DATA_BITS  -1:0] out);                                            // Output data
 
-  parameter integer ARRAYS      = 2**16;                                        // Number of memory elements for both arrays and elements
-  parameter integer INDEX_BITS  =   3;                                          // Log2 width of an element in bits
-  parameter integer DATA_BITS   =  16;                                          // Log2 width of an element in bits
   parameter integer INDEX_MAX   = 2**INDEX_BITS;                                // Maximum index
 
   parameter integer Reset   =  1;                                               // Zero all memory sizes
