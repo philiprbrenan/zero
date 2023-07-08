@@ -425,8 +425,8 @@ sub Zero::Emulator::Assembly::lowLevelReplaceSource($$$)                        
  }
 
 sub Zero::Emulator::Assembly::lowLevelReplaceTarget($$)                         #P Convert a memory write to a target heap array into a move operation so that we can use a separate heap memory on the fpga. The instruction under consideration is at the top of the supplied instruction list. Add the move instruction and modify the original instruction if the source field can be replaced
- {my ($assembly, $block) = @_;                                                  # Assembly options, instructions
-  return unless my $i = $$block[-1];
+ {my ($assembly, $instructions) = @_;                                           # Assembly options, instructions
+  return unless my $i = $$instructions[-1];
   if (my $t = $$i{target})                                                      # Target field to check
    {if (ref($t) =~ m(Reference) and $t->arena == arenaHeap)                     # Heap is target so replace
      {my $v = $assembly->variables->registers;                                  # Intermediate local source copy of heap
@@ -434,21 +434,29 @@ sub Zero::Emulator::Assembly::lowLevelReplaceTarget($$)                         
       my $m = Instruction(action=>"movWrite1",                                  # Put data into heap
         target=>$t, source=>$assembly->Reference($v, 1));
       my $M = Instruction(action=>"movWrite2");                                 # Reset after move to heap
-      push @$block, $m, $M;                                                     # New instruction sequence
+      push @$instructions, $m, $M;                                              # New instruction sequence
      }
    }
  }
 
-sub Zero::Emulator::Assembly::lowLevel($%)                                      #P Convert all heap memory operations into  mov's so that we can use a separate heap memory on the fpga
- {my ($assembly, %options) = @_;                                                # Code block, assembly options
+sub Zero::Emulator::Assembly::lowLevelReplace($$)                               #P Convert all heap memory operations in a scalar operation into moves so that we can use a separate heap memory on the fpga
+ {my ($assembly, $instructions) = @_;                                           # Code block, array of instructions
+  my $i = $$instructions[-1];
+  my $a = $i->action;
+  $assembly->lowLevelReplaceSource($instructions, q(source))  if $i->source;
+  $assembly->lowLevelReplaceSource($instructions, q(source2)) if $i->source2;
+  $assembly->lowLevelReplaceTarget($instructions)             if $i->target;
+ }
+
+sub Zero::Emulator::Assembly::lowLevel($)                                       #P Convert all heap memory operations into  mov's so that we can use a separate heap memory on the fpga
+ {my ($assembly) = @_;                                                          # Code block
   my @l;                                                                        # The equivalent low level instruction sequence
   my $code = $assembly->code;                                                   # The code to be assembled
   for my $c(keys @$code)                                                        # Labels
    {my $i = $$code[$c];
+    my $a = $i->action;
     push @l, $i;
-    $assembly->lowLevelReplaceSource(\@l, q(source))  if $i->source;
-    $assembly->lowLevelReplaceSource(\@l, q(source2)) if $i->source2;
-    $assembly->lowLevelReplaceTarget(\@l)             if $i->target;
+    $assembly->lowLevelReplace(\@l);
    }
 
   $assembly->code = [@l];
