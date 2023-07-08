@@ -14,12 +14,12 @@ use feature qw(say current_sub);
 
 makeDieConfess;
 
-my $home     = q(/home/phil/perl/cpan/ZeroEmulator/);                           # Local files
-my $user     = q(philiprbrenan);                                                # User
-my $repo     = q(zero);                                                         # Store code here so it can be referenced from a browser
-my $wf       = q(.github/workflows/main.yml);                                   # Work flow on Ubuntu
-my $repoUrl  = q(https://github.com/philiprbrenan/zero);                        # Repo
-my $timeFile = q(zzzFileTimes.data);                                            # Last upload time
+my $home     =  q(/home/phil/perl/cpan/ZeroEmulator/);                          # Local files
+my $user     =  q(philiprbrenan);                                               # User
+my $repo     =  q(zero);                                                        # Store code here so it can be referenced from a browser
+my $wf       =  q(.github/workflows/main.yml);                                  # Work flow on Ubuntu
+my $repoUrl  = qq(https://github.com/philiprbrenan/$repo);                      # Repo
+my $timeFile =  q(.fileTimes.data);                                             # Last upload time
 my $emulator = fpf $home, q(lib/Zero/Emulator.pm);                              # Emulator
 my $btree    = fpf $home, q(lib/Zero/BTree.pm);                                 # Btree
 my $readMe   = fpe $home, qw(README md2);                                       # Read me
