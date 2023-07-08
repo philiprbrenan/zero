@@ -104,6 +104,11 @@ module MemoryTB();                                                              
     index = 5;                              step();  ok(out == 65, "ML 5");
     index = 6;                              step();  ok(out == 66, "ML 6");
     index = 7;                              step();  ok(out == 67, "ML 7");
-    checkAllTestsPassed(38);
+
+    array = 2; in = 2;  action = m.Resize;  step();
+                        action = m.Size;    step();  ok(out ==  2, "Resize1");
+    array = 2; in =22;  action = m.Resize;  step();                             // Too big so no update
+                        action = m.Size;    step();  ok(out ==  2, "Resize2");
+    checkAllTestsPassed(40);
   end
 endmodule
