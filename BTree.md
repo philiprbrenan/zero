@@ -4,7 +4,7 @@ Zero::NWayTree - N-Way-Tree written in the Zero assembler programming language.
 
 <div>
 
-    <p><a href="https://github.com/philiprbrenan/zero"><img src="https://github.com/philiprbrenan/zero/workflows/Test/badge.svg"></a>
+    <p><a href="https://github.com/philiprbrenan/zeroLowLevel"><img src="https://github.com/philiprbrenan/zeroLowLevel/workflows/Test/badge.svg"></a>
 </div>
 
 # Synopsis
