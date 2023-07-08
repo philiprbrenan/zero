@@ -1,10 +1,10 @@
 # Name
 
-Zero::Emulator - Assemble and emulate a program written in the [Zero](https://github.com/philiprbrenan/zero) assembler programming language.
+Zero::Emulator - Assemble and emulate a program written in the [Zero](https://github.com/philiprbrenan/zeroLowLevel) assembler programming language.
 
 <div>
 
-    <p><a href="https://github.com/philiprbrenan/zero"><img src="https://github.com/philiprbrenan/zero/workflows/Test/badge.svg"></a>
+    <p><a href="https://github.com/philiprbrenan/zeroLowLevel"><img src="https://github.com/philiprbrenan/zeroLowLevel/workflows/Test/badge.svg"></a>
 </div>
 
 # Synopsis
@@ -58,27 +58,11 @@ Add the source locations together and store the result in the target area.
       my $a = Add 3, 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out  $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [5];
     
-      $e->compileToVerilog("Add") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      $e->generateVerilogMachineCode("Add") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-     }
-    
-    if (1)                                                                          
-     {Start 1;
-      my $b = Array 'b';
-      my $a = Array 'a';
-      Mov [$a, 0, 'a'], 11;
-      Mov [$a, 1, 'a'], 22;
-    
-      Add [$a, 2, 'a'], [$a, 1, 'a'], [$a, 0, 'a'];  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
-      my $c = Mov $a;
-      Out [$c, 2, 'a'];
-      my $e = Execute(suppressOutput=>1, lowLevel=>1);
-      is_deeply $e->outLines, [33];
-      $e->compileToVerilog("ArrayAdd") if $debug;
      }
     
 
@@ -102,15 +86,15 @@ Create a new memory area and write its number into the address named by the targ
       my $A = Array "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Mov     [$A,  1, "aaa"],  33;
-      my $B = Mov [$A, 1, "aaa"];
-      Out     [$a,  0, "aaa"];
-      Out     [$a,  1, "aaa"];
+      my $B = Mov [$A, \1, "aaa"];
+      Out     [$a,  \0, "aaa"];
+      Out     [$a,  \1, "aaa"];
       Out     $B;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [11, 22, 33];
     
-      $e->compileToVerilog("Array") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      $e->generateVerilogMachineCode("Array") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
      }
     
@@ -123,7 +107,7 @@ Create a new memory area and write its number into the address named by the targ
       my $c = Mov $a;
       Mov [$a, 0, 'alloc'], $b;
       Mov [$c, 1, 'alloc'], 2;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->Heap->($e, 0), [99, 2];
      }
     
@@ -161,7 +145,7 @@ Create a new memory area and write its number into the address named by the targ
       my $V = Mov [$a, \$i, 'aaa'];
       AssertEq $v, $V;
       Out [$a, \$i, 'aaa'];
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [11];
      }
     
@@ -171,7 +155,7 @@ Create a new memory area and write its number into the address named by the targ
       my $a = Array "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       #Clear $a, 10, 'aaa';
-      my $e = Execute(suppressOutput=>1, maximumArraySize=>10);
+      my $e = &$ee(suppressOutput=>1, maximumArraySize=>10);
       is_deeply $e->Heap->($e, 0), [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
      }
     
@@ -184,7 +168,7 @@ Create a new memory area and write its number into the address named by the targ
       ParamsPut 0, 1;  Call $set;
       ParamsPut 0, 2;  Call $set;
       ParamsPut 0, 3;  Call $set;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     1
     2
@@ -209,13 +193,11 @@ Create a new memory area and write its number into the address named by the targ
         Out 2;
        } 3;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
-    
-      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       31 instructions executed" if     $e->assembly->lowLevelOps;
-      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       19 instructions executed" unless $e->assembly->lowLevelOps;
+      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       19 instructions executed";
       is_deeply $e->outLines, [1, 2, 1, 1, 2];
-      $e->compileToVerilog("Mov2") if $testSet == 1 and $debug;
+      $e->generateVerilogMachineCode("Mov2") if $testSet == 1 and $debug;
      }
     
     if (1)                                                                          
@@ -231,7 +213,7 @@ Create a new memory area and write its number into the address named by the targ
         Dump;
        } 3;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->counts,                                                         # Several allocations and frees
        {array=>3, free=>3, add=>3, jGe=>4, jmp=>3, mov=>4
@@ -309,7 +291,7 @@ Count the number of elements in the array specified by the first source operand 
     1
     END
     
-      $e->compileToVerilog("ArrayCountLess") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      $e->generateVerilogMachineCode("ArrayCountLess") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
      }
     
@@ -329,7 +311,7 @@ Count the number of elements in the array specified by the first source operand 
     
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->outLines, [qw(3 2 1 0 3 2 1 0 0 1 2 3)];
-      $e->compileToVerilog("Array_scans") if $testSet == 1 and $debug;
+      $e->generateVerilogMachineCode("Array_scans") if $testSet == 1 and $debug;
      }
     
 
@@ -353,7 +335,7 @@ Count the number of elements in the array specified by the first source operand 
       is_deeply $e->out, <<END;
     2
     END
-      $e->compileToVerilog("ArrayCountGreaterIndex") if $testSet == 1 and $debug;
+      $e->generateVerilogMachineCode("ArrayCountGreaterIndex") if $testSet == 1 and $debug;
      }
     
     if (1)                                                                            
@@ -372,7 +354,7 @@ Count the number of elements in the array specified by the first source operand 
     
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->outLines, [qw(3 2 1 0 3 2 1 0 0 1 2 3)];
-      $e->compileToVerilog("Array_scans") if $testSet == 1 and $debug;
+      $e->generateVerilogMachineCode("Array_scans") if $testSet == 1 and $debug;
      }
     
 
@@ -394,11 +376,13 @@ Dump an array.
     
       ArrayDump $a;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
       is_deeply eval($e->out), [1, 22, 333];
     
-      is_deeply $e->assembly->codeToString, <<'END' unless $e->assembly->lowLevelOps;
+      #say STDERR $e->block->codeToString;
+    
+      is_deeply $e->block->codeToString, <<'END' if $testSet % 2 == 1;
     0000     array            0             3
     0001       mov [\0, 0, 3, 0]             1
     0002       mov [\0, 1, 3, 0]            22
@@ -406,21 +390,13 @@ Dump an array.
     0004  arrayDump            0
     END
     
-      is_deeply $e->assembly->codeToString, <<'END' if     $e->assembly->lowLevelOps;
-    0000     array            0             3
-    0001       mov            1             1
-    0002  movWrite1 [\0, 0, 3, 0]            \1
-    0003  movWrite2
-    0004       mov            2            22
-    0005  movWrite1 [\0, 1, 3, 0]            \2
-    0006  movWrite2
-    0007       mov            3           333
-    0008  movWrite1 [\0, 2, 3, 0]            \3
-    0009  movWrite2
-    0010  arrayDump            0
+      is_deeply $e->block->codeToString, <<'END' if $testSet % 2 == 0;
+    0000     array [undef, 0, 3, 0]  [undef, 3, 3, 0]  [undef, 0, 3, 0]
+    0001       mov [\0, 0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+    0002       mov [\0, 1, 3, 0]  [undef, 22, 3, 0]  [undef, 0, 3, 0]
+    0003       mov [\0, 2, 3, 0]  [undef, 333, 3, 0]  [undef, 0, 3, 0]
+    0004  arrayDump [undef, 0, 3, 0]  [undef, 0, 3, 0]  [undef, 0, 3, 0]
     END
-    
-      #say STDERR $e->assembly->codeToString; exit;
      }
     
 
@@ -444,9 +420,9 @@ Write an array to out
       ArrayOut $a;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       my $e = Execute(suppressOutput=>1, in => [9,88,777]);
-      is_deeply $e->outLines, [9, 88, 777];
+      is_deeply $e->out, "9 88 777";
     
-    # $e->compileToVerilog("ArrayOut") if $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+    # $e->generateVerilogMachineCode("ArrayOut") if $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
      }
     
@@ -472,7 +448,7 @@ Store in the target location the 1 based index of the second source operand in t
     2
     END
     
-      $e->compileToVerilog("ArrayIndex") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      $e->generateVerilogMachineCode("ArrayIndex") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
      }
     
@@ -492,7 +468,7 @@ Store in the target location the 1 based index of the second source operand in t
     
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->outLines, [qw(3 2 1 0 3 2 1 0 0 1 2 3)];
-      $e->compileToVerilog("Array_scans") if $testSet == 1 and $debug;
+      $e->generateVerilogMachineCode("Array_scans") if $testSet == 1 and $debug;
      }
     
 
@@ -586,7 +562,7 @@ Assert regardless.
     
       Assert;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     
     Assert failed  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -613,7 +589,7 @@ Assert two memory locations are equal.
     
       AssertEq \0, 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     Assert 1 == 2 failed
         1     2 assertEq
@@ -637,7 +613,7 @@ Assert false.
     
       AssertFalse 1;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1, trace=>1);
+      my $e = &$ee(suppressOutput=>1, trace=>1);
       #say STDERR dump($e->out);
     
       is_deeply $e->out, <<END;
@@ -668,7 +644,7 @@ Assert that the first value is greater than or equal to the second value.
     
       AssertGe \0, 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     Assert 1 >= 2 failed
         1     2 assertGe
@@ -693,7 +669,7 @@ Assert that the first value is greater than the second value.
     
       AssertGt \0, 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     Assert 1 >  2 failed
         1     2 assertGt
@@ -718,7 +694,7 @@ Assert that the first value is less than or equal to the second value.
     
       AssertLe \0, 0;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     Assert 1 <= 0 failed
         1     2 assertLe
@@ -743,7 +719,7 @@ Assert that the first value is less than  the second value.
     
       AssertLt \0, 0;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     Assert 1 <  0 failed
         1     2 assertLt
@@ -768,7 +744,7 @@ Assert two memory locations are not equal.
     
       AssertNe \0, 1;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     Assert 1 != 1 failed
         1     2 assertNe
@@ -792,7 +768,7 @@ Assert true.
     
       AssertTrue  0;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1, trace=>1);
+      my $e = &$ee(suppressOutput=>1, trace=>1);
       #say STDERR dump($e->out);
     
       is_deeply $e->out, <<END;
@@ -831,7 +807,7 @@ A bad ending to a block of code.
        {Out 3;
        };
       Out 4;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     1
     2
@@ -866,7 +842,7 @@ Block of code that can either be restarted or come to a good or a bad ending.
        {Out 3;
        };
       Out 4;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     1
     2
@@ -890,7 +866,7 @@ Block of code that can either be restarted or come to a good or a bad ending.
        {Out 3;
        };
       Out 4;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     1
     3
@@ -917,7 +893,7 @@ Call the subroutine at the target address.
     
       Call $w;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [1];
      }
     
@@ -932,7 +908,7 @@ Call the subroutine at the target address.
     
       Call $w;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [999];
      }
     
@@ -947,7 +923,7 @@ Call the subroutine at the target address.
 
       ReturnGet \0, 0;
       Out \0;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [999];
      }
     
@@ -983,7 +959,7 @@ Call the subroutine at the target address.
       my $V = Mov [$a, \$i, 'aaa'];
       AssertEq $v, $V;
       Out [$a, \$i, 'aaa'];
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [11];
      }
     
@@ -1002,7 +978,7 @@ Call the subroutine at the target address.
     
       ParamsPut 0, 3;  Call $set;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     1
     2
@@ -1025,7 +1001,7 @@ Confess with a stack trace showing the location both in the emulated code and in
 
        };
       Call $c;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     
     Confess at:  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
@@ -1052,7 +1028,7 @@ Decrement the target.
       Dec $a;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [2];
      }
     
@@ -1069,8 +1045,8 @@ Dump all the arrays currently in memory.
       Out $a;
       Mov [$a, 1, 'node'], 1;
       Mov [$a, 2, 'node'], 2;
-      Out Mov [$a, 1, 'node'];
-      Out Mov [$a, 2, 'node'];
+      Out Mov [$a, \1, 'node'];
+      Out Mov [$a, \2, 'node'];
       Free $a, "node";
       my $e = Execute(suppressOutput=>1);
       #say STDERR $e->PrintHeap->($e); exit;
@@ -1101,7 +1077,7 @@ Else block.
 
        {Out 0
        };
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [0];
      }
     
@@ -1130,27 +1106,11 @@ Else block.
        {Mov 3, 3;
         Mov 4, 4;
        };
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
-      #say STDERR $e->out; exit;
-    
-      is_deeply $e->out, <<END unless $e->assembly->lowLevelOps;
+      is_deeply $e->out, <<END;
     Trace: 1
         1     0     0    59         trace
-        2     1     1    29           jNe
-        3     5     0    32         label
-        4     6     1    35           mov  [0, 3, stackArea] = 3
-        5     7     1    35           mov  [0, 4, stackArea] = 4
-        6     8     0    32         label
-        7     9     1    29           jNe
-        8    10     1    35           mov  [0, 1, stackArea] = 1
-        9    11     1    35           mov  [0, 2, stackArea] = 1
-       10    12     1    31           jmp
-       11    16     0    32         label
-    END
-    
-      is_deeply $e->out, <<END if $e->assembly->lowLevelOps;
-        1     0     0    63         trace
         2     1     1    29           jNe
         3     5     0    32         label
         4     6     1    35           mov  [0, 3, stackArea] = 3
@@ -1207,7 +1167,7 @@ For loop 0..range-1 or in reverse.
        {my ($i) = @_;
         Out $i;
        } 10;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [0..9];
      }
     
@@ -1219,7 +1179,7 @@ For loop 0..range-1 or in reverse.
        {my ($i) = @_;
         Out $i;
        } 10, reverse=>1;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [reverse 0..9];
      }
     
@@ -1231,7 +1191,7 @@ For loop 0..range-1 or in reverse.
        {my ($i) = @_;
         Out $i;
        } [2, 10];
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [2..9];
      }
     
@@ -1326,7 +1286,7 @@ For loop to process each element remaining in the input channel
     
       my $e = Execute(suppressOutput=>1, trace=>0, in=>[333, 22, 1]);
     
-      $e->compileToVerilog("ForIn") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      $e->generateVerilogMachineCode("ForIn") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       is_deeply $e->outLines, [3, 333,  2, 22, 1, 1];
      }
@@ -1342,7 +1302,7 @@ For loop to process each element remaining in the input channel
        };
       my $e = Execute(suppressOutput=>1, in => [33,22,11]);
       is_deeply $e->outLines, [3,33, 2,22, 1,11];
-      $e->compileToVerilog("In") if $debug;
+      $e->generateVerilogMachineCode("In") if $debug;
      }
     
 
@@ -1375,8 +1335,8 @@ Free the memory area named by the target operand after confirming that it has th
       Out $a;
       Mov [$a, 1, 'node'], 1;
       Mov [$a, 2, 'node'], 2;
-      Out Mov [$a, 1, 'node'];
-      Out Mov [$a, 2, 'node'];
+      Out Mov [$a, \1, 'node'];
+      Out Mov [$a, \2, 'node'];
     
       Free $a, "node";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
@@ -1414,7 +1374,7 @@ A good ending to a block of code.
        {Out 3;
        };
       Out 4;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     1
     2
@@ -1516,7 +1476,7 @@ Execute then clause if the specified memory address is zero thus representing fa
       Else
        {Out 0
        };
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [0];
      }
     
@@ -1902,7 +1862,7 @@ Execute then clause if the specified memory address is not zero thus representin
       Else
        {Out 0
        };
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [1];
      }
     
@@ -1934,7 +1894,7 @@ Read a value from the input channel
       Out $i0;
       my $e = Execute(suppressOutput=>1, in=>[88, 44]);
       is_deeply $e->outLines, [88, 44, 2, 1, 0];
-      $e->compileToVerilog("InSize") if $testSet == 1 and $debug;
+      $e->generateVerilogMachineCode("InSize") if $testSet == 1 and $debug;
      }
     
 
@@ -1968,7 +1928,7 @@ Number of elements remining in the input channel
       my $e = Execute(suppressOutput=>1, in=>[88, 44]);
       is_deeply $e->outLines, [88, 44, 2, 1, 0];
     
-      $e->compileToVerilog("InSize") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      $e->generateVerilogMachineCode("InSize") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
      }
     
@@ -1989,7 +1949,7 @@ Increment the target.
       Inc $a;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [4];
      }
     
@@ -2062,9 +2022,9 @@ Jump to a target label if the first source field is equal to the second source f
           Out 10;
          };
        } 5;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [1, 3, 5, 9, 10, 2, 4, 5, 9, 10, 2, 4, 5, 9, 10, 2, 4, 6, 8, 10, 2, 4, 5, 7, 8];
-      $e->compileToVerilog("JFalse") if $testSet == 1 and $debug;
+      $e->generateVerilogMachineCode("JFalse") if $testSet == 1 and $debug;
      }
     
     if (1)                                                                          
@@ -2089,7 +2049,7 @@ Jump to a target label if the first source field is equal to the second source f
       my $e = Execute(suppressOutput=>1);
       is_deeply $e->outLines, [111, 333];
     
-      $e->compileToVerilog("Jeq") if $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      $e->generateVerilogMachineCode("Jeq") if $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
      }
     
@@ -2163,10 +2123,10 @@ Jump to a target label if the first source field is equal to zero.
           Out 10;
          };
        } 5;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [1, 3, 5, 9, 10, 2, 4, 5, 9, 10, 2, 4, 5, 9, 10, 2, 4, 6, 8, 10, 2, 4, 5, 7, 8];
     
-      $e->compileToVerilog("JFalse") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      $e->generateVerilogMachineCode("JFalse") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
      }
     
@@ -2239,9 +2199,9 @@ Jump to a target label if the first source field is greater than or equal to the
           Out 10;
          };
        } 5;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [1, 3, 5, 9, 10, 2, 4, 5, 9, 10, 2, 4, 5, 9, 10, 2, 4, 6, 8, 10, 2, 4, 5, 7, 8];
-      $e->compileToVerilog("JFalse") if $testSet == 1 and $debug;
+      $e->generateVerilogMachineCode("JFalse") if $testSet == 1 and $debug;
      }
     
 
@@ -2313,9 +2273,9 @@ Jump to a target label if the first source field is greater than the second sour
           Out 10;
          };
        } 5;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [1, 3, 5, 9, 10, 2, 4, 5, 9, 10, 2, 4, 5, 9, 10, 2, 4, 6, 8, 10, 2, 4, 5, 7, 8];
-      $e->compileToVerilog("JFalse") if $testSet == 1 and $debug;
+      $e->generateVerilogMachineCode("JFalse") if $testSet == 1 and $debug;
      }
     
 
@@ -2387,9 +2347,9 @@ Jump to a target label if the first source field is less than or equal to the se
           Out 10;
          };
        } 5;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [1, 3, 5, 9, 10, 2, 4, 5, 9, 10, 2, 4, 5, 9, 10, 2, 4, 6, 8, 10, 2, 4, 5, 7, 8];
-      $e->compileToVerilog("JFalse") if $testSet == 1 and $debug;
+      $e->generateVerilogMachineCode("JFalse") if $testSet == 1 and $debug;
      }
     
 
@@ -2461,9 +2421,9 @@ Jump to a target label if the first source field is less than the second source 
           Out 10;
          };
        } 5;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [1, 3, 5, 9, 10, 2, 4, 5, 9, 10, 2, 4, 5, 9, 10, 2, 4, 6, 8, 10, 2, 4, 5, 7, 8];
-      $e->compileToVerilog("JFalse") if $testSet == 1 and $debug;
+      $e->generateVerilogMachineCode("JFalse") if $testSet == 1 and $debug;
      }
     
 
@@ -2488,10 +2448,10 @@ Jump to a label.
       setLabel($a);
         Out  2;
       setLabel($b);
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [2];
     
-      $e->compileToVerilog("Jmp") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      $e->generateVerilogMachineCode("Jmp") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
      }
     
@@ -2564,9 +2524,9 @@ Jump to a target label if the first source field is not equal to the second sour
           Out 10;
          };
        } 5;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [1, 3, 5, 9, 10, 2, 4, 5, 9, 10, 2, 4, 5, 9, 10, 2, 4, 6, 8, 10, 2, 4, 5, 7, 8];
-      $e->compileToVerilog("JFalse") if $testSet == 1 and $debug;
+      $e->generateVerilogMachineCode("JFalse") if $testSet == 1 and $debug;
      }
     
 
@@ -2639,9 +2599,9 @@ Jump to a target label if the first source field is not equal to zero.
           Out 10;
          };
        } 5;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [1, 3, 5, 9, 10, 2, 4, 5, 9, 10, 2, 4, 5, 9, 10, 2, 4, 6, 8, 10, 2, 4, 5, 7, 8];
-      $e->compileToVerilog("JFalse") if $testSet == 1 and $debug;
+      $e->generateVerilogMachineCode("JFalse") if $testSet == 1 and $debug;
      }
     
 
@@ -2659,7 +2619,7 @@ Load the address component of an address.
     
       my $d = LoadAddress $c;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $f = LoadArea    [$a, 0, 'array'];
+      my $f = LoadArea    [$a, \0, 'array'];
     
       Out $d;
       Out $f;
@@ -2668,7 +2628,7 @@ Load the address component of an address.
       Mov [$a, \$c, 'array'], 33;
       Mov [$f, \$d, 'array'], 44;
     
-      my $e = Execute(suppressOutput=>1, maximumArraySize=>6);
+      my $e = &$ee(suppressOutput=>1, maximumArraySize=>6);
     
       is_deeply $e->out, <<END;
     2
@@ -2696,7 +2656,7 @@ Load the area component of an address.
       my $c = Mov 5;
       my $d = LoadAddress $c;
     
-      my $f = LoadArea    [$a, 0, 'array'];  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      my $f = LoadArea    [$a, \0, 'array'];  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
       Out $d;
@@ -2706,7 +2666,7 @@ Load the area component of an address.
       Mov [$a, \$c, 'array'], 33;
       Mov [$f, \$d, 'array'], 44;
     
-      my $e = Execute(suppressOutput=>1, maximumArraySize=>6);
+      my $e = &$ee(suppressOutput=>1, maximumArraySize=>6);
     
       is_deeply $e->out, <<END;
     2
@@ -2733,7 +2693,7 @@ Copy a constant or memory address to the target address.
       my $a = Mov 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [2];
      }
     
@@ -2753,15 +2713,15 @@ Copy a constant or memory address to the target address.
       Mov     [$A,  1, "aaa"],  33;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
-      my $B = Mov [$A, 1, "aaa"];  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      my $B = Mov [$A, \1, "aaa"];  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      Out     [$a,  0, "aaa"];
-      Out     [$a,  1, "aaa"];
+      Out     [$a,  \0, "aaa"];
+      Out     [$a,  \1, "aaa"];
       Out     $B;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [11, 22, 33];
-      $e->compileToVerilog("Array") if $testSet == 1 and $debug;
+      $e->generateVerilogMachineCode("Array") if $testSet == 1 and $debug;
      }
     
     if (1)                                                                           
@@ -2779,7 +2739,7 @@ Copy a constant or memory address to the target address.
     
       Mov [$c, 1, 'alloc'], 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->Heap->($e, 0), [99, 2];
      }
     
@@ -2821,7 +2781,7 @@ Copy a constant or memory address to the target address.
 
       AssertEq $v, $V;
       Out [$a, \$i, 'aaa'];
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [11];
      }
     
@@ -2834,7 +2794,7 @@ Copy a constant or memory address to the target address.
       ParamsPut 0, 1;  Call $set;
       ParamsPut 0, 2;  Call $set;
       ParamsPut 0, 3;  Call $set;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     1
     2
@@ -2865,13 +2825,11 @@ Copy a constant or memory address to the target address.
         Out 2;
        } 3;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
-    
-      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       31 instructions executed" if     $e->assembly->lowLevelOps;
-      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       19 instructions executed" unless $e->assembly->lowLevelOps;
+      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       19 instructions executed";
       is_deeply $e->outLines, [1, 2, 1, 1, 2];
-      $e->compileToVerilog("Mov2") if $testSet == 1 and $debug;
+      $e->generateVerilogMachineCode("Mov2") if $testSet == 1 and $debug;
      }
     
     if (1)                                                                           
@@ -2887,11 +2845,13 @@ Copy a constant or memory address to the target address.
       Mov [$a, 2, "aaa"], 333;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       ArrayDump $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
       is_deeply eval($e->out), [1, 22, 333];
     
-      is_deeply $e->assembly->codeToString, <<'END' unless $e->assembly->lowLevelOps;
+      #say STDERR $e->block->codeToString;
+    
+      is_deeply $e->block->codeToString, <<'END' if $testSet % 2 == 1;
     0000     array            0             3
     0001       mov [\0, 0, 3, 0]             1
     0002       mov [\0, 1, 3, 0]            22
@@ -2899,21 +2859,13 @@ Copy a constant or memory address to the target address.
     0004  arrayDump            0
     END
     
-      is_deeply $e->assembly->codeToString, <<'END' if     $e->assembly->lowLevelOps;
-    0000     array            0             3
-    0001       mov            1             1
-    0002  movWrite1 [\0, 0, 3, 0]            \1
-    0003  movWrite2
-    0004       mov            2            22
-    0005  movWrite1 [\0, 1, 3, 0]            \2
-    0006  movWrite2
-    0007       mov            3           333
-    0008  movWrite1 [\0, 2, 3, 0]            \3
-    0009  movWrite2
-    0010  arrayDump            0
+      is_deeply $e->block->codeToString, <<'END' if $testSet % 2 == 0;
+    0000     array [undef, 0, 3, 0]  [undef, 3, 3, 0]  [undef, 0, 3, 0]
+    0001       mov [\0, 0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+    0002       mov [\0, 1, 3, 0]  [undef, 22, 3, 0]  [undef, 0, 3, 0]
+    0003       mov [\0, 2, 3, 0]  [undef, 333, 3, 0]  [undef, 0, 3, 0]
+    0004  arrayDump [undef, 0, 3, 0]  [undef, 0, 3, 0]  [undef, 0, 3, 0]
     END
-    
-      #say STDERR $e->assembly->codeToString; exit;
      }
     
 
@@ -2941,29 +2893,29 @@ Copy the number of elements specified by the second source operand from the loca
        } $N;
     
     
-      MoveLong [$b, 2, 'bbb'], [$a, 4, 'aaa'], 3;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      MoveLong [$b, \2, 'bbb'], [$a, \4, 'aaa'], 3;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
-      my $e = Execute(suppressOutput=>1, maximumArraySize=>11);
+      my $e = &$ee(suppressOutput=>1, maximumArraySize=>11);
       is_deeply $e->Heap->($e, 0), [0 .. 9];
       is_deeply $e->Heap->($e, 1), [100, 101, 4, 5, 6, 105 .. 109];
-      $e->compileToVerilog("MoveLong_1") if $testSet == 1 and $debug;
+      $e->generateVerilogMachineCode("MoveLong_1") if $testSet == 1 and $debug;
      }
     
     if (1)                                                                          
      {Start 1;
       my $a = Array "aaa";
       my $b = Array "bbb";
-      Mov [$a, 0, 'aaa'],  11;
-      Mov [$a, 1, 'aaa'],  22;
-      Mov [$a, 2, 'aaa'],  33;
-      Mov [$a, 3, 'aaa'],  44;
-      Mov [$a, 4, 'aaa'],  55;
-      Mov [$b, 0, 'bbb'],  66;
-      Mov [$b, 1, 'bbb'],  77;
-      Mov [$b, 2, 'bbb'],  88;
-      Mov [$b, 3, 'bbb'],  99;
-      Mov [$b, 4, 'bbb'], 101;
+      Mov [$a, \0, 'aaa'],  11;
+      Mov [$a, \1, 'aaa'],  22;
+      Mov [$a, \2, 'aaa'],  33;
+      Mov [$a, \3, 'aaa'],  44;
+      Mov [$a, \4, 'aaa'],  55;
+      Mov [$b, \0, 'bbb'],  66;
+      Mov [$b, \1, 'bbb'],  77;
+      Mov [$b, \2, 'bbb'],  88;
+      Mov [$b, \3, 'bbb'],  99;
+      Mov [$b, \4, 'bbb'], 101;
       Resize $a, 5, 'aaa';
       Resize $b, 5, 'bbb';
     
@@ -2978,7 +2930,7 @@ Copy the number of elements specified by the second source operand from the loca
        } $b, "bbb";
     
     
-      MoveLong [$a, 1, 'aaa'], [$b, 2, 'bbb'], 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      MoveLong [$a, \1, 'aaa'], [$b, \2, 'bbb'], 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
       ForArray
@@ -2995,7 +2947,7 @@ Copy the number of elements specified by the second source operand from the loca
       is_deeply $e->heap(0), bless([11, 88, 99, 44, 55], "aaa");
       is_deeply $e->heap(1), bless([66, 77, 88, 99, 101],"bbb");
       is_deeply $e->outLines, [11, 22, 33, 44, 55, 66, 77, 88, 99, 101, 11, 88, 99, 44, 55, 66, 77, 88, 99, 101];
-      $e->compileToVerilog("MoveLong_2") if $debug;
+      $e->generateVerilogMachineCode("MoveLong_2") if $debug;
      }
     
 
@@ -3017,14 +2969,14 @@ Move and not.
       Out $a;
       Out $b;
       Out $c;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, <<END;
     3
     0
     1
     END
     
-      $e->compileToVerilog("Not") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      $e->generateVerilogMachineCode("Not") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
      }
     
@@ -3040,7 +2992,7 @@ Do nothing (but do it well!).
     
       Nop;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute;
+      my $e = &$ee;
       is_deeply $e->out, "";
      }
     
@@ -3134,7 +3086,7 @@ Get a word from the parameters in the previous frame and store it in the current
       my $V = Mov [$a, \$i, 'aaa'];
       AssertEq $v, $V;
       Out [$a, \$i, 'aaa'];
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [11];
      }
     
@@ -3174,7 +3126,7 @@ Put a word into the parameters list to make it visible in a called procedure.
       my $V = Mov [$a, \$i, 'aaa'];
       AssertEq $v, $V;
       Out [$a, \$i, 'aaa'];
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [11];
      }
     
@@ -3202,7 +3154,7 @@ Pop the memory area specified by the source operand into the memory address spec
     
       Out $c;
       Out $d;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
       #say STDERR $e->PrintLocal->($e); x;
       is_deeply $e->PrintLocal->($e), <<END;
@@ -3212,7 +3164,7 @@ Pop the memory area specified by the source operand into the memory address spec
       is_deeply $e->Heap->($e, 0), [];
       is_deeply $e->outLines, [2, 1];
     
-      $e->compileToVerilog("Pop") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      $e->generateVerilogMachineCode("Pop") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
      }
     
@@ -3241,7 +3193,7 @@ Define a procedure.
       Call $add;
       my $c = ReturnGet 0;
       Out $c;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [4];
      }
     
@@ -3254,7 +3206,7 @@ Define a procedure.
       Then
        {Out 99;
        };
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [1..10];
       is_deeply $e->outLines, [1..10];
      }
@@ -3280,7 +3232,7 @@ Push the value in the current stack frame specified by the source operand onto t
     
       Push $a, 2,     "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       #say STDERR $e->PrintHeap->($e); x;
       is_deeply $e->PrintHeap->($e), <<END;
     Heap: |  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
@@ -3310,7 +3262,7 @@ Push the value in the current stack frame specified by the source operand onto t
     
       Push $b, 33, "bbb";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->GetMemoryArrays->($e), 2;
     
       #say STDERR $e->PrintHeap->($e); exit;
@@ -3341,7 +3293,7 @@ Push the value in the current stack frame specified by the source operand onto t
       is_deeply $e->Heap->($e, 0), [1..2];
       is_deeply $e->outLines,      [1..2];
     
-      $e->compileToVerilog("Push") if $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      $e->generateVerilogMachineCode("Push") if $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
      }
     
@@ -3368,7 +3320,7 @@ Resize the target area to the source size.
       Resize $a, 2, "aaa";  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       ArrayDump $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->Heap->($e, 0), [1, 2];
       is_deeply eval($e->out), [1,2];
@@ -3391,7 +3343,7 @@ Create a random number in a specified range.
       my $a = Random 10;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       ok $e->out =~ m(\A\d\Z);
      }
     
@@ -3412,7 +3364,7 @@ Seed the random number generator.
 
       my $a = Random 10;
       Out $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       ok $e->out =~ m(\A\d\Z);
      }
     
@@ -3432,7 +3384,7 @@ Return from a procedure via the call stack.
 
        };
       Call $w;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [1];
      }
     
@@ -3457,7 +3409,7 @@ Get a word from the return area and save it.
       ReturnGet \0, 0;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out \0;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [999];
      }
     
@@ -3483,7 +3435,7 @@ Put a word into the return area.
       Call $w;
       ReturnGet \0, 0;
       Out \0;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [999];
      }
     
@@ -3507,11 +3459,11 @@ Shift an element down one in an area.
         sub{Mov [$a, 2, 'array'], 2};
     
     
-      my $b = ShiftDown [$a, 1, 'array'];  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      my $b = ShiftDown [$a, \1, 'array'];  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out $b;
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->Heap->($e, 0), [0, 2];
       is_deeply $e->outLines, [99];
      }
@@ -3534,10 +3486,10 @@ Shift left within an element.
       ShiftLeft $a, $a;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [2];
     
-      $e->compileToVerilog("ShiftLeft") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      $e->generateVerilogMachineCode("ShiftLeft") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
      }
     
@@ -3559,10 +3511,10 @@ Shift right with an element.
       ShiftRight $a, 1;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [2];
     
-      $e->compileToVerilog("ShiftRight") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      $e->generateVerilogMachineCode("ShiftRight") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
      }
     
@@ -3596,9 +3548,9 @@ Shift an element up one in an area.
         Out $a;
        } $a, "array";
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines,      [99, 0, 1, 2];
-      $e->compileToVerilog("Shift_up") if $testSet == 1 and $debug;
+      $e->generateVerilogMachineCode("Shift_up") if $testSet == 1 and $debug;
      }
     
     if (1)                                                                          
@@ -3619,7 +3571,7 @@ Shift an element up one in an area.
         Out $a;
        } $a, "array";
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [0, 99, 1, 2];
      }
     
@@ -3643,9 +3595,9 @@ Shift an element up one in an area.
         Out $a;
        } $a, "array";
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines,      [0, 1, 99, 2];
-      $e->compileToVerilog("Shift_up_2") if $testSet == 1 and $debug;
+      $e->generateVerilogMachineCode("Shift_up_2") if $testSet == 1 and $debug;
      }
     
     if (1)                                                                           
@@ -3661,7 +3613,7 @@ Shift an element up one in an area.
       ShiftUp [$a, 3, 'array'], 99;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
     
-      my $e = Execute(suppressOutput=>0);
+      my $e = &$ee(suppressOutput=>0);
       is_deeply $e->Heap->($e, 0), [0, 1, 2, 99];
       is_deeply [$e->timeParallel, $e->timeSequential], [3,5];
      }
@@ -3679,7 +3631,7 @@ Shift an element up one in an area.
     
       ShiftUp [$a, 2, 'array'], 26;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      my $e = Execute(suppressOutput=>1, maximumArraySize=>8);
+      my $e = &$ee(suppressOutput=>1, maximumArraySize=>8);
       is_deeply $e->Heap->($e, 0), bless([10, 20, 26, 30, 40, 50, 60, 70], "array");
      }
     
@@ -3722,10 +3674,10 @@ Subtract the second source operand value from the first source operand value and
       my $a = Subtract 4, 2;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       Out $a;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [2];
     
-      $e->compileToVerilog("Subtract") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+      $e->generateVerilogMachineCode("Subtract") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
      }
     
@@ -3782,7 +3734,7 @@ Then block.
       Else
        {Out 0
        };
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [0];
      }
     
@@ -3811,27 +3763,11 @@ Then block.
        {Mov 3, 3;
         Mov 4, 4;
        };
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
-      #say STDERR $e->out; exit;
-    
-      is_deeply $e->out, <<END unless $e->assembly->lowLevelOps;
+      is_deeply $e->out, <<END;
     Trace: 1
         1     0     0    59         trace
-        2     1     1    29           jNe
-        3     5     0    32         label
-        4     6     1    35           mov  [0, 3, stackArea] = 3
-        5     7     1    35           mov  [0, 4, stackArea] = 4
-        6     8     0    32         label
-        7     9     1    29           jNe
-        8    10     1    35           mov  [0, 1, stackArea] = 1
-        9    11     1    35           mov  [0, 2, stackArea] = 1
-       10    12     1    31           jmp
-       11    16     0    32         label
-    END
-    
-      is_deeply $e->out, <<END if $e->assembly->lowLevelOps;
-        1     0     0    63         trace
         2     1     1    29           jNe
         3     5     0    32         label
         4     6     1    35           mov  [0, 3, stackArea] = 3
@@ -3880,29 +3816,13 @@ Start or stop tracing.  Tracing prints each instruction executed and its effect 
        {Mov 3, 3;
         Mov 4, 4;
        };
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
-      #say STDERR $e->out; exit;
-    
-      is_deeply $e->out, <<END unless $e->assembly->lowLevelOps;
+      is_deeply $e->out, <<END;
     
     Trace: 1  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
         1     0     0    59         trace
-        2     1     1    29           jNe
-        3     5     0    32         label
-        4     6     1    35           mov  [0, 3, stackArea] = 3
-        5     7     1    35           mov  [0, 4, stackArea] = 4
-        6     8     0    32         label
-        7     9     1    29           jNe
-        8    10     1    35           mov  [0, 1, stackArea] = 1
-        9    11     1    35           mov  [0, 2, stackArea] = 1
-       10    12     1    31           jmp
-       11    16     0    32         label
-    END
-    
-      is_deeply $e->out, <<END if $e->assembly->lowLevelOps;
-        1     0     0    63         trace
         2     1     1    29           jNe
         3     5     0    32         label
         4     6     1    35           mov  [0, 3, stackArea] = 3
@@ -3938,7 +3858,7 @@ Enable or disable label tracing.  If tracing is enabled a stack trace is printed
        {my $a = Mov 1;
         Inc $a;
        } $N;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
     
       is_deeply $e->out, <<END;
     
@@ -3989,7 +3909,7 @@ Create a variable initialized to the specified value.
       my $a = Var 22;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
       AssertEq $a, 22;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->out, "";
      }
     
@@ -4045,7 +3965,7 @@ Runs its sub sections in simulated parallel so that we can prove that the sectio
     
       ShiftUp [$a, 3, 'array'], 99;
     
-      my $e = Execute(suppressOutput=>0);
+      my $e = &$ee(suppressOutput=>0);
       is_deeply $e->Heap->($e, 0), [0, 1, 2, 99];
       is_deeply [$e->timeParallel, $e->timeSequential], [3,5];
      }
@@ -4080,15 +4000,124 @@ Runs its sub sections in sequential order
         Out $a;
        } $a, "array";
     
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines,      [0, 1, 99, 2];
-      $e->compileToVerilog("Shift_up_2") if $testSet == 1 and $debug;
+      $e->generateVerilogMachineCode("Shift_up_2") if $testSet == 1 and $debug;
      }
     
 
 # Instruction Set Architecture
 
 Map the instruction set into a machine architecture.
+
+## GenerateMachineCode(%options)
+
+Generate a string of machine code from the current block of code.
+
+       Parameter  Description
+    1  %options   Generation options
+
+**Example:**
+
+    if (1)                                                                            
+     {Start 1;
+      my $a = Mov 1;
+    
+      my $g = GenerateMachineCode;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+    
+      my $d = disAssemble $g;
+         $d->assemble;
+      is_deeply $d->codeToString, <<'END';
+    0000       mov [undef, 0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+    END
+      my $e =  GenerateMachineCodeDisAssembleExecute;
+      is_deeply $e->block->codeToString, <<'END';
+    0000       mov [0, 0, 3, 0]  [0, 1, 3, 0]  [0, 0, 3, 0]
+    END
+     }
+    
+
+## disAssemble($mc)
+
+Disassemble machine code.
+
+       Parameter  Description
+    1  $mc        Machine code string
+
+**Example:**
+
+    if (1)                                                                            
+     {Start 1;
+      my $a = Mov 1;
+      my $g = GenerateMachineCode;
+    
+    
+      my $d = disAssemble $g;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+         $d->assemble;
+      is_deeply $d->codeToString, <<'END';
+    0000       mov [undef, 0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+    END
+      my $e =  GenerateMachineCodeDisAssembleExecute;
+      is_deeply $e->block->codeToString, <<'END';
+    0000       mov [0, 0, 3, 0]  [0, 1, 3, 0]  [0, 0, 3, 0]
+    END
+     }
+    
+
+## GenerateMachineCodeDisAssembleExecute(%options)
+
+Round trip: generate machine code and write it onto a string, disassemble the generated machine code string and recreate a block of code from it, then execute the reconstituted code to prove that it works as well as the original code.
+
+       Parameter  Description
+    1  %options   Options
+
+**Example:**
+
+    if (1)                                                                            
+     {Start 1;
+      my $a = Mov 1;
+      my $g = GenerateMachineCode;
+    
+      my $d = disAssemble $g;
+         $d->assemble;
+      is_deeply $d->codeToString, <<'END';
+    0000       mov [undef, 0, 3, 0]  [undef, 1, 3, 0]  [undef, 0, 3, 0]
+    END
+    
+      my $e =  GenerateMachineCodeDisAssembleExecute;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+      is_deeply $e->block->codeToString, <<'END';
+    0000       mov [0, 0, 3, 0]  [0, 1, 3, 0]  [0, 0, 3, 0]
+    END
+     }
+    
+
+# Generate Verilog
+
+## generateVerilogMachineCode($exec, $name)
+
+Generate machine code and print it out in Verilog format. We need the just completed execution environment so we can examine the out channel for the expected results.
+
+       Parameter  Description
+    1  $exec      Execution environment of completed run
+    2  $name      Name of subroutine to contain generated code
+
+**Example:**
+
+    if (1)                                                                            
+     {Start 1;
+      my $a = Mov 1;
+      ShiftLeft $a, $a;
+      Out $a;
+      my $e = &$ee(suppressOutput=>1);
+      is_deeply $e->outLines, [2];
+    
+      $e->generateVerilogMachineCode("ShiftLeft") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
+
+     }
+    
 
 # Compile to verilog
 
@@ -4118,7 +4147,7 @@ Compile each sub sequence of instructions into equivalent verilog.  A sub sequen
       is_deeply $e->in, [];
       is_deeply $e->inOriginally, [33, 22, 11];
       is_deeply $e->outLines, [1,2,3, 3,33, 2,22, 1,11];
-      is_deeply [map {$_->entry} $e->assembly->code->@*], [qw(1 0 0 1 0 0 0 0 0 0 0 0)]; # Sub sequence start points
+      is_deeply [map {$_->entry} $e->block->code->@*], [qw(1 0 0 1 0 0 0 0 0 0 0 0)]; # Sub sequence start points
     
       $e->compileToVerilog("ForIn") if $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
@@ -4207,7 +4236,7 @@ Low level memory access - push onto area
 
 Low level memory access - resize an area
 
-#### assembly
+#### block
 
 Block of code to be executed
 
@@ -4314,10 +4343,6 @@ Memory contents at the end of execution
 #### mostArrays
 
 The maximum number of arrays active at any point during the execution in each arena
-
-#### movReadAddress
-
-The address we wish to read during a read memory operation
 
 #### namesOfWidestArrays
 
@@ -4496,10 +4521,6 @@ Label counter used to generate unique labels
 #### labels
 
 Label name to instruction
-
-#### lowLevelOps
-
-Generate lower level instructions to allow heap to be placed in a separate verilog module
 
 #### procedures
 
@@ -4701,7 +4722,7 @@ Create a label.
     if (1)                                                                           
      {Start 1;
       Mov 0, 1;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
      }
     
     if (1)                                                                           
@@ -4720,7 +4741,7 @@ Create a label.
       setLabel($c);
         Out  4;
       setLabel($d);
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [2..3];
      }
     
@@ -4731,7 +4752,7 @@ Create a label.
         Out \0;
         Inc \0;
       Jlt $a, \0, 10;
-      my $e = Execute(suppressOutput=>1);
+      my $e = &$ee(suppressOutput=>1);
       is_deeply $e->outLines, [0..9];
      }
     
@@ -4751,6 +4772,40 @@ Stop recording the elapsed time for parallel sections.
 ## instructionMap()
 
 Instruction map
+
+## Zero::Emulator::Assembly::packRef($code, $instruction, $ref, $type)
+
+Pack a reference into 8 bytes.
+
+       Parameter     Description
+    1  $code         Code block being packed
+    2  $instruction  Instruction being packed
+    3  $ref          Reference being packed
+    4  $type         Type of reference being packed 0-target 1-source1 2-source2
+
+## Zero::Emulator::Assembly::unpackRef($code, $a, $operand)
+
+Unpack a reference.
+
+       Parameter  Description
+    1  $code      Code block being packed
+    2  $a         Instruction being packed
+    3  $operand   Reference being packed
+
+## Zero::Emulator::Assembly::packInstruction($code, $i)
+
+Pack an instruction.
+
+       Parameter  Description
+    1  $code      Code being packed
+    2  $i         Instruction to pack
+
+## disAssembleMinusContext($D)
+
+Disassemble and remove context information from disassembly to make testing easier.
+
+       Parameter  Description
+    1  $D         Machine code string
 
 ## CompileToVerilog(%options)
 
@@ -4823,139 +4878,155 @@ Compile a reference in assembler format to a corresponding verilog expression
 
 27 [Dec](#dec) - Decrement the target.
 
-28 [Dump](#dump) - Dump all the arrays currently in memory.
+28 [disAssemble](#disassemble) - Disassemble machine code.
 
-29 [Else](#else) - Else block.
+29 [disAssembleMinusContext](#disassembleminuscontext) - Disassemble and remove context information from disassembly to make testing easier.
 
-30 [Execute](#execute) - Execute the current assembly.
+30 [Dump](#dump) - Dump all the arrays currently in memory.
 
-31 [For](#for) - For loop 0.
+31 [Else](#else) - Else block.
 
-32 [ForArray](#forarray) - For loop to process each element of the named area.
+32 [Execute](#execute) - Execute the current assembly.
 
-33 [ForIn](#forin) - For loop to process each element remaining in the input channel
+33 [For](#for) - For loop 0.
 
-34 [Free](#free) - Free the memory area named by the target operand after confirming that it has the name specified on the source operand.
+34 [ForArray](#forarray) - For loop to process each element of the named area.
 
-35 [Good](#good) - A good ending to a block of code.
+35 [ForIn](#forin) - For loop to process each element remaining in the input channel
 
-36 [IfEq](#ifeq) - Execute then or else clause depending on whether two memory locations are equal.
+36 [Free](#free) - Free the memory area named by the target operand after confirming that it has the name specified on the source operand.
 
-37 [IfFalse](#iffalse) - Execute then clause if the specified memory address is zero thus representing false.
+37 [GenerateMachineCode](#generatemachinecode) - Generate a string of machine code from the current block of code.
 
-38 [IfGe](#ifge) - Execute then or else clause depending on whether two memory locations are greater than or equal.
+38 [GenerateMachineCodeDisAssembleExecute](#generatemachinecodedisassembleexecute) - Round trip: generate machine code and write it onto a string, disassemble the generated machine code string and recreate a block of code from it, then execute the reconstituted code to prove that it works as well as the original code.
 
-39 [IfGt](#ifgt) - Execute then or else clause depending on whether two memory locations are greater than.
+39 [generateVerilogMachineCode](#generateverilogmachinecode) - Generate machine code and print it out in Verilog format.
 
-40 [IfLe](#ifle) - Execute then or else clause depending on whether two memory locations are less than or equal.
+40 [Good](#good) - A good ending to a block of code.
 
-41 [IfLt](#iflt) - Execute then or else clause depending on whether two memory locations are less than.
+41 [IfEq](#ifeq) - Execute then or else clause depending on whether two memory locations are equal.
 
-42 [IfNe](#ifne) - Execute then or else clause depending on whether two memory locations are not equal.
+42 [IfFalse](#iffalse) - Execute then clause if the specified memory address is zero thus representing false.
 
-43 [IfTrue](#iftrue) - Execute then clause if the specified memory address is not zero thus representing true.
+43 [IfGe](#ifge) - Execute then or else clause depending on whether two memory locations are greater than or equal.
 
-44 [Ifx](#ifx) - Execute then or else clause depending on whether two memory locations are equal.
+44 [IfGt](#ifgt) - Execute then or else clause depending on whether two memory locations are greater than.
 
-45 [In](#in) - Read a value from the input channel
+45 [IfLe](#ifle) - Execute then or else clause depending on whether two memory locations are less than or equal.
 
-46 [Inc](#inc) - Increment the target.
+46 [IfLt](#iflt) - Execute then or else clause depending on whether two memory locations are less than.
 
-47 [InSize](#insize) - Number of elements remining in the input channel
+47 [IfNe](#ifne) - Execute then or else clause depending on whether two memory locations are not equal.
 
-48 [instructionMap](#instructionmap) - Instruction map
+48 [IfTrue](#iftrue) - Execute then clause if the specified memory address is not zero thus representing true.
 
-49 [Jeq](#jeq) - Jump to a target label if the first source field is equal to the second source field.
+49 [Ifx](#ifx) - Execute then or else clause depending on whether two memory locations are equal.
 
-50 [JFalse](#jfalse) - Jump to a target label if the first source field is equal to zero.
+50 [In](#in) - Read a value from the input channel
 
-51 [Jge](#jge) - Jump to a target label if the first source field is greater than or equal to the second source field.
+51 [Inc](#inc) - Increment the target.
 
-52 [Jgt](#jgt) - Jump to a target label if the first source field is greater than the second source field.
+52 [InSize](#insize) - Number of elements remining in the input channel
 
-53 [Jle](#jle) - Jump to a target label if the first source field is less than or equal to the second source field.
+53 [instructionMap](#instructionmap) - Instruction map
 
-54 [Jlt](#jlt) - Jump to a target label if the first source field is less than the second source field.
+54 [Jeq](#jeq) - Jump to a target label if the first source field is equal to the second source field.
 
-55 [Jmp](#jmp) - Jump to a label.
+55 [JFalse](#jfalse) - Jump to a target label if the first source field is equal to zero.
 
-56 [Jne](#jne) - Jump to a target label if the first source field is not equal to the second source field.
+56 [Jge](#jge) - Jump to a target label if the first source field is greater than or equal to the second source field.
 
-57 [JTrue](#jtrue) - Jump to a target label if the first source field is not equal to zero.
+57 [Jgt](#jgt) - Jump to a target label if the first source field is greater than the second source field.
 
-58 [Label](#label) - Create a label.
+58 [Jle](#jle) - Jump to a target label if the first source field is less than or equal to the second source field.
 
-59 [LoadAddress](#loadaddress) - Load the address component of an address.
+59 [Jlt](#jlt) - Jump to a target label if the first source field is less than the second source field.
 
-60 [LoadArea](#loadarea) - Load the area component of an address.
+60 [Jmp](#jmp) - Jump to a label.
 
-61 [Mov](#mov) - Copy a constant or memory address to the target address.
+61 [Jne](#jne) - Jump to a target label if the first source field is not equal to the second source field.
 
-62 [MoveLong](#movelong) - Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand.
+62 [JTrue](#jtrue) - Jump to a target label if the first source field is not equal to zero.
 
-63 [Nop](#nop) - Do nothing (but do it well!).
+63 [Label](#label) - Create a label.
 
-64 [Not](#not) - Move and not.
+64 [LoadAddress](#loadaddress) - Load the address component of an address.
 
-65 [Out](#out) - Write memory location contents to out.
+65 [LoadArea](#loadarea) - Load the area component of an address.
 
-66 [Parallel](#parallel) - Runs its sub sections in simulated parallel so that we can prove that the sections can be run in parallel.
+66 [Mov](#mov) - Copy a constant or memory address to the target address.
 
-67 [ParallelContinue](#parallelcontinue) - Continue recording the elapsed time for parallel sections.
+67 [MoveLong](#movelong) - Copy the number of elements specified by the second source operand from the location specified by the first source operand to the target operand.
 
-68 [ParallelStart](#parallelstart) - Start recording the elapsed time for parallel sections.
+68 [Nop](#nop) - Do nothing (but do it well!).
 
-69 [ParallelStop](#parallelstop) - Stop recording the elapsed time for parallel sections.
+69 [Not](#not) - Move and not.
 
-70 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
+70 [Out](#out) - Write memory location contents to out.
 
-71 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
+71 [Parallel](#parallel) - Runs its sub sections in simulated parallel so that we can prove that the sections can be run in parallel.
 
-72 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
+72 [ParallelContinue](#parallelcontinue) - Continue recording the elapsed time for parallel sections.
 
-73 [Procedure](#procedure) - Define a procedure.
+73 [ParallelStart](#parallelstart) - Start recording the elapsed time for parallel sections.
 
-74 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
+74 [ParallelStop](#parallelstop) - Stop recording the elapsed time for parallel sections.
 
-75 [Random](#random) - Create a random number in a specified range.
+75 [ParamsGet](#paramsget) - Get a word from the parameters in the previous frame and store it in the current frame.
 
-76 [RandomSeed](#randomseed) - Seed the random number generator.
+76 [ParamsPut](#paramsput) - Put a word into the parameters list to make it visible in a called procedure.
 
-77 [Resize](#resize) - Resize the target area to the source size.
+77 [Pop](#pop) - Pop the memory area specified by the source operand into the memory address specified by the target operand.
 
-78 [Return](#return) - Return from a procedure via the call stack.
+78 [Procedure](#procedure) - Define a procedure.
 
-79 [ReturnGet](#returnget) - Get a word from the return area and save it.
+79 [Push](#push) - Push the value in the current stack frame specified by the source operand onto the memory area identified by the target operand.
 
-80 [ReturnPut](#returnput) - Put a word into the return area.
+80 [Random](#random) - Create a random number in a specified range.
 
-81 [Sequential](#sequential) - Runs its sub sections in sequential order
+81 [RandomSeed](#randomseed) - Seed the random number generator.
 
-82 [ShiftDown](#shiftdown) - Shift an element down one in an area.
+82 [Resize](#resize) - Resize the target area to the source size.
 
-83 [ShiftLeft](#shiftleft) - Shift left within an element.
+83 [Return](#return) - Return from a procedure via the call stack.
 
-84 [ShiftRight](#shiftright) - Shift right with an element.
+84 [ReturnGet](#returnget) - Get a word from the return area and save it.
 
-85 [ShiftUp](#shiftup) - Shift an element up one in an area.
+85 [ReturnPut](#returnput) - Put a word into the return area.
 
-86 [Start](#start) - Start the current assembly using the specified version of the Zero language.
+86 [Sequential](#sequential) - Runs its sub sections in sequential order
 
-87 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
+87 [ShiftDown](#shiftdown) - Shift an element down one in an area.
 
-88 [Tally](#tally) - Counts instructions when enabled.
+88 [ShiftLeft](#shiftleft) - Shift left within an element.
 
-89 [Then](#then) - Then block.
+89 [ShiftRight](#shiftright) - Shift right with an element.
 
-90 [Trace](#trace) - Start or stop tracing.
+90 [ShiftUp](#shiftup) - Shift an element up one in an area.
 
-91 [TraceLabels](#tracelabels) - Enable or disable label tracing.
+91 [Start](#start) - Start the current assembly using the specified version of the Zero language.
 
-92 [Var](#var) - Create a variable initialized to the specified value.
+92 [Subtract](#subtract) - Subtract the second source operand value from the first source operand value and store the result in the target area.
 
-93 [Watch](#watch) - Watches for changes to the specified memory location.
+93 [Tally](#tally) - Counts instructions when enabled.
 
-94 [Zero::CompileToVerilog::deref](#zero-compiletoverilog-deref) - Compile a reference in assembler format to a corresponding verilog expression
+94 [Then](#then) - Then block.
+
+95 [Trace](#trace) - Start or stop tracing.
+
+96 [TraceLabels](#tracelabels) - Enable or disable label tracing.
+
+97 [Var](#var) - Create a variable initialized to the specified value.
+
+98 [Watch](#watch) - Watches for changes to the specified memory location.
+
+99 [Zero::CompileToVerilog::deref](#zero-compiletoverilog-deref) - Compile a reference in assembler format to a corresponding verilog expression
+
+100 [Zero::Emulator::Assembly::packInstruction](#zero-emulator-assembly-packinstruction) - Pack an instruction.
+
+101 [Zero::Emulator::Assembly::packRef](#zero-emulator-assembly-packref) - Pack a reference into 8 bytes.
+
+102 [Zero::Emulator::Assembly::unpackRef](#zero-emulator-assembly-unpackref) - Unpack a reference.
 
 # Installation
 
