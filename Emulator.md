@@ -67,18 +67,18 @@ Add the source locations together and store the result in the target area.
     
     if (1)                                                                          
      {Start 1;
+      my $b = Array 'b';
       my $a = Array 'a';
       Mov [$a, 0, 'a'], 11;
       Mov [$a, 1, 'a'], 22;
     
       Add [$a, 2, 'a'], [$a, 1, 'a'], [$a, 0, 'a'];  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
-      Out [$a, 2, 'a'];
+      my $c = Mov $a;
+      Out [$c, 2, 'a'];
       my $e = Execute(suppressOutput=>1, lowLevel=>1);
       is_deeply $e->outLines, [33];
-    
-      #$e->compileToVerilog("Add") if $testSet == 1 and $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
-
+      $e->compileToVerilog("ArrayAdd") if $debug;
      }
     
 
@@ -211,7 +211,9 @@ Create a new memory area and write its number into the address named by the targ
     
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       19 instructions executed";
+    
+      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       31 instructions executed" if     $e->assembly->lowLevelOps;
+      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       19 instructions executed" unless $e->assembly->lowLevelOps;
       is_deeply $e->outLines, [1, 2, 1, 1, 2];
       $e->compileToVerilog("Mov2") if $testSet == 1 and $debug;
      }
@@ -396,15 +398,29 @@ Dump an array.
     
       is_deeply eval($e->out), [1, 22, 333];
     
-      #say STDERR $e->block->codeToString;
-    
-      is_deeply $e->block->codeToString, <<'END';
+      is_deeply $e->assembly->codeToString, <<'END' unless $e->assembly->lowLevelOps;
     0000     array            0             3
     0001       mov [\0, 0, 3, 0]             1
     0002       mov [\0, 1, 3, 0]            22
     0003       mov [\0, 2, 3, 0]           333
     0004  arrayDump            0
     END
+    
+      is_deeply $e->assembly->codeToString, <<'END' if     $e->assembly->lowLevelOps;
+    0000     array            0             3
+    0001       mov            1             1
+    0002  movWrite1 [\0, 0, 3, 0]            \1
+    0003  movWrite2
+    0004       mov            2            22
+    0005  movWrite1 [\0, 1, 3, 0]            \2
+    0006  movWrite2
+    0007       mov            3           333
+    0008  movWrite1 [\0, 2, 3, 0]            \3
+    0009  movWrite2
+    0010  arrayDump            0
+    END
+    
+      #say STDERR $e->assembly->codeToString; exit;
      }
     
 
@@ -1116,9 +1132,25 @@ Else block.
        };
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->out, <<END;
+      #say STDERR $e->out; exit;
+    
+      is_deeply $e->out, <<END unless $e->assembly->lowLevelOps;
     Trace: 1
         1     0     0    59         trace
+        2     1     1    29           jNe
+        3     5     0    32         label
+        4     6     1    35           mov  [0, 3, stackArea] = 3
+        5     7     1    35           mov  [0, 4, stackArea] = 4
+        6     8     0    32         label
+        7     9     1    29           jNe
+        8    10     1    35           mov  [0, 1, stackArea] = 1
+        9    11     1    35           mov  [0, 2, stackArea] = 1
+       10    12     1    31           jmp
+       11    16     0    32         label
+    END
+    
+      is_deeply $e->out, <<END if $e->assembly->lowLevelOps;
+        1     0     0    63         trace
         2     1     1    29           jNe
         3     5     0    32         label
         4     6     1    35           mov  [0, 3, stackArea] = 3
@@ -2835,7 +2867,9 @@ Copy a constant or memory address to the target address.
     
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       19 instructions executed";
+    
+      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       31 instructions executed" if     $e->assembly->lowLevelOps;
+      is_deeply $e->analyzeExecutionResults(doubleWrite=>3), "#       19 instructions executed" unless $e->assembly->lowLevelOps;
       is_deeply $e->outLines, [1, 2, 1, 1, 2];
       $e->compileToVerilog("Mov2") if $testSet == 1 and $debug;
      }
@@ -2857,15 +2891,29 @@ Copy a constant or memory address to the target address.
     
       is_deeply eval($e->out), [1, 22, 333];
     
-      #say STDERR $e->block->codeToString;
-    
-      is_deeply $e->block->codeToString, <<'END';
+      is_deeply $e->assembly->codeToString, <<'END' unless $e->assembly->lowLevelOps;
     0000     array            0             3
     0001       mov [\0, 0, 3, 0]             1
     0002       mov [\0, 1, 3, 0]            22
     0003       mov [\0, 2, 3, 0]           333
     0004  arrayDump            0
     END
+    
+      is_deeply $e->assembly->codeToString, <<'END' if     $e->assembly->lowLevelOps;
+    0000     array            0             3
+    0001       mov            1             1
+    0002  movWrite1 [\0, 0, 3, 0]            \1
+    0003  movWrite2
+    0004       mov            2            22
+    0005  movWrite1 [\0, 1, 3, 0]            \2
+    0006  movWrite2
+    0007       mov            3           333
+    0008  movWrite1 [\0, 2, 3, 0]            \3
+    0009  movWrite2
+    0010  arrayDump            0
+    END
+    
+      #say STDERR $e->assembly->codeToString; exit;
      }
     
 
@@ -3765,9 +3813,25 @@ Then block.
        };
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->out, <<END;
+      #say STDERR $e->out; exit;
+    
+      is_deeply $e->out, <<END unless $e->assembly->lowLevelOps;
     Trace: 1
         1     0     0    59         trace
+        2     1     1    29           jNe
+        3     5     0    32         label
+        4     6     1    35           mov  [0, 3, stackArea] = 3
+        5     7     1    35           mov  [0, 4, stackArea] = 4
+        6     8     0    32         label
+        7     9     1    29           jNe
+        8    10     1    35           mov  [0, 1, stackArea] = 1
+        9    11     1    35           mov  [0, 2, stackArea] = 1
+       10    12     1    31           jmp
+       11    16     0    32         label
+    END
+    
+      is_deeply $e->out, <<END if $e->assembly->lowLevelOps;
+        1     0     0    63         trace
         2     1     1    29           jNe
         3     5     0    32         label
         4     6     1    35           mov  [0, 3, stackArea] = 3
@@ -3818,11 +3882,27 @@ Start or stop tracing.  Tracing prints each instruction executed and its effect 
        };
       my $e = Execute(suppressOutput=>1);
     
-      is_deeply $e->out, <<END;
+      #say STDERR $e->out; exit;
+    
+      is_deeply $e->out, <<END unless $e->assembly->lowLevelOps;
     
     Trace: 1  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
         1     0     0    59         trace
+        2     1     1    29           jNe
+        3     5     0    32         label
+        4     6     1    35           mov  [0, 3, stackArea] = 3
+        5     7     1    35           mov  [0, 4, stackArea] = 4
+        6     8     0    32         label
+        7     9     1    29           jNe
+        8    10     1    35           mov  [0, 1, stackArea] = 1
+        9    11     1    35           mov  [0, 2, stackArea] = 1
+       10    12     1    31           jmp
+       11    16     0    32         label
+    END
+    
+      is_deeply $e->out, <<END if $e->assembly->lowLevelOps;
+        1     0     0    63         trace
         2     1     1    29           jNe
         3     5     0    32         label
         4     6     1    35           mov  [0, 3, stackArea] = 3
@@ -4038,7 +4118,7 @@ Compile each sub sequence of instructions into equivalent verilog.  A sub sequen
       is_deeply $e->in, [];
       is_deeply $e->inOriginally, [33, 22, 11];
       is_deeply $e->outLines, [1,2,3, 3,33, 2,22, 1,11];
-      is_deeply [map {$_->entry} $e->block->code->@*], [qw(1 0 0 1 0 0 0 0 0 0 0 0)]; # Sub sequence start points
+      is_deeply [map {$_->entry} $e->assembly->code->@*], [qw(1 0 0 1 0 0 0 0 0 0 0 0)]; # Sub sequence start points
     
       $e->compileToVerilog("ForIn") if $debug;  # 𝗘𝘅𝗮𝗺𝗽𝗹𝗲
 
@@ -4127,7 +4207,7 @@ Low level memory access - push onto area
 
 Low level memory access - resize an area
 
-#### block
+#### assembly
 
 Block of code to be executed
 
@@ -4234,6 +4314,10 @@ Memory contents at the end of execution
 #### mostArrays
 
 The maximum number of arrays active at any point during the execution in each arena
+
+#### movReadAddress
+
+The address we wish to read during a read memory operation
 
 #### namesOfWidestArrays
 
@@ -4412,6 +4496,10 @@ Label counter used to generate unique labels
 #### labels
 
 Label name to instruction
+
+#### lowLevelOps
+
+Generate lower level instructions to allow heap to be placed in a separate verilog module
 
 #### procedures
 
@@ -4727,9 +4815,9 @@ Compile a reference in assembler format to a corresponding verilog expression
 
 23 [Call](#call) - Call the subroutine at the target address.
 
-24 [compileToVerilog](#compiletoverilog) - Compile each sub sequence of instructions into equivalent verilog.
+24 [CompileToVerilog](#compiletoverilog) - Execution environment for a block of code.
 
-25 [CompileToVerilog](#compiletoverilog) - Execution environment for a block of code.
+25 [compileToVerilog](#compiletoverilog) - Compile each sub sequence of instructions into equivalent verilog.
 
 26 [Confess](#confess) - Confess with a stack trace showing the location both in the emulated code and in the code that produced the emulated code.
 
