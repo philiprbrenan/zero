@@ -1,6 +1,6 @@
 #!/usr/bin/perl -I/home/phil/perl/cpan/DataTableText/lib/
 #-------------------------------------------------------------------------------
-# Push Zero code to GitHub
+# Push Zero code to GitHub. High level assembler version.
 # Philip R Brenan at gmail dot com, Appa Apps Ltd Inc., 2023
 #-------------------------------------------------------------------------------
 use warnings FATAL => qw(all);
